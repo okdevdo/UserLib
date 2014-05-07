@@ -1,0 +1,51 @@
+WELCOME to UserLib Library!
+
+    Copyright (C) 1995-2014  Oliver Kreis (okdev10@arcor.de)
+
+    This library is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published 
+	by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+ABOUT UserLib
+
+	UserLib is a C++ Framework with a C-Kernel. I can easily and quickly write an application.
+	If you like the library, you can do the same. If you need any help, write me an email.
+
+	OK, the main domain where the library lives is windows desktop, and it runs under Mingw and Cygwin.
+	I am interested to see it running under linux.
+
+FEATURE List
+
+	- am memory manager for small objects (C)
+	- data structures including AVL-trees, RB-trees and B*-trees (C, C++)
+	- string utilities including CStringBuffer (C, C++)
+	- application and program option management (C++)
+	- and many more ...
+
+DIRECTORY structure
+
+	UserLib/
+	 +-- CSources/
+	 +-- CppSources/
+	 +-- WinSources/
+	 +-- ConSources/
+	 +-- GuiSources/
+	 +
+	 +-- ... sample applications
+
+HOWTO install
+
+	See the file INSTALL for instructions on how to build and install UserLib. 
+	That file also lists supported compilers and operating systems and contains 
+	information regarding any other software packages that are required to build 
+	or run the Library.  Copyright and license information can be found in the
+	files COPYING.LESSER and COPYING. 
