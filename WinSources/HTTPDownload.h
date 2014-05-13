@@ -1,0 +1,57 @@
+/******************************************************************************
+    
+	This file is part of WinSources, which is part of UserLib.
+
+    Copyright (C) 1995-2014  Oliver Kreis (okdev10@arcor.de)
+
+    This library is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published 
+	by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+******************************************************************************/
+#pragma once
+
+#include "FilePath.h"
+#include "okDateTime.h"
+#include "WinSources.h"
+#include "HTTPClient.h"
+
+class WINSOURCES_API CHttpDownload: public CHttpClient
+{
+public:
+	CHttpDownload(void);
+	CHttpDownload(ConstRef(CStringLiteral) user, ConstRef(CStringLiteral) passwd, ConstRef(CUrl) serverandroot, ConstRef(CFilePath) diskrootpath);
+	virtual ~CHttpDownload(void);
+
+	void OpenConnection(ConstRef(CStringLiteral) user, ConstRef(CStringLiteral) passwd, ConstRef(CUrl) serverandroot, ConstRef(CFilePath) diskrootpath);
+	void ChangeWorkingDir(ConstRef(CFilePath) _relativeunixpath, bool reset2root = true);
+	void ChangeToParentDir();
+	void RetrieveFileTime(ConstRef(CFilePath) _relativeunixpath, Ref(CDateTime) modTime);
+	void RetrieveFile(ConstRef(CFilePath) _relativeunixpath, ConstRef(CDateTime) modTime);
+	void CloseConnection();
+
+	__inline bool IsConnected() const { return _open; }
+
+	__inline ConstRef(CStringLiteral) GetUserName() const { return _username; }
+	__inline ConstRef(CStringLiteral) GetPassword() const { return _password; }
+	__inline ConstRef(CUrl) GetServerAndRoot() const { return _serverandroot; }
+	__inline ConstRef(CFilePath) GetDiskRootPath() const { return _diskrootpath; }
+	__inline ConstRef(CFilePath) GetUnixWorkingDir() const { return _unixworkingdir; }
+
+protected:
+	CStringLiteral _username;
+	CStringLiteral _password;
+	CUrl _serverandroot;
+	CFilePath _diskrootpath;
+	CFilePath _unixworkingdir;
+};
+
