@@ -1,6 +1,6 @@
 /******************************************************************************
     
-	This file is part of XSetup, which is part of UserLib.
+	This file is part of XCygwinSetup, which is part of UserLib.
 
     Copyright (C) 1995-2014  Oliver Kreis (okdev10@arcor.de)
 

@@ -1,6 +1,6 @@
 /******************************************************************************
     
-	This file is part of XSetup, which is part of UserLib.
+	This file is part of XCygwinSetup, which is part of UserLib.
 
     Copyright (C) 1995-2014  Oliver Kreis (okdev10@arcor.de)
 
@@ -27,11 +27,11 @@ void __stdcall VectorEmptyDeleteFunc( ConstPointer data, Pointer context )
 {
 }
 
-class XSetupApplication: public CConsoleApplication
+class XCygwinSetupApplication: public CConsoleApplication
 {
 public:
-	XSetupApplication():
-		CConsoleApplication(CStringBuffer(__FILE__LINE__ _T("XSetup"))),
+	XCygwinSetupApplication():
+		CConsoleApplication(CStringBuffer(__FILE__LINE__ APPLICATION_NAME)),
 	    m_help(false),
 		m_SetupIniFiles(false),
 		m_sSetupIniFiles(__FILE__LINE__ 16, 16, VectorEmptyDeleteFunc),
@@ -57,7 +57,7 @@ public:
 		m_Update(false),
 		m_Output(false)
 	{
-        COptionCallback<XSetupApplication> cb(this,&XSetupApplication::handleHelp);
+        COptionCallback<XCygwinSetupApplication> cb(this,&XCygwinSetupApplication::handleHelp);
         
 		addOption(COption(_T("Help"))
 			.shortName(_T("h"))
@@ -141,7 +141,7 @@ public:
 			.description(_T("Redirects stdout to log file.")));
 		}
 
-	virtual ~XSetupApplication() 
+	virtual ~XCygwinSetupApplication() 
 	{
 	}
 
@@ -373,7 +373,7 @@ public:
 				m_Output = !(theConsoleApp->is_stdout_redirected());
 				if (m_Output)
 				{
-					tmp.FormatString(__FILE__LINE__ _T("XSetup_%04d%02d%02d_%02d%02d%02d.log"),
+					tmp.FormatString(__FILE__LINE__ APPLICATION_NAME _T("_%04d%02d%02d_%02d%02d%02d.log"),
 						Cast(int, now.GetYears()), Cast(int, now.GetMonths()), Cast(int, now.GetDays()),
 						Cast(int, now.GetHours()), Cast(int, now.GetMinutes()), Cast(int, now.GetSeconds()));
 					foutf.set_Filename(tmp);
@@ -492,7 +492,7 @@ int
 	_CrtSetReportFile( _CRT_ASSERT, _CRTDBG_FILE_STDERR );
 #endif
         
-	XSetupApplication testApp;
+	XCygwinSetupApplication testApp;
 
 	res = testApp.run(argc, argv);
 

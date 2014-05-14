@@ -1,6 +1,6 @@
 /******************************************************************************
     
-	This file is part of XSetup, which is part of UserLib.
+	This file is part of XCygwinSetup, which is part of UserLib.
 
     Copyright (C) 1995-2014  Oliver Kreis (okdev10@arcor.de)
 
@@ -61,6 +61,8 @@ using std::endl;
 #define CYGWIN_PREREMOVE_DIR _T("/etc/preremove/")
 #define CYGWIN_POSTINSTALL_DIR _T("/etc/postinstall/")
 #define CYGWIN_TMP_DIR _T("/tmp/")
+
+#define APPLICATION_NAME _T("XCygwinSetup")
 
 void ScanSetupIni(CStringLiteral pInstallDir, CStringLiteral psSetupIniScanDir, CDataVectorT<mbchar>& psSetupIniFiles,
 	CDataVectorT<CStringBuffer>& psSearchPackage, CDataVectorT<mbchar>& psSearchKey, WUInt flags, WInt iVerbose);
