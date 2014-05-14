@@ -1,0 +1,134 @@
+
+						UserLib INSTALLATION
+						====================
+
+Under WINDOWS
+=============
+
+Microsoft Visual Studio
+=======================
+
+Run the xsetup client. For example:
+
+		xsetup -g1 -g2 <Version> -w <path to UserLib Root>
+		
+		Generate 'ProjectFile.xml' from 'XSetup.exe.properties' ('-g1'). Then
+		build the Visual Studio project tree from 'ProjectFile.xml' ('-g2').
+		<Version> may be eg 'v110', for Visual Studio 2012. You can find the 
+		solution file in:
+		
+			<path to UserLib Root>\vs\<Version>\UserLib.sln
+		
+		or
+		
+		xsetup -g2 <Version> 
+		
+		Edit 'ProjectFile.xml' and regenerate the Visual Studio project tree.
+		Regeneration of the project files works fine when Visual Studio 2012
+		or 2013 is running. Visual Studio asks you to reload the project files.
+		Sometimes reloading does not really work. Then you have to restart 
+		Visual Studio. 
+
+Minimum operating system for the xsetup client is Vista. 
+
+===============================================================================
+Usage:
+
+     -h, /Help     Show Help.
+
+  Setup
+
+     -g2, /GenVS   This option has an argument 'version'. The argument is not
+                    optional. Generates Visual Studio Project Tree according to
+                    argument 'version' (v110, v120 are supported).
+     -g1, /GenXML  Generates XML intermediate based on XSetup's properties.
+
+  Util
+
+     -o, /Output   This option has an argument 'outputfile'. Write all 'stdout'
+                    to 'outputfile'. 'outputfile' defaults to
+                    'XSetupYYYYMMDDHHMMSS.log', if not given.
+     -v, /Verbose  Prints verbose infos.
+     -w, /WorkDir  This option has an argument 'path'. The argument is not
+                    optional. Argument 'path' points to UserLib Source Tree
+                    Root. If this option is not given, current directory will
+                    be taken.
+     -64, /x64     Enforces x64 configurations, even if compiler is not
+                    installed.
+     -x, /XMLFile  This option has an argument 'path'. The argument is not
+                    optional. Names XML intermediate.
+
+
+XSetup Copyright (C) 1995-2014 Oliver Kreis
+This program comes with ABSOLUTELY NO WARRANTY. It is free software, and you
+are welcome to redistribute it under certain conditions. See file 'LICENSE'
+for details.
+===============================================================================
+
+The following software packages are required for building UserLib. They should
+be installed in parallel to UserLib. There are make files and command files (
+'makefile-ok.msc', 'dowin32.cmd', 'dowin64.cmd')
+
+- bzip2-1.0.6
+  Homepage: http://www.bzip.org/
+  Usage: CppSources/BZip2Filter.h CppSources/BZip2Filter.cpp XBUnzip2/*
+  XBZip2/*
+  
+- expat-2.1.0
+  Homepage: http://expat.sourceforge.net/
+  Usage: CppSources/SAXParser.h CppSources/SAXParserImpl.h 
+  CppSources/SAXParser.cpp CppSources/SAXParserImpl.cpp XSetup/Program2.cpp
+  
+- mysql-connector-c-6.1.3
+  Homepage: http://dev.mysql.com/downloads/connector/c/
+  Usage: WinSources/MySQLDB.h WinSources/MySQLDBImpl.h WinSources/MySQLDB.cpp
+  WinSources/MySQLDBImpl.cpp
+  ODBC
+  Homepage: http://dev.mysql.com/downloads/connector/odbc/
+  Usage: WinSources/ODBC.h WinSources/ODBCImpl.h WinSources/ODBC.cpp
+  WinSources/ODBCImpl.cpp
+  
+- openssl-1.0.1g
+  Homepage: http://www.openssl.org/source/
+  Usage: openssl/*
+  
+- postgresql-9.3.4
+  Homepage: http://www.postgresql.org/download/
+  Usage: WinSources/PostgresDB.h WinSources/PostgresDBImpl.h 
+  WinSources/PostgresDB.cpp WinSources/PostgresDBImpl.cpp
+  ODBC
+  Homepage: http://www.postgresql.org/ftp/odbc/
+  Usage: WinSources/ODBC.h WinSources/ODBCImpl.h WinSources/ODBC.cpp
+  WinSources/ODBCImpl.cpp
+  
+- sqlite-autoconf-3080200
+  Homepage: http://www.sqlite.org/
+  Usage: CppSources/SqLite3DB.h CppSources/SqLite3DBImpl.h 
+  CppSources/SqLite3DB.cpp CppSources/SqLite3DBImpl.h
+  ODBC
+  Homepage: http://www.ch-werner.de/sqliteodbc/
+  Usage: WinSources/ODBC.h WinSources/ODBCImpl.h WinSources/ODBC.cpp
+  WinSources/ODBCImpl.cpp
+  
+- xz-5.0.5
+  Homepage: http://tukaani.org/xz/
+  Usage: CppSources/LZMAFilter.h CppSources/LZMALibFilter.h 
+  CppSources/XZFilter.h CppSources/LZMAFilter.cpp CppSources/LZMALibFilter.cpp
+  CppSources/XZFilter.cpp
+  Remark: xz cannot be compiled with MSC. You can use a patch.
+  
+- zlib-1.2.8
+  Homepage: http://www.zlib.net/
+  Usage: CppSources/GZipFilter.h CppSources/ZipArchive.h CppSources/ZipFilter.h
+  CppSources/ZLibFilter.h CppSources/GZipFilter.cpp CppSources/ZipArchive.cpp
+  CppSources/ZipFilter.cpp CppSources/ZLibFilter.cpp
+
+  
+GNU Compiler (Mingw, Cyqwin)
+============================
+
+Autotools version 1.14 are needed. From the shell call 'configure'. To build a
+debug version call 'configure --enable-debug'.
+
+The above software packages can be compiled in the shell with their configure
+script. Install them in '/usr/local'.
