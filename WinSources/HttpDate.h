@@ -47,7 +47,9 @@ public:
 	CHttpDate(void);
 	CHttpDate(CConstPointer date); // rfc1123-date | rfc850-date | asctime-date
 	CHttpDate(ConstRef(CDateTime) date);
+#ifndef OK_SYS_UNIX
 	CHttpDate(ConstRef(CSystemTime) date);
+#endif
 	virtual ~CHttpDate(void);
 
 	void Now(); // UTC - Time
@@ -64,7 +66,9 @@ public:
 	CStringBuffer GetDate(); // rfc1123-date
 	void SetDate(CConstPointer date); // rfc1123-date | rfc850-date | asctime-date
 	void SetDate(ConstRef(CDateTime) date);
+#ifndef OK_SYS_UNIX
 	void SetDate(ConstRef(CSystemTime) date);
+#endif
 	ULONGLONG GetTime2Compare() const;
 
 protected:

@@ -236,59 +236,59 @@ static long long strtoll_test(const char *_Str, char **_EndPtr, int _Radix)
 }
 
 struct __tagTestZahlU {
-	CConstPointer sZahl;
+	const wchar_t*sZahl;
 	long long vZahl;
 	int vRadix;
 } TestZahlU[] = {
 	{
-		_T("  \t \n   123456789"),
+		L"  \t \n   123456789",
 		123456789LL,
 		0
 	},
 	{
-		_T("  \t \n   -123456789"),
+		L"  \t \n   -123456789",
 		-123456789LL,
 		0
 	},
 	{
-		_T("9223372036854775808"),
+		L"9223372036854775808",
 		9223372036854775807LL,
 		0
 	},
 	{
-		_T("-9223372036854775806"),
+		L"-9223372036854775806",
 		-9223372036854775806LL,
 		0
 	},
 	{
-		_T("0xABCD"),
+		L"0xABCD",
 		0xABCD,
 		0
 	},
 	{
-		_T("04567"),
+		L"04567",
 		04567,
 		0
 	},
 	{
-		_T("01238"),
+		L"01238",
 		0123,
 		0
 	},
 	{
-		_T("ABCD"),
+		L"ABCD",
 		0xABCD,
 		16
 	},
 	{
-		_T("ZZZZ"),
+		L"ZZZZ",
 		1679615,
 		36
 	}
 };
 
 struct __tagTestZahlA {
-	char *sZahl;
+	const char *sZahl;
 	long long vZahl;
 	int vRadix;
 } TestZahlA[] = {
@@ -343,7 +343,7 @@ static void TestStrUtil()
 {
 	OpenTestFile(_T("TestStrUtil"));
 
-	CPointer sZahlEndU = NULL;
+	wchar_t *sZahlEndU = NULL;
 	char *sZahlEndA = NULL;
 	long long vTestZahl;
 

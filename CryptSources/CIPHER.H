@@ -61,30 +61,30 @@ extern "C" {
 		TWOFISH_KEY twofishkey;
 	} SYMMETRIC_KEY;
 
-	void DESSetup(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey);
-	void DESEncrypt(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey);
-	void DESDecrypt(BConstPointer ct, BPointer pt, SYMMETRIC_KEY *skey);
-	void DESFinish(SYMMETRIC_KEY *skey);
+	CYSOURCES_API void DESSetup(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey);
+	CYSOURCES_API void DESEncrypt(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey);
+	CYSOURCES_API void DESDecrypt(BConstPointer ct, BPointer pt, SYMMETRIC_KEY *skey);
+	CYSOURCES_API void DESFinish(SYMMETRIC_KEY *skey);
 
-	void DES3Setup(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey);
-	void DES3Encrypt(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey);
-	void DES3Decrypt(BConstPointer ct, BPointer pt, SYMMETRIC_KEY *skey);
-	void DES3Finish(SYMMETRIC_KEY *skey);
+	CYSOURCES_API void DES3Setup(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey);
+	CYSOURCES_API void DES3Encrypt(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey);
+	CYSOURCES_API void DES3Decrypt(BConstPointer ct, BPointer pt, SYMMETRIC_KEY *skey);
+	CYSOURCES_API void DES3Finish(SYMMETRIC_KEY *skey);
 
-	void AESSetup(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey);
-	void AESEncrypt(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey);
-	void AESDecrypt(BConstPointer ct, BPointer pt, SYMMETRIC_KEY *skey);
-	void AESFinish(SYMMETRIC_KEY *skey);
+	CYSOURCES_API void AESSetup(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey);
+	CYSOURCES_API void AESEncrypt(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey);
+	CYSOURCES_API void AESDecrypt(BConstPointer ct, BPointer pt, SYMMETRIC_KEY *skey);
+	CYSOURCES_API void AESFinish(SYMMETRIC_KEY *skey);
 
-	void BlowfishSetup(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey);
-	void BlowfishEncrypt(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey);
-	void BlowfishDecrypt(BConstPointer ct, BPointer pt, SYMMETRIC_KEY *skey);
-	void BlowfishFinish(SYMMETRIC_KEY *skey);
+	CYSOURCES_API void BlowfishSetup(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey);
+	CYSOURCES_API void BlowfishEncrypt(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey);
+	CYSOURCES_API void BlowfishDecrypt(BConstPointer ct, BPointer pt, SYMMETRIC_KEY *skey);
+	CYSOURCES_API void BlowfishFinish(SYMMETRIC_KEY *skey);
 
-	void TwofishSetup(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey);
-	void TwofishEncrypt(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey);
-	void TwofishDecrypt(BConstPointer ct, BPointer pt, SYMMETRIC_KEY *skey);
-	void TwofishFinish(SYMMETRIC_KEY *skey);
+	CYSOURCES_API void TwofishSetup(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey);
+	CYSOURCES_API void TwofishEncrypt(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey);
+	CYSOURCES_API void TwofishDecrypt(BConstPointer ct, BPointer pt, SYMMETRIC_KEY *skey);
+	CYSOURCES_API void TwofishFinish(SYMMETRIC_KEY *skey);
 
 	typedef struct {
 		void(*Setup)(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey);
@@ -96,17 +96,17 @@ extern "C" {
 		SYMMETRIC_KEY key;
 	} SYMMETRIC_KEY_CBC;
 
-	void CBCSetup(BConstPointer IV, int blocklen, BConstPointer key, int keylen, int num_rounds, 
+	CYSOURCES_API void CBCSetup(BConstPointer IV, int blocklen, BConstPointer key, int keylen, int num_rounds, 
 		void(*Setup)(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey),
 		void(*Encrypt)(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey),
 		void(*Decrypt)(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey),
 		void(*Finish)(SYMMETRIC_KEY *skey),
 		SYMMETRIC_KEY_CBC *skey);
-	void CBCSetIV(BConstPointer IV, int blocklen, SYMMETRIC_KEY_CBC *skey);
-	void CBCGetIV(BPointer IV, int blocklen, SYMMETRIC_KEY_CBC *skey);
-	void CBCEncrypt(BConstPointer pt, BPointer ct, dword len, SYMMETRIC_KEY_CBC *skey);
-	void CBCDecrypt(BConstPointer ct, BPointer pt, dword len, SYMMETRIC_KEY_CBC *skey);
-	void CBCFinish(SYMMETRIC_KEY_CBC *skey);
+	CYSOURCES_API void CBCSetIV(BConstPointer IV, int blocklen, SYMMETRIC_KEY_CBC *skey);
+	CYSOURCES_API void CBCGetIV(BPointer IV, int blocklen, SYMMETRIC_KEY_CBC *skey);
+	CYSOURCES_API void CBCEncrypt(BConstPointer pt, BPointer ct, dword len, SYMMETRIC_KEY_CBC *skey);
+	CYSOURCES_API void CBCDecrypt(BConstPointer ct, BPointer pt, dword len, SYMMETRIC_KEY_CBC *skey);
+	CYSOURCES_API void CBCFinish(SYMMETRIC_KEY_CBC *skey);
 
 	typedef struct {
 		void(*Setup)(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey);
@@ -120,17 +120,17 @@ extern "C" {
 		SYMMETRIC_KEY key;
 	} SYMMETRIC_KEY_CFB;
 
-	void CFBSetup(BConstPointer IV, int blocklen, BConstPointer key, int keylen, int num_rounds, 
+	CYSOURCES_API void CFBSetup(BConstPointer IV, int blocklen, BConstPointer key, int keylen, int num_rounds, 
 		void(*Setup)(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey),
 		void(*Encrypt)(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey),
 		void(*Decrypt)(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey),
 		void(*Finish)(SYMMETRIC_KEY *skey),
 		SYMMETRIC_KEY_CFB *skey);
-	void CFBSetIV(BConstPointer IV, int blocklen, SYMMETRIC_KEY_CFB *skey);
-	void CFBGetIV(BPointer IV, int blocklen, SYMMETRIC_KEY_CFB *skey);
-	void CFBEncrypt(BConstPointer pt, BPointer ct, dword len, SYMMETRIC_KEY_CFB *skey);
-	void CFBDecrypt(BConstPointer ct, BPointer pt, dword len, SYMMETRIC_KEY_CFB *skey);
-	void CFBFinish(SYMMETRIC_KEY_CFB *skey);
+	CYSOURCES_API void CFBSetIV(BConstPointer IV, int blocklen, SYMMETRIC_KEY_CFB *skey);
+	CYSOURCES_API void CFBGetIV(BPointer IV, int blocklen, SYMMETRIC_KEY_CFB *skey);
+	CYSOURCES_API void CFBEncrypt(BConstPointer pt, BPointer ct, dword len, SYMMETRIC_KEY_CFB *skey);
+	CYSOURCES_API void CFBDecrypt(BConstPointer ct, BPointer pt, dword len, SYMMETRIC_KEY_CFB *skey);
+	CYSOURCES_API void CFBFinish(SYMMETRIC_KEY_CFB *skey);
 
 	typedef struct {
 		void(*Setup)(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey);
@@ -143,17 +143,17 @@ extern "C" {
 		SYMMETRIC_KEY key;
 	} SYMMETRIC_KEY_OFB;
 
-	void OFBSetup(BConstPointer IV, int blocklen, BConstPointer key, int keylen, int num_rounds, 
+	CYSOURCES_API void OFBSetup(BConstPointer IV, int blocklen, BConstPointer key, int keylen, int num_rounds, 
 		void(*Setup)(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey),
 		void(*Encrypt)(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey),
 		void(*Decrypt)(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey),
 		void(*Finish)(SYMMETRIC_KEY *skey),
 		SYMMETRIC_KEY_OFB *skey);
-	void OFBSetIV(BConstPointer IV, int blocklen, SYMMETRIC_KEY_OFB *skey);
-	void OFBGetIV(BPointer IV, int blocklen, SYMMETRIC_KEY_OFB *skey);
-	void OFBEncrypt(BConstPointer pt, BPointer ct, dword len, SYMMETRIC_KEY_OFB *skey);
-	void OFBDecrypt(BConstPointer ct, BPointer pt, dword len, SYMMETRIC_KEY_OFB *skey);
-	void OFBFinish(SYMMETRIC_KEY_OFB *skey);
+	CYSOURCES_API void OFBSetIV(BConstPointer IV, int blocklen, SYMMETRIC_KEY_OFB *skey);
+	CYSOURCES_API void OFBGetIV(BPointer IV, int blocklen, SYMMETRIC_KEY_OFB *skey);
+	CYSOURCES_API void OFBEncrypt(BConstPointer pt, BPointer ct, dword len, SYMMETRIC_KEY_OFB *skey);
+	CYSOURCES_API void OFBDecrypt(BConstPointer ct, BPointer pt, dword len, SYMMETRIC_KEY_OFB *skey);
+	CYSOURCES_API void OFBFinish(SYMMETRIC_KEY_OFB *skey);
 
 	typedef struct {
 		void(*Setup)(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey);
@@ -173,17 +173,17 @@ extern "C" {
 #define CTR_COUNTER_BIG_ENDIAN       0x1000
 #define CTR_COUNTER_RFC3686          0x2000
 
-	void CTRSetup(BConstPointer IV, int blocklen, BConstPointer key, int keylen, int num_rounds, int ctr_mode,
+	CYSOURCES_API void CTRSetup(BConstPointer IV, int blocklen, BConstPointer key, int keylen, int num_rounds, int ctr_mode,
 		void(*Setup)(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey),
 		void(*Encrypt)(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey),
 		void(*Decrypt)(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey),
 		void(*Finish)(SYMMETRIC_KEY *skey),
 		SYMMETRIC_KEY_CTR *skey);
-	void CTRSetIV(BConstPointer IV, int blocklen, SYMMETRIC_KEY_CTR *skey);
-	void CTRGetIV(BPointer IV, int blocklen, SYMMETRIC_KEY_CTR *skey);
-	void CTREncrypt(BConstPointer pt, BPointer ct, dword len, SYMMETRIC_KEY_CTR *skey);
-	void CTRDecrypt(BConstPointer ct, BPointer pt, dword len, SYMMETRIC_KEY_CTR *skey);
-	void CTRFinish(SYMMETRIC_KEY_CTR *skey);
+	CYSOURCES_API void CTRSetIV(BConstPointer IV, int blocklen, SYMMETRIC_KEY_CTR *skey);
+	CYSOURCES_API void CTRGetIV(BPointer IV, int blocklen, SYMMETRIC_KEY_CTR *skey);
+	CYSOURCES_API void CTREncrypt(BConstPointer pt, BPointer ct, dword len, SYMMETRIC_KEY_CTR *skey);
+	CYSOURCES_API void CTRDecrypt(BConstPointer ct, BPointer pt, dword len, SYMMETRIC_KEY_CTR *skey);
+	CYSOURCES_API void CTRFinish(SYMMETRIC_KEY_CTR *skey);
 
 	typedef struct {
 		void(*Setup)(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey);
@@ -194,15 +194,15 @@ extern "C" {
 		SYMMETRIC_KEY key2;
 	} SYMMETRIC_KEY_XTS;
 
-	void XTSSetup(BConstPointer key, int keylen, int num_rounds,
+	CYSOURCES_API void XTSSetup(BConstPointer key, int keylen, int num_rounds,
 		void(*Setup)(BConstPointer key, int keylen, int num_rounds, SYMMETRIC_KEY *skey),
 		void(*Encrypt)(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey),
 		void(*Decrypt)(BConstPointer pt, BPointer ct, SYMMETRIC_KEY *skey),
 		void(*Finish)(SYMMETRIC_KEY *skey),
 		SYMMETRIC_KEY_XTS *skey);
-	void XTSEncrypt(BConstPointer pt, BPointer ct, dword ptlen, BConstPointer tweak, SYMMETRIC_KEY_XTS *skey);
-	void XTSDecrypt(BConstPointer ct, BPointer pt, dword ptlen, BConstPointer tweak, SYMMETRIC_KEY_XTS *skey);
-	void XTSFinish(SYMMETRIC_KEY_XTS *skey);
+	CYSOURCES_API void XTSEncrypt(BConstPointer pt, BPointer ct, dword ptlen, BConstPointer tweak, SYMMETRIC_KEY_XTS *skey);
+	CYSOURCES_API void XTSDecrypt(BConstPointer ct, BPointer pt, dword ptlen, BConstPointer tweak, SYMMETRIC_KEY_XTS *skey);
+	CYSOURCES_API void XTSFinish(SYMMETRIC_KEY_XTS *skey);
 
 #ifdef __cplusplus
 }

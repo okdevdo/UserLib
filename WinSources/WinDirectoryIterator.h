@@ -33,6 +33,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <time.h>
+#define FILETIME time_t
 #endif
 #ifdef OK_COMP_MSC
 typedef dword mode_t;

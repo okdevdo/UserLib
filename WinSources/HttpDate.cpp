@@ -148,10 +148,12 @@ CHttpDate::CHttpDate(ConstRef(CDateTime) date)
 	SetDate(date);
 }
 
+#ifndef OK_SYS_UNIX
 CHttpDate::CHttpDate(ConstRef(CSystemTime) date)
 {
 	SetDate(date);
 }
+#endif
 
 CHttpDate::~CHttpDate(void)
 {
@@ -267,10 +269,12 @@ void CHttpDate::SetDate(ConstRef(CDateTime) date)
 	m_SystemTime.wDayOfWeek = date.GetWeekDay();
 }
 
+#ifndef OK_SYS_UNIX
 void CHttpDate::SetDate(ConstRef(CSystemTime) date)
 {
 	date.GetTime(m_SystemTime);
 }
+#endif
 
 void CHttpDate::ScanAscTime(Ref(CStringConstIterator) it)
 {

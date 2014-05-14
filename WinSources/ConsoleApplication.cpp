@@ -22,6 +22,10 @@
 #include "ConsoleApplication.h"
 #include "WinException.h"
 
+#ifdef OK_SYS_UNIX
+#include <unistd.h>
+#endif
+
 CConsoleApplication::CConsoleApplication() :
 CApplication(),
 _stdout_init(false),

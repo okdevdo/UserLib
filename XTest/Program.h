@@ -126,6 +126,3 @@ void TestEventLog();
 
 void TestSqLite3ServiceClient();
 void TestWinSources();
-
-void MetaProjectCreateProjectFilesXML();
-void MetaProjectCreateProjectFilesVS(CConstPointer pVersion);

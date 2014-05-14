@@ -27,11 +27,11 @@
 #define FAIL_COND (_hFileFind == INVALID_HANDLE_VALUE)
 #endif
 #ifdef OK_SYS_UNIX
-#include <unistd.h>
-#include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <utime.h>
 #include <stdio.h>
-
 #define FAIL_COND PtrCheck(_hFileFind)
 #endif
 
@@ -425,7 +425,7 @@ void CWinDirectoryIterator::RemoveDirectory(ConstRef(CFilePath) path)
 		case EACCES:
 		default:
 			throw OK_NEW_OPERATOR CWinDirectoryIteratorException(__FILE__LINE__ _T("in %s CWinDirectoryIteratorException, path = '%s'"),
-				_T("CDirectoryIterator::RemoveDirectory"), path.GetString(), errno);
+				_T("CWinDirectoryIterator::RemoveDirectory"), path.GetString(), CWinException::CRunTimeError);
 			break;
 		}
 	}
@@ -1283,8 +1283,6 @@ void CWinDirectoryIterator::Open(ConstRef(CFilePath) path)
 	}
 #endif
 #ifdef OK_SYS_UNIX
-	assert(PathSeparatorChar() == UnixPathSeparatorChar());
-
 	CFilePath dir;
 
 	dir.set_Root(_filePath.get_Root());
@@ -1300,8 +1298,8 @@ void CWinDirectoryIterator::Open(ConstRef(CFilePath) path)
 		case ENOENT:
 			return;
 		default:
-			throw OK_NEW_OPERATOR CDirectoryIteratorException(__FILE__LINE__ _T("in %s CDirectoryIteratorException, path = '%s'"), 
-				_T("CWinDirectoryIterator::Open"), path.GetString(), errno);
+			throw OK_NEW_OPERATOR CWinDirectoryIteratorException(__FILE__LINE__ _T("in %s CWinDirectoryIteratorException, path = '%s'"), 
+				_T("CWinDirectoryIterator::Open"), path.GetString(), CWinException::CRunTimeError);
 			return;
 		}
 	}
@@ -1482,8 +1480,8 @@ void CWinDirectoryIterator::_load_status()
 	int res = ::stat(tmp.GetString(), &_tStatus);
 	
 	if ( res < 0 )
-		throw OK_NEW_OPERATOR CDirectoryIteratorException(__FILE__LINE__ _T("in %s CDirectoryIteratorException, path = '%s'"), 
-				_T("CWinDirectoryIterator::_load_status"), tmp.GetString(), errno);
+		throw OK_NEW_OPERATOR CWinDirectoryIteratorException(__FILE__LINE__ _T("in %s CWinDirectoryIteratorException, path = '%s'"), 
+		_T("CWinDirectoryIterator::_load_status"), tmp.GetString(), CWinException::CRunTimeError);
 	_bStatus = true;
 }
 
@@ -1504,8 +1502,8 @@ void CWinDirectoryIterator::_test_access()
 		case EINVAL:
 			break;
 		default:
-			throw OK_NEW_OPERATOR CDirectoryIteratorException(__FILE__LINE__ _T("in %s CDirectoryIteratorException, path = '%s'"), 
-				_T("CWinDirectoryIterator::_test_access"), tmp.GetString(), errno);
+			throw OK_NEW_OPERATOR CWinDirectoryIteratorException(__FILE__LINE__ _T("in %s CWinDirectoryIteratorException, path = '%s'"), 
+				_T("CWinDirectoryIterator::_test_access"), tmp.GetString(), CWinException::CRunTimeError);
 			break;
 		}
 	}

@@ -172,26 +172,6 @@ static void TestSpecialDESImport(void)
 
 static void TestSpecial(void)
 {
-	CFilePath fname1(__FILE__LINE__ _T("C:\\DEV\\Projects\\UserLib\\"));
-	CFilePath fname2(__FILE__LINE__ _T("vs"));
-
-	try
-	{
-		CDirectoryIterator::SetCurrentDirectory(fname1);
-		MetaProjectCreateProjectFilesXML();
-		fname2.MakeDirectory();
-		if (CDirectoryIterator::DirectoryExists(fname2) < 0)
-			CDirectoryIterator::MakeDirectory(fname2);
-		CDirectoryIterator::SetCurrentDirectory(fname2);
-		CDirectoryIterator::CopyFile(CFilePath(__FILE__LINE__ _T("..\\ProjectFiles.xml")), CFilePath(__FILE__LINE__ _T("ProjectFiles.xml")));
-		MetaProjectCreateProjectFilesVS(_T("v100"));
-		MetaProjectCreateProjectFilesVS(_T("v110"));
-		MetaProjectCreateProjectFilesVS(_T("v120"));
-	}
-	catch (CBaseException* ex)
-	{
-		CERR << ex->GetExceptionMessage() << endl;
-	}
 }
 
 static Ptr(CFile) _TestFile = NULL;
