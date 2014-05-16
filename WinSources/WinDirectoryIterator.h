@@ -26,6 +26,7 @@
 #include "SystemTime.h"
 
 #ifdef OK_SYS_WINDOWS
+#include <sys/types.h>
 #include <io.h>
 #endif
 #ifdef OK_SYS_UNIX

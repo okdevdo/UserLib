@@ -54,17 +54,35 @@ CAsyncTCPClient::~CAsyncTCPClient(void)
 void CAsyncTCPClient::Open(CConstPointer pServer, CConstPointer pProtocol)
 {
 	SOCKET s;
-	ADDRINFOT *result = NULL;
-    ADDRINFOT *ptr = NULL;
-    ADDRINFOT hints;
     int iResult;
+#ifdef OK_COMP_GNUC
+	addrinfo *result = NULL;
+	addrinfo *ptr = NULL;
+	addrinfo hints;
+	CStringBuffer vServer(__FILE__LINE__ pServer);
+	CStringBuffer vProtocol(__FILE__LINE__ pProtocol);
+	CByteBuffer bServer;
+	CByteBuffer bProtocol;
+#endif
+#ifdef OK_COMP_MSC
+	ADDRINFOT *result = NULL;
+	ADDRINFOT *ptr = NULL;
+	ADDRINFOT hints;
+#endif
 
     s_memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
 
+#ifdef OK_COMP_GNUC
+	vServer.convertToByteBuffer(bServer);
+	vProtocol.convertToByteBuffer(bProtocol);
+	iResult = getaddrinfo(CastAnyPtr(char, bServer.get_Buffer()), CastAnyPtr(char, bProtocol.get_Buffer()), &hints, &result);
+#endif
+#ifdef OK_COMP_MSC
 	iResult = GetAddrInfo(pServer, pProtocol, &hints, &result);
+#endif
     if ( iResult != 0 )
 		ThrowDefaultException(__FILE__LINE__ _T("CAsyncTCPClient::Open"));
 
@@ -85,7 +103,12 @@ void CAsyncTCPClient::Open(CConstPointer pServer, CConstPointer pProtocol)
         }
         break;
     }
+#ifdef OK_COMP_GNUC
+	freeaddrinfo(result);
+#endif
+#ifdef OK_COMP_MSC
 	FreeAddrInfo(result);
+#endif
     if (s == INVALID_SOCKET)
 		ThrowDefaultException(__FILE__LINE__ _T("CAsyncTCPClient::Open"));
 	m_Server.SetString(__FILE__LINE__ pServer);
@@ -105,7 +128,12 @@ void CAsyncTCPClient::Open(SOCKET clientConnection)
 
 void CAsyncTCPClient::Cancel()
 {
+#ifdef OK_COMP_GNUC
+	if (!CancelIo(m_pData->get_file()))
+#endif
+#ifdef OK_COMP_MSC
 	if (!CancelIoEx(m_pData->get_file(), m_pData->get_overlapped()))
+#endif
 	{
 		DWORD result = GetLastError();
 

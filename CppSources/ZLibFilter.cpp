@@ -21,6 +21,7 @@
 #include "CPPS_PCH.H"
 #include "ZLibFilter.h"
 
+#define Z_SOLO
 #include "zlib.h"
 
 static void *zalloc(void *opaque, unsigned int size, unsigned int num)
