@@ -18,11 +18,14 @@ XTest_CPPFLAGS += -DNDEBUG
 XTest_CXXFLAGS += -O
 endif
 if COND_MINGW
-XTest_LDADD += -lrpcrt4 -lcrypt32 -lodbc32 -lodbccp32 -lws2_32 -lwsock32 -luser32 -ladvapi32 -lmsvcrt
+if COND_MINGW_V3
+else
+XTest_LDADD += /mingw/mingw32/lib/CRT_noglob.o
+endif
+XTest_LDADD += -lcrypt32 -lodbc32 -lodbccp32 -lws2_32 -lwsock32 -luser32 -ladvapi32 -lmsvcrt
 XTest_CXXFLAGS += -mthreads
 XTest_LDFLAGS += -mthreads
 XTest_CPPFLAGS += -D_MINGW_CONSOLE -I/usr/local/include
-XTest_LDADD += /mingw/mingw32/lib/CRT_noglob.o
 endif
 if COND_MINGW64
 XTest_CPPFLAGS += -D_MINGW64_CONSOLE

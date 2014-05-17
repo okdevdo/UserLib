@@ -17,8 +17,8 @@ ByteLinkedBuffer.h DataBinaryTree.h File.h VolumeIterator.h Configuration.h Data
 BZip2Filter.h CRC32Value.h Filter.h GZipFilter.h MD5Buffer.h TarArchive.h ZLibFilter.h okDateTime.h ZipArchive.h ZipFilter.h \
 LZMALibFilter.h LZMAFilter.h XZFilter.h
 
-libCppSources_la_LIBADD = ../CSources/libCSources.la ../CryptSources/libCryptSources.la /usr/local/lib/libbzip2.la /usr/local/lib/libxz.la /usr/local/lib/libzlib.la /usr/local/lib/libsqlite3.la /usr/local/lib/libexpat.la
-libCppSources_la_LDFLAGS = -no-undefined -version-info 1 -mthreads
+libCppSources_la_LIBADD = ../CSources/libCSources.la ../CryptSources/libCryptSources.la -lbz2 -llzma -lz -lsqlite3 -lexpat
+libCppSources_la_LDFLAGS = -no-undefined -version-info 1 -mthreads -L/usr/local/lib
 libCppSources_la_CFLAGS = 
 libCppSources_la_CPPFLAGS = -DXML_LARGE_SIZE -DHAVE_EXPAT_CONFIG_H -I$(top_srcdir)/CSources -I$(top_srcdir)/CryptSources -I/usr/local/include
 libCppSources_la_CXXFLAGS = -fexceptions -Wall -mthreads
