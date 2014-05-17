@@ -1,0 +1,20 @@
+# Makefile for Microsoft Visual C++ 6.0
+# usage: nmake -f makefile-ok.msc
+
+CC=cl
+CFLAGS= /nologo /MD /W3 /Ox /D "SQLITE_USE_URI" /D "SQLITE_ENABLE_COLUMN_METADATA" /D "SQLITE_WIN32_MALLOC"
+
+OBJS= sqlite3.obj
+
+all: lib
+
+lib: $(OBJS)
+	lib /out:sqlite3.lib $(OBJS)
+
+clean: 
+	del *.obj
+	del sqlite3.lib 
+
+.c.obj: 
+	$(CC) $(CFLAGS) -c $*.c -Fo$*.obj
+

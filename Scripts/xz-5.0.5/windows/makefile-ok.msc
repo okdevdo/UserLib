@@ -1,0 +1,103 @@
+# Makefile for Microsoft Visual C++ 6.0
+# usage: nmake -f makefile-ok.msc
+
+CC=cl
+CFLAGS= -DLZMA_API_STATIC -MD -Ox -DHAVE_CONFIG_H -nologo -I. -I..\src\common\ \
+-I..\src\liblzma\api -I..\src\liblzma\check -I..\src\liblzma\common \
+-I..\src\liblzma\delta\ -I..\src\liblzma\lz\ -I..\src\liblzma\lzma\ \
+-I..\src\liblzma\rangecoder\ -I..\src\liblzma\simple\
+
+OBJS= FindVersion.obj \
+..\src\common\tuklib_cpucores.obj \
+..\src\common\tuklib_exit.obj \
+..\src\common\tuklib_mbstr_fw.obj \
+..\src\common\tuklib_mbstr_width.obj \
+..\src\common\tuklib_open_stdxxx.obj \
+..\src\common\tuklib_physmem.obj \
+..\src\common\tuklib_progname.obj \
+..\src\liblzma\check\check.obj \
+..\src\liblzma\check\crc32_fast.obj \
+..\src\liblzma\check\crc32_table.obj \
+..\src\liblzma\check\crc64_fast.obj \
+..\src\liblzma\check\crc64_table.obj \
+..\src\liblzma\check\sha256.obj \
+..\src\liblzma\common\alone_decoder.obj \
+..\src\liblzma\common\alone_encoder.obj \
+..\src\liblzma\common\auto_decoder.obj \
+..\src\liblzma\common\block_buffer_decoder.obj \
+..\src\liblzma\common\block_buffer_encoder.obj \
+..\src\liblzma\common\block_decoder.obj \
+..\src\liblzma\common\block_encoder.obj \
+..\src\liblzma\common\block_header_decoder.obj \
+..\src\liblzma\common\block_header_encoder.obj \
+..\src\liblzma\common\block_util.obj \
+..\src\liblzma\common\common.obj \
+..\src\liblzma\common\easy_buffer_encoder.obj \
+..\src\liblzma\common\easy_decoder_memusage.obj \
+..\src\liblzma\common\easy_encoder.obj \
+..\src\liblzma\common\easy_encoder_memusage.obj \
+..\src\liblzma\common\easy_preset.obj \
+..\src\liblzma\common\filter_buffer_decoder.obj \
+..\src\liblzma\common\filter_buffer_encoder.obj \
+..\src\liblzma\common\filter_common.obj \
+..\src\liblzma\common\filter_decoder.obj \
+..\src\liblzma\common\filter_encoder.obj \
+..\src\liblzma\common\filter_flags_decoder.obj \
+..\src\liblzma\common\filter_flags_encoder.obj \
+..\src\liblzma\common\hardware_physmem.obj \
+..\src\liblzma\common\index.obj \
+..\src\liblzma\common\index_decoder.obj \
+..\src\liblzma\common\index_encoder.obj \
+..\src\liblzma\common\index_hash.obj \
+..\src\liblzma\common\stream_buffer_decoder.obj \
+..\src\liblzma\common\stream_buffer_encoder.obj \
+..\src\liblzma\common\stream_decoder.obj \
+..\src\liblzma\common\stream_encoder.obj \
+..\src\liblzma\common\stream_flags_common.obj \
+..\src\liblzma\common\stream_flags_decoder.obj \
+..\src\liblzma\common\stream_flags_encoder.obj \
+..\src\liblzma\common\vli_decoder.obj \
+..\src\liblzma\common\vli_encoder.obj \
+..\src\liblzma\common\vli_size.obj \
+..\src\liblzma\delta\delta_common.obj \
+..\src\liblzma\delta\delta_decoder.obj \
+..\src\liblzma\delta\delta_encoder.obj \
+..\src\liblzma\lz\lz_decoder.obj \
+..\src\liblzma\lz\lz_encoder.obj \
+..\src\liblzma\lz\lz_encoder_mf.obj \
+..\src\liblzma\lzma\fastpos_table.obj \
+..\src\liblzma\lzma\lzma2_decoder.obj \
+..\src\liblzma\lzma\lzma2_encoder.obj \
+..\src\liblzma\lzma\lzma_decoder.obj \
+..\src\liblzma\lzma\lzma_encoder.obj \
+..\src\liblzma\lzma\lzma_encoder_optimum_fast.obj \
+..\src\liblzma\lzma\lzma_encoder_optimum_normal.obj \
+..\src\liblzma\lzma\lzma_encoder_presets.obj \
+..\src\liblzma\rangecoder\price_table.obj \
+..\src\liblzma\simple\simple_coder.obj \
+..\src\liblzma\simple\simple_decoder.obj \
+..\src\liblzma\simple\simple_encoder.obj \
+..\src\liblzma\simple\sparc.obj \
+..\src\liblzma\simple\x86.obj
+
+
+all: lib
+
+lib: $(OBJS)
+	lib /out:xz.lib $(OBJS)
+
+clean: 
+	del *.obj
+	del ..\src\common\*.obj
+	del ..\src\liblzma\check\*.obj
+	del ..\src\liblzma\common\*.obj
+	del ..\src\liblzma\delta\*.obj
+	del ..\src\liblzma\lz\*.obj
+	del ..\src\liblzma\lzma\*.obj
+	del ..\src\liblzma\rangecoder\*.obj
+	del ..\src\liblzma\simple\*.obj
+	del xz.lib
+
+.c.obj: 
+	$(CC) $(CFLAGS) -c $*.c -Fo$*.obj
+
