@@ -411,7 +411,7 @@ public:
 				else
 				{
 					path.set_Path(tmp);
-					if (!(CDirectoryIterator::FileExists(path)))
+					if (CDirectoryIterator::DirectoryExists(path) >= 0)
 					{
 						CERR << _T("Environment variable set, but Visual Studio 2010 is not installed.") << endl;
 						if (m_verbose)
@@ -451,7 +451,7 @@ public:
 				else
 				{
 					path.set_Path(tmp);
-					if (!(CDirectoryIterator::FileExists(path)))
+					if (CDirectoryIterator::DirectoryExists(path) >= 0)
 					{
 						CERR << _T("Environment variable set, but Visual Studio 2012 is not installed.") << endl;
 						if (m_verbose)
@@ -491,7 +491,7 @@ public:
 				else
 				{
 					path.set_Path(tmp);
-					if (!(CDirectoryIterator::FileExists(path)))
+					if (CDirectoryIterator::DirectoryExists(path) >= 0)
 					{
 						CERR << _T("Environment variable set, but Visual Studio 2013 is not installed.") << endl;
 						if (m_verbose)
