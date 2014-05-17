@@ -45,7 +45,7 @@ libWinSources_la_CPPFLAGS += -D_MINGW_CONSOLE
 endif
 if COND_MINGW64
 libWinSources_la_SOURCES += MySQLDB.cpp MySQLDBImpl.cpp PostgresDB.cpp PostgresDBImpl.cpp
-libWinSources_la_CPPFLAGS += -I/usr/local/include/mysql -I/usr/local/include/postgres
+libWinSources_la_CPPFLAGS += -I/usr/local/include -I/usr/local/include/mysql -I/usr/local/include/postgres
 libWinSources_la_LIBADD += /usr/local/lib/libpq.la /usr/local/lib/libmysql.la
 
 libWinSources_la_LIBADD += -lodbc32 -lodbccp32 -lws2_32 -lwsock32 -luser32 -ladvapi32 -lmsvcrt

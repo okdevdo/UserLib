@@ -12,7 +12,7 @@ libOpenSSL_la_LIBADD = ../CppSources/libCppSources.la
 libOpenSSL_la_LIBADD += -lcrypto -lssl
 
 libOpenSSL_la_CFLAGS = 
-libOpenSSL_la_CPPFLAGS = -I$(top_srcdir)/CSources -I$(top_srcdir)/CppSources
+libOpenSSL_la_CPPFLAGS = -I$(top_srcdir)/CSources -I$(top_srcdir)/CppSources -I/usr/local/include
 libOpenSSL_la_CXXFLAGS = -fexceptions -Wall
 if DEBUG
 libOpenSSL_la_CPPFLAGS += -D_DEBUG
@@ -22,7 +22,6 @@ libOpenSSL_la_CPPFLAGS += -DNDEBUG
 libOpenSSL_la_CXXFLAGS += -O
 endif
 if COND_MINGW
-libOpenSSL_la_CPPFLAGS += -I/usr/local/include
 libOpenSSL_la_CXXFLAGS += -mthreads
 libOpenSSL_la_LDFLAGS += -mthreads
 libOpenSSL_la_LIBADD += -lodbc32 -lodbccp32 -lws2_32 -lwsock32 -luser32 -ladvapi32 -lmsvcrt
