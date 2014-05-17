@@ -30,8 +30,7 @@ libWinSources_la_CPPFLAGS += -DNDEBUG
 libWinSources_la_CXXFLAGS += -O
 endif
 if COND_MINGW
-if COND_MINGW_V3
-else
+if COND_MINGW_V4
 libWinSources_la_SOURCES += MySQLDB.cpp MySQLDBImpl.cpp PostgresDB.cpp PostgresDBImpl.cpp
 libWinSources_la_CPPFLAGS += -I/usr/local/include/mysql -I/usr/local/include/postgres
 libWinSources_la_LIBADD += /usr/local/lib/libpq.la /usr/local/lib/libmysql.la

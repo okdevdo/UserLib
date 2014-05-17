@@ -18,8 +18,7 @@ XTest_CPPFLAGS += -DNDEBUG
 XTest_CXXFLAGS += -O
 endif
 if COND_MINGW
-if COND_MINGW_V3
-else
+if COND_MINGW_V4
 XTest_LDADD += /mingw/mingw32/lib/CRT_noglob.o
 endif
 XTest_LDADD += -lcrypt32 -lodbc32 -lodbccp32 -lws2_32 -lwsock32 -luser32 -ladvapi32 -lmsvcrt

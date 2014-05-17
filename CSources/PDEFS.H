@@ -77,6 +77,10 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #pragma warning( disable : 4996)
 #endif
+#ifdef __MINGW_MAJOR_VERSION
+#undef __MINGW32_MAJOR_VERSION
+#define __MINGW32_MAJOR_VERSION __MINGW_MAJOR_VERSION
+#endif
 #ifdef __MINGW32_MAJOR_VERSION
 #if __MINGW32_MAJOR_VERSION < 4
 #undef __MSVCRT_VERSION__
@@ -147,14 +151,21 @@
 	#endif
 #endif
 #ifdef _MINGW_CONSOLE
+	#if __MINGW32_MAJOR_VERSION > 3
+		#include <sdkddkver.h>
+	#endif
 	#define	__CONSOLE__
 	#undef _WIN32_WINNT
-    #define _WIN32_WINNT_WINXP 0x0501
+	#ifndef _WIN32_WINNT_WINXP
+		#define _WIN32_WINNT_WINXP 0x0501
+	#endif
 	#define _WIN32_WINNT _WIN32_WINNT_WINXP
 	#undef WINVER
 	#define WINVER _WIN32_WINNT
 	#undef NTDDI_VERSION
-    #define NTDDI_WINXPSP2 0x05010200
+	#ifndef NTDDI_WINXPSP2
+		#define NTDDI_WINXPSP2 0x05010200
+	#endif
 	#define NTDDI_VERSION NTDDI_WINXPSP2
 	#undef __MSVCRT_VERSION__
 	#define __MSVCRT_VERSION__ 0x0710

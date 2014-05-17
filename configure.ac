@@ -4,7 +4,7 @@
 AC_PREREQ(2.68)
 AC_INIT(XTest, 1.0, okinfo@arcor.de)
 AC_CONFIG_SRCDIR([CSources/PDEFS.H])
-AM_INIT_AUTOMAKE([1.11 no-define foreign -Wall -Werror subdir-objects])
+AM_INIT_AUTOMAKE([1.12 no-define foreign -Wall -Werror subdir-objects])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -32,12 +32,12 @@ case $host_os in
 	*) ;;
 esac
 if test x$want_mingw = xyes; then
-   echo -e "#include \"stdio.h\"\nvoid main(void) { printf(\"%d\", __MINGW32_MAJOR_VERSION); }" > testmver.c
+   echo -e "#include \"stdio.h\"\nvoid main(void) { \n#ifdef __MINGW_MAJOR_VERSION\nprintf(\"%d\", __MINGW_MAJOR_VERSION);\n#else\nprintf(\"%d\", __MINGW32_MAJOR_VERSION);\n#endif\n }" > testmver.c
    gcc -o testmver.exe testmver.c
    MINGW_VERSION=`testmver.exe`
    rm testmver.exe testmver.c
 fi
-AM_CONDITIONAL([COND_MINGW_V3], [test x$MINGW_VERSION = x3])
+AM_CONDITIONAL([COND_MINGW_V4], [test x$MINGW_VERSION = x4])
 AM_CONDITIONAL([COND_MINGW], [test x$want_mingw = xyes])
 AM_CONDITIONAL([COND_MINGW64], [test x$want_mingw64 = xyes])
 AM_CONDITIONAL([COND_CYGWIN], [test x$want_cygwin = xyes])
@@ -46,6 +46,7 @@ AM_CONDITIONAL([COND_CYGWIN64], [test x$want_cygwin64 = xyes])
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
+AM_PROG_AR
 CFLAGS=
 CPPFLAGS=
 CXXFLAGS=

@@ -129,8 +129,9 @@ a subfolder 'Scripts' ('makefile-ok.msc', 'dowin32.cmd', 'dowin64.cmd')
 GNU Compiler (Mingw, Cyqwin)
 ============================
 
-Autotools version 1.14 are needed. From the shell call 'configure'. To build a
-debug version call 'configure --enable-debug'.
+Autotools version 1.12 are needed. From the shell call 'configure'. To build a
+debug version call 'configure --enable-debug'. To build a unicode version call
+'configure --enable-unicode'.
 
 The above software packages can be compiled in the shell with their configure
 script. Install them in '/usr/local'.
