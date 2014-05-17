@@ -27,7 +27,7 @@ CConditionVariable::CConditionVariable(void):
 	m_bCondition(false)
 {
 #ifdef OK_SYS_WINDOWS
-#if (WINVER >= _WIN32_WINNT_VISTA)
+#if (WINVER >= _WIN32_WINNT_VISTA) && (OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR)
 	InitializeConditionVariable(&m_condition);
 #else
 	m_event = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -92,7 +92,7 @@ void CConditionVariable::unlock()
 bool CConditionVariable::sleep(dword millisec)
 {
 #ifdef OK_SYS_WINDOWS
-#if (WINVER >= _WIN32_WINNT_VISTA)
+#if (WINVER >= _WIN32_WINNT_VISTA) && (OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR)
 	while (!m_bCondition)
 	{
 		if (SleepConditionVariableCS(&m_condition, &m_lock, millisec) == 0)
@@ -164,7 +164,7 @@ void CConditionVariable::wake()
 {
 	m_bCondition = true;
 #ifdef OK_SYS_WINDOWS
-#if (WINVER >= _WIN32_WINNT_VISTA)
+#if (WINVER >= _WIN32_WINNT_VISTA) && (OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR)
 	WakeConditionVariable(&m_condition);
 #else
 	if ( !SetEvent(m_event) )

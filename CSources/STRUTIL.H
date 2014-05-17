@@ -170,7 +170,62 @@ CSOURCES_API char *ltoa(long value, char *str, int radix);
 CSOURCES_API char *lltoa(long long value, char *str, int radix);
 #define s_lltoa(v,b,r)				lltoa((v), (b), (r))
 #endif
-#ifdef OK_SYS_WINDOWS
+#ifdef OK_SYS_WINDOWS32
+#if __MINGW32_MAJOR_VERSION < 4
+long long wcstoll(const wchar_t *_Str, wchar_t **_EndPtr, int _Radix);
+long long strtoll(const char *_Str, char **_EndPtr, int _Radix);
+unsigned long long wcstoull(const wchar_t *_Str, wchar_t **_EndPtr, int _Radix);
+unsigned long long strtoull(const char *_Str, char **_EndPtr, int _Radix);
+#ifdef UNICODE
+#define s_strtof(n,e)				wcstof((n), (e))
+#define s_strtod(n,e)				wcstod((n), (e))
+#define s_strtold(n,e)				wcstold((n), (e))
+#define s_strtol(n,e,r)				wcstol((n), (e), (r))
+#define s_strtoul(n,e,r)			wcstoul((n), (e), (r))
+#define s_strtoll(n,e,r)			wcstoll((n), (e), (r))
+#define s_strtoull(n,e,r)			wcstoull((n), (e), (r))
+#define s_ltoa(v,b,r)				_ltow((v), (b), (r))
+#define s_lltoa(v,b,r)				_i64tow((v), (b), (r))
+#define s_atoi(n)					_wtoi((n))
+#else
+#define s_strtof(n,e)				strtof((n), (e))
+#define s_strtod(n,e)				strtod((n), (e))
+#define s_strtold(n,e)				strtold((n), (e))
+#define s_strtol(n,e,r)				strtol((n), (e), (r))
+#define s_strtoul(n,e,r)			strtoul((n), (e), (r))
+#define s_strtoll(n,e,r)			strtoll((n), (e), (r))
+#define s_strtoull(n,e,r)			strtoull((n), (e), (r))
+#define s_ltoa(v,b,r)				_ltoa((v), (b), (r))
+#define s_lltoa(v,b,r)				_i64toa((v), (b), (r))
+#define s_atoi(n)					atoi((n))
+#endif
+#else
+#ifdef UNICODE
+#define s_strtof(n,e)				wcstof((n), (e))
+#define s_strtod(n,e)				wcstod((n), (e))
+#define s_strtold(n,e)				wcstold((n), (e))
+#define s_strtol(n,e,r)				wcstol((n), (e), (r))
+#define s_strtoul(n,e,r)			wcstoul((n), (e), (r))
+#define s_strtoll(n,e,r)			_wcstoi64((n), (e), (r))
+#define s_strtoull(n,e,r)			_wcstoui64((n), (e), (r))
+#define s_ltoa(v,b,r)				_ltow((v), (b), (r))
+#define s_lltoa(v,b,r)				_i64tow((v), (b), (r))
+#define s_atoi(n)					_wtoi((n))
+#else
+#define s_strtof(n,e)				strtof((n), (e))
+#define s_strtod(n,e)				strtod((n), (e))
+#define s_strtold(n,e)				strtold((n), (e))
+#define s_strtol(n,e,r)				strtol((n), (e), (r))
+#define s_strtoul(n,e,r)			strtoul((n), (e), (r))
+#define s_strtoll(n,e,r)			strtoll((n), (e), (r))
+#define s_strtoull(n,e,r)			strtoull((n), (e), (r))
+#define s_ltoa(v,b,r)				_ltoa((v), (b), (r))
+#define s_lltoa(v,b,r)				_i64toa((v), (b), (r))
+#define s_atoi(n)					atoi((n))
+#endif
+#endif
+#endif
+#ifdef OK_SYS_WINDOWS64
 #ifdef UNICODE
 #define s_strtof(n,e)				wcstof((n), (e))
 #define s_strtod(n,e)				wcstod((n), (e))

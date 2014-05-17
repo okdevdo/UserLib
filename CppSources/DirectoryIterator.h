@@ -104,13 +104,29 @@ public:
 private:
 	CFilePath _filePath;
 #ifdef OK_COMP_GNUC
-#ifdef OK_SYS_WINDOWS
+#ifdef OK_SYS_WINDOWS32
+	intptr_t _hFileFind;
+#if __MINGW32_MAJOR_VERSION < 4
+#ifdef _UNICODE
+	__wfinddata64_t _tFileFind;
+#else
+	__finddata64_t _tFileFind;
+#endif
+#else
+#ifdef _UNICODE
+	_wfinddata64_t _tFileFind;
+#else
+	_finddata64_t _tFileFind;
+#endif
+#endif
+#endif	
+#ifdef OK_SYS_WINDOWS64
 	intptr_t _hFileFind;
 #ifdef _UNICODE
 	_wfinddata64_t _tFileFind;
 #else
 	_finddata64_t _tFileFind;
-#endif	
+#endif
 #endif	
 #ifdef OK_SYS_UNIX
 	DIR *_hFileFind;

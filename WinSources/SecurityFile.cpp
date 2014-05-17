@@ -203,12 +203,25 @@ CFile::TFileSize CSecurityFile::GetSize()
 	if ( m_fileHandle == INVALID_HANDLE_VALUE )
 		return 0;
 #ifdef OK_SYS_WINDOWS
+#if OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR
 	LARGE_INTEGER res;
 
 	if ( !GetFileSizeEx(m_fileHandle, &res) )
 		throw OK_NEW_OPERATOR CSecurityFileException(__FILE__LINE__ _T("%s Exception"), 
 		    _T("CSecurityFile::GetSize"), CWinException::WinExtError);
 	return res.QuadPart;
+#else
+	LARGE_INTEGER res;
+	DWORD lres;
+	DWORD hres;
+
+	if ( (lres = GetFileSize(m_fileHandle, &hres)) == INVALID_FILE_SIZE )
+		throw OK_NEW_OPERATOR CSecurityFileException(__FILE__LINE__ _T("%s Exception"), 
+		    _T("CSecurityFile::GetSize"), CWinException::WinExtError);
+	res.HighPart = hres;
+	res.LowPart = lres;
+	return res.QuadPart;
+#endif
 #endif
 #ifdef OK_SYS_UNIX
 	off_t pos = lseek(m_fileHandle, 0, SEEK_CUR);

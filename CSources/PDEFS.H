@@ -78,6 +78,10 @@
 #pragma warning( disable : 4996)
 #endif
 #ifdef __MINGW32_MAJOR_VERSION
+#if __MINGW32_MAJOR_VERSION < 4
+#undef __MSVCRT_VERSION__
+#define __MSVCRT_VERSION__ 0x0710
+#endif
 #define OK_SYS_WINDOWS 1
 #define OK_SYS_WINDOWS32 1
 #define OK_CPU_32BIT 1
@@ -145,10 +149,12 @@
 #ifdef _MINGW_CONSOLE
 	#define	__CONSOLE__
 	#undef _WIN32_WINNT
+    #define _WIN32_WINNT_WINXP 0x0501
 	#define _WIN32_WINNT _WIN32_WINNT_WINXP
 	#undef WINVER
 	#define WINVER _WIN32_WINNT
 	#undef NTDDI_VERSION
+    #define NTDDI_WINXPSP2 0x05010200
 	#define NTDDI_VERSION NTDDI_WINXPSP2
 	#undef __MSVCRT_VERSION__
 	#define __MSVCRT_VERSION__ 0x0710

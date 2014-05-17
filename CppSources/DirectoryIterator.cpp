@@ -50,6 +50,17 @@
 #endif
 #ifdef OK_SYS_WINDOWS32
 #undef _tfinddata64_t
+#if __MINGW32_MAJOR_VERSION < 4
+#ifdef _UNICODE
+#define _tfinddata64_t    __wfinddata64_t
+#define _tfindfirst64 _wfindfirst64
+#define _tfindnext64 _wfindnext64
+#else
+#define _tfinddata64_t    __finddata64_t
+#define _tfindfirst64 _findfirst64
+#define _tfindnext64 _findnext64
+#endif
+#else
 #ifdef _UNICODE
 #define _tfinddata64_t    _wfinddata64_t
 #define _tfindfirst64 _wfindfirst64
@@ -58,6 +69,7 @@
 #define _tfinddata64_t    _finddata64_t
 #define _tfindfirst64 _findfirst64
 #define _tfindnext64 _findnext64
+#endif
 #endif
 #endif
 #endif

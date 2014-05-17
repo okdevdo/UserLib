@@ -20,7 +20,7 @@
 ******************************************************************************/
 #include "WS_PCH.H"
 #include "EventLogger.h"
-#if (WINVER >= _WIN32_WINNT_VISTA)
+#if (_WIN32_WINNT >= _WIN32_WINNT_VISTA) && (OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR)
 #include <evntprov.h>
 #include "okreis.h"
 #endif
@@ -56,7 +56,7 @@ protected:
 	void InitializeClassicLog();
 	void DeInitializeClassicLog();
 
-#if (WINVER >= _WIN32_WINNT_VISTA)
+#if (_WIN32_WINNT >= _WIN32_WINNT_VISTA) && (OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR)
 	REGHANDLE _handle;
 #endif
 	HANDLE _classicHandle;
@@ -65,7 +65,7 @@ protected:
 IMPL_WINEXCEPTION(CEventLoggerException, CWinException)
 
 CEventLoggerImpl::CEventLoggerImpl():
-#if (WINVER >= _WIN32_WINNT_VISTA)
+#if (_WIN32_WINNT >= _WIN32_WINNT_VISTA) && (OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR)
 _handle(0LL),
 #endif
 _classicHandle(NULL)
@@ -82,7 +82,7 @@ CEventLoggerImpl::~CEventLoggerImpl()
 
 void CEventLoggerImpl::InitializeLog()
 {
-#if (WINVER >= _WIN32_WINNT_VISTA)
+#if (_WIN32_WINNT >= _WIN32_WINNT_VISTA) && (OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR)
 	if (!_handle)
 	{
 		DWORD status = ERROR_SUCCESS;
@@ -101,7 +101,7 @@ void CEventLoggerImpl::InitializeLog()
 
 void CEventLoggerImpl::DeInitializeLog()
 {
-#if (WINVER >= _WIN32_WINNT_VISTA)
+#if (_WIN32_WINNT >= _WIN32_WINNT_VISTA) && (OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR)
 	if (_handle)
 	{
 		EventUnregister(_handle);
@@ -131,7 +131,7 @@ void CEventLoggerImpl::DeInitializeClassicLog()
 
 void CEventLoggerImpl::WriteLog(CEventLogger::InfoLevel level, CConstPointer msgtext)
 {
-#if (WINVER >= _WIN32_WINNT_VISTA)
+#if (_WIN32_WINNT >= _WIN32_WINNT_VISTA) && (OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR)
 	DWORD status = ERROR_SUCCESS;
 	EVENT_DATA_DESCRIPTOR DataDescriptors[1];
 	PCEVENT_DESCRIPTOR EventDescriptor = NULL;
@@ -240,35 +240,29 @@ void CEventLogger::WriteFormattedLog(InfoLevel level, CConstPointer _format, ...
 {
 	va_list args;
 	int cnt = 0;
-	LPTSTR buf = NULL;
+	TCHAR buf[4096];
 
-	va_start(args, _format);
-	cnt = _vsctprintf(_format, args);
-	va_end(args);
-	if (cnt < 0)
-		throw OK_NEW_OPERATOR CEventLoggerException(__FILE__LINE__ _T("in %s CEventLoggerException"), _T("CEventLogger::WriteFormattedLog"), CWinException::CRunTimeError);
-	buf = CastAny(LPTSTR, TFalloc((cnt + 16) * szchar));
 	va_start(args, _format);
 #ifdef OK_COMP_GNUC
 #ifdef OK_SYS_WINDOWS32
 #ifdef _UNICODE
-	cnt = _vsnwprintf(buf, cnt + 16, _format, args);
+	cnt = _vsnwprintf(buf, 4096, _format, args);
 #else
-	cnt = vsnprintf(buf, cnt + 16, _format, args);
+	cnt = vsnprintf(buf, 4096, _format, args);
 #endif
 #endif
 #ifdef OK_SYS_WINDOWS64
 #ifdef _UNICODE
-	cnt = _vsnwprintf(buf, cnt + 16, _format, args);
+	cnt = _vsnwprintf(buf, 4096, _format, args);
 #else
-	cnt = vsnprintf(buf, cnt + 16, _format, args);
+	cnt = vsnprintf(buf, 4096, _format, args);
 #endif
 #endif
 #ifdef OK_SYS_UNIX
 #endif
 #endif
 #ifdef OK_COMP_MSC
-	cnt = _vstprintf_s(buf, cnt + 16, _format, args);
+	cnt = _vstprintf_s(buf, 4096, _format, args);
 #endif
 	va_end(args);
 	if (cnt < 0)
@@ -300,35 +294,29 @@ void CEventLogger::WriteFormattedClassicLog(InfoLevel level, Category category, 
 {
 	va_list args;
 	int cnt = 0;
-	LPTSTR buf = NULL;
+	TCHAR buf[4096];
 
-	va_start(args, _format);
-	cnt = _vsctprintf(_format, args);
-	va_end(args);
-	if (cnt < 0)
-		throw OK_NEW_OPERATOR CEventLoggerException(__FILE__LINE__ _T("in %s CEventLoggerException"), _T("CEventLogger::WriteFormattedLog"), CWinException::CRunTimeError);
-	buf = CastAny(LPTSTR, TFalloc((cnt + 16) * szchar));
 	va_start(args, _format);
 #ifdef OK_COMP_GNUC
 #ifdef OK_SYS_WINDOWS32
 #ifdef _UNICODE
-	cnt = _vsnwprintf(buf, cnt + 16, _format, args);
+	cnt = _vsnwprintf(buf, 4096, _format, args);
 #else
-	cnt = vsnprintf(buf, cnt + 16, _format, args);
+	cnt = vsnprintf(buf, 4096, _format, args);
 #endif
 #endif
 #ifdef OK_SYS_WINDOWS64
 #ifdef _UNICODE
-	cnt = _vsnwprintf(buf, cnt + 16, _format, args);
+	cnt = _vsnwprintf(buf, 4096, _format, args);
 #else
-	cnt = vsnprintf(buf, cnt + 16, _format, args);
+	cnt = vsnprintf(buf, 4096, _format, args);
 #endif
 #endif
 #ifdef OK_SYS_UNIX
 #endif
 #endif
 #ifdef OK_COMP_MSC
-	cnt = _vstprintf_s(buf, cnt + 16, _format, args);
+	cnt = _vstprintf_s(buf, 4096, _format, args);
 #endif
 	va_end(args);
 	if (cnt < 0)

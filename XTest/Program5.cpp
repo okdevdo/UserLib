@@ -798,6 +798,7 @@ void TestSQL23()
 }
 #endif
 
+#if OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR
 void TestSQL3()
 {
 	CStringBuffer tmp;
@@ -977,7 +978,7 @@ void TestSQL3()
 		}
 	}
 }
-
+#endif
 
 static void TestFunc(Ptr(CSqLite3Connection) pConn, ConstRef(CSqLite3Connection::CSqLite3Columns) pArgs)
 {
@@ -1185,6 +1186,7 @@ void TestSQL4()
 	}
 }
 
+#if OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR
 void TestSQL5()
 {
 	CStringBuffer tmp;
@@ -1312,6 +1314,7 @@ void TestSQL5()
 		}
 	}
 }
+#endif
 
 void TestSQL()
 {
@@ -1325,10 +1328,14 @@ void TestSQL()
 	COUT << _T("TestSQL23: ODBC, SqLite3") << endl;
 	TestSQL23();
 #endif
+#if OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR
 	COUT << _T("TestSQL3: Native, MySQL") << endl;
 	TestSQL3();
+#endif
 	COUT << _T("TestSQL4: Native, SqLite3") << endl;
 	TestSQL4();
+#if OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR
 	COUT << _T("TestSQL5: Native, PostGreSQL") << endl;
 	TestSQL5();
+#endif
 }

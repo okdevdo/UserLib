@@ -538,7 +538,7 @@ void CWinDirectoryIterator::LinkFile(ConstRef(CFilePath) _from, ConstRef(CFilePa
 void CWinDirectoryIterator::SymLinkFile(ConstRef(CFilePath) _from, ConstRef(CFilePath) _to)
 {
 #ifdef OK_SYS_WINDOWS
-#if (_WIN32_WINNT >= _WIN32_WINNT_VISTA)
+#if (_WIN32_WINNT >= _WIN32_WINNT_VISTA) && (OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR)
 	DWORD flags = 0;
 
 	CSecurityContext::instance()->SetProcessPrivilege(SE_CREATE_SYMBOLIC_LINK_NAME, TRUE);

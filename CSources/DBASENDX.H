@@ -65,22 +65,22 @@ typedef struct _tagFBTreeFileNodeEntry
 } _FBTreeFileNodeEntry, *_pFBTreeFileNodeEntry;
 #define szFBTreeFileNodeEntry sizeof(_FBTreeFileNodeEntry)
 
-CSOURCES_LOCAL TListCnt __stdcall FBTreeCount(Pointer liste);
-CSOURCES_LOCAL void __stdcall FBTreeClose(Pointer liste);
-CSOURCES_LOCAL errno_t __stdcall FBTreeBegin(Pointer liste, Ptr(LSearchResultType) result);
-CSOURCES_LOCAL errno_t __stdcall FBTreeNext(LSearchResultType node, Ptr(LSearchResultType) result);
-CSOURCES_LOCAL errno_t __stdcall FBTreePrev(LSearchResultType node, Ptr(LSearchResultType) result);
-CSOURCES_LOCAL errno_t __stdcall FBTreeLast(Pointer liste, Ptr(LSearchResultType) result);
-CSOURCES_LOCAL errno_t __stdcall FBTreeFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) result);
-CSOURCES_LOCAL errno_t __stdcall FBTreeUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) result);
-CSOURCES_LOCAL errno_t __stdcall FBTreeLowerBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) result);
-CSOURCES_LOCAL errno_t __stdcall FBTreeInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) result);
-CSOURCES_LOCAL errno_t __stdcall FBTreeRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(bool));
-CSOURCES_LOCAL Pointer __stdcall FBTreeGetData(LSearchResultType node);
-CSOURCES_LOCAL void __stdcall FBTreeSetData(LSearchResultType node, ConstPointer data);
-CSOURCES_LOCAL void __stdcall FBTreeSortedTester(Pointer liste, TSearchAndSortUserFunc sortFunc, ConstPointer context);
-CSOURCES_LOCAL void __stdcall FBTreeBeginBatch(Pointer liste);
-CSOURCES_LOCAL errno_t __stdcall FBTreeEndBatch(Pointer liste);
+TListCnt __stdcall FBTreeCount(Pointer liste);
+void __stdcall FBTreeClose(Pointer liste);
+errno_t __stdcall FBTreeBegin(Pointer liste, Ptr(LSearchResultType) result);
+errno_t __stdcall FBTreeNext(LSearchResultType node, Ptr(LSearchResultType) result);
+errno_t __stdcall FBTreePrev(LSearchResultType node, Ptr(LSearchResultType) result);
+errno_t __stdcall FBTreeLast(Pointer liste, Ptr(LSearchResultType) result);
+errno_t __stdcall FBTreeFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) result);
+errno_t __stdcall FBTreeUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) result);
+errno_t __stdcall FBTreeLowerBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) result);
+errno_t __stdcall FBTreeInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) result);
+errno_t __stdcall FBTreeRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(bool));
+Pointer __stdcall FBTreeGetData(LSearchResultType node);
+void __stdcall FBTreeSetData(LSearchResultType node, ConstPointer data);
+void __stdcall FBTreeSortedTester(Pointer liste, TSearchAndSortUserFunc sortFunc, ConstPointer context);
+void __stdcall FBTreeBeginBatch(Pointer liste);
+errno_t __stdcall FBTreeEndBatch(Pointer liste);
 
 #ifdef __cplusplus
 }

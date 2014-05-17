@@ -42,11 +42,11 @@ public:
 private:
 	volatile bool m_bCondition;
 #ifdef OK_SYS_WINDOWS
-#if (WINVER >= _WIN32_WINNT_VISTA)
+#if (WINVER >= _WIN32_WINNT_VISTA) && (OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR)
 	CONDITION_VARIABLE m_condition;
 #else
-#endif
 	HANDLE m_event;
+#endif
 	CRITICAL_SECTION m_lock;
 #endif
 #ifdef OK_SYS_UNIX

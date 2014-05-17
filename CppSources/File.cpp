@@ -897,12 +897,19 @@ CFile::TFileSize CStreamFile::GetSize()
 		throw OK_NEW_OPERATOR CFileException(__FILE__LINE__ _T("in %s CFileException"),
 		_T("CStreamFile::GetSize"), errno);
 
+#if OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR
 	if (_fseeki64(CastAnyPtr(FILE, m_file), 0, SEEK_END))
 		throw OK_NEW_OPERATOR CFileException(__FILE__LINE__ _T("in %s CFileException"),
 		_T("CStreamFile::GetSize"), errno);
 
 	__int64 len = _ftelli64(CastAnyPtr(FILE, m_file));
+#else
+	if (fseek(CastAnyPtr(FILE, m_file), 0, SEEK_END))
+		throw OK_NEW_OPERATOR CFileException(__FILE__LINE__ _T("in %s CFileException"),
+		_T("CStreamFile::GetSize"), errno);
 
+	 int len = ftell(CastAnyPtr(FILE, m_file));
+#endif
 	if (len < 0)
 		throw OK_NEW_OPERATOR CFileException(__FILE__LINE__ _T("in %s CFileException"),
 		_T("CStreamFile::GetSize"), errno);
@@ -1005,7 +1012,11 @@ CFile::TFileOffset CStreamFile::GetFilePos()
 		return res;
 
 #ifdef OK_SYS_WINDOWS
+#if OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR
 	__int64 len = _ftelli64(CastAnyPtr(FILE, m_file));
+#else
+	int len = ftell(CastAnyPtr(FILE, m_file));
+#endif
 
 	if (len < 0)
 #endif
@@ -1024,7 +1035,11 @@ void CStreamFile::SetFilePos(TFileOffset pos)
 	if (PtrCheck(m_file) || ferror(CastAnyPtr(FILE, m_file)))
 		return;
 #ifdef OK_SYS_WINDOWS
+#if OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR
 	if (_fseeki64(CastAnyPtr(FILE, m_file), pos, SEEK_SET))
+#else
+	if (fseek(CastAnyPtr(FILE, m_file), pos, SEEK_SET))
+#endif
 #endif
 #ifdef OK_SYS_UNIX
 	if (fseek(CastAnyPtr(FILE, m_file), pos, SEEK_SET))
