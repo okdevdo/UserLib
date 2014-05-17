@@ -66,8 +66,8 @@ for details.
 ===============================================================================
 
 The following software packages are required for building UserLib. They should
-be installed in parallel to UserLib. There are make files and command files (
-'makefile-ok.msc', 'dowin32.cmd', 'dowin64.cmd')
+be installed in parallel to UserLib. There are make files and command files in
+a subfolder 'Scripts' ('makefile-ok.msc', 'dowin32.cmd', 'dowin64.cmd')
 
 - bzip2-1.0.6
   Homepage: http://www.bzip.org/
@@ -101,7 +101,7 @@ be installed in parallel to UserLib. There are make files and command files (
   Usage: WinSources/ODBC.h WinSources/ODBCImpl.h WinSources/ODBC.cpp
   WinSources/ODBCImpl.cpp
   
-- sqlite-autoconf-3080200
+- sqlite-autoconf-3080403
   Homepage: http://www.sqlite.org/
   Usage: CppSources/SqLite3DB.h CppSources/SqLite3DBImpl.h 
   CppSources/SqLite3DB.cpp CppSources/SqLite3DBImpl.h
@@ -114,14 +114,16 @@ be installed in parallel to UserLib. There are make files and command files (
   Homepage: http://tukaani.org/xz/
   Usage: CppSources/LZMAFilter.h CppSources/LZMALibFilter.h 
   CppSources/XZFilter.h CppSources/LZMAFilter.cpp CppSources/LZMALibFilter.cpp
-  CppSources/XZFilter.cpp
-  Remark: xz cannot be compiled with MSC. You can use a patch.
+  CppSources/XZFilter.cpp XLUnzip/* XLZip/* XZUnzip/* XZZip/*
+  Remark: xz cannot be compiled with MSC. You can use a patch located in 
+  'Scripts'.
   
 - zlib-1.2.8
   Homepage: http://www.zlib.net/
   Usage: CppSources/GZipFilter.h CppSources/ZipArchive.h CppSources/ZipFilter.h
   CppSources/ZLibFilter.h CppSources/GZipFilter.cpp CppSources/ZipArchive.cpp
-  CppSources/ZipFilter.cpp CppSources/ZLibFilter.cpp
+  CppSources/ZipFilter.cpp CppSources/ZLibFilter.cpp XGUnzip/* XGZip/* XUnzip/*
+  XZip/*
 
   
 GNU Compiler (Mingw, Cyqwin)
