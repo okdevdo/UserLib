@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file Application.h
+ *  \brief Singleton class, responsible for handling of command line parameters and supplying access to application's properties.
+ */
 #pragma once
 
 #include "CppSources.h"
@@ -26,27 +30,123 @@
 #include "FilePath.h"
 
 class CPPSOURCES_API CAbstractConfiguration;
+
+/**
+ *  \class CApplication
+ *  \brief Singleton class, responsible for handling of command line parameters and supplying access to application's properties.
+ */
 class CPPSOURCES_API CApplication
 {
 public:
+	/**
+	 *  \brief Standard constructor.
+	 *  
+	 *  \details Initializes the Application object.
+	 */
 	CApplication();
+	/**
+	 *  \brief Constructor. Takes the default application name as an argument.
+	 *  
+	 *  \param [in] _defaultAppName, default application name
+	 *  
+	 *  \details Initializes the Application object.
+	 */
 	CApplication(ConstRef(CStringBuffer) _defaultAppName);
+	/**
+	 *  \brief Destructor.
+	 *  
+	 *  \details Releases allocated memory.
+	 */
 	virtual ~CApplication(void);
-
+	
+	/**
+	 *  \brief Add an program option.
+	 *  
+	 *  \param [in] option, a newly defined program option
+	 *  \return void.
+	 *  
+	 *  \details Add an option to the list of defined options.
+	 *  The command line arguments will be parsed, whether they 
+	 *  match an option in the list of defined options.
+	 */
 	void addOption(COption& option);
+	/**
+	 *  \brief stop option processing.
+	 *  
+	 *  \return void.
+	 *  
+	 *  \details stop option processing whenever necessary, 
+	 *  for example the help option was detected on the command line.
+	 */
 	void stopOptionsProcessing();
 
+	/**
+	 *  \brief main 'event' loop.
+	 *  
+	 *  \param [in] argc command line argument count.
+	 *  \param [in] argv command line arguments.
+	 *  \return int, result code of the application.
+	 *  
+	 *  \details Call this function in 'main' with that function's arguments.
+	 */
 	virtual int run(int argc, CArray argv);
 #if defined(OK_COMP_GNUC) && defined(OK_SYS_WINDOWS) && defined(_UNICODE)
 	int run(int argc, char** argv);
 #endif
+	/**
+	 *  \brief print usage.
+	 *  
+	 *  \param [out] outBuf, functions output.
+	 *  \return void.
+	 *  
+	 *  \details print the list of defined options in a formatted manner.
+	 */
 	void usage(Ref(CStringBuffer) outBuf);
 
+	/**
+	 *  \brief Main pure virtual overload. Main functionality of the application.
+	 *  
+	 *  \return int, application result code.
+	 *  
+	 *  \details Overwrite this function to implement the main functions of the application.
+	 */
 	virtual int main() = 0;
+	/**
+	 *  \brief Pure virtual overload. Handles all parsed options.
+	 *  
+	 *  \param [in] name, 'long name' of the option.
+	 *  \param [in] value value, if any, given on the command line with that option.
+	 *  \return void.
+	 *  
+	 *  \details This function will be called whenever an option was parsed on the command line.
+	 *  Overwrite this function to implement handling of command line arguments.
+	 */
 	virtual void handleOption(const CStringLiteral& name, const CStringLiteral &value) = 0;
 
+	/**
+	 *  \brief Implements access to system's and application's properties.
+	 *  
+	 *  \return Ptr(CAbstractConfiguration), see description there
+	 *  
+	 *  \details Implements access to system's and application's properties. 
+	 *  See class 'CAbstractConfiguration' for details.
+	 */
 	__inline CAbstractConfiguration* config() { return m_config; }
+	/**
+	 *  \brief Singleton access.
+	 *  
+	 *  \return Ptr(CApplication), the application instance.
+	 *  
+	 *  \details Call the macro 'theApp' to have access to the singleton.
+	 */
 	__inline static CApplication* instance() { return m_instance; }
+	/**
+	 *  \brief Accessor Default Application Name.
+	 *  
+	 *  \return ConstRef(CStringBuffer), the default application name.
+	 *  
+	 *  \details Access to the Default Application Name.
+	 */
 	__inline ConstRef(CStringBuffer) get_DefaultAppName() const { return m_defaultAppName; }
 
 protected:
