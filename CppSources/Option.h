@@ -39,7 +39,7 @@ public:
 	/**
 	 *  \brief Option callback, called to handle the corresponding command line argument occurrence.
 	 *  
-	 *  \param [in] name, 'long name' of the option.
+	 *  \param [in] name 'long name' of the option.
 	 *  \param [in] value value, if any, given on the command line with that option.
 	 *  \return void.
 	 *  
@@ -87,7 +87,7 @@ public:
 	/**
 	 *  \brief Copy constructor
 	 *  
-	 *  \param [in] cb, object to be copied
+	 *  \param [in] cb object to be copied
 	 *  
 	 *  \details Copy constructor.
 	 */
@@ -105,8 +105,8 @@ public:
 	/**
 	 *  \brief Assignment operator
 	 *  
-	 *  \param [in] cb, object to be copied
-	 *  \return Ref(COptionCallback), *this.
+	 *  \param [in] cb object to be copied
+	 *  \return Ref(COptionCallback) *this.
 	 *  
 	 *  \details Assignment operator.
 	 */
@@ -123,7 +123,7 @@ public:
 	/**
 	 *  \brief Option callback, called to handle the corresponding command line argument occurrence.
 	 *  
-	 *  \param [in] name, 'long name' of the option.
+	 *  \param [in] name 'long name' of the option.
 	 *  \param [in] value value, if any, given on the command line with that option.
 	 *  \return void.
 	 *  
@@ -163,7 +163,7 @@ public:
 	/**
 	 *  \brief Constructor
 	 *  
-	 *  \param [in] _fullname, full name of the option
+	 *  \param [in] _fullname full name of the option
 	 *  
 	 *  \details Constructor.
 	 */
@@ -171,8 +171,8 @@ public:
 	/**
 	 *  \brief Constructor
 	 *  
-	 *  \param [in] _fullname, full name of the option
-	 *  \param [in] _shortname, the abbreviated, short name of the option
+	 *  \param [in] _fullname full name of the option
+	 *  \param [in] _shortname the abbreviated, short name of the option
 	 *  
 	 *  \details Constructor.
 	 */
@@ -180,11 +180,11 @@ public:
 	/**
 	 *  \brief Constructor
 	 *  
-	 *  \param [in] _fullname, full name of the option
-	 *  \param [in] _shortname, the abbreviated, short name of the option
-	 *  \param [in] _category, category of the option, usage will sorted in respect of the category
-	 *  \param [in] _description, description of the option
-	 *  \param [in] _required, if this flag is true, the option is required and can not be missing on the command line.
+	 *  \param [in] _fullname full name of the option
+	 *  \param [in] _shortname the abbreviated, short name of the option
+	 *  \param [in] _category category of the option, usage will sorted in respect of the category
+	 *  \param [in] _description description of the option
+	 *  \param [in] _required if this flag is true, the option is required and can not be missing on the command line.
 	 *  
 	 *  \details Constructor.
 	 */
@@ -192,7 +192,7 @@ public:
 	/**
 	 *  \brief Copy Constructor
 	 *  
-	 *  \param [in] _copy, the object to be copied
+	 *  \param [in] _copy the object to be copied
 	 *  
 	 *  \details Copy Constructor.
 	 */
@@ -207,8 +207,8 @@ public:
 	/**
 	 *  \brief Setter short name
 	 *  
-	 *  \param [in] _shortname, short name of the option
-	 *  \return Ref(COption), *this.
+	 *  \param [in] _shortname short name of the option
+	 *  \return Ref(COption) *this.
 	 *  
 	 *  \details Setter short name of the option. Short names are an alternate name to be used on the command line.
 	 */
@@ -216,8 +216,8 @@ public:
 	/**
 	 *  \brief Setter category
 	 *  
-	 *  \param [in] _category, category of the option
-	 *  \return Ref(COption), *this.
+	 *  \param [in] _category category of the option
+	 *  \return Ref(COption) *this.
 	 *  
 	 *  \details Setter category of the option. In the usage the options will be sorted in respect to the category.
 	 */
@@ -225,8 +225,8 @@ public:
 	/**
 	 *  \brief Setter description
 	 *  
-	 *  \param [in] _description, description of the option
-	 *  \return Ref(COption), *this.
+	 *  \param [in] _description description of the option
+	 *  \return Ref(COption) *this.
 	 *  
 	 *  \details Setter description of the option. In the usage this description will be given to the user.
 	 */
@@ -234,8 +234,8 @@ public:
 	/**
 	 *  \brief Setter required flag
 	 *  
-	 *  \param [in] _required, whether the option is required on the command line
-	 *  \return Ref(COption), *this.
+	 *  \param [in] _required whether the option is required on the command line
+	 *  \return Ref(COption) *this.
 	 *  
 	 *  \details Setter required flag of the option.
 	 */
@@ -243,8 +243,8 @@ public:
 	/**
 	 *  \brief Setter repeatable flag
 	 *  
-	 *  \param [in] _repeatable, whether the option can be repeated
-	 *  \return Ref(COption), *this.
+	 *  \param [in] _repeatable whether the option can be repeated
+	 *  \return Ref(COption) *this.
 	 *  
 	 *  \details Setter repeatable flag of the option. This flag is not really useful without setting the argument of the option.
 	 */
@@ -252,10 +252,10 @@ public:
 	/**
 	 *  \brief Setter Argument
 	 *  
-	 *  \param [in] _name, name of the argument
-	 *  \param [in] _required, whether the argument is required
-	 *  \param [in] _position, position of the argument (takes 0 for no position)
-	 *  \return Ref(COption), *this.
+	 *  \param [in] _name name of the argument
+	 *  \param [in] _required whether the argument is required
+	 *  \param [in] _position position of the argument (takes 0 for no position)
+	 *  \return Ref(COption) *this.
 	 *  
 	 *  \details Setter Argument of the option. The position of the argument, if defined, has the following definition: If the full or short name has been omitted, but the argument has been placed in the defined position on the command line, the defined option will be recognized and handled.
 	 */
@@ -263,7 +263,7 @@ public:
 	/**
 	 *  \brief Setter noArgument
 	 *  
-	 *  \return Ref(COption), *this.
+	 *  \return Ref(COption) *this.
 	 *  
 	 *  \details Explicit setter of not defining an argument.
 	 */
@@ -271,8 +271,8 @@ public:
 	/**
 	 *  \brief Setter group
 	 *  
-	 *  \param [in] _group, the group of the option
-	 *  \return Ref(COption), *this.
+	 *  \param [in] _group the group of the option
+	 *  \return Ref(COption) *this.
 	 *  
 	 *  \details Setter group of the option. Only one option of a group can be given on the command line.
 	 */
@@ -280,8 +280,8 @@ public:
 	/**
 	 *  \brief Setter callback
 	 *  
-	 *  \param [in] _callback, callback object
-	 *  \return Ref(COption), *this.
+	 *  \param [in] _callback callback object
+	 *  \return Ref(COption) *this.
 	 *  
 	 *  \details Setter callback of the option. If the option has been found on the command line, this callback will be called instead of the function handleOption of the application object.
 	 */
@@ -387,7 +387,7 @@ public:
 	/**
 	 *  \brief test, whether this option has the given short name
 	 *  
-	 *  \param [in] option, the test value
+	 *  \param [in] option the test value
 	 *  \return WBool
 	 *  
 	 *  \details test, whether this option has the given short name
@@ -396,7 +396,7 @@ public:
 	/**
 	 *  \brief test, whether this option has the given full name
 	 *  
-	 *  \param [in] option, the test value
+	 *  \param [in] option the test value
 	 *  \return WBool
 	 *  
 	 *  \details test, whether this option has the given full name
@@ -405,7 +405,7 @@ public:
 	/**
 	 *  \brief test, whether this option has the given partial, full name
 	 *  
-	 *  \param [in] option, the test value
+	 *  \param [in] option the test value
 	 *  \return WBool
 	 *  
 	 *  \details test, whether this option has the given partial, full name

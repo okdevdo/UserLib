@@ -32,7 +32,7 @@
 
 /**
  *  \class CAbstractConfiguration
- *  \brief Application's properties. There are various types of properties.
+ *  \brief Base class of all configuration classes.
  */
 class CPPSOURCES_API CAbstractConfiguration: public CCppObject
 {
@@ -455,7 +455,7 @@ public:
 	 *  
 	 *  \param [in] _prefix path to be searched
 	 *  \param [out] _keys enumerated keys
-	 *  \return WBool, true on Success
+	 *  \return WBool true on Success
 	 *  
 	 *  \details Virtual overload to enumerate all keys.
 	 */
@@ -465,7 +465,7 @@ public:
 	 *  
 	 *  \param [in] _name path to be searched
 	 *  \param [out] _value value to be retrieved
-	 *  \return WBool, true on Success
+	 *  \return WBool true on Success
 	 *  
 	 *  \details Virtual overload of a getter of raw property data.
 	 */
@@ -475,7 +475,7 @@ public:
 	 *  
 	 *  \param [in] _name path to be searched
 	 *  \param [in] _value value to be stored
-	 *  \return WBool, true on Success
+	 *  \return WBool true on Success
 	 *  
 	 *  \details Virtual overload of a setter of raw property data.
 	 */
@@ -491,7 +491,7 @@ protected:
 
 /**
  *  \class CMapConfiguration
- *  \brief Application's properties. There are various types of properties.
+ *  \brief Stores configuration items in a binary tree.
  */
 class CPPSOURCES_API CMapConfiguration: public CAbstractConfiguration
 {
@@ -540,7 +540,7 @@ public:
 	 *  
 	 *  \param [in] _prefix path to be searched
 	 *  \param [out] _keys enumerated keys
-	 *  \return WBool, true on Success
+	 *  \return WBool true on Success
 	 *  
 	 *  \details Virtual overload to enumerate all keys.
 	 */
@@ -550,7 +550,7 @@ public:
 	 *  
 	 *  \param [in] _name path to be searched
 	 *  \param [out] _value value to be retrieved
-	 *  \return WBool, true on Success
+	 *  \return WBool true on Success
 	 *  
 	 *  \details Virtual overload of a getter of raw property data.
 	 */
@@ -560,7 +560,7 @@ public:
 	 *  
 	 *  \param [in] _name path to be searched
 	 *  \param [in] _value value to be stored
-	 *  \return WBool, true on Success
+	 *  \return WBool true on Success
 	 *  
 	 *  \details Virtual overload of a setter of raw property data.
 	 */
@@ -574,7 +574,7 @@ protected:
 
 /**
  *  \class CFileConfiguration
- *  \brief Application's properties. There are various types of properties.
+ *  \brief Based on CMapConfiguration. Fills the tree from a file.
  */
 class CPPSOURCES_API CFileConfiguration: public CMapConfiguration
 {
@@ -588,8 +588,8 @@ public:
 	/**
 	 *  \brief Constructor
 	 *  
-	 *  \param [in] _prefix value, which makes the paths to the configuration objects unique.
-	 *  \param [in] _iswritable flag, whether this configuration object is writeable.
+	 *  \param [in] _path file path.
+	 *  \param [in] bWritable flag, whether this configuration object is writeable.
 	 *  
 	 *  \details Constructor. Initializes the configuration object.
 	 */
@@ -619,7 +619,7 @@ protected:
 
 /**
  *  \class CSystemConfiguration
- *  \brief Application's properties. There are various types of properties.
+ *  \brief Implements access to the environment of the program.
  */
 class CPPSOURCES_API CSystemConfiguration: public CAbstractConfiguration
 {
@@ -642,7 +642,7 @@ public:
 	 *  
 	 *  \param [in] _prefix path to be searched
 	 *  \param [out] _keys enumerated keys
-	 *  \return WBool, true on Success
+	 *  \return WBool true on Success
 	 *  
 	 *  \details Virtual overload to enumerate all keys.
 	 */
@@ -652,7 +652,7 @@ public:
 	 *  
 	 *  \param [in] _name path to be searched
 	 *  \param [out] _value value to be retrieved
-	 *  \return WBool, true on Success
+	 *  \return WBool true on Success
 	 *  
 	 *  \details Virtual overload of a getter of raw property data.
 	 */
@@ -662,7 +662,7 @@ public:
 	 *  
 	 *  \param [in] _name path to be searched
 	 *  \param [in] _value value to be stored
-	 *  \return WBool, true on Success
+	 *  \return WBool true on Success
 	 *  
 	 *  \details Virtual overload of a setter of raw property data.
 	 */
@@ -671,7 +671,7 @@ public:
 
 /**
  *  \class CApplicationConfiguration
- *  \brief Application's properties. There are various types of properties.
+ *  \brief Implements access to application infos.
  */
 class CPPSOURCES_API CApplicationConfiguration: public CAbstractConfiguration
 {
@@ -710,7 +710,7 @@ public:
 	 *  
 	 *  \param [in] _prefix path to be searched
 	 *  \param [out] _keys enumerated keys
-	 *  \return WBool, true on Success
+	 *  \return WBool true on Success
 	 *  
 	 *  \details Virtual overload to enumerate all keys.
 	 */
@@ -720,7 +720,7 @@ public:
 	 *  
 	 *  \param [in] _name path to be searched
 	 *  \param [out] _value value to be retrieved
-	 *  \return WBool, true on Success
+	 *  \return WBool true on Success
 	 *  
 	 *  \details Virtual overload of a getter of raw property data.
 	 */
@@ -730,7 +730,7 @@ public:
 	 *  
 	 *  \param [in] _name path to be searched
 	 *  \param [in] _value value to be stored
-	 *  \return WBool, true on Success
+	 *  \return WBool true on Success
 	 *  
 	 *  \details Virtual overload of a setter of raw property data.
 	 */
@@ -742,7 +742,7 @@ protected:
 
 /**
  *  \class CConfigurationList
- *  \brief Application's properties. There are various types of properties.
+ *  \brief List of configuration objects, but with a configuration object interface, thus traversing the list to find a value.
  */
 class CPPSOURCES_API CConfigurationList: public CAbstractConfiguration
 {
@@ -785,7 +785,7 @@ public:
 	 *  
 	 *  \param [in] _prefix path to be searched
 	 *  \param [out] _keys enumerated keys
-	 *  \return WBool, true on Success
+	 *  \return WBool true on Success
 	 *  
 	 *  \details Virtual overload to enumerate all keys.
 	 */
@@ -795,7 +795,7 @@ public:
 	 *  
 	 *  \param [in] _name path to be searched
 	 *  \param [out] _value value to be retrieved
-	 *  \return WBool, true on Success
+	 *  \return WBool true on Success
 	 *  
 	 *  \details Virtual overload of a getter of raw property data.
 	 */
@@ -805,7 +805,7 @@ public:
 	 *  
 	 *  \param [in] _name path to be searched
 	 *  \param [in] _value value to be stored
-	 *  \return WBool, true on Success
+	 *  \return WBool true on Success
 	 *  
 	 *  \details Virtual overload of a setter of raw property data.
 	 */

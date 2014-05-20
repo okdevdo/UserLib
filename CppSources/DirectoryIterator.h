@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file DirectoryIterator.h
+ *  \brief Contains a class to traverse a file system directory
+ */
 #pragma once
 
 #include "CppSources.h"
@@ -40,35 +44,221 @@
 #undef CopyFile
 #undef RemoveDirectory
 
+/**
+ *  \class CDirectoryIterator
+ *  \brief Class to traverse a file system directory
+ */
 class CPPSOURCES_API CDirectoryIterator: public CCppObject
 {
 public:
+	/**
+	 *  \brief Standard constructor
+	 *  
+	 *  \details Initializes the object.
+	 */
 	CDirectoryIterator();
+	/**
+	 *  \brief Constructor
+	 *  
+	 *  \param [in] path search path, accepts wild cards in the file name part
+	 *  
+	 *  \details Initializes the object. Calls Open.
+	 */
 	CDirectoryIterator(ConstRef(CFilePath) path);
+	/**
+	 *  \brief Destructor
+	 *  
+	 *  \details Frees allocated memory.
+	 */
 	virtual ~CDirectoryIterator(void);
 
+	/**
+	 *  \brief Retrieve current directory
+	 *  
+	 *  \param [out] path current directory
+	 *  \return void
+	 *  
+	 *  \details Retrieve current directory, which is a process global variable. That means \c GetCurrentDirectory and \c SetCurrentDirectory are not thread safe.
+	 */
 	static void GetCurrentDirectory(Ref(CFilePath) path);
+	/**
+	 *  \brief Set current directory
+	 *  
+	 *  \param [in] path new current path
+	 *  \return void
+	 *  
+	 *  \details Set current directory, which is a process global variable. That means \c GetCurrentDirectory and \c SetCurrentDirectory are not thread safe.
+	 */
 	static void SetCurrentDirectory(ConstRef(CFilePath) path);
+	/**
+	 *  \brief Creates a directory
+	 *  
+	 *  \param [in] path path to the new directory
+	 *  \return void
+	 *  
+	 *  \details Creates a directory. The whole path will be created, if necessary.
+	 */
 	static void MakeDirectory(ConstRef(CFilePath) path);
+	/**
+	 *  \brief Deletes a directory
+	 *  
+	 *  \param [in] path path to be deleted
+	 *  \return void
+	 *  
+	 *  \details Deletes a directory, which may be be not empty. The whole directory tree will be traversed and all elements deleted.
+	 */
 	static void RemoveDirectory(ConstRef(CFilePath) path);
+	/**
+	 *  \brief Delete a single file
+	 *  
+	 *  \param [in] path path to be deleted
+	 *  \return void
+	 *  
+	 *  \details Delete a single file.
+	 */
 	static void RemoveFile(ConstRef(CFilePath) path);
+    /**
+     *  \brief Test on the existence of a file
+     *  
+     *  \param [in] path path to be tested
+     *  \return bool
+     *  
+     *  \details Test on the existence of a file.
+     */
     static bool FileExists(ConstRef(CFilePath) path);
+    /**
+     *  \brief Test on the existence of directory
+     *  
+     *  \param [in] path path to be tested
+     *  \return int number of items in the directory, except "." and "..".
+     *  
+     *  \details Test on the existence of directory.
+     */
     static int DirectoryExists(ConstRef(CFilePath) path);
+    /**
+     *  \brief Rename a directory
+     *  
+     *  \param [in] basepath path to parent directory
+     *  \param [in] oldname name of the directory to be renamed
+     *  \param [in] newname new name of the directory
+     *  \return Return_Description
+     *  
+     *  \details Rename a directory.
+     */
     static void RenameDirectory(ConstRef(CFilePath) basepath, ConstRef(CStringBuffer) oldname, ConstRef(CStringBuffer) newname);
+    /**
+     *  \brief Move a file
+     *  
+     *  \param [in] from path to file to be moved
+     *  \param [in] to path to be created
+     *  \return void
+     *  
+     *  \details Move a file. The file cannot be moved across devices.
+     */
     static void MoveFile(ConstRef(CFilePath) from, ConstRef(CFilePath) to);
+	/**
+     *  \brief Copy a file
+     *  
+     *  \param [in] from path to file to be copied
+     *  \param [in] to path to be created
+     *  \return void
+     *  
+     *  \details Copy a file.
+     */
     static void CopyFile(ConstRef(CFilePath) from, ConstRef(CFilePath) to);
 
+	/**
+	 *  \brief Default getter of path separator character
+	 *  
+	 *  \return mbchar
+	 *  
+	 *  \details Default getter of path separator character. The default depends on compile time macros.
+	 */
 	static mbchar DefaultPathSeparatorChar();
+	/**
+	 *  \brief Default getter of path separator string
+	 *  
+	 *  \return CConstPointer
+	 *  
+	 *  \details Default getter of path separator string. The default depends on compile time macros.
+	 */
 	static CConstPointer DefaultPathSeparatorString();
+	/**
+	 *  \brief Windows getter of path separator character
+	 *  
+	 *  \return mbchar
+	 *  
+	 *  \details Windows getter of path separator character.
+	 */
 	static mbchar WinPathSeparatorChar();
+	/**
+	 *  \brief Windows getter of path separator string
+	 *  
+	 *  \return CConstPointer
+	 *  
+	 *  \details Windows getter of path separator string.
+	 */
 	static CConstPointer WinPathSeparatorString();
+	/**
+	 *  \brief Unix getter of path separator character
+	 *  
+	 *  \return mbchar
+	 *  
+	 *  \details Unix getter of path separator character.
+	 */
 	static mbchar UnixPathSeparatorChar();
+	/**
+	 *  \brief Unix getter of path separator string
+	 *  
+	 *  \return CConstPointer
+	 *  
+	 *  \details Unix getter of path separator string.
+	 */
 	static CConstPointer UnixPathSeparatorString();
 
+	/**
+	 *  \brief Opens the iterator
+	 *  
+	 *  \param [in] path search path, accepts wild cards in the file name part
+	 *  \return void
+	 *  
+	 *  \details Opens the iterator and initializes it with a new path.
+	 */
 	void Open(ConstRef(CFilePath) path);
+	/**
+	 *  \brief Advances the iterator
+	 *  
+	 *  \return void
+	 *  
+	 *  \details Advances the iterator. 
+	 */
 	void Next();
+	/**
+	 *  \brief Closes the iterator
+	 *  
+	 *  \return void
+	 *  
+	 *  \details Closes the iterator.
+	 */
 	void Close();
 
+	/**
+	 *  \brief Test on success of file find functions
+	 *  
+	 *  \return bool
+	 *  
+	 *  \details Test on success of file find functions.
+	 *  \code{.cpp}
+CDirectoryIterator it;
+
+it.Open(path);
+while (it)
+{
+	process(it);
+	++it;
+}
+	    \endcode
+	 */
 	__inline operator bool() const 
 	{ 
 #ifdef OK_SYS_WINDOWS
@@ -78,27 +268,100 @@ public:
 		return NotPtrCheck(_hFileFind);
 #endif
 	}
-	__inline CDirectoryIterator& operator++() 
+	/**
+	 *  \brief Advances the iterator
+	 *  \return Ref(CDirectoryIterator) *this
+	 */
+	__inline Ref(CDirectoryIterator) operator++() 
 	{ 
 		Next(); 
 		return *this; 
 	}
 
+	/**
+	 *  \brief Test, whether the current item has archive flag set
+	 *  
+	 *  \return WBool
+	 */
 	WBool is_Archive();
+	/**
+	 *  \brief Test, whether the current item has hidden flag set
+	 *  
+	 *  \return WBool
+	 */
 	WBool is_Hidden();
+	/**
+	 *  \brief Test, whether the current item has read only flag set
+	 *  
+	 *  \return WBool
+	 */
 	WBool is_ReadOnly();
+	/**
+	 *  \brief Test, whether the current item is a directory
+	 *  
+	 *  \return WBool
+	 */
 	WBool is_SubDir();
+	/**
+	 *  \brief Test, whether the current item has system flag set
+	 *  
+	 *  \return WBool
+	 */
 	WBool is_System();
 	
+	/**
+	 *  \brief Getter create time of the current item
+	 *  
+	 *  \return CDateTime
+	 */
 	CDateTime get_CreateTime();
+	/**
+	 *  \brief Getter last access time of the current item
+	 *  
+	 *  \return CDateTime
+	 */
 	CDateTime get_LastAccessTime();
+	/**
+	 *  \brief Getter last write time of the current item
+	 *  
+	 *  \return CDateTime
+	 */
 	CDateTime get_LastWriteTime();
 
+	/**
+	 *  \brief Getter file size of the current item
+	 *  
+	 *  \return sqword
+	 */
 	sqword get_FileSize();
+	/**
+	 *  \brief Getter name of the current item
+	 *  
+	 *  \return CStringBuffer
+	 */
 	CStringBuffer get_Name();
+	/**
+	 *  \brief Getter full path of the current item
+	 *  
+	 *  \return CStringBuffer
+	 */
 	CStringBuffer get_Path();
 
+	/**
+	 *  \brief Getter of path separator character
+	 *  
+	 *  \return mbchar
+	 *  
+	 *  \details Getter of path separator character from the search path object.
+	 */
 	mbchar PathSeparatorChar();
+	/**
+	 *  \brief Getter of path separator string
+	 *  
+	 *  \return CConstPointer
+	 *  
+	 *  \details Getter of path separator string from the search path object.
+	 */
 	CConstPointer PathSeparatorString();
 
 private:

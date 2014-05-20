@@ -47,7 +47,7 @@ public:
 	/**
 	 *  \brief Constructor. Takes the default application name as an argument.
 	 *  
-	 *  \param [in] _defaultAppName, default application name
+	 *  \param [in] _defaultAppName default application name
 	 *  
 	 *  \details Initializes the Application object.
 	 */
@@ -62,7 +62,7 @@ public:
 	/**
 	 *  \brief Add an program option.
 	 *  
-	 *  \param [in] option, a newly defined program option
+	 *  \param [in] option a newly defined program option
 	 *  \return void.
 	 *  
 	 *  \details Add an option to the list of defined options.
@@ -85,7 +85,7 @@ public:
 	 *  
 	 *  \param [in] argc command line argument count.
 	 *  \param [in] argv command line arguments.
-	 *  \return int, result code of the application.
+	 *  \return int result code of the application.
 	 *  
 	 *  \details Call this function in 'main' with that function's arguments.
 	 */
@@ -96,7 +96,7 @@ public:
 	/**
 	 *  \brief print usage.
 	 *  
-	 *  \param [out] outBuf, functions output.
+	 *  \param [out] outBuf functions output.
 	 *  \return void.
 	 *  
 	 *  \details print the list of defined options in a formatted manner.
@@ -106,7 +106,7 @@ public:
 	/**
 	 *  \brief Main pure virtual overload. Main functionality of the application.
 	 *  
-	 *  \return int, application result code.
+	 *  \return int application result code.
 	 *  
 	 *  \details Overwrite this function to implement the main functions of the application.
 	 */
@@ -114,7 +114,7 @@ public:
 	/**
 	 *  \brief Pure virtual overload. Handles all parsed options.
 	 *  
-	 *  \param [in] name, 'long name' of the option.
+	 *  \param [in] name 'long name' of the option.
 	 *  \param [in] value value, if any, given on the command line with that option.
 	 *  \return void.
 	 *  
@@ -126,7 +126,7 @@ public:
 	/**
 	 *  \brief Implements access to system's and application's properties.
 	 *  
-	 *  \return Ptr(CAbstractConfiguration), see description there
+	 *  \return Ptr(CAbstractConfiguration) see description there
 	 *  
 	 *  \details Implements access to system's and application's properties. 
 	 *  See class 'CAbstractConfiguration' for details.
@@ -135,7 +135,7 @@ public:
 	/**
 	 *  \brief Singleton access.
 	 *  
-	 *  \return Ptr(CApplication), the application instance.
+	 *  \return Ptr(CApplication) the application instance.
 	 *  
 	 *  \details Call the macro 'theApp' to have access to the singleton.
 	 */
@@ -143,7 +143,7 @@ public:
 	/**
 	 *  \brief Accessor Default Application Name.
 	 *  
-	 *  \return ConstRef(CStringBuffer), the default application name.
+	 *  \return ConstRef(CStringBuffer) the default application name.
 	 *  
 	 *  \details Access to the Default Application Name.
 	 */
