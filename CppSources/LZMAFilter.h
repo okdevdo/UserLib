@@ -18,33 +18,95 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file LZMAFilter.h
+ *  \brief LZMA compressor and decompressor filters
+ */
 #pragma once
 
 #include "CppSources.h"
 #include "LZMALibFilter.h"
 
+/**
+ *  \class CLZMACompressFilter
+ *  \brief LZMA compressor filter
+ */
 class CPPSOURCES_API CLZMACompressFilter :
 	public CLZMALibCompressFilter
 {
 public:
+	/**
+	 *  \brief Constructor
+	 *  \param input any filter input
+	 *  \param output any filter output
+	 *  \details Initializes the object.
+	 */
 	CLZMACompressFilter(Ptr(CAbstractFilterInput) input, Ptr(CAbstractFilterOutput) output);
+	/**
+	 *  \brief Destructor
+	 *  
+	 *  \details Does nothing.
+	 */
 	virtual ~CLZMACompressFilter(void);
 
+	/**
+	 *  \brief Calls CFilter::open and initializes the LZMA compressor.
+	 *  
+	 *  \return void.
+	 *  
+	 *  \details Virtual function has been overwritten.
+	 */
 	virtual void open();
+	/**
+	 *  \brief Perform compression.
+	 *  
+	 *  \return dword result code of the operation.
+	 *  
+	 *  \details Pure virtual function has been overwritten.
+	 */
 	virtual dword do_filter();
 
 private:
 	CLZMACompressFilter(void);
 };
 
+/**
+ *  \class CLZMADeCompressFilter
+ *  \brief LZMA decompressor filter
+ */
 class CPPSOURCES_API CLZMADeCompressFilter :
 	public CLZMALibDeCompressFilter
 {
 public:
+	/**
+	 *  \brief Constructor
+	 *  \param input any filter input
+	 *  \param output any filter output
+	 *  \details Initializes the object.
+	 */
 	CLZMADeCompressFilter(Ptr(CAbstractFilterInput) input, Ptr(CAbstractFilterOutput) output);
+	/**
+	 *  \brief Destructor
+	 *  
+	 *  \details Does nothing.
+	 */
 	virtual ~CLZMADeCompressFilter(void);
 
+	/**
+	 *  \brief Calls CFilter::open and initializes the LZMA decompressor.
+	 *  
+	 *  \return void.
+	 *  
+	 *  \details Virtual function has been overwritten.
+	 */
 	virtual void open();
+	/**
+	 *  \brief Perform compression.
+	 *  
+	 *  \return dword result code of the operation.
+	 *  
+	 *  \details Pure virtual function has been overwritten.
+	 */
 	virtual dword do_filter();
 
 private:

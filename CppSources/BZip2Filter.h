@@ -18,20 +18,60 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file BZip2Filter.h
+ *  \brief Bzip2 compressor and decompressor filters
+ */
 #pragma once
 
 #include "CppSources.h"
 #include "Filter.h"
 
+/**
+ *  \class CBZip2CompressFilter
+ *  \brief Bzip2 compressor filter
+ */
 class CPPSOURCES_API CBZip2CompressFilter :
 	public CFilter
 {
 public:
+	/**
+	 *  \brief Constructor
+	 *  \param input any filter input
+	 *  \param output any filter output
+	 *  \details Initializes the object.
+	 */
 	CBZip2CompressFilter(Ptr(CAbstractFilterInput) input, Ptr(CAbstractFilterOutput) output);
+	/**
+	 *  \brief Destructor
+	 *  
+	 *  \details Does nothing.
+	 */
 	virtual ~CBZip2CompressFilter(void);
 
+	/**
+	 *  \brief Calls CFilter::open and initializes the BZip2 compressor.
+	 *  
+	 *  \return void.
+	 *  
+	 *  \details Virtual function has been overwritten.
+	 */
 	virtual void open();
+	/**
+	 *  \brief Perform compression.
+	 *  
+	 *  \return dword result code of the operation.
+	 *  
+	 *  \details Pure virtual function has been overwritten.
+	 */
 	virtual dword do_filter();
+	/**
+	 *  \brief Frees allocated memory and calls CFilter::close.
+	 *  
+	 *  \return void.
+	 *  
+	 *  \details Virtual function has been overwritten.
+	 */
 	virtual void close();
 
 private:
@@ -44,11 +84,43 @@ class CPPSOURCES_API CBZip2DeCompressFilter :
 	public CFilter
 {
 public:
+	/**
+	 *  \brief Constructor
+	 *  \param input any filter input
+	 *  \param output any filter output
+	 *  \details Initializes the object.
+	 */
 	CBZip2DeCompressFilter(Ptr(CAbstractFilterInput) input, Ptr(CAbstractFilterOutput) output);
+	/**
+	 *  \brief Destructor
+	 *  
+	 *  \details Does not release the pointers to \c CAbstractFilterInput and \c CAbstractFilterOutput.
+	 */
 	virtual ~CBZip2DeCompressFilter(void);
 
+	/**
+	 *  \brief Calls CFilter::open and initializes the BZip2 decompressor.
+	 *  
+	 *  \return void.
+	 *  
+	 *  \details Virtual function has been overwritten.
+	 */
 	virtual void open();
+	/**
+	 *  \brief Perform compression.
+	 *  
+	 *  \return dword result code of the operation.
+	 *  
+	 *  \details Pure virtual function has been overwritten.
+	 */
 	virtual dword do_filter();
+	/**
+	 *  \brief Frees allocated memory and calls CFilter::close.
+	 *  
+	 *  \return void.
+	 *  
+	 *  \details Virtual function has been overwritten.
+	 */
 	virtual void close();
 
 private:

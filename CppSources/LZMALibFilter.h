@@ -18,19 +18,52 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file LZMALibFilter.h
+ *  \brief Bzip2 compressor and decompressor filters
+ */
 #pragma once
 
 #include "CppSources.h"
 #include "Filter.h"
 
+/**
+ *  \class CLZMALibCompressFilter
+ *  \brief Compressor filter
+ */
 class CPPSOURCES_API CLZMALibCompressFilter :
 	public CFilter
 {
 public:
+	/**
+	 *  \brief Constructor
+	 *  \param input any filter input
+	 *  \param output any filter output
+	 *  \details Initializes the object.
+	 */
 	CLZMALibCompressFilter(Ptr(CAbstractFilterInput) input, Ptr(CAbstractFilterOutput) output);
+	/**
+	 *  \brief Destructor
+	 *  
+	 *  \details Does nothing.
+	 */
 	virtual ~CLZMALibCompressFilter();
 
+	/**
+	 *  \brief Perform compression.
+	 *  
+	 *  \return dword result code of the operation.
+	 *  
+	 *  \details Pure virtual function has been overwritten.
+	 */
 	virtual dword do_filter();
+	/**
+	 *  \brief Frees allocated memory and calls CFilter::close.
+	 *  
+	 *  \return void.
+	 *  
+	 *  \details Virtual function has been overwritten.
+	 */
 	virtual void close();
 
 protected:
@@ -40,14 +73,43 @@ private:
 	CLZMALibCompressFilter(void);
 };
 
+/**
+ *  \class CLZMALibDeCompressFilter
+ *  \brief DeCompressor filter
+ */
 class CPPSOURCES_API CLZMALibDeCompressFilter :
 	public CFilter
 {
 public:
+	/**
+	 *  \brief Constructor
+	 *  \param input any filter input
+	 *  \param output any filter output
+	 *  \details Initializes the object.
+	 */
 	CLZMALibDeCompressFilter(Ptr(CAbstractFilterInput) input, Ptr(CAbstractFilterOutput) output);
+	/**
+	 *  \brief Destructor
+	 *  
+	 *  \details Does nothing.
+	 */
 	virtual ~CLZMALibDeCompressFilter();
 
+	/**
+	 *  \brief Perform compression.
+	 *  
+	 *  \return dword result code of the operation.
+	 *  
+	 *  \details Pure virtual function has been overwritten.
+	 */
 	virtual dword do_filter();
+	/**
+	 *  \brief Frees allocated memory and calls CFilter::close.
+	 *  
+	 *  \return void.
+	 *  
+	 *  \details Virtual function has been overwritten.
+	 */
 	virtual void close();
 
 protected:

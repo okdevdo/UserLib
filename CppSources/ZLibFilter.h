@@ -18,20 +18,60 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file ZLibFilter.h
+ *  \brief ZLib compressor and decompressor filters
+ */
 #pragma once
 
 #include "CppSources.h"
 #include "Filter.h"
 
+/**
+ *  \class CZLibCompressFilter
+ *  \brief ZLib compressor filter
+ */
 class CPPSOURCES_API CZLibCompressFilter :
 	public CFilter
 {
 public:
+	/**
+	 *  \brief Constructor
+	 *  \param input any filter input
+	 *  \param output any filter output
+	 *  \details Initializes the object.
+	 */
 	CZLibCompressFilter(Ptr(CAbstractFilterInput) input, Ptr(CAbstractFilterOutput) output);
+	/**
+	 *  \brief Destructor
+	 *  
+	 *  \details Does nothing.
+	 */
 	virtual ~CZLibCompressFilter(void);
 
+	/**
+	 *  \brief Calls CFilter::open and initializes the ZLib compressor.
+	 *  
+	 *  \return void.
+	 *  
+	 *  \details Virtual function has been overwritten.
+	 */
 	virtual void open();
+	/**
+	 *  \brief Perform compression.
+	 *  
+	 *  \return dword result code of the operation.
+	 *  
+	 *  \details Pure virtual function has been overwritten.
+	 */
 	virtual dword do_filter();
+	/**
+	 *  \brief Frees allocated memory and calls CFilter::close.
+	 *  
+	 *  \return void.
+	 *  
+	 *  \details Virtual function has been overwritten.
+	 */
 	virtual void close();
 
 protected:
@@ -41,15 +81,51 @@ private:
 	CZLibCompressFilter(void);
 };
 
+/**
+ *  \class CZLibDeCompressFilter
+ *  \brief ZLib decompressor filter
+ */
 class CPPSOURCES_API CZLibDeCompressFilter :
 	public CFilter
 {
 public:
+	/**
+	 *  \brief Constructor
+	 *  \param input any filter input
+	 *  \param output any filter output
+	 *  \details Initializes the object.
+	 */
 	CZLibDeCompressFilter(Ptr(CAbstractFilterInput) input, Ptr(CAbstractFilterOutput) output);
+	/**
+	 *  \brief Destructor
+	 *  
+	 *  \details Does nothing.
+	 */
 	virtual ~CZLibDeCompressFilter(void);
 
+	/**
+	 *  \brief Calls CFilter::open and initializes the ZLib decompressor.
+	 *  
+	 *  \return void.
+	 *  
+	 *  \details Virtual function has been overwritten.
+	 */
 	virtual void open();
+	/**
+	 *  \brief Perform compression.
+	 *  
+	 *  \return dword result code of the operation.
+	 *  
+	 *  \details Pure virtual function has been overwritten.
+	 */
 	virtual dword do_filter();
+	/**
+	 *  \brief Frees allocated memory and calls CFilter::close.
+	 *  
+	 *  \return void.
+	 *  
+	 *  \details Virtual function has been overwritten.
+	 */
 	virtual void close();
 
 protected:

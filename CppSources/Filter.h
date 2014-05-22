@@ -744,13 +744,13 @@ public:
 	 *  \brief Constructor
 	 *  \param input any filter input
 	 *  \param output any filter output
-	 *  \details Constructor.
+	 *  \details Stores \c input and \c output.
 	 */
 	CFilter(Ptr(CAbstractFilterInput) input, Ptr(CAbstractFilterOutput) output);
 	/**
 	 *  \brief Destructor
 	 *  
-	 *  \details Destructor.
+	 *  \details Does not release the pointers to \c CAbstractFilterInput and \c CAbstractFilterOutput.
 	 */
 	virtual ~CFilter(void);
 

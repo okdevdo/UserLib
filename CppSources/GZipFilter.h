@@ -18,19 +18,52 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file GZipFilter.h
+ *  \brief GZip compressor and decompressor filters
+ */
 #pragma once
 
 #include "CppSources.h"
 #include "ZLibFilter.h"
 
+/**
+ *  \class CGZipCompressFilter
+ *  \brief GZip compressor filter
+ */
 class CPPSOURCES_API CGZipCompressFilter :
 	public CZLibCompressFilter
 {
 public:
+	/**
+	 *  \brief Constructor
+	 *  \param input any filter input
+	 *  \param output any filter output
+	 *  \details Initializes the object.
+	 */
 	CGZipCompressFilter(Ptr(CAbstractFilterInput) input, Ptr(CAbstractFilterOutput) output);
+	/**
+	 *  \brief Destructor
+	 *  
+	 *  \details Does nothing.
+	 */
 	virtual ~CGZipCompressFilter(void);
 
+	/**
+	 *  \brief Calls CFilter::open and initializes the GZip compressor.
+	 *  
+	 *  \return void.
+	 *  
+	 *  \details Virtual function has been overwritten.
+	 */
 	virtual void open();
+	/**
+	 *  \brief Frees allocated memory and calls CZLibCompressFilter::close.
+	 *  
+	 *  \return void.
+	 *  
+	 *  \details Virtual function has been overwritten.
+	 */
 	virtual void close();
 
 private:
@@ -39,13 +72,35 @@ private:
 	CGZipCompressFilter(void);
 };
 
+/**
+ *  \class CGZipDeCompressFilter
+ *  \brief GZip decompressor filter
+ */
 class CPPSOURCES_API CGZipDeCompressFilter :
 	public CZLibDeCompressFilter
 {
 public:
+	/**
+	 *  \brief Constructor
+	 *  \param input any filter input
+	 *  \param output any filter output
+	 *  \details Initializes the object.
+	 */
 	CGZipDeCompressFilter(Ptr(CAbstractFilterInput) input, Ptr(CAbstractFilterOutput) output);
+	/**
+	 *  \brief Destructor
+	 *  
+	 *  \details Does nothing.
+	 */
 	virtual ~CGZipDeCompressFilter(void);
 
+	/**
+	 *  \brief Calls CFilter::open and initializes the GZip decompressor.
+	 *  
+	 *  \return void.
+	 *  
+	 *  \details Virtual function has been overwritten.
+	 */
 	virtual void open();
 
 private:
