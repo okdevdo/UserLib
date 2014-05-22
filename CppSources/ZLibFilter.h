@@ -20,7 +20,7 @@
 ******************************************************************************/
 /**
  *  \file ZLibFilter.h
- *  \brief ZLib compressor and decompressor filters
+ *  \brief Base classes for GZip and Zip compressor and decompressor filters
  */
 #pragma once
 
@@ -29,7 +29,7 @@
 
 /**
  *  \class CZLibCompressFilter
- *  \brief ZLib compressor filter
+ *  \brief Base class for GZip and Zip compressor filter
  */
 class CPPSOURCES_API CZLibCompressFilter :
 	public CFilter
@@ -83,7 +83,7 @@ private:
 
 /**
  *  \class CZLibDeCompressFilter
- *  \brief ZLib decompressor filter
+ *  \brief Base class for GZip and Zip decompressor filter
  */
 class CPPSOURCES_API CZLibDeCompressFilter :
 	public CFilter

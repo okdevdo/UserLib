@@ -20,7 +20,7 @@
 ******************************************************************************/
 /**
  *  \file LZMALibFilter.h
- *  \brief Bzip2 compressor and decompressor filters
+ *  \brief Base classes for LZMA and XZ compressor and decompressor filters
  */
 #pragma once
 
@@ -29,7 +29,7 @@
 
 /**
  *  \class CLZMALibCompressFilter
- *  \brief Compressor filter
+ *  \brief Base class for LZMA and XZ compressor filter
  */
 class CPPSOURCES_API CLZMALibCompressFilter :
 	public CFilter
@@ -75,7 +75,7 @@ private:
 
 /**
  *  \class CLZMALibDeCompressFilter
- *  \brief DeCompressor filter
+ *  \brief Base class for LZMA and XZ decompressor filter
  */
 class CPPSOURCES_API CLZMALibDeCompressFilter :
 	public CFilter
