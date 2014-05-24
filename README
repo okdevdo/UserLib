@@ -17,25 +17,29 @@ WELCOME to UserLib Library!
 
 ABOUT UserLib
 
-	UserLib is a C++ Framework with a C-Kernel. I can easily and quickly write an application.
-	If you like the library, you can do the same. If you need any help, write me an email.
-
-	OK, the main domain where the library lives is windows desktop, and it runs under Mingw and Cygwin.
-	I am interested to see it running under linux.
-
-FEATURE List
-
-	- am memory manager for small objects (C)
-	- data structures including AVL-trees, RB-trees and B*-trees (C, C++)
-	- string utilities including CStringBuffer (C, C++)
-	- application and program option management (C++)
-	- and many more ...
-
+	UserLib is a C++ Framework with a C-Kernel. The C-Kernel contains a
+	thread-safe managed memory allocator and a set of functions implementing
+	standard data structures. The C++ Framework uses the generic feature, ie
+	templates, very sparingly. Modern C++ features are also not included.
+	
+	Basic C++ is used as wrapper around the C-Kernel, OS-specific functions 
+	and third-party-software. That way the library is easy to use. And it is 
+	complete, it contains everything to build an application.
+	
 DIRECTORY structure
 
 	UserLib/
+	 |
 	 +-- CSources/
+	 |   TFMEM.C - Thread-safe managed memory allocator
+	 |   LISTE.C - Standard data structures
+	 |   STRUTIL.C - String utilities
+	 |   ...
 	 +-- CppSources/
+	 |   Application.cpp - Singleton for application management
+	 |   Option.cpp - Defines an option for the application given on the command line
+	 |   Configuration.cpp - Configuration management
+	 |   ...
 	 +-- WinSources/
 	 +-- ConSources/
 	 +-- GuiSources/
