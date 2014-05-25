@@ -20,7 +20,7 @@
 ******************************************************************************/
 /**
  *  \file ZLibFilter.h
- *  \brief Base classes for GZip and Zip compressor and decompressor filters
+ *  \brief Base classes for GZip and Zip compressor and decompressor filters.
  */
 #pragma once
 

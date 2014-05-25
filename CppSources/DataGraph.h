@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file DataGraph.h
+ *  \brief Graph data structure.
+ */
 #pragma once
 
 #include "LISTE.H"

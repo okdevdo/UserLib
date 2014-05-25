@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file CRC32Value.h
+ *  \brief Class to calculate CRC32.
+ */
 #pragma once
 
 #include "CppSources.h"

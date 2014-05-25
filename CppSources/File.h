@@ -20,7 +20,7 @@
 ******************************************************************************/
 /**
  *  \file File.h
- *  \brief Disk-IO Low-Level Management
+ *  \brief Disk-IO Low-Level Management.
  */
 #pragma once
 

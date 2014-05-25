@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file FlagRegister.h
+ *  \brief Bit vector (variable size linear buffer) data structure.
+ */
 #pragma once
 
 #include "CppSources.h"

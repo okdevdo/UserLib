@@ -20,7 +20,7 @@
 ******************************************************************************/
 /**
  *  \file Archive.h
- *  \brief Archive management.
+ *  \brief Base classes for archive management. Derived classes are CZipArchive and CTarArchive.
  */
 #pragma once
 

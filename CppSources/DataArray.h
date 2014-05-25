@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file DataArray.h
+ *  \brief Array (fixed size buffer) data structure.
+ */
 #pragma once
 
 #include "LISTE.H"

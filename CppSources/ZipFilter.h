@@ -20,7 +20,7 @@
 ******************************************************************************/
 /**
  *  \file ZipFilter.h
- *  \brief Zip compressor and decompressor filters
+ *  \brief Zip compressor and decompressor filters. Used in the zip archiver.
  */
 #pragma once
 

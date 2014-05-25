@@ -1,9 +1,12 @@
+<!-- HTML header for doxygen 1.8.7-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.7"/>
+<meta name="keywords" content="Library, C++"> 
+<meta name="robots" content="index|follow"> 
 <title>UserLib: WinSources/SecurityFile.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -14,6 +17,7 @@
   $(document).ready(function() { searchBox.OnSelectItem(0); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="ok_doxy_stylesheet.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,10 +26,13 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">UserLib
+   <div id="projectname"><a href="index.html">UserLib</a>
    &#160;<span id="projectnumber">v1.0.0</span>
    </div>
    <div id="projectbrief">C++ Framework</div>
+  </td>
+  <td style="padding-left: 10em;">
+  <a href="http://okdevdo.github.io/UserLib/">okdevdo/UserLib Home</a>
   </td>
  </tr>
  </tbody>
@@ -113,7 +120,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_file_8h.html">File.h</a>&quot;</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &quot;WinSources.h&quot;</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;WinException.h&quot;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;okDateTime.h&quot;</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="ok_date_time_8h.html">okDateTime.h</a>&quot;</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#ifdef OK_COMP_GNUC</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#ifdef OK_SYS_WINDOWS</span></div>
@@ -167,15 +174,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="class_c_file_html_a34fbe4bc093551167dfc221f9e694a0f"><div class="ttname"><a href="class_c_file.html#a34fbe4bc093551167dfc221f9e694a0f">CFile::GetSize</a></div><div class="ttdeci">virtual TFileSize GetSize()=0</div><div class="ttdoc">Getter file size. </div></div>
 <div class="ttc" id="class_c_file_html_a66e4b761c24b0d4113f87ef80c978cf3"><div class="ttname"><a href="class_c_file.html#a66e4b761c24b0d4113f87ef80c978cf3">CFile::SetFilePos</a></div><div class="ttdeci">virtual void SetFilePos(TFileOffset off)=0</div><div class="ttdoc">Setter file read and write position. </div></div>
 <div class="ttc" id="class_c_file_html_ab3bd6c80ea5838c11219776c8e63a7fe"><div class="ttname"><a href="class_c_file.html#ab3bd6c80ea5838c11219776c8e63a7fe">CFile::Open</a></div><div class="ttdeci">virtual void Open(const CFilePath &amp;_path, unsigned char _readOnly=1, unsigned char _textMode=1, TEncoding _encoding=ScanFor_Encoding)</div><div class="ttdoc">Opens the file object. </div></div>
+<div class="ttc" id="ok_date_time_8h_html"><div class="ttname"><a href="ok_date_time_8h.html">okDateTime.h</a></div><div class="ttdoc">Date and time class definition. </div></div>
 <div class="ttc" id="class_c_file_html_ae36190d8ee16c2479fb7def20349bab2"><div class="ttname"><a href="class_c_file.html#ae36190d8ee16c2479fb7def20349bab2">CFile::Write</a></div><div class="ttdeci">virtual void Write(const CByteBuffer &amp;_buffer)=0</div><div class="ttdoc">Write buffer. </div></div>
 <div class="ttc" id="class_c_file_html_a926d71b92b21fd1699b96e5ab596aef8"><div class="ttname"><a href="class_c_file.html#a926d71b92b21fd1699b96e5ab596aef8">CFile::Close</a></div><div class="ttdeci">virtual void Close()</div><div class="ttdoc">Closes the file object. </div></div>
 <div class="ttc" id="class_c_file_path_html"><div class="ttname"><a href="class_c_file_path.html">CFilePath</a></div><div class="ttdoc">Handles file paths. </div><div class="ttdef"><b>Definition:</b> FilePath.h:44</div></div>
 <div class="ttc" id="class_c_file_html"><div class="ttname"><a href="class_c_file.html">CFile</a></div><div class="ttdoc">Pure virtual base class for disk file management. </div><div class="ttdef"><b>Definition:</b> File.h:36</div></div>
 <div class="ttc" id="_file_8h_html"><div class="ttname"><a href="_file_8h.html">File.h</a></div><div class="ttdoc">Disk-IO Low-Level Management. </div></div>
 </div><!-- fragment --></div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat May 24 2014 14:34:31 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun May 25 2014 15:15:11 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

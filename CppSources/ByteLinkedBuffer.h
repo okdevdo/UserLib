@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file ByteLinkedBuffer.h
+ *  \brief Reference counted buffer for binary data divided in chunks of data. Internal data structure is a B*-tree.
+ */
 #pragma once
 
 #include "CppSources.h"

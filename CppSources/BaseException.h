@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file BaseException.h
+ *  \brief Base class for all exceptions in UserLib.
+ */
 #pragma once
 
 #include "CppSources.h"

@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file DataDoubleLinkedList.h
+ *  \brief Double linked list data structure.
+ */
 #pragma once
 
 #include "LISTE.H"

@@ -20,7 +20,7 @@
 ******************************************************************************/
 /**
  *  \file GZipFilter.h
- *  \brief GZip compressor and decompressor filters
+ *  \brief GZip compressor and decompressor filters.
  */
 #pragma once
 

@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file ZipArchive.h
+ *  \brief Zip archive reader and writer.
+ */
 #pragma once
 
 #include "CppSources.h"

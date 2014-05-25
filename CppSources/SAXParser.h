@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file SAXParser.h
+ *  \brief XML parsing engine interface classes supported by expat.
+ */
 #pragma once
 
 #include "CppSources.h"

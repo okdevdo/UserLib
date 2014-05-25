@@ -1,9 +1,12 @@
+<!-- HTML header for doxygen 1.8.7-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.7"/>
+<meta name="keywords" content="Library, C++"> 
+<meta name="robots" content="index|follow"> 
 <title>UserLib: CppSources/Archive.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -14,6 +17,7 @@
   $(document).ready(function() { searchBox.OnSelectItem(0); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="ok_doxy_stylesheet.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,10 +26,13 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">UserLib
+   <div id="projectname"><a href="index.html">UserLib</a>
    &#160;<span id="projectnumber">v1.0.0</span>
    </div>
    <div id="projectbrief">C++ Framework</div>
+  </td>
+  <td style="padding-left: 10em;">
+  <a href="http://okdevdo.github.io/UserLib/">okdevdo/UserLib Home</a>
   </td>
  </tr>
  </tbody>
@@ -112,7 +119,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;CppSources.h&quot;</span></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_file_8h.html">File.h</a>&quot;</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;DataHashtable.h&quot;</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_data_hashtable_8h.html">DataHashtable.h</a>&quot;</span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">class </span>CPPSOURCES_API <a class="code" href="class_c_archive.html">CArchive</a>;</div>
 <div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="class_c_archive_file.html">   36</a></span>&#160;<span class="keyword">class </span>CPPSOURCES_API <a class="code" href="class_c_archive_file.html">CArchiveFile</a>: <span class="keyword">public</span> <a class="code" href="class_c_file.html">CFile</a></div>
@@ -251,6 +258,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="class_c_archive_property_html_a7e471feb21cfe1b4db9940836e098287"><div class="ttname"><a href="class_c_archive_property.html#a7e471feb21cfe1b4db9940836e098287">CArchiveProperty::value</a></div><div class="ttdeci">__inline __int64 value() const </div><div class="ttdoc">Getter value of the property. </div><div class="ttdef"><b>Definition:</b> Archive.h:194</div></div>
 <div class="ttc" id="class_c_archive_property_html_a99789071ae9549d67850568ea18fe931"><div class="ttname"><a href="class_c_archive_property.html#a99789071ae9549d67850568ea18fe931">CArchiveProperty::CArchiveProperty</a></div><div class="ttdeci">CArchiveProperty(const CArchiveProperty &amp;copy)</div><div class="ttdoc">Copy constructor. </div><div class="ttdef"><b>Definition:</b> Archive.h:167</div></div>
 <div class="ttc" id="class_c_archive_property_html_a5dc5f6e1c75f9d3c85a7db5bb5d4842b"><div class="ttname"><a href="class_c_archive_property.html#a5dc5f6e1c75f9d3c85a7db5bb5d4842b">CArchiveProperty::isNull</a></div><div class="ttdeci">__inline unsigned char isNull() const </div><div class="ttdoc">Test on null. </div><div class="ttdef"><b>Definition:</b> Archive.h:202</div></div>
+<div class="ttc" id="_data_hashtable_8h_html"><div class="ttname"><a href="_data_hashtable_8h.html">DataHashtable.h</a></div><div class="ttdoc">Hash list data structure. </div></div>
 <div class="ttc" id="class_c_file_html_afd01b368c86af7b959757f6cdd0bdf88"><div class="ttname"><a href="class_c_file.html#afd01b368c86af7b959757f6cdd0bdf88">CFile::operator=</a></div><div class="ttdeci">void operator=(const CFile &amp;_file)</div><div class="ttdoc">Assignment operator. </div></div>
 <div class="ttc" id="class_c_file_html_af1f0334959d380d0da69faa563a88b68"><div class="ttname"><a href="class_c_file.html#af1f0334959d380d0da69faa563a88b68">CFile::Read</a></div><div class="ttdeci">virtual void Read(CByteBuffer &amp;_buffer)=0</div><div class="ttdoc">Read buffer. </div></div>
 <div class="ttc" id="class_c_file_html_a34fbe4bc093551167dfc221f9e694a0f"><div class="ttname"><a href="class_c_file.html#a34fbe4bc093551167dfc221f9e694a0f">CFile::GetSize</a></div><div class="ttdeci">virtual TFileSize GetSize()=0</div><div class="ttdoc">Getter file size. </div></div>
@@ -267,9 +275,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="class_c_archive_property_html_ab3b44728955e67289c02a735bf12acbf"><div class="ttname"><a href="class_c_archive_property.html#ab3b44728955e67289c02a735bf12acbf">CArchiveProperty::key</a></div><div class="ttdeci">__inline CStringLiteral key() const </div><div class="ttdoc">Getter name of the property. </div><div class="ttdef"><b>Definition:</b> Archive.h:186</div></div>
 <div class="ttc" id="_file_8h_html"><div class="ttname"><a href="_file_8h.html">File.h</a></div><div class="ttdoc">Disk-IO Low-Level Management. </div></div>
 </div><!-- fragment --></div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat May 24 2014 14:34:30 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun May 25 2014 15:15:10 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

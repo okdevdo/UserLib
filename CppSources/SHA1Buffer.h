@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file SHA1Buffer.h
+ *  \brief Special class calculating the SHA1 digest.
+ */
 #pragma once
 
 #include "CppSources.h"

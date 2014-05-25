@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file StringLiteral.h
+ *  \brief Contains definitions for a constant char iterator and string literals.
+ */
 #pragma once
 
 #include <ostream>

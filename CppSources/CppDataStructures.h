@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file CppDataStructures.h
+ *  \brief Templated definitions of linked List, binary tree and B*-tree.
+ */
 #pragma once
 
 #include "CppSources.h"

@@ -20,7 +20,7 @@
 ******************************************************************************/
 /**
  *  \file LZMALibFilter.h
- *  \brief Base classes for LZMA and XZ compressor and decompressor filters
+ *  \brief Base classes for LZMA and XZ compressor and decompressor filters.
  */
 #pragma once
 

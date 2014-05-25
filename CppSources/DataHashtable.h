@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file DataHashtable.h
+ *  \brief Hash list data structure.
+ */
 #pragma once
 
 #include "CppSources.h"

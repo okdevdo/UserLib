@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file DataBase.h
+ *  \brief Database class based on DBASE IV.
+ */
 #pragma once
 
 #include "CppSources.h"

@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file VolumeIterator.h
+ *  \brief The runtime library version of the volume iterator iterates over the drives of the local computer.
+ */
 #pragma once
 
 #include "CppSources.h"

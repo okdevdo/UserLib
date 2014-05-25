@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file SqLite3DBImpl.h
+ *  \brief Implementation classes to access SqLite3 database.
+ */
 #pragma once
 
 #include "CppSources.h"

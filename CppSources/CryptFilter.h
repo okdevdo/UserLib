@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file CryptFilter.h
+ *  \brief Encryption and decryption filters.
+ */
 #pragma once
 
 #include "CppSources.h"

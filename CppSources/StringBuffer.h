@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file StringBuffer.h
+ *  \brief Reference counted char buffer.
+ */
 #pragma once
 
 #define MAX_FORMATTEXT 4096L

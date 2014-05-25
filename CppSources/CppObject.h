@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file CppObject.h
+ *  \brief Base class of all objects allocated on the heap.
+ */
 #pragma once
 
 #include "CppSources.h"

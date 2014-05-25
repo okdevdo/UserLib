@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file MD5Buffer.h
+ *  \brief Special class calculating the MD5 digest.
+ */
 #pragma once
 
 #include "CppSources.h"

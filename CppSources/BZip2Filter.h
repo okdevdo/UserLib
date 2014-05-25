@@ -20,7 +20,7 @@
 ******************************************************************************/
 /**
  *  \file BZip2Filter.h
- *  \brief Bzip2 compressor and decompressor filters
+ *  \brief Bzip2 compressor and decompressor filters.
  */
 #pragma once
 

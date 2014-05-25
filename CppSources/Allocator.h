@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ******************************************************************************/
+/**
+ *  \file Allocator.h
+ *  \brief Managed allocator for Standard template container.
+ */
 #pragma once
 
 #include "CppSources.h"

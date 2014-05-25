@@ -20,7 +20,7 @@
 ******************************************************************************/
 /**
  *  \file LZMAFilter.h
- *  \brief LZMA compressor and decompressor filters
+ *  \brief LZMA compressor and decompressor filters.
  */
 #pragma once
 
