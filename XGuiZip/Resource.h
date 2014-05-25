@@ -47,5 +47,3 @@
 
 #define IDM_ADDFILES                            300
 #define IDM_EXTRACT                             301
-
-#define MANIFEST_RESOURCE_ID 1

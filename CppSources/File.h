@@ -544,7 +544,7 @@ public:
 	 *  
 	 *  \details Virtual overload. Setter file size.
 	 */
-	virtual void SetSize(TFileSizes sz);
+	virtual void SetSize(TFileSize sz);
 	/**
 	 *  \brief Getter file read and write position
 	 *  

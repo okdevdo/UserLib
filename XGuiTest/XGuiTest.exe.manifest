@@ -29,7 +29,7 @@
 <dependency>
     <dependentAssembly>
  		<assemblyIdentity
-			type="Win32" 
+			type="win32" 
 			name="Microsoft.Windows.GdiPlus" 
 			version="1.1.0.0" 
 			processorArchitecture="*"

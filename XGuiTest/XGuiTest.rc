@@ -357,3 +357,9 @@ BEGIN
     END
 END
 
+#ifndef RT_MANIFEST
+#define RT_MANIFEST 24
+#endif
+#define APP_MANIFEST 1
+
+APP_MANIFEST RT_MANIFEST XGuiTest.exe.manifest
