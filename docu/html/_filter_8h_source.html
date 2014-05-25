@@ -1,9 +1,12 @@
+<!-- HTML header for doxygen 1.8.7-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.7"/>
+<meta name="keywords" content="Library, C++"> 
+<meta name="robots" content="index|follow"> 
 <title>UserLib: CppSources/Filter.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -14,6 +17,7 @@
   $(document).ready(function() { searchBox.OnSelectItem(0); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="ok_doxy_stylesheet.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,10 +26,13 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">UserLib
+   <div id="projectname"><a href="index.html">UserLib</a>
    &#160;<span id="projectnumber">v1.0.0</span>
    </div>
    <div id="projectbrief">C++ Framework</div>
+  </td>
+  <td style="padding-left: 10em;">
+  <a href="http://okdevdo.github.io/UserLib/">okdevdo/UserLib Home</a>
   </td>
  </tr>
  </tbody>
@@ -112,8 +119,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;CppSources.h&quot;</span></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_file_8h.html">File.h</a>&quot;</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;BaseException.h&quot;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &quot;DataVector.h&quot;</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_base_exception_8h.html">BaseException.h</a>&quot;</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_data_vector_8h.html">DataVector.h</a>&quot;</span></div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
 <div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="class_c_abstract_filter_input.html">   36</a></span>&#160;<span class="keyword">class </span>CPPSOURCES_API <a class="code" href="class_c_abstract_filter_input.html">CAbstractFilterInput</a></div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;{</div>
@@ -384,6 +391,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00933"></a><span class="lineno">  933</span>&#160;};</div>
 <div class="line"><a name="l00934"></a><span class="lineno">  934</span>&#160;</div>
 <div class="line"><a name="l00935"></a><span class="lineno">  935</span>&#160;DECL_EXCEPTION(CPPSOURCES_API, CFilterException, CBaseException)</div>
+<div class="ttc" id="_data_vector_8h_html"><div class="ttname"><a href="_data_vector_8h.html">DataVector.h</a></div><div class="ttdoc">Vector (variable size linear buffer) data structure. </div></div>
 <div class="ttc" id="class_c_std_in_filter_input_html"><div class="ttname"><a href="class_c_std_in_filter_input.html">CStdInFilterInput</a></div><div class="ttdoc">Special input class. Input will be delivered from the standard input device. </div><div class="ttdef"><b>Definition:</b> Filter.h:371</div></div>
 <div class="ttc" id="class_c_abstract_filter_output_html_a2053a2a90bfae897098801a8fbbf5aa7"><div class="ttname"><a href="class_c_abstract_filter_output.html#a2053a2a90bfae897098801a8fbbf5aa7">CAbstractFilterOutput::open</a></div><div class="ttdeci">virtual void open()=0</div><div class="ttdoc">Open the output. </div></div>
 <div class="ttc" id="class_c_filter_output_html_af28884cbab5aa12e6e118282e97450ed"><div class="ttname"><a href="class_c_filter_output.html#af28884cbab5aa12e6e118282e97450ed">CFilterOutput::write</a></div><div class="ttdeci">virtual void write(CByteBuffer &amp;outputbuf)</div><div class="ttdoc">Write out data. </div></div>
@@ -414,15 +422,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="class_c_file_html"><div class="ttname"><a href="class_c_file.html">CFile</a></div><div class="ttdoc">Pure virtual base class for disk file management. </div><div class="ttdef"><b>Definition:</b> File.h:36</div></div>
 <div class="ttc" id="class_c_filter_html_a529b40946d13c3d0f4bafd22ca1408ab"><div class="ttname"><a href="class_c_filter.html#a529b40946d13c3d0f4bafd22ca1408ab">CFilter::do_filter</a></div><div class="ttdeci">virtual unsigned long do_filter()=0</div><div class="ttdoc">Perform transformation. </div></div>
 <div class="ttc" id="class_c_abstract_filter_input_html_a83e6892ef25a721604ec9aa09cfeea87"><div class="ttname"><a href="class_c_abstract_filter_input.html#a83e6892ef25a721604ec9aa09cfeea87">CAbstractFilterInput::size</a></div><div class="ttdeci">virtual CFile::TFileSize size()=0</div><div class="ttdoc">Getter size of input. </div></div>
+<div class="ttc" id="_base_exception_8h_html"><div class="ttname"><a href="_base_exception_8h.html">BaseException.h</a></div><div class="ttdoc">Base class for all exceptions in UserLib. </div></div>
 <div class="ttc" id="class_c_file_filter_output_html"><div class="ttname"><a href="class_c_file_filter_output.html">CFileFilterOutput</a></div><div class="ttdoc">Special output class. Output will be written to disk file. </div><div class="ttdef"><b>Definition:</b> Filter.h:532</div></div>
 <div class="ttc" id="class_c_line_write_filter_html"><div class="ttname"><a href="class_c_line_write_filter.html">CLineWriteFilter</a></div><div class="ttdoc">Special filter. Reads data in, and appends a line end character, before writing. </div><div class="ttdef"><b>Definition:</b> Filter.h:891</div></div>
 <div class="ttc" id="class_c_copy_filter_html"><div class="ttname"><a href="class_c_copy_filter.html">CCopyFilter</a></div><div class="ttdoc">Special filter. Copies input to output. </div><div class="ttdef"><b>Definition:</b> Filter.h:813</div></div>
 <div class="ttc" id="class_c_string_vector_filter_output_html"><div class="ttname"><a href="class_c_string_vector_filter_output.html">CStringVectorFilterOutput</a></div><div class="ttdoc">Special output class. Output will be written to a string vector data type. </div><div class="ttdef"><b>Definition:</b> Filter.h:426</div></div>
 <div class="ttc" id="_file_8h_html"><div class="ttname"><a href="_file_8h.html">File.h</a></div><div class="ttdoc">Disk-IO Low-Level Management. </div></div>
 </div><!-- fragment --></div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat May 24 2014 14:34:30 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun May 25 2014 15:15:11 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

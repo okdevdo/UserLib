@@ -1,9 +1,12 @@
+<!-- HTML header for doxygen 1.8.7-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.7"/>
+<meta name="keywords" content="Library, C++"> 
+<meta name="robots" content="index|follow"> 
 <title>UserLib: CppSources/ByteBuffer.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -14,6 +17,7 @@
   $(document).ready(function() { searchBox.OnSelectItem(0); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="ok_doxy_stylesheet.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,10 +26,13 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">UserLib
+   <div id="projectname"><a href="index.html">UserLib</a>
    &#160;<span id="projectnumber">v1.0.0</span>
    </div>
    <div id="projectbrief">C++ Framework</div>
+  </td>
+  <td style="padding-left: 10em;">
+  <a href="http://okdevdo.github.io/UserLib/">okdevdo/UserLib Home</a>
   </td>
  </tr>
  </tbody>
@@ -88,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">ByteBuffer.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/******************************************************************************</span></div>
+<a href="_byte_buffer_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/******************************************************************************</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">    </span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">    This file is part of CppSources, which is part of UserLib.</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"></span></div>
@@ -108,46 +115,47 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment"></span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">******************************************************************************/</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;CppSources.h&quot;</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">class </span>CPPSOURCES_API CByteBuffer</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;{</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    CByteBuffer();</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    CByteBuffer(DECL_FILE_LINE dword initialSize);</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    CByteBuffer(DECL_FILE_LINE BConstPointer buffer, dword bufferSize);</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    CByteBuffer(<span class="keyword">const</span> CByteBuffer&amp; buffer);</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    ~CByteBuffer(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    __inline BPointer get_Buffer()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _buffer; }</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    __inline dword get_BufferSize()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _bufferSize; }</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    __inline dword get_AllocSize()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> (PtrCheck(_buffer)?0:Castdword(TFsize(_buffer))); }</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordtype">void</span> set_BufferSize(DECL_FILE_LINE dword bufferSize);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordtype">void</span> set_Buffer(DECL_FILE_LINE BConstPointer buffer, dword bufferSize);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordtype">void</span> concat_Buffer(BConstPointer buffer, dword bufferSize);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordtype">void</span> concat_Buffer(<span class="keyword">const</span> CByteBuffer&amp; other);</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordtype">int</span> find_Char(byte ch, dword startpos = 0) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordtype">int</span> find_Text(BPointer str, dword strLen, dword startpos = 0) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordtype">void</span> get_SubBuffer(dword startpos, dword chLen, CByteBuffer&amp; result) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;CppSources.h&quot;</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">class </span>CPPSOURCES_API CByteBuffer</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;{</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    CByteBuffer();</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    CByteBuffer(DECL_FILE_LINE dword initialSize);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    CByteBuffer(DECL_FILE_LINE BConstPointer buffer, dword bufferSize);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    CByteBuffer(<span class="keyword">const</span> CByteBuffer&amp; buffer);</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    ~CByteBuffer(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    __inline BPointer get_Buffer()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _buffer; }</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    __inline dword get_BufferSize()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _bufferSize; }</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    __inline dword get_AllocSize()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> (PtrCheck(_buffer)?0:Castdword(TFsize(_buffer))); }</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordtype">void</span> set_BufferSize(DECL_FILE_LINE dword bufferSize);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordtype">void</span> set_Buffer(DECL_FILE_LINE BConstPointer buffer, dword bufferSize);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordtype">void</span> concat_Buffer(BConstPointer buffer, dword bufferSize);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordtype">void</span> concat_Buffer(<span class="keyword">const</span> CByteBuffer&amp; other);</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordtype">void</span> operator=(<span class="keyword">const</span> CByteBuffer&amp; copy);</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    BPointer _buffer;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    dword _bufferSize;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;};</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;CPPSOURCES_API <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> CByteBuffer&amp; buffer1, <span class="keyword">const</span> CByteBuffer&amp; buffer2);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;CPPSOURCES_API <span class="keywordtype">bool</span> operator!=(<span class="keyword">const</span> CByteBuffer&amp; buffer1, <span class="keyword">const</span> CByteBuffer&amp; buffer2);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordtype">int</span> find_Char(byte ch, dword startpos = 0) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordtype">int</span> find_Text(BPointer str, dword strLen, dword startpos = 0) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordtype">void</span> get_SubBuffer(dword startpos, dword chLen, CByteBuffer&amp; result) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">void</span> operator=(<span class="keyword">const</span> CByteBuffer&amp; copy);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    </div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    BPointer _buffer;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    dword _bufferSize;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;};</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;CPPSOURCES_API <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> CByteBuffer&amp; buffer1, <span class="keyword">const</span> CByteBuffer&amp; buffer2);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;CPPSOURCES_API <span class="keywordtype">bool</span> operator!=(<span class="keyword">const</span> CByteBuffer&amp; buffer1, <span class="keyword">const</span> CByteBuffer&amp; buffer2);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
 </div><!-- fragment --></div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat May 24 2014 14:34:30 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun May 25 2014 15:15:10 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

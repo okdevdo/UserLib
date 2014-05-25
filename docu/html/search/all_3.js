@@ -1,5 +1,13 @@
 var searchData=
 [
+  ['dataarray_2eh',['DataArray.h',['../_data_array_8h.html',1,'']]],
+  ['database_2eh',['DataBase.h',['../_data_base_8h.html',1,'']]],
+  ['databinarytree_2eh',['DataBinaryTree.h',['../_data_binary_tree_8h.html',1,'']]],
+  ['databtree_2eh',['DataBTree.h',['../_data_b_tree_8h.html',1,'']]],
+  ['datadoublelinkedlist_2eh',['DataDoubleLinkedList.h',['../_data_double_linked_list_8h.html',1,'']]],
+  ['datagraph_2eh',['DataGraph.h',['../_data_graph_8h.html',1,'']]],
+  ['datahashtable_2eh',['DataHashtable.h',['../_data_hashtable_8h.html',1,'']]],
+  ['datavector_2eh',['DataVector.h',['../_data_vector_8h.html',1,'']]],
   ['defaultpathseparatorchar',['DefaultPathSeparatorChar',['../class_c_directory_iterator.html#a053f18aeaa6feda55866c4f64db1bf79',1,'CDirectoryIterator']]],
   ['defaultpathseparatorstring',['DefaultPathSeparatorString',['../class_c_directory_iterator.html#a1de23c764e9314801dc01f62114fad8f',1,'CDirectoryIterator']]],
   ['description',['description',['../class_c_option.html#adc437ef0df0f8c1e7fc22a06e077c196',1,'COption::description(CStringLiteral _description)'],['../class_c_option.html#a3b27e5c9950504d755e4822614877de8',1,'COption::description() const ']]],

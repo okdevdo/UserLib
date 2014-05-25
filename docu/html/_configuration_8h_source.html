@@ -1,9 +1,12 @@
+<!-- HTML header for doxygen 1.8.7-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.7"/>
+<meta name="keywords" content="Library, C++"> 
+<meta name="robots" content="index|follow"> 
 <title>UserLib: CppSources/Configuration.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -14,6 +17,7 @@
   $(document).ready(function() { searchBox.OnSelectItem(0); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="ok_doxy_stylesheet.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,10 +26,13 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">UserLib
+   <div id="projectname"><a href="index.html">UserLib</a>
    &#160;<span id="projectnumber">v1.0.0</span>
    </div>
    <div id="projectbrief">C++ Framework</div>
+  </td>
+  <td style="padding-left: 10em;">
+  <a href="http://okdevdo.github.io/UserLib/">okdevdo/UserLib Home</a>
   </td>
  </tr>
  </tbody>
@@ -111,9 +118,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;CppSources.h&quot;</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;DataBinaryTree.h&quot;</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;DataDoubleLinkedList.h&quot;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &quot;DataVector.h&quot;</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_data_binary_tree_8h.html">DataBinaryTree.h</a>&quot;</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_data_double_linked_list_8h.html">DataDoubleLinkedList.h</a>&quot;</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_data_vector_8h.html">DataVector.h</a>&quot;</span></div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_file_path_8h.html">FilePath.h</a>&quot;</span></div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
 <div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="class_c_abstract_configuration.html">   37</a></span>&#160;<span class="keyword">class </span>CPPSOURCES_API <a class="code" href="class_c_abstract_configuration.html">CAbstractConfiguration</a>: <span class="keyword">public</span> CCppObject</div>
@@ -277,12 +284,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00816"></a><span class="lineno">  816</span>&#160;};</div>
 <div class="line"><a name="l00817"></a><span class="lineno">  817</span>&#160;</div>
 <div class="line"><a name="l00818"></a><span class="lineno">  818</span>&#160;</div>
+<div class="ttc" id="_data_vector_8h_html"><div class="ttname"><a href="_data_vector_8h.html">DataVector.h</a></div><div class="ttdoc">Vector (variable size linear buffer) data structure. </div></div>
 <div class="ttc" id="class_c_abstract_configuration_html_a479887c9067ac15150a1ee02615ec3a9"><div class="ttname"><a href="class_c_abstract_configuration.html#a479887c9067ac15150a1ee02615ec3a9">CAbstractConfiguration::IsModified</a></div><div class="ttdeci">__inline unsigned char IsModified() const </div><div class="ttdoc">Getter flag modified. </div><div class="ttdef"><b>Definition:</b> Configuration.h:80</div></div>
 <div class="ttc" id="class_c_map_configuration_html_a3265faef0383accbd61db8cbffd488fd"><div class="ttname"><a href="class_c_map_configuration.html#a3265faef0383accbd61db8cbffd488fd">CMapConfiguration::Count</a></div><div class="ttdeci">__inline TListCnt Count() const </div><div class="ttdoc">Number of stored property values. </div><div class="ttdef"><b>Definition:</b> Configuration.h:536</div></div>
 <div class="ttc" id="class_c_abstract_configuration_html_a69081f8c7ecd86cbddbac42ae9dbf1db"><div class="ttname"><a href="class_c_abstract_configuration.html#a69081f8c7ecd86cbddbac42ae9dbf1db">CAbstractConfiguration::IsWritable</a></div><div class="ttdeci">__inline unsigned char IsWritable() const </div><div class="ttdoc">Getter flag writeable. </div><div class="ttdef"><b>Definition:</b> Configuration.h:72</div></div>
 <div class="ttc" id="class_c_abstract_configuration_html"><div class="ttname"><a href="class_c_abstract_configuration.html">CAbstractConfiguration</a></div><div class="ttdoc">Base class of all configuration classes. </div><div class="ttdef"><b>Definition:</b> Configuration.h:37</div></div>
 <div class="ttc" id="class_c_abstract_configuration_html_a9e7f38802e585336371a0d93c7fb765d"><div class="ttname"><a href="class_c_abstract_configuration.html#a9e7f38802e585336371a0d93c7fb765d">CAbstractConfiguration::Enumerate</a></div><div class="ttdeci">virtual unsigned char Enumerate(const CStringLiteral &amp;_prefix, Keys &amp;_keys)</div><div class="ttdoc">virtual overload to enumerate all keys </div></div>
 <div class="ttc" id="_file_path_8h_html"><div class="ttname"><a href="_file_path_8h.html">FilePath.h</a></div><div class="ttdoc">Handles file paths. </div></div>
+<div class="ttc" id="_data_double_linked_list_8h_html"><div class="ttname"><a href="_data_double_linked_list_8h.html">DataDoubleLinkedList.h</a></div><div class="ttdoc">Double linked list data structure. </div></div>
 <div class="ttc" id="class_c_abstract_configuration_html_a4a25fe73a787c2c143684e5f95e6b6a5"><div class="ttname"><a href="class_c_abstract_configuration.html#a4a25fe73a787c2c143684e5f95e6b6a5">CAbstractConfiguration::SetRawValue</a></div><div class="ttdeci">virtual unsigned char SetRawValue(const CStringLiteral &amp;_name, const CStringBuffer &amp;_value)</div><div class="ttdoc">virtual overload of a setter of raw property data </div></div>
 <div class="ttc" id="class_c_configuration_list_html"><div class="ttname"><a href="class_c_configuration_list.html">CConfigurationList</a></div><div class="ttdoc">List of configuration objects, but with a configuration object interface, thus traversing the list to...</div><div class="ttdef"><b>Definition:</b> Configuration.h:747</div></div>
 <div class="ttc" id="class_c_application_configuration_html"><div class="ttname"><a href="class_c_application_configuration.html">CApplicationConfiguration</a></div><div class="ttdoc">Implements access to application infos. </div><div class="ttdef"><b>Definition:</b> Configuration.h:676</div></div>
@@ -293,10 +302,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="class_c_abstract_configuration_html_a248be1d0ba05d8ef65303b8cd7411ed4"><div class="ttname"><a href="class_c_abstract_configuration.html#a248be1d0ba05d8ef65303b8cd7411ed4">CAbstractConfiguration::GetRawValue</a></div><div class="ttdeci">virtual unsigned char GetRawValue(const CStringLiteral &amp;_name, CStringBuffer &amp;_value)</div><div class="ttdoc">virtual overload of a getter of raw property data </div></div>
 <div class="ttc" id="class_c_map_configuration_html"><div class="ttname"><a href="class_c_map_configuration.html">CMapConfiguration</a></div><div class="ttdoc">Stores configuration items in a binary tree. </div><div class="ttdef"><b>Definition:</b> Configuration.h:496</div></div>
 <div class="ttc" id="class_c_file_configuration_html"><div class="ttname"><a href="class_c_file_configuration.html">CFileConfiguration</a></div><div class="ttdoc">Based on CMapConfiguration. Fills the tree from a file. </div><div class="ttdef"><b>Definition:</b> Configuration.h:579</div></div>
+<div class="ttc" id="_data_binary_tree_8h_html"><div class="ttname"><a href="_data_binary_tree_8h.html">DataBinaryTree.h</a></div><div class="ttdoc">AVL and RB binary tree data structure. </div></div>
 </div><!-- fragment --></div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat May 24 2014 14:34:30 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun May 25 2014 15:15:10 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>
