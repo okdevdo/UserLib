@@ -26,6 +26,15 @@ ABOUT UserLib
 	and third-party-software. That way the library is easy to use. And it is 
 	complete, it contains everything to build an application.
 	
+	A list of third-party-software is included in INSTALL file. There is
+	also an information given, which source files are involved in each 
+	third-party-software.
+	
+	UserLib supports configuration of the application by using the command 
+	line and properties files. Any disk file can be read in, downloaded from
+	the internet or a database connection can be opened. The data manipulation
+	process is supported by common data structures.
+	
 DIRECTORY structure
 
 	UserLib/
@@ -36,13 +45,42 @@ DIRECTORY structure
 	 |   STRUTIL.C - String utilities
 	 |   ...
 	 +-- CppSources/
+	 |   DataArray.h, DataBinaryTree.h, DataBTree.h, DataDoubleLinkedList.h, 
+	 |      DataGraph.h, DataHashtable.h, DataVector.h - Wrapper for the standard 
+	 |      data structures
 	 |   Application.cpp - Singleton for application management
 	 |   Option.cpp - Defines an option for the application given on the command line
 	 |   Configuration.cpp - Configuration management
+	 |   File.cpp, FilePath.cpp, DirectoryIterator.cpp - File and directory management
+	 |   Filter.cpp - Data transformation pattern
+	 |   BZip2Filter.cpp, GZipFilter.cpp, XZFilter.cpp - Data compression
+	 |   Archive.cpp, TarArchive.cpp, ZipArchive.cpp - Archive management
+	 |   HashBuffer.cpp, CryptFilter.cpp - Data encryption
+	 |   SAXParser.cpp - XML support
+	 |   SqLite3DB.cpp - SqLite3 database support
 	 |   ...
 	 +-- WinSources/
+	 |   Thread.cpp, WProcess.cpp - Thread and process management
+	 |   ConditionVariable.cpp, Event.cpp, Mutex.cpp, ScopedLock.h - Synchronisation
+	 |   AsyncFile.cpp, AsyncIOBuffer.cpp, AsyncIOData.cpp, AsyncIOManager.cpp, 
+	 |      AsyncTCPClient.cpp, AsyncTCPServer.cpp - Asynchronous file and tcp/ip management
+	 |   EventLogChannel.cpp, EventLogEvent.cpp, EventLogger.cpp, EventLogProvider.cpp, 
+	 |      EventLogRecord.cpp - Windows event logging access
+	 |   FTPClient.cpp, HTTPClient.cpp, HTTPDownload.cpp, HttpServer.cpp - Internet access
+	 |   MySQLDB.cpp, ODBC.cpp, PostgresDB.cpp - Database support
+	 |   ...
 	 +-- ConSources/
+	 |   Console.cpp - Main console object
+	 |   ConsoleWindow.cpp - Base console window object
+	 |   ConsoleControl.cpp - Derived from ConsoleWindow, base console control object
+	 |   ConsoleButtonControl.cpp, ConsoleComboControl.cpp, ConsoleLabelControl.cpp, 
+	 |      ConsoleListControl.cpp, ConsoleScrollbarControl.cpp, ConsoleTabControl.cpp, 
+	 |      ConsoleTextControl.cpp - Console control objects
+	 |   CConsolePopupMenu.cpp - Menus
+	 |   ConsoleDialog.cpp - Dialogs
+	 |   ...
 	 +-- GuiSources/
+	 |   ...
 	 +
 	 +-- ... sample applications
 
