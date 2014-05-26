@@ -706,29 +706,50 @@ static CConstPointer VCXPROJPart2[] = {
 	_T("  <Import Project=\"$(VCTargetsPath)\\Microsoft.Cpp.props\"/>\r\n")
 	_T("  <ImportGroup Label=\"ExtensionSettings\">\r\n")
 	_T("  </ImportGroup>\r\n")
-	_T("  <ImportGroup Label=\"PropertySheets\" Condition=\"'$(Configuration)|$(Platform)'=='Debug|Win32'\">\r\n")
+	_T("  <ImportGroup Condition=\"'$(Configuration)|$(Platform)'=='Debug|Win32'\" Label=\"PropertySheets\">\r\n")
 	_T("    <Import Project=\"$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props\" Condition=\"exists('$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props')\" Label=\"LocalAppDataPlatform\"/>\r\n")
 	_T("  </ImportGroup>\r\n")
-	_T("  <ImportGroup Label=\"PropertySheets\" Condition=\"'$(Configuration)|$(Platform)'=='Release|Win32'\">\r\n")
+	_T("  <ImportGroup Condition=\"'$(Configuration)|$(Platform)'=='Release|Win32'\" Label=\"PropertySheets\">\r\n")
 	_T("    <Import Project=\"$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props\" Condition=\"exists('$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props')\" Label=\"LocalAppDataPlatform\"/>\r\n")
 	_T("  </ImportGroup>\r\n")
 	_T("  <PropertyGroup Label=\"UserMacros\"/>\r\n"),
+
 	_T("  <Import Project=\"$(VCTargetsPath)\\Microsoft.Cpp.props\"/>\r\n")
 	_T("  <ImportGroup Label=\"ExtensionSettings\">\r\n")
 	_T("  </ImportGroup>\r\n")
-	_T("  <ImportGroup Label=\"PropertySheets\" Condition=\"'$(Configuration)|$(Platform)'=='Debug|Win32'\">\r\n")
+	_T("  <ImportGroup Condition=\"'$(Configuration)|$(Platform)'=='Debug|Win32'\" Label=\"PropertySheets\">\r\n")
 	_T("    <Import Project=\"$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props\" Condition=\"exists('$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props')\" Label=\"LocalAppDataPlatform\"/>\r\n")
 	_T("  </ImportGroup>\r\n")
 	_T("  <ImportGroup Condition=\"'$(Configuration)|$(Platform)'=='Debug|x64'\" Label=\"PropertySheets\">\r\n")
 	_T("    <Import Project=\"$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props\" Condition=\"exists('$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props')\" Label=\"LocalAppDataPlatform\"/>\r\n")
 	_T("  </ImportGroup>\r\n")
-	_T("  <ImportGroup Label=\"PropertySheets\" Condition=\"'$(Configuration)|$(Platform)'=='Release|Win32'\">\r\n")
+	_T("  <ImportGroup Condition=\"'$(Configuration)|$(Platform)'=='Release|Win32'\" Label=\"PropertySheets\">\r\n")
 	_T("    <Import Project=\"$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props\" Condition=\"exists('$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props')\" Label=\"LocalAppDataPlatform\"/>\r\n")
 	_T("  </ImportGroup>\r\n")
 	_T("  <ImportGroup Condition=\"'$(Configuration)|$(Platform)'=='Release|x64'\" Label=\"PropertySheets\">\r\n")
 	_T("    <Import Project=\"$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props\" Condition=\"exists('$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props')\" Label=\"LocalAppDataPlatform\"/>\r\n")
 	_T("  </ImportGroup>\r\n")
 	_T("  <PropertyGroup Label=\"UserMacros\"/>\r\n"),
+
+	_T("  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='Debug|Win32'\">\r\n")
+    _T("    <GenerateManifest>false</GenerateManifest>\r\n")
+    _T("  </PropertyGroup>\r\n")
+    _T("  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='Release|Win32'\">\r\n")
+    _T("    <GenerateManifest>false</GenerateManifest>\r\n")
+    _T("  </PropertyGroup>\r\n"),
+
+	_T("  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='Debug|Win32'\">\r\n")
+    _T("    <GenerateManifest>false</GenerateManifest>\r\n")
+    _T("  </PropertyGroup>\r\n")
+    _T("  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='Release|Win32'\">\r\n")
+    _T("    <GenerateManifest>false</GenerateManifest>\r\n")
+    _T("  </PropertyGroup>\r\n")
+	_T("  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='Debug|x64'\">\r\n")
+    _T("    <GenerateManifest>false</GenerateManifest>\r\n")
+    _T("  </PropertyGroup>\r\n")
+    _T("  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='Release|x64'\">\r\n")
+    _T("    <GenerateManifest>false</GenerateManifest>\r\n")
+    _T("  </PropertyGroup>\r\n"),
 };
 
 static CConstPointer VCXPROJPart3[] = {
@@ -962,6 +983,10 @@ static void WriteProjectFile(CConstPointer pVersion, Ptr(CProjectInfo) info, boo
 	if (hasWin64)
 		fprojfile->Write(VCXPROJLOOP1[3], vConfigurationType, pVersion);
 	fprojfile->Write(VCXPROJPart2[hasWin64?1:0]);
+	if (info->m_Type.Compare(CStringLiteral(_T("ConsoleExe")), 0, CStringLiteral::cIgnoreCase) == 0)
+		fprojfile->Write(VCXPROJPart2[hasWin64?3:2]);
+	else if (info->m_Type.Compare(CStringLiteral(_T("GuiExe")), 0, CStringLiteral::cIgnoreCase) == 0)
+		fprojfile->Write(VCXPROJPart2[hasWin64?3:2]);
 	// Win32 Debug
 	fprojfile->Write(VCXPROJPart3[0]);
 	tmp = info->m_AdditionalIncludeDirectories.Join(_T(";"));
