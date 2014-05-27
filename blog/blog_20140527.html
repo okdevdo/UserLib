@@ -34,35 +34,62 @@
 	  <p>UserLib contains class <a href="../html/_cpp_object_8h_source.html">CCppObject</a>, which is the base class of all classes allocated on the heap.</p>
 	  <h2>Containers</h2>
 	  <p>The <a href="http://en.wikipedia.org/wiki/Standard_Template_Library">standard template library</a> supports four categories: containers, algorithms, functors and iterators. Containers can be divided into two groups: sequential and associative containers. Sequence containers include vector, deque, and list. Associative containers include set, multiset, map, and multimap.</p>
-	  <p>UserLib contains several templated wrapper classes. Wrapper classes of a interface and implementation of data structures written in C. This list include <a href="../html/_data_vector_8h_source.html">CDataVector</a>, <a href="../html/_data_double_linked_list_8h_source.html">CDataDoubleLinkedList</a>, <a href="../html/_data_binary_tree_8h_source.html">CDataBinaryTree</a> and <a href="../html/_data_b_tree_8h_source.html">CDataBTree</a>. Each class defines its own iterator. And the set of methods forming the interface are very similar to each other. For example the interface of <a href="../html/_data_vector_8h_source.html">CDataVector</a> is as follows:
-	  <code>
-	    bool Open(TListCnt cnt, TListCnt exp);
-		TListCnt Count() const;
-		void Close(TDeleteFunc freeFunc = NULL, Pointer context = NULL);
-		Iterator Index(TListIndex index) const { Iterator it = VectorIndex(_liste, index); return it; }
-		Iterator Begin() const;
-		Iterator Next(Iterator node) const;
-		Iterator Prev(Iterator node) const;
-		Iterator Last() const;
-		bool ForEach(TForEachFunc func, Pointer context = NULL) const;
-		Iterator Find(ConstPointer data, TSearchAndSortFunc findFunc) const;
-		Iterator FindUser(ConstPointer data, TSearchAndSortUserFunc findFunc, ConstPointer context) const;
-		Iterator FindSorted(ConstPointer data, TSearchAndSortFunc findFunc = NULL) const;
-		Iterator UpperBound(ConstPointer data, TSearchAndSortFunc findFunc) const;
-		Iterator LowerBound(ConstPointer data, TSearchAndSortFunc findFunc) const;
-		void Sort(TSearchAndSortFunc sortFunc = NULL, TSortMode mode = HeapSortMode) const;
-		void SortUser(TSearchAndSortUserFunc sortFunc, ConstPointer context, TSortMode mode = HeapSortMode) const;
-		Iterator Append(ConstPointer data) const;
-		Iterator Prepend(ConstPointer data) const;
-		Iterator InsertBefore(Iterator node, ConstPointer data) const;
-		Iterator InsertAfter(Iterator node, ConstPointer data) const;
-		void Remove(Iterator node, TDeleteFunc freeFunc = NULL, Pointer context = NULL) const;
-		Iterator InsertSorted(ConstPointer data, TSearchAndSortFunc findFunc = NULL) const;
-		bool RemoveSorted(ConstPointer data, TSearchAndSortFunc findFunc = NULL, TDeleteFunc freeFunc = NULL, Pointer context = NULL) const;
-		ConstPointer GetData(Iterator node) const;
-		void SetData(Iterator node, ConstPointer data) const;
-	  </code>
-	  </p>
+	  <p>UserLib contains several templated wrapper classes. Wrapper classes of a interface and implementation of data structures written in C. This list include <a href="../html/_data_vector_8h_source.html">CDataVector</a>, <a href="../html/_data_double_linked_list_8h_source.html">CDataDoubleLinkedList</a>, <a href="../html/_data_binary_tree_8h_source.html">CDataBinaryTree</a> and <a href="../html/_data_b_tree_8h_source.html">CDataBTree</a>. Each class defines its own iterator. And the set of methods forming the interface are very similar to each other. For example the interface of <a href="../html/_data_vector_8h_source.html">CDataVector</a> is as follows:</p>
+	  <table>
+		<tr><td><code>bool Open(TListCnt cnt, TListCnt exp);</code></td></tr>
+		<tr><td><code>TListCnt Count() const;</code></td></tr>
+		<tr><td><code>void Close(TDeleteFunc freeFunc = NULL, Pointer context = NULL);</code></td></tr>
+		<tr><td><code>Iterator Index(TListIndex index) const { Iterator it = VectorIndex(_liste, index); return it; }</code></td></tr>
+		<tr><td><code>Iterator Begin() const;</code></td></tr>
+		<tr><td><code>Iterator Next(Iterator node) const;</code></td></tr>
+		<tr><td><code>Iterator Prev(Iterator node) const;</code></td></tr>
+		<tr><td><code>Iterator Last() const;</code></td></tr>
+		<tr><td><code>bool ForEach(TForEachFunc func, Pointer context = NULL) const;</code></td></tr>
+		<tr><td><code>Iterator Find(ConstPointer data, TSearchAndSortFunc findFunc) const;</code></td></tr>
+		<tr><td><code>Iterator FindSorted(ConstPointer data, TSearchAndSortFunc findFunc = NULL) const;</code></td></tr>
+		<tr><td><code>Iterator UpperBound(ConstPointer data, TSearchAndSortFunc findFunc) const;</code></td></tr>
+		<tr><td><code>Iterator LowerBound(ConstPointer data, TSearchAndSortFunc findFunc) const;</code></td></tr>
+		<tr><td><code>void Sort(TSearchAndSortFunc sortFunc = NULL, TSortMode mode = HeapSortMode) const;</code></td></tr>
+		<tr><td><code>Iterator Append(ConstPointer data) const;</code></td></tr>
+		<tr><td><code>Iterator Prepend(ConstPointer data) const;</code></td></tr>
+		<tr><td><code>Iterator InsertBefore(Iterator node, ConstPointer data) const;</code></td></tr>
+		<tr><td><code>Iterator InsertAfter(Iterator node, ConstPointer data) const;</code></td></tr>
+		<tr><td><code>void Remove(Iterator node, TDeleteFunc freeFunc = NULL, Pointer context = NULL) const;</code></td></tr>
+		<tr><td><code>Iterator InsertSorted(ConstPointer data, TSearchAndSortFunc findFunc = NULL) const;</code></td></tr>
+		<tr><td><code>bool RemoveSorted(ConstPointer data, TSearchAndSortFunc findFunc = NULL, TDeleteFunc freeFunc = NULL, Pointer context = NULL) const;</code></td></tr>
+		<tr><td><code>ConstPointer GetData(Iterator node) const;</code></td></tr>
+		<tr><td><code>void SetData(Iterator node, ConstPointer data) const;</code></td></tr>
+	  </table>
+	  <p>And sample code looks like this:</p>
+<pre><code>
+void __stdcall XDeleteFunc( ConstPointer data, Pointer context )
+{
+	X* pInfo = CastAnyPtr(X, CastMutable(Pointer, data));
+
+	pInfo->release();
+}
+
+sword __stdcall XSearchAndSortFunc( ConstPointer pa, ConstPointer pb)
+{
+	X* ppa = CastAnyPtr(X, CastMutable(Pointer, pa));
+	X* ppb = CastAnyPtr(X, CastMutable(Pointer, pb));
+
+	return (ppa->GetName().Compare(ppb->GetName()));
+}
+
+int main(int argc, char**argv)
+{
+	CDataVectorT<X> dv(16, 16);
+	CDataVectorT<X>::Iterator it;
+	X toFind;
+	
+	dv.Append(new X());
+	...
+	it = dv.Find(&toFind, XSearchAndSortFunc);
+	...
+	dv.Close(XDeleteFunc);
+}
+</code></pre>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/okdevdo">okdevdo</a></p>
