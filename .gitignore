@@ -163,7 +163,6 @@ m4/
 docu/
 vs/
 _backup/
-.gitattributes
 .project
 ABOUT-NLS
 ChangeLog
