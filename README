@@ -22,9 +22,10 @@ ABOUT UserLib
 	standard data structures. The C++ Framework uses the generic feature, ie
 	templates, very sparingly. Modern C++ features are also not included.
 	
-	Basic C++ is used as wrapper around the C-Kernel, OS-specific functions 
-	and third-party-software. That way the library is easy to use. And it is 
-	complete, it contains everything to build an application.
+	Classic C++ is used as wrapper around the C-Kernel, OS-specific functions 
+	and third-party-software. That way the library is easy to use and there is 
+	full control of most implementation details. And it is complete, it contains 
+	everything to build an application.
 	
 	A list of third-party-software is included in INSTALL file. There is
 	also an information given, which source files are involved in each 
