@@ -21,11 +21,48 @@
       <header>
         <h1>Modern C++</h1>
         <p><a href="http://en.wikipedia.org/wiki/C%2B%2B">C++</a> is one of the programming languages most used. It is standardized by <a href="https://isocpp.org/">ISO</a> organisation.</p>
+		
+        <ul>
+          <li><a href="">Back</a></li>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="">Next</a></li>
+        </ul>
       </header>
       <section>
 	  <h2>Smart Pointers</h2>
 	  <p>In the standard library of C++11 you find the following <a href="http://en.wikipedia.org/wiki/Smart_pointer">smart pointers</a>: unique_ptr, shared_ptr and weak_ptr. unique_ptr is an advancement of old auto_ptr. auto_ptr has a copy semantic, while unique_ptr has a modern move semantic. shared_ptr and weak_ptr implement the counted reference pointer idiom.</p>
-	  <p></p>
+	  <p>UserLib contains class <a href="../html/_cpp_object_8h_source.html">CCppObject</a>, which is the base class of all classes allocated on the heap.</p>
+	  <h2>Containers</h2>
+	  <p>The <a href="http://en.wikipedia.org/wiki/Standard_Template_Library">standard template library</a> supports four categories: containers, algorithms, functors and iterators. Containers can be divided into two groups: sequential and associative containers. Sequence containers include vector, deque, and list. Associative containers include set, multiset, map, and multimap.</p>
+	  <p>UserLib contains several templated wrapper classes. Wrapper classes of a interface and implementation of data structures written in C. This list include <a href="../html/_data_vector_8h_source.html">CDataVector</a>, <a href="../html/_data_double_linked_list_8h_source.html">CDataDoubleLinkedList</a>, <a href="../html/_data_binary_tree_8h_source.html">CDataBinaryTree</a> and <a href="../html/_data_b_tree_8h_source.html">CDataBTree</a>. Each class defines its own iterator. And the set of methods forming the interface are very similar to each other. For example the interface of <a href="../html/_data_vector_8h_source.html">CDataVector</a> is as follows:
+	  <code>
+	    bool Open(TListCnt cnt, TListCnt exp);
+		TListCnt Count() const;
+		void Close(TDeleteFunc freeFunc = NULL, Pointer context = NULL);
+		Iterator Index(TListIndex index) const { Iterator it = VectorIndex(_liste, index); return it; }
+		Iterator Begin() const;
+		Iterator Next(Iterator node) const;
+		Iterator Prev(Iterator node) const;
+		Iterator Last() const;
+		bool ForEach(TForEachFunc func, Pointer context = NULL) const;
+		Iterator Find(ConstPointer data, TSearchAndSortFunc findFunc) const;
+		Iterator FindUser(ConstPointer data, TSearchAndSortUserFunc findFunc, ConstPointer context) const;
+		Iterator FindSorted(ConstPointer data, TSearchAndSortFunc findFunc = NULL) const;
+		Iterator UpperBound(ConstPointer data, TSearchAndSortFunc findFunc) const;
+		Iterator LowerBound(ConstPointer data, TSearchAndSortFunc findFunc) const;
+		void Sort(TSearchAndSortFunc sortFunc = NULL, TSortMode mode = HeapSortMode) const;
+		void SortUser(TSearchAndSortUserFunc sortFunc, ConstPointer context, TSortMode mode = HeapSortMode) const;
+		Iterator Append(ConstPointer data) const;
+		Iterator Prepend(ConstPointer data) const;
+		Iterator InsertBefore(Iterator node, ConstPointer data) const;
+		Iterator InsertAfter(Iterator node, ConstPointer data) const;
+		void Remove(Iterator node, TDeleteFunc freeFunc = NULL, Pointer context = NULL) const;
+		Iterator InsertSorted(ConstPointer data, TSearchAndSortFunc findFunc = NULL) const;
+		bool RemoveSorted(ConstPointer data, TSearchAndSortFunc findFunc = NULL, TDeleteFunc freeFunc = NULL, Pointer context = NULL) const;
+		ConstPointer GetData(Iterator node) const;
+		void SetData(Iterator node, ConstPointer data) const;
+	  </code>
+	  </p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/okdevdo">okdevdo</a></p>
