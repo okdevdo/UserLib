@@ -15,7 +15,7 @@ XChecksum_CPPFLAGS += -DNDEBUG
 XChecksum_CXXFLAGS += -O
 endif
 if COND_MINGW
-XChecksum_LDADD += -lodbc32 -lodbccp32 -lws2_32 -lwsock32 -luser32 -ladvapi32 -lmsvcrt
+XChecksum_LDADD += -lws2_32 -lwsock32 -luser32 -ladvapi32 -lmsvcrt
 XChecksum_CXXFLAGS += -mthreads
 XChecksum_LDFLAGS += -mthreads
 XChecksum_CPPFLAGS += -D_MINGW_CONSOLE

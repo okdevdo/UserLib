@@ -39,7 +39,7 @@ endif
 if COND_MINGW
 libConSources_la_CXXFLAGS += -mthreads
 libConSources_la_LDFLAGS += -mthreads
-libConSources_la_LIBADD += -lodbc32 -lodbccp32 -lws2_32 -lwsock32 -luser32 -ladvapi32 -lmsvcrt
+libConSources_la_LIBADD += -luser32 -ladvapi32 -lmsvcrt
 libConSources_la_CPPFLAGS += -D_MINGW_CONSOLE
 endif
 if COND_MINGW64

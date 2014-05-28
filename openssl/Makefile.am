@@ -24,7 +24,7 @@ endif
 if COND_MINGW
 libOpenSSL_la_CXXFLAGS += -mthreads
 libOpenSSL_la_LDFLAGS += -mthreads
-libOpenSSL_la_LIBADD += -lodbc32 -lodbccp32 -lws2_32 -lwsock32 -luser32 -ladvapi32 -lmsvcrt
+libOpenSSL_la_LIBADD += -lws2_32 -lwsock32 -luser32 -ladvapi32 -lmsvcrt
 endif
 if COND_UNICODE
 libOpenSSL_la_CPPFLAGS += -DUNICODE

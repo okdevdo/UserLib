@@ -15,7 +15,7 @@ XGUnzip_CPPFLAGS += -DNDEBUG
 XGUnzip_CXXFLAGS += -O
 endif
 if COND_MINGW
-XGUnzip_LDADD += -lodbc32 -lodbccp32 -lws2_32 -lwsock32 -luser32 -ladvapi32 -lmsvcrt
+XGUnzip_LDADD += -luser32 -ladvapi32 -lmsvcrt
 XGUnzip_CXXFLAGS += -mthreads
 XGUnzip_LDFLAGS += -mthreads
 XGUnzip_CPPFLAGS += -D_MINGW_CONSOLE

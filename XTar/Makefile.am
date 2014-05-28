@@ -15,7 +15,7 @@ XTar_CPPFLAGS += -DNDEBUG
 XTar_CXXFLAGS += -O
 endif
 if COND_MINGW
-XTar_LDADD += -lodbc32 -lodbccp32 -lws2_32 -lwsock32 -luser32 -ladvapi32 -lmsvcrt
+XTar_LDADD += -luser32 -ladvapi32 -lmsvcrt
 XTar_CXXFLAGS += -mthreads
 XTar_LDFLAGS += -mthreads
 XTar_CPPFLAGS += -D_MINGW_CONSOLE

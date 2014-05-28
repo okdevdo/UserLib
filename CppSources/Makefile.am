@@ -18,10 +18,10 @@ BZip2Filter.h CRC32Value.h Filter.h GZipFilter.h MD5Buffer.h TarArchive.h ZLibFi
 LZMALibFilter.h LZMAFilter.h XZFilter.h
 
 libCppSources_la_LIBADD = ../CSources/libCSources.la ../CryptSources/libCryptSources.la -lbz2 -llzma -lz -lsqlite3 -lexpat
-libCppSources_la_LDFLAGS = -no-undefined -version-info 1 -mthreads -L/usr/local/lib
+libCppSources_la_LDFLAGS = -no-undefined -version-info 1 -L/usr/local/lib
 libCppSources_la_CFLAGS = 
 libCppSources_la_CPPFLAGS = -DXML_LARGE_SIZE -DHAVE_EXPAT_CONFIG_H -I$(top_srcdir)/CSources -I$(top_srcdir)/CryptSources -I/usr/local/include
-libCppSources_la_CXXFLAGS = -fexceptions -Wall -mthreads
+libCppSources_la_CXXFLAGS = -fexceptions -Wall
 if DEBUG
 libCppSources_la_CPPFLAGS += -D_DEBUG
 libCppSources_la_CXXFLAGS += -g
@@ -30,6 +30,8 @@ libCppSources_la_CPPFLAGS += -DNDEBUG
 libCppSources_la_CXXFLAGS += -O
 endif
 if COND_MINGW
+libCppSources_la_CXXFLAGS += -mthreads
+libCppSources_la_LDFLAGS += -mthreads
 libCppSources_la_LIBADD += -lmsvcr100 -lmsvcrt
 endif
 if COND_UNICODE

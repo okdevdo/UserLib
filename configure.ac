@@ -32,10 +32,10 @@ case $host_os in
 	*) ;;
 esac
 if test x$want_mingw = xyes; then
-   echo -e "#include \"stdio.h\"\nvoid main(void) { \n#ifdef __MINGW_MAJOR_VERSION\nprintf(\"%d\", __MINGW_MAJOR_VERSION);\n#else\nprintf(\"%d\", __MINGW32_MAJOR_VERSION);\n#endif\n }" > testmver.c
-   gcc -o testmver.exe testmver.c
-   MINGW_VERSION=`testmver.exe`
-   rm testmver.exe testmver.c
+   echo -e "#include \"stdio.h\"\nvoid main(void) { \n#ifdef __MINGW_MAJOR_VERSION\nprintf(\"%d\", __MINGW_MAJOR_VERSION);\n#else\nprintf(\"%d\", __MINGW32_MAJOR_VERSION);\n#endif\n }" > conftest.c
+   gcc -o conftest.exe conftest.c
+   MINGW_VERSION=`conftest.exe`
+   rm conftest.exe conftest.c
 fi
 AM_CONDITIONAL([COND_MINGW_V4], [test x$MINGW_VERSION = x4])
 AM_CONDITIONAL([COND_MINGW], [test x$want_mingw = xyes])
@@ -54,6 +54,7 @@ AC_PROG_MAKE_SET
 
 # Checks for libraries.
 LT_INIT
+AC_CHECK_LIB(pthread, [pthread_mutex_init])
 
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h limits.h stddef.h stdlib.h string.h unistd.h wchar.h malloc.h netdb.h sys/socket.h utime.h])

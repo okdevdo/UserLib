@@ -15,7 +15,7 @@ XLUnzip_CPPFLAGS += -DNDEBUG
 XLUnzip_CXXFLAGS += -O
 endif
 if COND_MINGW
-XLUnzip_LDADD += -lodbc32 -lodbccp32 -lws2_32 -lwsock32 -luser32 -ladvapi32 -lmsvcrt
+XLUnzip_LDADD += -luser32 -ladvapi32 -lmsvcrt
 XLUnzip_CXXFLAGS += -mthreads
 XLUnzip_LDFLAGS += -mthreads
 XLUnzip_CPPFLAGS += -D_MINGW_CONSOLE
