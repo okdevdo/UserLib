@@ -14,8 +14,8 @@ libCSources_la_CPPFLAGS += -DNDEBUG
 libCSources_la_CXXFLAGS += -O
 endif
 if COND_MINGW
-libCSources_la_CXXFLAGS += -mthreads
 libCSources_la_LDFLAGS += -mthreads
+libCSources_la_CXXFLAGS += -mthreads
 libCSources_la_CPPFLAGS += -D_MINGW_CONSOLE
 endif
 if COND_MINGW64

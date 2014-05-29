@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.68)
-AC_INIT(XTest, 1.0, okinfo@arcor.de)
+AC_INIT(UserLib, 1.0.3, okdev10@arcor.de)
 AC_CONFIG_SRCDIR([CSources/PDEFS.H])
 AM_INIT_AUTOMAKE([1.12 no-define foreign -Wall -Werror subdir-objects])
 AC_CONFIG_HEADERS([config.h])

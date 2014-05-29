@@ -24,8 +24,8 @@ ConsoleLabelControl.h ConsoleListControl.h ConSources.h \
 ConsoleEditMenu.h ConsoleClipboard.h ConsoleUndoManager.h ConsoleLayout.h \
 ConsoleTableViewer.h ConsoleTabPageControl.h ConsoleTabControl.h
 
-libConSources_la_LIBADD = ../WinSources/libWinSources.la
 libConSources_la_LDFLAGS = -no-undefined -version-info 1
+libConSources_la_LIBADD = ../WinSources/libWinSources.la
 libConSources_la_CFLAGS = 
 libConSources_la_CPPFLAGS = -I$(top_srcdir)/CSources -I$(top_srcdir)/CppSources -I$(top_srcdir)/WinSources
 libConSources_la_CXXFLAGS = -fexceptions -Wall

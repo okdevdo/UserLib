@@ -15,8 +15,8 @@ libCryptSources_la_CPPFLAGS += -DNDEBUG
 libCryptSources_la_CXXFLAGS += -O
 endif
 if COND_MINGW
-libCryptSources_la_CXXFLAGS += -mthreads
 libCryptSources_la_LDFLAGS += -mthreads
+libCryptSources_la_CXXFLAGS += -mthreads
 endif
 if COND_UNICODE
 libCryptSources_la_CPPFLAGS += -DUNICODE
