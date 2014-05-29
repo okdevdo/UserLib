@@ -33,11 +33,11 @@ if COND_MINGW
 if COND_MINGW_V4
 libWinSources_la_SOURCES += MySQLDB.cpp MySQLDBImpl.cpp PostgresDB.cpp PostgresDBImpl.cpp
 libWinSources_la_CPPFLAGS += -I/usr/local/include -I/usr/local/include/mysql -I/usr/local/include/postgres
-libWinSources_la_LIBADD += -L/usr/local/lib -lpq -lmysql -lodbc32 -lodbccp32 
+libWinSources_la_LIBADD += -L/usr/local/lib -lpq -lmysql
 endif
 libWinSources_la_CXXFLAGS += -mthreads
 libWinSources_la_LDFLAGS += -mthreads
-libWinSources_la_LIBADD += -lws2_32 -lwsock32 -luser32 -ladvapi32 -lmsvcrt
+libWinSources_la_LIBADD += -lodbc32 -lodbccp32 -lws2_32 -lwsock32 -luser32 -ladvapi32 -lmsvcrt
 libWinSources_la_SOURCES += SecurityContext.cpp EventLogger.cpp ODBC.cpp ODBCImpl.cpp AsyncFile.cpp \
 AsyncIOBuffer.cpp AsyncIOData.cpp AsyncIOManager.cpp AsyncTCPClient.cpp Event.cpp
 include_HEADERS += SecurityContext.h EventLogger.h ODBC.h
