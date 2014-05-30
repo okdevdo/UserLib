@@ -162,7 +162,7 @@ protected:
 
 	static CApplication* m_instance;
 
-	typedef CDataVectorT<COption> COptionVector;
+	typedef CDataVectorT<COption, CStringByNameIgnoreCaseLessFunctor<COption>> COptionVector;
 
 	CStringBuffer m_defaultAppName;
 	COptionVector m_definedOptions;

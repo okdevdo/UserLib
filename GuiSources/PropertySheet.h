@@ -61,6 +61,7 @@ protected:
 };
 
 typedef CDataVectorT<CPropertySheetAbstractNode> CPropertySheetNodeVector;
+typedef CDataVectorT<CPropertySheetAbstractNode, CCppObjectLessFunctor<CPropertySheetAbstractNode>, CCppObjectNullFunctor<CPropertySheetAbstractNode>> CPropertySheetSelectedNodeVector;
 
 class CPropertySheetNode: public CPropertySheetAbstractNode
 {
@@ -214,7 +215,7 @@ private:
 	void _EnsureVisible();
 
 	CPropertySheetNodeVector m_nodes;
-	CPropertySheetNodeVector m_selNodes;
+	CPropertySheetSelectedNodeVector m_selNodes;
 	CPropertySheetNode* m_currentNode;
 	LONG m_minValueWidth;
 	bool m_multiSelect;

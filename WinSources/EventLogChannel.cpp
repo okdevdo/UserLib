@@ -565,7 +565,7 @@ static void __stdcall CEventLogChannelsDeleteFunc(ConstPointer data, Pointer con
 }
 
 CEventLogChannels::CEventLogChannels(DECL_FILE_LINE0) :
-	CDataVectorT<CEventLogChannel>(ARGS_FILE_LINE 16, 256, CEventLogChannelsDeleteFunc, NULL, CEventLogChannelsSearchAndSortFunc)
+	super(ARGS_FILE_LINE 16, 256)
 {
 }
 
@@ -644,19 +644,6 @@ BOOLEAN CEventLogChannels::Load()
 	return TRUE;
 }
 
-BOOLEAN CEventLogChannels::ForEach(TForEachFunc func, Pointer context) const
-{
-	Iterator it = Begin();
-
-	while (it)
-	{
-		if (!func(*it, context))
-			return FALSE;
-		++it;
-	}
-	return TRUE;
-}
-
 Ptr(CEventLogChannel) CEventLogChannels::FindSorted(ConstRef(CStringBuffer) name)
 {
 	CEventLogChannel toFind;
@@ -665,15 +652,7 @@ Ptr(CEventLogChannel) CEventLogChannels::FindSorted(ConstRef(CStringBuffer) name
 
 	Iterator fIt = super::FindSorted(&toFind);
 
-	if (fIt)
+	if (super::MatchSorted(fIt, &toFind))
 		return *fIt;
-	//Iterator it = Begin();
-
-	//while (it)
-	//{
-	//	if ((*it)->get_name().Compare(name) == 0)
-	//		return *it;
-	//	++it;
-	//}
 	return NULL;
 }

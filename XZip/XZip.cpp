@@ -53,11 +53,11 @@ public:
 		m_sViewFiles(),
 		m_bRecurseFolders(false),
 		m_bExclude(false),
-		m_sExclude(__FILE__LINE__ 16, 16, VectorEmptyDeleteFunc),
+		m_sExclude(__FILE__LINE__ 16, 16),
 		m_bZipArchive(false),
 		m_sZipArchive(),
 		m_bZipFileSpec(false),
-		m_sZipFileSpec(__FILE__LINE__ 16, 16, VectorEmptyDeleteFunc),
+		m_sZipFileSpec(__FILE__LINE__ 16, 16),
 		m_bInputDir(false),
 		m_sInputDir(),
 		m_bOutputFile(false),
@@ -306,11 +306,11 @@ protected:
 	CStringLiteral m_sViewFiles;
 	WBool m_bRecurseFolders;
 	WBool m_bExclude;
-	CDataVectorT<mbchar> m_sExclude;
+	TMBCharList m_sExclude;
 	WBool m_bZipArchive;
 	CStringLiteral m_sZipArchive;
 	WBool m_bZipFileSpec;
-	CDataVectorT<mbchar> m_sZipFileSpec;
+	TMBCharList m_sZipFileSpec;
 	WBool m_bInputDir;
 	CStringLiteral m_sInputDir;
 	WBool m_bOutputFile;

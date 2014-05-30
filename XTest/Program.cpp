@@ -448,6 +448,15 @@ sword __stdcall TestSortFunc(ConstPointer pa, ConstPointer pb)
 	return 0;
 }
 
+sword __stdcall TestSortUserFunc(ConstPointer pa, ConstPointer pb, Pointer context)
+{
+	if (pa < pb)
+		return -1;
+	if (pa > pb)
+		return 1;
+	return 0;
+}
+
 sword __stdcall TestSortFuncUInt(ConstPointer pa, ConstPointer pb)
 {
 	unsigned int* ppa = CastAnyPtr(unsigned int, CastMutable(Pointer, pa));
@@ -525,7 +534,7 @@ public:
 		m_TestDirectoryIterator(false),
 		m_TestLinkedByteBuffer(false),
 		m_ScanDirectory(false),
-		m_sScanDirectory(__FILE__LINE__ 16, 16, VectorEmptyDeleteFunc),
+		m_sScanDirectory(__FILE__LINE__ 16, 16),
 		m_ScanDirectoryPattern(false),
 		m_sScanDirectoryPattern(),
 		m_TestDBase(false),
@@ -540,7 +549,7 @@ public:
 		m_TestSQL(false),
 #ifdef OK_SYS_WINDOWS
 		m_TestHttp1(false),
-		m_sTestHttp1(__FILE__LINE__ 16, 16, VectorEmptyDeleteFunc),
+		m_sTestHttp1(__FILE__LINE__ 16, 16),
 		m_TestHttp2(false),
 		m_sTestHttp2(),
 #endif
@@ -1023,7 +1032,7 @@ private:
 	WBool m_TestDirectoryIterator;
 	WBool m_TestLinkedByteBuffer;
 	WBool m_ScanDirectory;
-	CDataVectorT<mbchar> m_sScanDirectory;
+	TMBCharList m_sScanDirectory;
 	WBool m_ScanDirectoryPattern;
 	CStringLiteral m_sScanDirectoryPattern;
 	WBool m_TestDBase;
@@ -1038,7 +1047,7 @@ private:
 	WBool m_TestSQL;
 #ifdef OK_SYS_WINDOWS
 	WBool m_TestHttp1;
-	CDataVectorT<mbchar> m_sTestHttp1;
+	TMBCharList m_sTestHttp1;
 	WBool m_TestHttp2;
 	CStringLiteral m_sTestHttp2;
 #endif

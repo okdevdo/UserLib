@@ -216,70 +216,135 @@ v_ndelete( Array table, sword ix, word cnt, WPointer max )
 	return ix;
 	}
 
-sdword __stdcall 
-_lv_bsearch( Array table, ConstPointer ptr, dword max, TSearchAndSortFunc func, sword _mode )
-	{
+sdword __stdcall
+_lv_bsearch(Array table, ConstPointer ptr, dword max, TSearchAndSortFunc func, sword _mode)
+{
 	sdword ux = 1;
 	sdword ox = max;
 	sdword ix = -1;
 	sword erg;
 	Pointer pt;
-	if ( PtrCheck(table) || PtrCheck(func) )
+	if (PtrCheck(table) || PtrCheck(func))
 		return -1;
-	while ( ox >= ux )
-		{
-		ix = ( ( ox + ux ) / 2 ) - 1;
-		erg = func( DerefPtr(Pointer,_fl_ptradd( table, ix * szPointer )), CastMutable(Pointer, ptr) );
-		if ( erg < 0 )
+	while (ox >= ux)
+	{
+		ix = ((ox + ux) / 2) - 1;
+		erg = func(DerefPtr(Pointer, _fl_ptradd(table, ix * szPointer)), CastMutable(Pointer, ptr));
+		if (erg < 0)
 			ux = ix + 2;
-		else if ( erg > 0 )
+		else if (erg > 0)
 			ox = ix;
-		else if ( _mode == UTLPTR_INSERTMODE )
-			{
-			max--;
-			if ( Cast(dword,ix) < max )
-				{
-				pt = _fl_ptradd( table, (ix + 1) * szPointer );
-				for ( ; Cast(dword,ix) < max; ix++, pt = _fl_ptradd( pt, szPointer ) )
-					if ( ( erg = func( DerefPtr(Pointer,pt), CastMutable(Pointer, ptr) ) ) != 0 )
-						return ix;
-				}
-			return max;
-		} else
-			{
-			if ( ix > 0 )
-				{
-				pt = _fl_ptradd( table, (ix - 1) * szPointer );
-				for ( ; ix > 0; ix--, pt = _fl_ptradd( pt, -Cast(sdword,szPointer) ) )
-					if ( ( erg = func( DerefPtr(Pointer,pt), CastMutable(Pointer, ptr) ) ) != 0 )
-						return ix;
-				}
-			return 0;
-			}						   /* endif */
-		}							   /* endwhile */
-	if ( ix >= 0 )
+		else if (_mode == UTLPTR_INSERTMODE)
 		{
-		switch ( _mode )
+			max--;
+			if (Cast(dword, ix) < max)
 			{
+				pt = _fl_ptradd(table, (ix + 1) * szPointer);
+				for (; Cast(dword, ix) < max; ix++, pt = _fl_ptradd(pt, szPointer))
+					if ((erg = func(DerefPtr(Pointer, pt), CastMutable(Pointer, ptr))) != 0)
+						return ix;
+			}
+			return max;
+		}
+		else
+		{
+			if (ix > 0)
+			{
+				pt = _fl_ptradd(table, (ix - 1) * szPointer);
+				for (; ix > 0; ix--, pt = _fl_ptradd(pt, -Cast(sdword, szPointer)))
+					if ((erg = func(DerefPtr(Pointer, pt), CastMutable(Pointer, ptr))) != 0)
+						return ix;
+			}
+			return 0;
+		}						   /* endif */
+	}							   /* endwhile */
+	if (ix >= 0)
+	{
+		switch (_mode)
+		{
 		case UTLPTR_INSERTMODE:
-			if ( func( DerefPtr(Pointer,_fl_ptradd( table, ix * szPointer )), CastMutable(Pointer, ptr) ) > 0 )
+			if (func(DerefPtr(Pointer, _fl_ptradd(table, ix * szPointer)), CastMutable(Pointer, ptr)) > 0)
 				ix--;
 			break;
 		case UTLPTR_SEARCHMODE:
-			if ( func( DerefPtr(Pointer,_fl_ptradd( table, ix * szPointer )), CastMutable(Pointer, ptr) ) >= 0 )
+			if (func(DerefPtr(Pointer, _fl_ptradd(table, ix * szPointer)), CastMutable(Pointer, ptr)) >= 0)
 				break;
-			if ( Cast(dword,ix) < ( max - 1 ) )
+			if (Cast(dword, ix) < (max - 1))
 				ix++;
 			break;
 		default:
 			ix = -1;
 			break;
-			}							   /* endswitch */
-		}
+		}							   /* endswitch */
+	}
 	return ix;
-	}								   /* end of v_bsearch */
+}								   /* end of v_bsearch */
 
-sword __stdcall 
+sdword __stdcall
+_lv_ubsearch(Array table, ConstPointer ptr, dword max, TSearchAndSortUserFunc func, Pointer context, sword _mode)
+{
+	sdword ux = 1;
+	sdword ox = max;
+	sdword ix = -1;
+	sword erg;
+	Pointer pt;
+	if (PtrCheck(table) || PtrCheck(func))
+		return -1;
+	while (ox >= ux)
+	{
+		ix = ((ox + ux) / 2) - 1;
+		erg = func(DerefPtr(Pointer, _fl_ptradd(table, ix * szPointer)), CastMutable(Pointer, ptr), context);
+		if (erg < 0)
+			ux = ix + 2;
+		else if (erg > 0)
+			ox = ix;
+		else if (_mode == UTLPTR_INSERTMODE)
+		{
+			max--;
+			if (Cast(dword, ix) < max)
+			{
+				pt = _fl_ptradd(table, (ix + 1) * szPointer);
+				for (; Cast(dword, ix) < max; ix++, pt = _fl_ptradd(pt, szPointer))
+					if ((erg = func(DerefPtr(Pointer, pt), CastMutable(Pointer, ptr), context)) != 0)
+						return ix;
+			}
+			return max;
+		}
+		else
+		{
+			if (ix > 0)
+			{
+				pt = _fl_ptradd(table, (ix - 1) * szPointer);
+				for (; ix > 0; ix--, pt = _fl_ptradd(pt, -Cast(sdword, szPointer)))
+					if ((erg = func(DerefPtr(Pointer, pt), CastMutable(Pointer, ptr), context)) != 0)
+						return ix;
+			}
+			return 0;
+		}						   /* endif */
+	}							   /* endwhile */
+	if (ix >= 0)
+	{
+		switch (_mode)
+		{
+		case UTLPTR_INSERTMODE:
+			if (func(DerefPtr(Pointer, _fl_ptradd(table, ix * szPointer)), CastMutable(Pointer, ptr), context) > 0)
+				ix--;
+			break;
+		case UTLPTR_SEARCHMODE:
+			if (func(DerefPtr(Pointer, _fl_ptradd(table, ix * szPointer)), CastMutable(Pointer, ptr), context) >= 0)
+				break;
+			if (Cast(dword, ix) < (max - 1))
+				ix++;
+			break;
+		default:
+			ix = -1;
+			break;
+		}							   /* endswitch */
+	}
+	return ix;
+}								   /* end of v_bsearch */
+
+sword __stdcall
 v_bsearch( Array table, ConstPointer ptr, word max, TSearchAndSortFunc func, sword _mode )
 	{
 	sword ux = 1;
@@ -365,7 +430,7 @@ _lv_lsearch( Array table, ConstPointer ptr, dword max, TSearchAndSortFunc func, 
 	}								   /* end of v_lsearch */
 
 sdword __stdcall 
-_lv_ulsearch( Array table, ConstPointer ptr, dword max, TSearchAndSortUserFunc func, ConstPointer user, sword _mode )
+_lv_ulsearch( Array table, ConstPointer ptr, dword max, TSearchAndSortUserFunc func, Pointer user, sword _mode )
 	{
 	sdword ix = max;
 	Array pt = table;
@@ -486,7 +551,7 @@ v_heapsort( Array _heap, word cnt, TSearchAndSortFunc _cmp )
 	}
 
 void __stdcall 
-v_uheapsort( Array _heap, word cnt, TSearchAndSortUserFunc _cmp, ConstPointer user )
+v_uheapsort( Array _heap, word cnt, TSearchAndSortUserFunc _cmp, Pointer user )
 	{
 	word min;
 	word ix;
@@ -604,7 +669,7 @@ _lv_heapsort( Array _heap, dword cnt, TSearchAndSortFunc _cmp )
 	}
 
 void __stdcall 
-_lv_uheapsort( Array _heap, dword cnt, TSearchAndSortUserFunc _cmp, ConstPointer user )
+_lv_uheapsort( Array _heap, dword cnt, TSearchAndSortUserFunc _cmp, Pointer user )
 	{
 	dword min;
 	dword ix;
@@ -732,7 +797,7 @@ v_quicksort( Array _heap, word cnt, TSearchAndSortFunc _cmp )
 }
 
 static void __stdcall
-_v_uquicksort(Array _heap, sword l, sword r, ConstPointer user, TSearchAndSortUserFunc _cmp)
+_v_uquicksort(Array _heap, sword l, sword r, Pointer user, TSearchAndSortUserFunc _cmp)
 {
 	Array tmp = CastAny(Array, _l_ptradd(_heap, r * szPointer));
 	Array p1;
@@ -795,7 +860,7 @@ _v_uquicksort(Array _heap, sword l, sword r, ConstPointer user, TSearchAndSortUs
 }
 
 void __stdcall 
-v_uquicksort( Array _heap, word cnt, TSearchAndSortUserFunc _cmp, ConstPointer user )
+v_uquicksort( Array _heap, word cnt, TSearchAndSortUserFunc _cmp, Pointer user )
 {
 	_v_uquicksort(_heap, 0, cnt - 1, user, _cmp);
 }
@@ -870,7 +935,7 @@ _lv_quicksort( Array _heap, dword cnt, TSearchAndSortFunc _cmp )
 }
 
 static void __stdcall
-__lv_uquicksort(Array _heap, sdword l, sdword r, ConstPointer user, TSearchAndSortUserFunc _cmp)
+__lv_uquicksort(Array _heap, sdword l, sdword r, Pointer user, TSearchAndSortUserFunc _cmp)
 {
 	Array tmp = CastAny(Array, _l_ptradd(_heap, r * szPointer));
 	Array p1;
@@ -933,7 +998,7 @@ __lv_uquicksort(Array _heap, sdword l, sdword r, ConstPointer user, TSearchAndSo
 }
 
 void __stdcall 
-_lv_uquicksort( Array _heap, dword cnt, TSearchAndSortUserFunc _cmp, ConstPointer user )
+_lv_uquicksort( Array _heap, dword cnt, TSearchAndSortUserFunc _cmp, Pointer user )
 {
 	__lv_uquicksort(_heap, 0, cnt - 1, user, _cmp);
 }
@@ -1198,7 +1263,7 @@ _ls_bsearch( Pointer table, dword size, ConstPointer ptr, dword max, TSearchAndS
 	}								   /* end of s_bsearch */
 
 sdword __stdcall 
-_ls_ubsearch( Pointer table, dword size, ConstPointer ptr, dword max, TSearchAndSortUserFunc func, ConstPointer context, sword _mode )
+_ls_ubsearch( Pointer table, dword size, ConstPointer ptr, dword max, TSearchAndSortUserFunc func, Pointer context, sword _mode )
 	{
 	sdword ux = 1;
 	sdword ox = max;
@@ -1315,7 +1380,7 @@ s_bsearch( Pointer table, dword size, ConstPointer ptr, word max, TSearchAndSort
 	}								   /* end of s_bsearch */
 
 sword __stdcall 
-s_ubsearch( Pointer table, dword size, ConstPointer ptr, word max, TSearchAndSortUserFunc func, ConstPointer context, sword _mode )
+s_ubsearch( Pointer table, dword size, ConstPointer ptr, word max, TSearchAndSortUserFunc func, Pointer context, sword _mode )
 	{
 	sword ux = 1;
 	sword ox = max;
@@ -1400,7 +1465,7 @@ _ls_lsearch( Pointer table, dword size, ConstPointer ptr, dword max, TSearchAndS
 	}								   /* end of v_lsearch */
 
 sdword __stdcall 
-_ls_ulsearch( Pointer table, dword size, ConstPointer ptr, dword max, TSearchAndSortUserFunc func, ConstPointer user, sword _mode )
+_ls_ulsearch( Pointer table, dword size, ConstPointer ptr, dword max, TSearchAndSortUserFunc func, Pointer user, sword _mode )
 	{
 	sdword ix = max;
 	Pointer pt = table;
@@ -1521,7 +1586,7 @@ s_heapsort( Pointer _heap, dword _size, word cnt, TSearchAndSortFunc _cmp )
 	}
 
 void __stdcall
-s_uheapsort( Pointer _heap, dword _size, word cnt, TSearchAndSortUserFunc _cmp, ConstPointer user )
+s_uheapsort( Pointer _heap, dword _size, word cnt, TSearchAndSortUserFunc _cmp, Pointer user )
 	{
 	word min;
 	word ix;
@@ -1639,7 +1704,7 @@ _ls_heapsort( Pointer _heap, dword _size, dword cnt, TSearchAndSortFunc _cmp )
 	}
 
 void __stdcall 
-_ls_uheapsort( Pointer _heap, dword _size, dword cnt, TSearchAndSortUserFunc _cmp, ConstPointer user )
+_ls_uheapsort( Pointer _heap, dword _size, dword cnt, TSearchAndSortUserFunc _cmp, Pointer user )
 	{
 	dword min;
 	dword ix;
@@ -1767,7 +1832,7 @@ _ls_quicksort( Pointer _heap, dword datasize, dword cnt, TSearchAndSortFunc _cmp
 }
 
 static void __stdcall
-__ls_uquicksort(Pointer _heap, dword datasize, sdword l, sdword r, TSearchAndSortUserFunc _cmp, ConstPointer user)
+__ls_uquicksort(Pointer _heap, dword datasize, sdword l, sdword r, TSearchAndSortUserFunc _cmp, Pointer user)
 {
 	Pointer tmp = _l_ptradd(_heap, r * datasize);
 	Pointer p1;
@@ -1830,7 +1895,7 @@ __ls_uquicksort(Pointer _heap, dword datasize, sdword l, sdword r, TSearchAndSor
 }
 
 void __stdcall 
-_ls_uquicksort( Pointer _heap, dword datasize, dword cnt, TSearchAndSortUserFunc _cmp, ConstPointer user )
+_ls_uquicksort( Pointer _heap, dword datasize, dword cnt, TSearchAndSortUserFunc _cmp, Pointer user )
 {
 	__ls_uquicksort(_heap, datasize, 0, cnt - 1, _cmp, user);
 }

@@ -22,9 +22,17 @@
 
 #include "OpenSSL.h"
 
+class COpenSSLClass;
+class COpenSSLClassFunctor
+{
+public:
+	bool operator()(ConstPtr(COpenSSLClass) pA, ConstPtr(COpenSSLClass) pB) const;
+};
+
 class OPENSSL_API COpenSSLClass : public CCppObject
 {
 public:
+	typedef CDataVectorT<COpenSSLClass, COpenSSLClassFunctor> COpenSSLClasses;
 	COpenSSLClass(ConstPointer raw = NULL);
 	virtual ~COpenSSLClass();
 
@@ -40,6 +48,11 @@ protected:
 	Pointer _raw;
 
 private:
-	static CDataVectorT<COpenSSLClass> _objs;
+	static COpenSSLClasses _objs;
 };
+
+__inline bool COpenSSLClassFunctor::operator()(ConstPtr(COpenSSLClass) pA, ConstPtr(COpenSSLClass) pB) const
+{
+	return pA->get_raw() < pB->get_raw();
+}
 

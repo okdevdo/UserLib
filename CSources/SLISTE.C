@@ -1100,7 +1100,7 @@ SVectorFind(Pointer liste, ConstPointer data, TSearchAndSortFunc findFunc)
 }
 
 LSearchResultType __stdcall 
-SVectorFindUser(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, ConstPointer context)
+SVectorFindUser(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, Pointer context)
 {
 	_pSVectorHead head = CastAny(_pSVectorHead,liste);
 	Pointer dataPointer = head->data;
@@ -1192,7 +1192,7 @@ SVectorSort(Pointer liste, TSearchAndSortFunc sortFunc, word mode)
 }
 
 void __stdcall 
-SVectorSortUser(Pointer liste, TSearchAndSortUserFunc sortFunc, ConstPointer context, word mode)
+SVectorSortUser(Pointer liste, TSearchAndSortUserFunc sortFunc, Pointer context, word mode)
 {
 	_pSVectorHead head = CastAny(_pSVectorHead,liste);
 	Pointer dataPointer = head->data;

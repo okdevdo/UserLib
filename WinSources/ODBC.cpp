@@ -206,7 +206,7 @@ sdword CODBCStatement::NullTerminatedParameterString = SQL_NTS;
 #endif
 
 CODBCStatement::CODBCStatement(CODBCEnvironment* lpEnv, CODBCStatementImpl* lpStmtImpl) :
-_lpEnv(lpEnv), _lpImpl(lpStmtImpl), _columns(__FILE__LINE__ 16, 16, CODBCColumnsDeleteFunc)
+_lpEnv(lpEnv), _lpImpl(lpStmtImpl), _columns(__FILE__LINE__ 16, 16)
 {
 	if (_lpEnv)
 		_lpEnv->addRef();
@@ -236,9 +236,10 @@ CODBCColumn* CODBCStatement::get_ColumnInfo(word ix) const
 	return NULL;
 }
 
-CODBCColumn* CODBCStatement::get_ColumnInfo(LPCTSTR name) const
+CODBCColumn* CODBCStatement::get_ColumnInfo(LPCTSTR name)
 {
-	CODBCColumns::Iterator it = _columns.Find(CastAnyPtr(CODBCColumn, CastMutable(CPointer, name)), CODBCColumnsSearchAndSortFunc);
+	CODBCColumn cmp(name);
+	CODBCColumns::Iterator it = _columns.Find<CStringByNameLessFunctor<CODBCColumn>>(&cmp);
 
 	if (it)
 		return *it;

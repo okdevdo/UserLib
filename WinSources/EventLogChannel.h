@@ -39,6 +39,7 @@ public:
 	BOOLEAN Load(CConstPointer pName);
 	BOOLEAN LoadEvents(Ptr(CEventLogProviders) pProviders);
 
+	__inline ConstRef(CStringBuffer) get_Name() const { return _name; }
 	__inline ConstRef(CStringBuffer) get_name() const { return _name; }
 	__inline BOOLEAN get_enabled() const { return _enabled; }
 	__inline EVT_CHANNEL_ISOLATION_TYPE get_isolation() const { return _isolation; }
@@ -61,7 +62,7 @@ public:
 	__inline EVT_CHANNEL_SID_TYPE get_sidType() const { return _sidType; }
 	__inline ConstRef(CDataVectorT<CStringBuffer>) get_publisherList() const { return _publisherList; }
 	__inline UINT32 get_fileMax() const { return _fileMax; }
-	__inline ConstRef(CEventLogEvents) get_events() const { return _events; }
+	__inline Ref(CEventLogEvents) get_events() { return _events; }
 
 	__inline void set_name(ConstRef(CStringBuffer) name) { _name = name; }
 	void set_enabled(BOOLEAN b); // You cannot set this property for the Application, System, and Security channels.
@@ -199,16 +200,15 @@ private:
 
 };
 
-class WINSOURCES_API CEventLogChannels : public CDataVectorT<CEventLogChannel>
+class WINSOURCES_API CEventLogChannels : public CDataVectorT<CEventLogChannel, CStringByNameLessFunctor<CEventLogChannel>>
 {
-	typedef CDataVectorT<CEventLogChannel> super;
+	typedef CDataVectorT<CEventLogChannel, CStringByNameLessFunctor<CEventLogChannel>> super;
 
 public:
 	CEventLogChannels(DECL_FILE_LINE0);
 	virtual ~CEventLogChannels();
 
 	BOOLEAN Load();
-	BOOLEAN ForEach(TForEachFunc func, Pointer context) const;
 	Ptr(CEventLogChannel) FindSorted(ConstRef(CStringBuffer) name);
 };
 

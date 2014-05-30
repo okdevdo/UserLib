@@ -62,8 +62,19 @@ private:
 	bool _testVersion;
 };
 
-class CPackageInstallInfoVector: public CDataVectorT<CPackageInstallInfo>
+class CPackageInstallInfoLessFunctor
 {
+public:
+	bool operator()(ConstPtr(CPackageInstallInfo) r1, ConstPtr(CPackageInstallInfo) r2) const
+	{
+		return r1->GetVendorVersion() < r2->GetVendorVersion();
+	}
+};
+
+class CPackageInstallInfoVector : public CDataVectorT<CPackageInstallInfo, CPackageInstallInfoLessFunctor>
+{
+	typedef CDataVectorT<CPackageInstallInfo, CPackageInstallInfoLessFunctor> super;
+
 public:
 	CPackageInstallInfoVector(DECL_FILE_LINE TListCnt cnt, TListCnt exp);
 	~CPackageInstallInfoVector();
@@ -77,10 +88,13 @@ void __stdcall PackageInstallInfoDeleteFunc( ConstPointer data, Pointer context 
 class CPackageInfo: public CCppObject
 {
 public:
+	typedef CDataVectorT<CPackageInfo, CStringByNameLessFunctor<CPackageInfo>, CCppObjectNullFunctor<CPackageInfo>> CRequiredByList;
+
 	CPackageInfo();
 	CPackageInfo(ConstRef(CStringBuffer) packageName);
 	virtual ~CPackageInfo();
 
+	__inline ConstRef(CStringBuffer) get_Name() const { return _packageName; }
 	__inline ConstRef(CStringBuffer) GetPackageName() const { return _packageName; }
 	__inline void SetPackageName(ConstRef(CStringBuffer) name) { _packageName = name; }
 
@@ -139,7 +153,7 @@ public:
 	__inline Ptr(CInstallPackageInfo) GetInstallInfo() { return _installInfo; }
 	__inline void SetInstallInfo(Ptr(CInstallPackageInfo) p) { _installInfo = p; }
 
-	Ref(CDataVectorT<CPackageInfo>) GetRequiredBy() { return _requiredBy; }
+	Ref(CRequiredByList) GetRequiredBy() { return _requiredBy; }
 	void AddRequiredBy(CPackageInfo* pInfo);
 	void RemoveAllRequiredBy();
 
@@ -160,7 +174,7 @@ private:
 	bool _visited;
 	bool _finished;
 	Ptr(CInstallPackageInfo) _installInfo;
-	CDataVectorT<CPackageInfo> _requiredBy;
+	CRequiredByList _requiredBy;
 };
 
 sword __stdcall PackageInfoSearchAndSortFunc( ConstPointer pa, ConstPointer pb);

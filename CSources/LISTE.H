@@ -113,20 +113,18 @@ extern "C" {
 	CSOURCES_API LSearchResultType __stdcall VectorPrev(LSearchResultType node);
 	CSOURCES_API LSearchResultType __stdcall VectorLast(Pointer liste);
 	CSOURCES_API bool __stdcall VectorForEach(Pointer liste, TForEachFunc func, Pointer context);
-	CSOURCES_API LSearchResultType __stdcall VectorFind(Pointer liste, ConstPointer data, TSearchAndSortFunc findFunc);
-	CSOURCES_API LSearchResultType __stdcall VectorFindUser(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, ConstPointer context );
-	CSOURCES_API LSearchResultType __stdcall VectorFindSorted(Pointer liste, ConstPointer data, TSearchAndSortFunc sortFunc);
-	CSOURCES_API LSearchResultType __stdcall VectorUpperBound(Pointer liste, ConstPointer data, TSearchAndSortFunc sortFunc);
-	CSOURCES_API LSearchResultType __stdcall VectorLowerBound(Pointer liste, ConstPointer data, TSearchAndSortFunc sortFunc);
-	CSOURCES_API void __stdcall VectorSort(Pointer liste, TSearchAndSortFunc sortFunc, word mode);
-	CSOURCES_API void __stdcall VectorSortUser(Pointer liste, TSearchAndSortUserFunc sortFunc, ConstPointer context, word mode);
+	CSOURCES_API LSearchResultType __stdcall VectorFind(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, Pointer context );
+	CSOURCES_API LSearchResultType __stdcall VectorFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
+	CSOURCES_API LSearchResultType __stdcall VectorUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
+	CSOURCES_API LSearchResultType __stdcall VectorLowerBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
+	CSOURCES_API void __stdcall VectorSort(Pointer liste, TSearchAndSortUserFunc sortFunc, Pointer context, word mode);
 	CSOURCES_API LSearchResultType __stdcall VectorAppend(Pointer liste, ConstPointer data);
 	CSOURCES_API LSearchResultType __stdcall VectorPrepend(Pointer liste, ConstPointer data);
 	CSOURCES_API LSearchResultType __stdcall VectorInsertBefore(LSearchResultType node, ConstPointer data);
 	CSOURCES_API LSearchResultType __stdcall VectorInsertAfter(LSearchResultType node, ConstPointer data);
 	CSOURCES_API void __stdcall VectorRemove(LSearchResultType node, TDeleteFunc freeFunc, Pointer context);
-	CSOURCES_API LSearchResultType __stdcall VectorInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortFunc sortFunc);
-	CSOURCES_API bool __stdcall VectorRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortFunc sortFunc, TDeleteFunc freeFunc, Pointer context);
+	CSOURCES_API LSearchResultType __stdcall VectorInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
+	CSOURCES_API bool __stdcall VectorRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer sortContext, TDeleteFunc freeFunc, Pointer freeContext);
 	CSOURCES_API Pointer __stdcall VectorGetData(LSearchResultType node);
 	CSOURCES_API void __stdcall VectorSetData(LSearchResultType node, ConstPointer data);
 

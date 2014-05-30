@@ -42,15 +42,15 @@ public:
 		m_AnyOption(false),
 		m_bEnumAll(false),
 		m_bStartService(false),
-		m_sStartServices(__FILE__LINE__ 16, 16, VectorEmptyDeleteFunc),
+		m_sStartServices(__FILE__LINE__ 16, 16),
 		m_bStopService(false),
-		m_sStopServices(__FILE__LINE__ 16, 16, VectorEmptyDeleteFunc),
+		m_sStopServices(__FILE__LINE__ 16, 16),
 		m_bEnableService(false),
-		m_sEnableServices(__FILE__LINE__ 16, 16, VectorEmptyDeleteFunc),
+		m_sEnableServices(__FILE__LINE__ 16, 16),
 		m_bDisableService(false),
-		m_sDisableServices(__FILE__LINE__ 16, 16, VectorEmptyDeleteFunc),
+		m_sDisableServices(__FILE__LINE__ 16, 16),
 		m_bDeleteService(false),
-		m_sDeleteServices(__FILE__LINE__ 16, 16, VectorEmptyDeleteFunc)
+		m_sDeleteServices(__FILE__LINE__ 16, 16)
 	{
 		COptionCallback<XServiceCtrlAppApplication> cb(this, &XServiceCtrlAppApplication::handleHelp);
 
@@ -172,15 +172,15 @@ protected:
 	WBool m_AnyOption;
 	WBool m_bEnumAll;
 	WBool m_bStartService;
-	CDataVectorT<mbchar> m_sStartServices;
+	TMBCharList m_sStartServices;
 	WBool m_bStopService;
-	CDataVectorT<mbchar> m_sStopServices;
+	TMBCharList m_sStopServices;
 	WBool m_bEnableService;
-	CDataVectorT<mbchar> m_sEnableServices;
+	TMBCharList m_sEnableServices;
 	WBool m_bDisableService;
-	CDataVectorT<mbchar> m_sDisableServices;
+	TMBCharList m_sDisableServices;
 	WBool m_bDeleteService;
-	CDataVectorT<mbchar> m_sDeleteServices;
+	TMBCharList m_sDeleteServices;
 };
 
 int

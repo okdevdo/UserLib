@@ -314,13 +314,12 @@ void CInstallPackageInfo::Print(WInt iVerbose, dword indent) const
 }
 
 CInstallPackageInfoVector::CInstallPackageInfoVector(DECL_FILE_LINE TListCnt cnt, TListCnt exp):
-    CDataVectorT<CInstallPackageInfo>(ARGS_FILE_LINE cnt,exp), m_Modified(false)
+   super(ARGS_FILE_LINE cnt, exp), m_Modified(false)
 {
 }
 
 CInstallPackageInfoVector::~CInstallPackageInfoVector()
 {
-	Close(InstallPackageInfoDeleteFunc, NULL);
 }
 
 class CInstallPackageInfoFilterOutput: public CFilterOutput
@@ -352,7 +351,7 @@ public:
 
 		Ptr(CInstallPackageInfo) pf = OK_NEW_OPERATOR CInstallPackageInfo(CStringBuffer(__FILE__LINE__ tmpSplit[0]), CStringBuffer(__FILE__LINE__ tmpSplit[1]), true);
 
-		m_vector.InsertSorted(pf, InstallPackageInfoSearchAndSortFunc);
+		m_vector.InsertSorted(pf);
 	}
 
 	virtual void close()

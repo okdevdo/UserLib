@@ -67,10 +67,10 @@ typedef struct _tagCTextControlChars_FindNL
 
 } TCTextControlChars_FindNL;
 
-static sword __stdcall TSearchAndSortUserFunc_CTextControlChars_FindNL( ConstPointer ArrayItem, ConstPointer DataItem, ConstPointer Context )
+static sword __stdcall TSearchAndSortUserFunc_CTextControlChars_FindNL( ConstPointer ArrayItem, ConstPointer DataItem, Pointer Context )
 {
 	Ptr(CTextControlChar) pArrayItem = CastAnyPtr(CTextControlChar, CastMutable(Pointer, ArrayItem));
-	Ptr(TCTextControlChars_FindNL) pContext = CastAnyPtr(TCTextControlChars_FindNL, CastMutable(Pointer, Context));
+	Ptr(TCTextControlChars_FindNL) pContext = CastAnyPtr(TCTextControlChars_FindNL, Context);
 
 	++(pContext->cntCh);
 	if ( pArrayItem->isNewLine )

@@ -84,16 +84,14 @@ public:
 		return tmp;
 	}
 
-	int CompareQ2(Ptr(QualityFactorItem) other)
+	bool CompareQ2(ConstPtr(QualityFactorItem) other) const
 	{
 		WULong l = _name.GetLength();
 		WULong ol = other->_name.GetLength();
 
-		if ((l > ol) && (_name.Compare(other->_name, ol, CStringLiteral::cIgnoreCase | CStringLiteral::cLimited) == 0))
-			return 1;
 		if ((l < ol) && (_name.Compare(other->_name, l, CStringLiteral::cIgnoreCase | CStringLiteral::cLimited) == 0))
-			return -1;
-		return 0;
+			return true;
+		return false;
 	}
 
 	__inline ConstRef(CStringBuffer) get_Name() const { return _name; }
@@ -121,15 +119,26 @@ static sword __stdcall QualityFactorItemSearchAndSortFunc2(ConstPointer ArrayIte
 	return 1;
 }
 
-class QualityFactorList : public CDataVectorT<QualityFactorItem>
+class QualityFactorItemLessFunctor
 {
 public:
-	QualityFactorList() : CDataVectorT<QualityFactorItem>(__FILE__LINE__ 16, 16, QualityFactorItemDeleteFunc) {}
+	bool operator()(ConstPtr(QualityFactorItem) r1, ConstPtr(QualityFactorItem) r2) const
+	{
+		return r1->CompareQ2(r2);
+	}
+};
+
+class QualityFactorList : public CDataVectorT<QualityFactorItem>
+{
+	typedef CDataVectorT<QualityFactorItem> super;
+
+public:
+	QualityFactorList() : super(__FILE__LINE__ 16, 16) {}
 	~QualityFactorList() {}
 
 	void SplitQ(ConstRef(CStringBuffer) list)
 	{
-		CDataVectorT<QualityFactorItem> sorted(__FILE__LINE__ 16, 16, QualityFactorItemDeleteFunc);
+		super sorted(__FILE__LINE__ 16, 16);
 
 		Split(list, _T(","));
 
@@ -144,7 +153,7 @@ public:
 				sorted.Append(item);
 			else
 			{
-				Iterator it2 = sorted.Find(item, QualityFactorItemSearchAndSortFunc2);
+				Iterator it2 = sorted.Find<QualityFactorItemLessFunctor>(item);
 
 				if (it2)
 					sorted.InsertBefore(it2, item);

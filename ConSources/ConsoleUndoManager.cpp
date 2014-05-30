@@ -61,7 +61,6 @@ CConsoleUndoGroup::CConsoleUndoGroup(void):
 
 CConsoleUndoGroup::~CConsoleUndoGroup(void)
 {
-	m_ItemVector.Close(UndoGroupDeleteFunc, NULL);
 }
 
 void CConsoleUndoGroup::push(Ptr(CConsoleUndoItem) item)
@@ -77,12 +76,12 @@ void CConsoleUndoGroup::pop()
 	CConsoleUndoItemVector::Iterator it = m_ItemVector.Last();
 
 	if ( it )
-		m_ItemVector.Remove(it, UndoGroupDeleteFunc, NULL);
+		m_ItemVector.Remove(it);
 }
 
 void CConsoleUndoGroup::clear(void)
 {
-	m_ItemVector.Close(UndoGroupDeleteFunc, NULL);
+	m_ItemVector.Close();
 	m_ItemVector.Open(__FILE__LINE__ 16, 16);
 	m_Current = 0;
 }

@@ -47,9 +47,8 @@ static void __stdcall DataItem_DeleteFunc( ConstPointer data, Pointer context )
 
 CConsoleTableViewer::DataRow::~DataRow()
 {
-	m_items.Close(DataItem_DeleteFunc, NULL);
-	if ( !(m_columns.Release()) )
-		m_columns.Close(DataColumn_DeleteFunc, NULL);
+	m_items.Close();
+	m_columns.Close();
 }
 
 CConsoleTableViewer::DataColumn::~DataColumn()
@@ -321,9 +320,8 @@ CConsoleTableViewer::CConsoleTableViewer(ConstRef(CFilePath) path, CConstPointer
 
 CConsoleTableViewer::~CConsoleTableViewer(void)
 {
-	m_rows.Close(DataRow_DeleteFunc, NULL);
-	if ( !(m_cols.Release()) )
-		m_cols.Close(DataColumn_DeleteFunc, NULL);
+	m_rows.Close();
+	m_cols.Close();
 }
 
 void CConsoleTableViewer::StartEdit(void)
@@ -393,8 +391,8 @@ void CConsoleTableViewer::Initialize()
 	m_SelectionMode = false;
 	m_control = NULL;
 
-	m_rows.Close(DataRow_DeleteFunc, NULL);
-	m_cols.Close(DataColumn_DeleteFunc, NULL);
+	m_rows.Close();
+	m_cols.Close();
 
 	m_rows.Open(__FILE__LINE__ 16, 16);
 	m_cols.Open(__FILE__LINE__ 16, 16);

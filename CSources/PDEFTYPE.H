@@ -252,8 +252,10 @@
 
 #define Ptr(type)               type *
 #define Ref(type)               type&
+#define RefRef(type)            type&&
 #define ConstPtr(type)          const type *
 #define ConstRef(type)          const type&
+#define ConstRefRef(type)       const type&&
 #define PtrPtr(type)			type **
 #if defined(__cplusplus)
 	// Integrals

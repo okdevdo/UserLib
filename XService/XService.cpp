@@ -41,7 +41,7 @@ public:
 		m_help(false),
 		m_bInstallService(false),
 		m_bStartService(false),
-		m_sStartServices(__FILE__LINE__ 16, 16, VectorEmptyDeleteFunc)
+		m_sStartServices(__FILE__LINE__ 16, 16)
 	{
 		COptionCallback<XServiceApplication> cb(this, &XServiceApplication::handleHelp);
 
@@ -120,7 +120,7 @@ protected:
 	WBool m_help;
 	WBool m_bInstallService;
 	WBool m_bStartService;
-	CDataVectorT<mbchar> m_sStartServices;
+	TMBCharList m_sStartServices;
 };
 
 int

@@ -531,7 +531,6 @@ CGridViewRow::CGridViewRow(CGridView* pGridView, ConstRef(CStringBuffer) text):
 
 CGridViewRow::~CGridViewRow(void)
 {
-	m_cells.Close(TDeleteFunc_CGridViewCells, NULL);
 }
 
 void CGridViewRow::set_Text(ConstRef(CStringBuffer) text)
@@ -577,7 +576,7 @@ void CGridViewRow::set_Cell(dword ix, CGridViewCell* cell)
 
 		if ( cell1->is_Selected() )
 			cell1->set_Selected(false);
-		m_cells.Remove(m_cells.Index(ix), TDeleteFunc_CGridViewCells, NULL);
+		m_cells.Remove(m_cells.Index(ix));
 	}
 	else if ( ix >= m_cells.Count() )
 		m_cells.Append(cell);
@@ -856,11 +855,6 @@ CGridView::CGridView(ConstRef(CStringBuffer) name):
 
 CGridView::~CGridView(void)
 {
-	m_selCells.Close(TDeleteFunc_Empty, NULL);
-	m_selRows.Close(TDeleteFunc_Empty, NULL);
-	m_selColumns.Close(TDeleteFunc_Empty, NULL);
-	m_columns.Close(TDeleteFunc_CGridViewColumns, NULL);
-	m_rows.Close(TDeleteFunc_CGridViewRows, NULL);
 	if ( m_emptyCell )
 		delete m_emptyCell;
 	if ( m_stringFormat )
@@ -955,7 +949,7 @@ void CGridView::set_Column(dword ix, CGridViewColumn* column)
 			}
 			++it;
 		}
-		m_columns.Remove(m_columns.Index(ix), TDeleteFunc_CGridViewColumns, NULL);
+		m_columns.Remove(m_columns.Index(ix));
 	}
 	else if ( ix >= m_columns.Count() )
 		m_columns.Append(column);
@@ -1017,7 +1011,7 @@ void CGridView::set_Row(dword ix, CGridViewRow* row)
 			if ( jx > -1 )
 				m_currentCell = NULL;
 		}
-		m_rows.Remove(m_rows.Index(ix), TDeleteFunc_CGridViewRows, NULL);
+		m_rows.Remove(m_rows.Index(ix));
 	}
 	else if ( ix >= m_rows.Count() )
 		m_rows.Append(row);
@@ -1061,7 +1055,7 @@ void CGridView::set_SelCell(dword ix, CGridViewCell* cell)
 	{
 		if ( ix >= m_selCells.Count() )
 			return;
-		m_selCells.Remove(m_selCells.Index(ix), TDeleteFunc_Empty, NULL);
+		m_selCells.Remove(m_selCells.Index(ix));
 	}
 	else if ( ix >= m_selCells.Count() )
 		m_selCells.Append(cell);
@@ -1090,7 +1084,7 @@ void CGridView::set_SelRow(dword ix, CGridViewRow* row)
 	{
 		if ( ix >= m_selRows.Count() )
 			return;
-		m_selRows.Remove(m_selRows.Index(ix), TDeleteFunc_Empty, NULL);
+		m_selRows.Remove(m_selRows.Index(ix));
 	}
 	else if ( ix >= m_selRows.Count() )
 		m_selRows.Append(row);
@@ -1119,7 +1113,7 @@ void CGridView::set_SelColumn(dword ix, CGridViewColumn* column)
 	{
 		if ( ix >= m_selColumns.Count() )
 			return;
-		m_selColumns.Remove(m_selColumns.Index(ix), TDeleteFunc_Empty, NULL);
+		m_selColumns.Remove(m_selColumns.Index(ix));
 	}
 	else if ( ix >= m_selColumns.Count() )
 		m_selColumns.Append(column);

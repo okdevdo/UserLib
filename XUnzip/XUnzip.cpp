@@ -52,13 +52,13 @@ public:
 		m_bViewFiles(false),
 		m_sViewFiles(),
 		m_bExclude(false),
-		m_sExclude(__FILE__LINE__ 16, 16, VectorEmptyDeleteFunc),
+		m_sExclude(__FILE__LINE__ 16, 16),
 		m_bUseFolders(false),
 		m_bOverwrite(false),
 		m_bZipArchive(false),
 		m_sZipArchive(),
 		m_bUnzipFileSpecs(false),
-		m_sUnzipFileSpecs(__FILE__LINE__ 16, 16, VectorEmptyDeleteFunc),
+		m_sUnzipFileSpecs(__FILE__LINE__ 16, 16),
 		m_bOutputDir(false),
 		m_sOutputDir(),
 		m_bOutputFile(false),
@@ -313,13 +313,13 @@ protected:
 	WBool m_bViewFiles;
 	CStringLiteral m_sViewFiles;
 	WBool m_bExclude;
-	CDataVectorT<mbchar> m_sExclude;
+	TMBCharList m_sExclude;
 	WBool m_bUseFolders;
 	WBool m_bOverwrite;
 	WBool m_bZipArchive;
 	CStringLiteral m_sZipArchive;
 	WBool m_bUnzipFileSpecs;
-	CDataVectorT<mbchar> m_sUnzipFileSpecs;
+	TMBCharList m_sUnzipFileSpecs;
 	WBool m_bOutputDir;
 	CStringLiteral m_sOutputDir;
 	WBool m_bOutputFile;

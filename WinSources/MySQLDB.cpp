@@ -152,7 +152,7 @@ static sword __stdcall CMySQLColumnsSearchAndSortFunc(ConstPointer item, ConstPo
 }
 
 CMySQLStatement::CMySQLStatement(CMySQLEnvironment* lpEnv, CMySQLStatementImpl* lpStmtImpl) :
-_lpEnv(lpEnv), _lpImpl(lpStmtImpl), _columns(__FILE__LINE__ 16, 16, CMySQLColumnsDeleteFunc)
+_lpEnv(lpEnv), _lpImpl(lpStmtImpl), _columns(__FILE__LINE__ 16, 16)
 {
 	if (_lpEnv)
 		_lpEnv->addRef();
@@ -182,9 +182,10 @@ CMySQLColumn* CMySQLStatement::get_ColumnInfo(word ix) const
 	return NULL;
 }
 
-CMySQLColumn* CMySQLStatement::get_ColumnInfo(CConstPointer name) const
+CMySQLColumn* CMySQLStatement::get_ColumnInfo(CConstPointer name)
 {
-	CMySQLColumns::Iterator it = _columns.Find(CastAnyPtr(CMySQLColumn, CastMutable(CPointer, name)), CMySQLColumnsSearchAndSortFunc);
+	CMySQLColumn cmp(name);
+	CMySQLColumns::Iterator it = _columns.Find<CStringByNameLessFunctor<CMySQLColumn>>(&cmp);
 
 	if (it)
 		return *it;

@@ -59,6 +59,8 @@ public:
 	CProjectDepInfo() {}
 	virtual ~CProjectDepInfo() {}
 
+	__inline ConstRef(CStringBuffer) get_Name() const { return m_Name; }
+
 	CStringBuffer m_Name;
 	CStringBuffer m_Guid;
 };
@@ -78,13 +80,15 @@ void __stdcall CProjectDepInfoDeleteFunc(ConstPointer data, Pointer context)
 	pdata->release();
 }
 
-typedef CDataVectorT<CProjectDepInfo> CProjectDepInfos;
+typedef CDataVectorT<CProjectDepInfo, CStringByNameIgnoreCaseLessFunctor<CProjectDepInfo>> CProjectDepInfos;
 
 class CProjectFileInfo : public CCppObject
 {
 public:
 	CProjectFileInfo() {}
 	virtual ~CProjectFileInfo() {}
+
+	__inline ConstRef(CStringBuffer) get_Name() const { return m_Name; }
 
 	CStringBuffer m_Name;
 	CStringBuffer m_Type;
@@ -105,7 +109,7 @@ void __stdcall CProjectFileInfoDeleteFunc(ConstPointer data, Pointer context)
 	pdata->release();
 }
 
-typedef CDataVectorT<CProjectFileInfo> CProjectFileInfos;
+typedef CDataVectorT<CProjectFileInfo, CStringByNameIgnoreCaseLessFunctor<CProjectFileInfo>> CProjectFileInfos;
 
 typedef CDataVectorT<CStringBuffer> CProjectPreprocessorDefinitions;
 
@@ -157,8 +161,8 @@ class CProjectInfo : public CCppObject
 {
 public:
 	CProjectInfo() :
-		m_FileInfos(__FILE__LINE__ 16, 16, CProjectFileInfoDeleteFunc, NULL, CProjectFileInfoSortAndSearchFunc),
-		m_DepInfos(__FILE__LINE__ 16, 16, CProjectDepInfoDeleteFunc, NULL, CProjectDepInfoSortAndSearchFunc),
+		m_FileInfos(__FILE__LINE__ 16, 16),
+		m_DepInfos(__FILE__LINE__ 16, 16),
 		m_Outputs(__FILE__LINE__ 16, 16),
 		m_AdditionalInputs(__FILE__LINE__ 16, 16),
 		m_PreprocessorDefinitions(__FILE__LINE__ 16, 16),
@@ -168,8 +172,8 @@ public:
 	}
 	CProjectInfo(ConstRef(CStringBuffer) name) :
 		m_Name(name),
-		m_FileInfos(__FILE__LINE__ 16, 16, CProjectFileInfoDeleteFunc, NULL, CProjectFileInfoSortAndSearchFunc),
-		m_DepInfos(__FILE__LINE__ 16, 16, CProjectDepInfoDeleteFunc, NULL, CProjectDepInfoSortAndSearchFunc),
+		m_FileInfos(__FILE__LINE__ 16, 16),
+		m_DepInfos(__FILE__LINE__ 16, 16),
 		m_Outputs(__FILE__LINE__ 16, 16),
 		m_AdditionalInputs(__FILE__LINE__ 16, 16),
 		m_PreprocessorDefinitions(__FILE__LINE__ 16, 16),
@@ -178,6 +182,8 @@ public:
 	{
 	}
 	virtual ~CProjectInfo() {}
+
+	__inline ConstRef(CStringBuffer) get_Name() const { return m_Name; }
 
 	CStringBuffer m_Name;
 	CStringBuffer m_Guid;
@@ -210,12 +216,13 @@ void __stdcall CProjectInfoDeleteFunc(ConstPointer data, Pointer context)
 	pdata->release();
 }
 
-class CProjectInfos : public CDataVectorT<CProjectInfo>
+class CProjectInfos : public CDataVectorT<CProjectInfo, CStringByNameIgnoreCaseLessFunctor<CProjectInfo>>
 {
-	typedef CDataVectorT<CProjectInfo> super;
+	typedef CDataVectorT<CProjectInfo, CStringByNameIgnoreCaseLessFunctor<CProjectInfo>> super;
 
 public:
-	CProjectInfos(DECL_FILE_LINE TListCnt init, TListCnt exp) : super(ARGS_FILE_LINE init, exp, CProjectInfoDeleteFunc, NULL, CProjectInfoSortAndSearchFunc) {}
+	CProjectInfos(DECL_FILE_LINE TListCnt init, TListCnt exp) : super(ARGS_FILE_LINE init, exp) {}
+	virtual ~CProjectInfos() {}
 
 	void CollectDeps(ConstRef(CStringBuffer) name, Ref(super::Iterator) it2Collect)
 	{
@@ -311,8 +318,8 @@ public:
 
 			while (it)
 			{
-				if ((*it)->get_name().Compare(CStringLiteral(_T("Guid")), 0, CStringLiteral::cIgnoreCase) == 0)
-					m_ProjectsGuid = (*it)->get_value();
+				if ((*it)->get_Name().Compare(CStringLiteral(_T("Guid")), 0, CStringLiteral::cIgnoreCase) == 0)
+					m_ProjectsGuid = (*it)->get_Value();
 				++it;
 			}
 			return;
@@ -327,14 +334,14 @@ public:
 
 			while (it)
 			{
-				if ((*it)->get_name().Compare(CStringLiteral(_T("Name")), 0, CStringLiteral::cIgnoreCase) == 0)
-					m_CurrentProjectInfo->m_Name = (*it)->get_value();
-				if ((*it)->get_name().Compare(CStringLiteral(_T("Guid")), 0, CStringLiteral::cIgnoreCase) == 0)
-					m_CurrentProjectInfo->m_Guid = (*it)->get_value();
-				if ((*it)->get_name().Compare(CStringLiteral(_T("Folder")), 0, CStringLiteral::cIgnoreCase) == 0)
-					m_CurrentProjectInfo->m_Folder = (*it)->get_value();
-				if ((*it)->get_name().Compare(CStringLiteral(_T("Type")), 0, CStringLiteral::cIgnoreCase) == 0)
-					m_CurrentProjectInfo->m_Type = (*it)->get_value();
+				if ((*it)->get_Name().Compare(CStringLiteral(_T("Name")), 0, CStringLiteral::cIgnoreCase) == 0)
+					m_CurrentProjectInfo->m_Name = (*it)->get_Value();
+				if ((*it)->get_Name().Compare(CStringLiteral(_T("Guid")), 0, CStringLiteral::cIgnoreCase) == 0)
+					m_CurrentProjectInfo->m_Guid = (*it)->get_Value();
+				if ((*it)->get_Name().Compare(CStringLiteral(_T("Folder")), 0, CStringLiteral::cIgnoreCase) == 0)
+					m_CurrentProjectInfo->m_Folder = (*it)->get_Value();
+				if ((*it)->get_Name().Compare(CStringLiteral(_T("Type")), 0, CStringLiteral::cIgnoreCase) == 0)
+					m_CurrentProjectInfo->m_Type = (*it)->get_Value();
 				++it;
 			}
 			return;
@@ -346,10 +353,10 @@ public:
 
 			while (it)
 			{
-				if ((*it)->get_name().Compare(CStringLiteral(_T("Name")), 0, CStringLiteral::cIgnoreCase) == 0)
-					pFileInfo->m_Name = (*it)->get_value();
-				if ((*it)->get_name().Compare(CStringLiteral(_T("Type")), 0, CStringLiteral::cIgnoreCase) == 0)
-					pFileInfo->m_Type = (*it)->get_value();
+				if ((*it)->get_Name().Compare(CStringLiteral(_T("Name")), 0, CStringLiteral::cIgnoreCase) == 0)
+					pFileInfo->m_Name = (*it)->get_Value();
+				if ((*it)->get_Name().Compare(CStringLiteral(_T("Type")), 0, CStringLiteral::cIgnoreCase) == 0)
+					pFileInfo->m_Type = (*it)->get_Value();
 				++it;
 			}
 			m_CurrentProjectInfo->m_FileInfos.Append(pFileInfo);
@@ -362,10 +369,10 @@ public:
 
 			while (it)
 			{
-				if ((*it)->get_name().Compare(CStringLiteral(_T("Name")), 0, CStringLiteral::cIgnoreCase) == 0)
-					pDepInfo->m_Name = (*it)->get_value();
-				if ((*it)->get_name().Compare(CStringLiteral(_T("Guid")), 0, CStringLiteral::cIgnoreCase) == 0)
-					pDepInfo->m_Guid = (*it)->get_value();
+				if ((*it)->get_Name().Compare(CStringLiteral(_T("Name")), 0, CStringLiteral::cIgnoreCase) == 0)
+					pDepInfo->m_Name = (*it)->get_Value();
+				if ((*it)->get_Name().Compare(CStringLiteral(_T("Guid")), 0, CStringLiteral::cIgnoreCase) == 0)
+					pDepInfo->m_Guid = (*it)->get_Value();
 				++it;
 			}
 			m_CurrentProjectInfo->m_DepInfos.Append(pDepInfo);

@@ -37,7 +37,7 @@ CSetupIniFileVector::~CSetupIniFileVector()
 {
 }
 
-void CSetupIniFileVector::Fill(CStringLiteral psSetupIniScanDir, CDataVectorT<mbchar>& psSetupIniFiles)
+void CSetupIniFileVector::Fill(CStringLiteral psSetupIniScanDir, Ref(TMBCharList) psSetupIniFiles)
 {
 	bool bScanDir = false;
 	CStringBuffer sScanDir;
@@ -63,7 +63,7 @@ void CSetupIniFileVector::Fill(CStringLiteral psSetupIniScanDir, CDataVectorT<mb
 		}
 		if ( psSetupIniFiles.Count() > 0 )
 		{
-			CDataVectorT<mbchar>::Iterator it = psSetupIniFiles.Begin();
+			TMBCharList::Iterator it = psSetupIniFiles.Begin();
 
 			while ( it )
 			{

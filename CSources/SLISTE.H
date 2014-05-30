@@ -85,12 +85,12 @@ extern "C" {
 	CSOURCES_API LSearchResultType __stdcall SVectorLast(Pointer liste);
 	CSOURCES_API bool __stdcall SVectorForEach(Pointer liste, TForEachFunc func, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall SVectorFind(Pointer liste, ConstPointer data, TSearchAndSortFunc findFunc);
-	CSOURCES_API LSearchResultType __stdcall SVectorFindUser(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, ConstPointer context);
+	CSOURCES_API LSearchResultType __stdcall SVectorFindUser(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall SVectorFindSorted(Pointer liste, ConstPointer data, TSearchAndSortFunc sortFunc);
 	CSOURCES_API LSearchResultType __stdcall SVectorUpperBound(Pointer liste, ConstPointer data, TSearchAndSortFunc sortFunc);
 	CSOURCES_API LSearchResultType __stdcall SVectorLowerBound(Pointer liste, ConstPointer data, TSearchAndSortFunc sortFunc);
 	CSOURCES_API void __stdcall SVectorSort(Pointer liste, TSearchAndSortFunc sortFunc, word mode);
-	CSOURCES_API void __stdcall SVectorSortUser(Pointer liste, TSearchAndSortUserFunc sortFunc, ConstPointer context, word mode);
+	CSOURCES_API void __stdcall SVectorSortUser(Pointer liste, TSearchAndSortUserFunc sortFunc, Pointer context, word mode);
 	CSOURCES_API LSearchResultType __stdcall SVectorAppend(Pointer liste, ConstPointer data);
 	CSOURCES_API LSearchResultType __stdcall SVectorPrepend(Pointer liste, ConstPointer data);
 	CSOURCES_API LSearchResultType __stdcall SVectorInsertBefore(LSearchResultType node, ConstPointer data);

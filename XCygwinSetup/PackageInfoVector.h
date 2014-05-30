@@ -23,8 +23,10 @@
 #include "DataVector.h"
 #include "PackageInfo.h"
 
-class CPackageInfoVector: public CDataVectorT<CPackageInfo>
+class CPackageInfoVector : public CDataVectorT<CPackageInfo, CStringByNameLessFunctor<CPackageInfo>>
 {
+	typedef CDataVectorT<CPackageInfo, CStringByNameLessFunctor<CPackageInfo>> super;
+
 public:
 	CPackageInfoVector(DECL_FILE_LINE TListCnt cnt, TListCnt exp);
 	~CPackageInfoVector();

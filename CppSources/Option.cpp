@@ -190,6 +190,11 @@ ConstRef(CStringBuffer) COption::fullname() const
 	return m_fullname;
 }
 
+ConstRef(CStringBuffer) COption::get_Name() const
+{
+	return m_fullname;
+}
+
 ConstRef(CStringBuffer) COption::shortName() const
 {
 	return m_shortname;

@@ -1213,7 +1213,7 @@ static void TestVector()
 {
 	OpenTestFile(_T("TestVector"));
 
-	CDataVector list(__FILE__LINE__ 16, 16);
+	CDataVector list(__FILE__LINE__ 16, 16, TestDeleteFunc, NULL, TestSortUserFunc);
 	CDataVector::Iterator it;
 	dword i;
 	dword j;
@@ -1225,7 +1225,7 @@ static void TestVector()
 
 	qsort(numbers, 120, sizeof(ULongPointer), TestCompareSRand64);
 
-	list.Sort(TestSortFunc);
+	list.Sort();
 	it = list.Begin();
 	i = 0;
 	while (it)
@@ -1248,7 +1248,7 @@ static void TestVector()
 		WriteErrorTestFile(1, _T("i != 0"));
 	for (i = 0; i < 120; ++i)
 	{
-		it = list.FindSorted((Pointer)numbers[i], TestSortFunc);
+		it = list.FindSorted((Pointer)numbers[i]);
 		j = i;
 		while (it)
 		{
@@ -1260,10 +1260,10 @@ static void TestVector()
 			WriteErrorTestFile(1, _T("j != 120"));
 	}
 	for (i = 0; i < 120; i += 2)
-		list.RemoveSorted((Pointer)numbers[i], TestSortFunc, TestDeleteFunc, NULL);
+		list.RemoveSorted((Pointer)numbers[i]);
 	for (i = 0; i < 120; ++i)
 	{
-		it = list.FindSorted((Pointer)numbers[i], TestSortFunc);
+		it = list.FindSorted((Pointer)numbers[i]);
 		if ((i % 2) == 0)
 		{
 			++it;
@@ -1286,7 +1286,6 @@ static void TestVector()
 				WriteErrorTestFile(1, _T("j != 121"));
 		}
 	}
-	list.Close(TestDeleteFunc, NULL);
 
 	WriteSuccessTestFile(1);
 
@@ -1297,8 +1296,8 @@ static void TestVectorT()
 {
 	OpenTestFile(_T("TestVectorT"));
 
-	CDataVectorT<unsigned int> list(__FILE__LINE__ 16, 16);
-	CDataVectorT<unsigned int>::Iterator it;
+	TestFuncUIntVector list(__FILE__LINE__ 16, 16);
+	TestFuncUIntVector::Iterator it;
 	dword i;
 	dword j;
 	unsigned int numbers[120];
@@ -1309,7 +1308,7 @@ static void TestVectorT()
 
 	qsort(numbers, 120, sizeof(unsigned int), TestCompareSRand);
 
-	list.Sort(TestSortFuncUInt);
+	list.Sort();
 	it = list.Begin();
 	i = 0;
 	while (it)
@@ -1332,7 +1331,7 @@ static void TestVectorT()
 		WriteErrorTestFile(1, _T("i != 0"));
 	for (i = 0; i < 120; ++i)
 	{
-		it = list.FindSorted(numbers + i, TestSortFuncUInt);
+		it = list.FindSorted(numbers + i);
 		j = i;
 		while (it)
 		{
@@ -1344,10 +1343,10 @@ static void TestVectorT()
 			WriteErrorTestFile(1, _T("j != 120"));
 	}
 	for (i = 0; i < 120; i += 2)
-		list.RemoveSorted(numbers + i, TestSortFuncUInt, TestDeleteFunc, NULL);
+		list.RemoveSorted(numbers + i);
 	for (i = 0; i < 120; ++i)
 	{
-		it = list.FindSorted(numbers + i, TestSortFuncUInt);
+		it = list.FindSorted(numbers + i);
 		if ((i % 2) == 0)
 		{
 			++it;
@@ -1370,8 +1369,7 @@ static void TestVectorT()
 				WriteErrorTestFile(1, _T("j != 121"));
 		}
 	}
-	list.Close(TestDeleteFunc, NULL);
-
+	
 	WriteSuccessTestFile(1);
 
 	CloseTestFile();

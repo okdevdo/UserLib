@@ -54,6 +54,51 @@ bool __stdcall TEventLogChannelForEachFunc(ConstPointer data, Pointer context)
 	return true;
 }
 
+class TEventLogChannelForEachFunctor
+{
+public:
+	bool operator()(Ptr(CEventLogChannel) pChannel)
+	{
+		OK_NEW_OPERATOR CListViewNode(pListView, pChannel->get_name());
+		return true;
+	}
+
+	Ptr(CListView) pListView;
+};
+
+class TEventLogEventForEachFunctor
+{
+public:
+	TEventLogEventForEachFunctor(): pGridView(NULL), lRowCnt(0) {}
+
+	bool operator()(Ptr(CEventLogEvent) pEvent)
+	{
+		Ptr(CGridViewRow) pRow = NULL;
+		CStringBuffer sText;
+
+		sText.FormatString(__FILE__LINE__ _T("Row%d"), lRowCnt);
+		pRow = OK_NEW_OPERATOR CGridViewRow(pGridView, sText);
+		sText.FormatString(__FILE__LINE__ _T("%lld"), pEvent->get_eventRecordID());
+		OK_NEW_OPERATOR CGridViewCell(pGridView, pRow, pColumn[0], sText);
+		sText.FormatString(__FILE__LINE__ _T("%02d.%02d.%04d %02d:%02d:%02d"), pEvent->get_creationTime().GetDays(), pEvent->get_creationTime().GetMonths(), pEvent->get_creationTime().GetYears(),
+			pEvent->get_creationTime().GetHours(), pEvent->get_creationTime().GetMinutes(), pEvent->get_creationTime().GetSeconds());
+		OK_NEW_OPERATOR CGridViewCell(pGridView, pRow, pColumn[1], sText);
+		sText.FormatString(__FILE__LINE__ _T("%d"), pEvent->get_eventID());
+		OK_NEW_OPERATOR CGridViewCell(pGridView, pRow, pColumn[2], sText);
+		OK_NEW_OPERATOR CGridViewCell(pGridView, pRow, pColumn[3], pEvent->get_channel());
+		OK_NEW_OPERATOR CGridViewCell(pGridView, pRow, pColumn[4], pEvent->get_computer());
+		OK_NEW_OPERATOR CGridViewCell(pGridView, pRow, pColumn[5], pEvent->get_userSID());
+		++lRowCnt;
+		return true;
+	}
+
+	CGridView* pGridView;
+	CGridViewColumn* pColumn[6];
+	dword lRowCnt;
+};
+
+
+
 class CEventLogEventForEachFunc
 {
 public:
@@ -131,7 +176,11 @@ LRESULT COpenDialog::OnInitDialog(WPARAM wParam, LPARAM lParam)
 
 		if (eventLogChannels.Count() == 0)
 			eventLogChannels.Load();
-		eventLogChannels.ForEach(TEventLogChannelForEachFunc, pListView);
+
+		TEventLogChannelForEachFunctor arg;
+
+		arg.pListView = pListView;
+		eventLogChannels.ForEach<TEventLogChannelForEachFunctor>(arg);
 
 		pListView->set_CurrentNode(pListView->get_Node((dword)0));
 		pListView->set_VScrollEnabled(TRUE);
@@ -552,17 +601,17 @@ LRESULT XGuiLog::OnNewCommand(WPARAM wParam, LPARAM lParam)
 
 		pGridView->BeginUpdate();
 
-		CEventLogEventForEachFunc eventLogEventForEachFuncInfo;
+		TEventLogEventForEachFunctor arg;
 
-		eventLogEventForEachFuncInfo.pGridView = pGridView;
-		eventLogEventForEachFuncInfo.pColumn[0] = OK_NEW_OPERATOR CGridViewColumn(pGridView, _T("EventRecordID"));
-		eventLogEventForEachFuncInfo.pColumn[1] = OK_NEW_OPERATOR CGridViewColumn(pGridView, _T("CreationTime"));
-		eventLogEventForEachFuncInfo.pColumn[2] = OK_NEW_OPERATOR CGridViewColumn(pGridView, _T("EventID"));
-		eventLogEventForEachFuncInfo.pColumn[3] = OK_NEW_OPERATOR CGridViewColumn(pGridView, _T("Channel"));
-		eventLogEventForEachFuncInfo.pColumn[4] = OK_NEW_OPERATOR CGridViewColumn(pGridView, _T("Computer"));
-		eventLogEventForEachFuncInfo.pColumn[5] = OK_NEW_OPERATOR CGridViewColumn(pGridView, _T("UserID"));
+		arg.pGridView = pGridView;
+		arg.pColumn[0] = OK_NEW_OPERATOR CGridViewColumn(pGridView, _T("EventRecordID"));
+		arg.pColumn[1] = OK_NEW_OPERATOR CGridViewColumn(pGridView, _T("CreationTime"));
+		arg.pColumn[2] = OK_NEW_OPERATOR CGridViewColumn(pGridView, _T("EventID"));
+		arg.pColumn[3] = OK_NEW_OPERATOR CGridViewColumn(pGridView, _T("Channel"));
+		arg.pColumn[4] = OK_NEW_OPERATOR CGridViewColumn(pGridView, _T("Computer"));
+		arg.pColumn[5] = OK_NEW_OPERATOR CGridViewColumn(pGridView, _T("UserID"));
 
-		eventLogEvents.ForEach(TEventLogEventForEachFunc, &eventLogEventForEachFuncInfo, true);
+		eventLogEvents.ForEach(arg, true);
 
 		pGridView->EndUpdate(TRUE);
 		m_pTabControl->set_CurrentTabPage(pPage);

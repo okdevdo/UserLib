@@ -409,8 +409,6 @@ CWin* CListView::Clone(LONG style, DWORD exstyle)
 
 void CListView::clear(void)
 {
-	m_selNodes.Close(TDeleteFunc_SelectedListViewNodes, NULL);
-	m_nodes.Close(TDeleteFunc_ListViewNodes, NULL);
 }
 
 CListViewNode* CListView::get_Node(LPCTSTR key)
@@ -449,7 +447,7 @@ void CListView::set_Node(dword ix, CListViewNode* node)
 			m_currentNode = NULL;
 		if ( node1->is_Selected() )
 			node1->set_Selected(false);
-		m_nodes.Remove(m_nodes.Index(ix), TDeleteFunc_ListViewNodes, NULL);
+		m_nodes.Remove(m_nodes.Index(ix));
 	}
 	else if ( ix >= m_nodes.Count() )
 		m_nodes.Append(node);
@@ -505,7 +503,7 @@ void CListView::set_SelNode(dword ix, CListViewNode* node)
 	{
 		if ( ix >= m_selNodes.Count() )
 			return;
-		m_selNodes.Remove(m_selNodes.Index(ix), TDeleteFunc_SelectedListViewNodes, NULL);
+		m_selNodes.Remove(m_selNodes.Index(ix));
 	}
 	else if ( ix >= m_selNodes.Count() )
 		m_selNodes.Append(node);

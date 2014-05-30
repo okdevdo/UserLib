@@ -28,7 +28,7 @@ void __stdcall CDataVectorT_StringBuffer_DeleteFunc(ConstPointer data, Pointer c
 	tmp.assign(CastAny(CConstPointer, data));
 }
 
-sword __stdcall CDataVectorT_StringBuffer_SearchAndSortFunc(ConstPointer pa, ConstPointer pb)
+sword __stdcall CDataVectorT_StringBuffer_SearchAndSortUserFunc(ConstPointer pa, ConstPointer pb, Pointer context)
 {
 	CStringBuffer tmpa, tmpb;
 	sword cmp;

@@ -54,14 +54,14 @@ static bool _TestFileSpec(ConstRef(CFilePath) file, ConstRef(CFilePath) filespec
 	return false;
 }
 
-static bool _TestFileSpecs(ConstRef(CStringBuffer) afile, ConstRef(CDataVectorT<mbchar>) filespecs)
+static bool _TestFileSpecs(ConstRef(CStringBuffer) afile, ConstRef(TMBCharList) filespecs)
 {
 	CStringBuffer tmp(afile);
 
 	tmp.ReplaceString(CDirectoryIterator::UnixPathSeparatorString(), CDirectoryIterator::WinPathSeparatorString());
 
 	CFilePath fpath(tmp);
-	CDataVectorT<mbchar>::Iterator it = filespecs.Begin();
+	TMBCharList::Iterator it = filespecs.Begin();
 
 	while (it)
 	{
@@ -106,14 +106,14 @@ static bool _TestExcludeSpec(ConstRef(CFilePath) file, ConstRef(CFilePath) files
 	return false;
 }
 
-static bool _TestExcludeSpecs(ConstRef(CStringBuffer) afile, ConstRef(CDataVectorT<mbchar>) filespecs)
+static bool _TestExcludeSpecs(ConstRef(CStringBuffer) afile, ConstRef(TMBCharList) filespecs)
 {
 	CStringBuffer tmp(afile);
 
 	tmp.ReplaceString(CDirectoryIterator::UnixPathSeparatorString(), CDirectoryIterator::WinPathSeparatorString());
 
 	CFilePath fpath(tmp);
-	CDataVectorT<mbchar>::Iterator it = filespecs.Begin();
+	TMBCharList::Iterator it = filespecs.Begin();
 
 	while (it)
 	{
@@ -126,7 +126,7 @@ static bool _TestExcludeSpecs(ConstRef(CStringBuffer) afile, ConstRef(CDataVecto
 	return false;
 }
 
-void XZipViewFiles(ConstRef(CFilePath) fzipfile, ConstRef(CDataVectorT<mbchar>) filespecs, ConstRef(CDataVectorT<mbchar>) excludespecs, CStringLiteral mode)
+void XZipViewFiles(ConstRef(CFilePath) fzipfile, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs, CStringLiteral mode)
 {
 	CSecurityFile* pArchiveFile = NULL;
 	CArchiveIterator *zipIt = NULL;
@@ -325,7 +325,7 @@ void XZipViewFiles(ConstRef(CFilePath) fzipfile, ConstRef(CDataVectorT<mbchar>) 
 	}
 }
 
-static void _XZipAddFilesRecurse(Ref(CZipArchive) zipArchive, ConstRef(CFilePath) dir, ConstRef(CStringBuffer) pattern, ConstRef(CDataVectorT<mbchar>) excludespecs, bool bIsFSNTFS)
+static void _XZipAddFilesRecurse(Ref(CZipArchive) zipArchive, ConstRef(CFilePath) dir, ConstRef(CStringBuffer) pattern, ConstRef(TMBCharList) excludespecs, bool bIsFSNTFS)
 {
 	CDirectoryIterator it;
 	CFilePath fpath;
@@ -383,10 +383,10 @@ static void _XZipAddFilesRecurse(Ref(CZipArchive) zipArchive, ConstRef(CFilePath
 	}
 }
 
-void _XZipAddFiles(Ref(CZipArchive) zipArchive, WBool recursefolders, ConstRef(CDataVectorT<mbchar>) filespecs, ConstRef(CDataVectorT<mbchar>) excludespecs)
+void _XZipAddFiles(Ref(CZipArchive) zipArchive, WBool recursefolders, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs)
 {
 	CDirectoryIterator it;
-	CDataVectorT<mbchar>::Iterator itP;
+	TMBCharList::Iterator itP;
 	CFilePath fpath;
 	FILETIME cftime;
 	FILETIME aftime;
@@ -456,7 +456,7 @@ void _XZipAddFiles(Ref(CZipArchive) zipArchive, WBool recursefolders, ConstRef(C
 	}
 }
 
-void XZipAddFiles(ConstRef(CFilePath) fzipfile, WBool recursefolders, ConstRef(CDataVectorT<mbchar>) filespecs, ConstRef(CDataVectorT<mbchar>) excludespecs)
+void XZipAddFiles(ConstRef(CFilePath) fzipfile, WBool recursefolders, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs)
 {
 	Ptr(CSecurityFile) pFile = NULL;
 	bool bExist = false;
@@ -554,7 +554,7 @@ static sword __stdcall TGetFileListSearchFunc( ConstPointer ArrayItem, ConstPoin
 	return pArrayItem->fPath.Compare(vDataItem, 0, CStringLiteral::cIgnoreCase);
 }
 
-static void _XZipGetFileList(Ptr(CArchiveIterator) zipIt, ConstRef(CDataVectorT<mbchar>) filespecs, Ref(CDataSVectorT<TGetFileList>) list)
+static void _XZipGetFileList(Ptr(CArchiveIterator) zipIt, ConstRef(TMBCharList) filespecs, Ref(CDataSVectorT<TGetFileList>) list)
 {
 	while ( zipIt->Next() )
 	{
@@ -598,7 +598,7 @@ static void _XZipGetFileList(Ptr(CArchiveIterator) zipIt, ConstRef(CDataVectorT<
 	zipIt->release();
 }
 
-void XZipFreshenFiles(ConstRef(CFilePath) fzipfile, ConstRef(CDataVectorT<mbchar>) filespecs, ConstRef(CDataVectorT<mbchar>) excludespecs)
+void XZipFreshenFiles(ConstRef(CFilePath) fzipfile, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs)
 {
 	Ptr(CSecurityFile) pFile = NULL;
 
@@ -729,7 +729,7 @@ void XZipFreshenFiles(ConstRef(CFilePath) fzipfile, ConstRef(CDataVectorT<mbchar
 	}
 }
 
-static void _XZipUpdateAddFilesRecurse(Ref(CZipArchive) zipArchive, ConstRef(CFilePath) dir, ConstRef(CStringBuffer) pattern, ConstRef(CDataVectorT<mbchar>) excludespecs, ConstRef(CDataSVectorT<TGetFileList>) fileList, bool bIsFSNTFS)
+static void _XZipUpdateAddFilesRecurse(Ref(CZipArchive) zipArchive, ConstRef(CFilePath) dir, ConstRef(CStringBuffer) pattern, ConstRef(TMBCharList) excludespecs, ConstRef(CDataSVectorT<TGetFileList>) fileList, bool bIsFSNTFS)
 {
 	CDirectoryIterator it;
 	CDataSVectorT<TGetFileList>::Iterator itG;
@@ -792,10 +792,10 @@ static void _XZipUpdateAddFilesRecurse(Ref(CZipArchive) zipArchive, ConstRef(CFi
 	}
 }
 
-void _XZipUpdateAddFiles(Ref(CZipArchive) zipArchive, WBool recursefolders, ConstRef(CDataVectorT<mbchar>) filespecs, ConstRef(CDataVectorT<mbchar>) excludespecs, ConstRef(CDataSVectorT<TGetFileList>) fileList)
+void _XZipUpdateAddFiles(Ref(CZipArchive) zipArchive, WBool recursefolders, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs, ConstRef(CDataSVectorT<TGetFileList>) fileList)
 {
 	CDirectoryIterator it;
-	CDataVectorT<mbchar>::Iterator itP;
+	TMBCharList::Iterator itP;
 	CDataSVectorT<TGetFileList>::Iterator itG;
 	CFilePath fpath;
 	FILETIME cftime;
@@ -867,7 +867,7 @@ void _XZipUpdateAddFiles(Ref(CZipArchive) zipArchive, WBool recursefolders, Cons
 	}
 }
 
-void XZipUpdateFiles(ConstRef(CFilePath) fzipfile, WBool recursefolders, ConstRef(CDataVectorT<mbchar>) filespecs, ConstRef(CDataVectorT<mbchar>) excludespecs)
+void XZipUpdateFiles(ConstRef(CFilePath) fzipfile, WBool recursefolders, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs)
 {
 	Ptr(CSecurityFile) pFile = NULL;
 

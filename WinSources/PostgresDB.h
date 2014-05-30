@@ -96,7 +96,7 @@ class CPostgresStatementImpl;
 class WINSOURCES_API CPostgresStatement : public CCppObject
 {
 public:
-	typedef CDataVectorT<CPostgresColumn> CPostgresColumns;
+	typedef CDataVectorT<CPostgresColumn, CStringByNameLessFunctor<CPostgresColumn>> CPostgresColumns;
 
 	CPostgresStatement(CPostgresEnvironment* lpEnv = NULL, CPostgresStatementImpl* lpStmtImpl = NULL);
 	virtual ~CPostgresStatement(void);
@@ -106,7 +106,7 @@ public:
 
 	word get_ColumnCount() const;
 	CPostgresColumn* get_ColumnInfo(word ix) const;
-	CPostgresColumn* get_ColumnInfo(CConstPointer name) const;
+	CPostgresColumn* get_ColumnInfo(CConstPointer name);
 
 	sqword get_RowCount() const;
 

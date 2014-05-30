@@ -40,7 +40,16 @@ public:
 		virtual ~ReplacePointer();
 	};
 
-	typedef CDataVectorT<ReplacePointer> ReplacePointers;
+	class WINSOURCES_API ReplacePointerLessFunctor
+	{
+	public:
+		bool operator()(ConstPtr(ReplacePointer) r1, ConstPtr(ReplacePointer) r2) const
+		{
+			return (r1->_begin < r2->_begin);
+		}
+	};
+
+	typedef CDataVectorT<ReplacePointer, ReplacePointerLessFunctor> ReplacePointers;
 
 	class WINSOURCES_API ContentPointer: public CCppObject
 	{
@@ -66,7 +75,16 @@ public:
 		virtual ~ResourceItem();
 	};
 
-	typedef CDataVectorT<ResourceItem> ResourceItems;
+	class WINSOURCES_API ResourceItemLessFunctor
+	{
+	public:
+		bool operator()(ConstPtr(ResourceItem) r1, ConstPtr(ResourceItem) r2) const
+		{
+			return (r1->_resource < r2->_resource);
+		}
+	};
+
+	typedef CDataVectorT<ResourceItem, ResourceItemLessFunctor> ResourceItems;
 
 	class WINSOURCES_API ServerItem: public CCppObject
 	{
@@ -78,7 +96,16 @@ public:
 		virtual ~ServerItem();
 	};
 
-	typedef CDataVectorT<ServerItem> ServerItems;
+	class WINSOURCES_API ServerItemLessFunctor
+	{
+	public:
+		bool operator()(ConstPtr(ServerItem) r1, ConstPtr(ServerItem) r2) const
+		{
+			return (r1->_server < r2->_server);
+		}
+	};
+
+	typedef CDataVectorT<ServerItem, ServerItemLessFunctor> ServerItems;
 
 public:
 	CHtmlPage(void);

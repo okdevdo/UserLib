@@ -77,9 +77,9 @@ public:
 		m_AnyOption(false),
 		m_help(false),
 		m_check(false),
-		m_scheck(__FILE__LINE__ 16, 16, VectorEmptyDeleteFunc),
+		m_scheck(__FILE__LINE__ 16, 16),
 		m_argument(false),
-		m_sargument(__FILE__LINE__ 16, 16, VectorEmptyDeleteFunc),
+		m_sargument(__FILE__LINE__ 16, 16),
 		m_md4(false),
 		m_md5(false),
 		m_sha(false),
@@ -278,7 +278,7 @@ public:
 
 		if (m_argument)
 		{
-			CDataVectorT<mbchar>::Iterator it = m_sargument.Begin();
+			TMBCharList::Iterator it = m_sargument.Begin();
 
 			while (it)
 			{
@@ -290,7 +290,7 @@ public:
 		}
 		if (m_check)
 		{
-			CDataVectorT<mbchar>::Iterator it = m_scheck.Begin();
+			TMBCharList::Iterator it = m_scheck.Begin();
 
 			while (it)
 			{
@@ -387,9 +387,9 @@ protected:
 	WBool m_AnyOption;
 	WBool m_help;
 	WBool m_check;
-	CDataVectorT<mbchar> m_scheck;
+	TMBCharList m_scheck;
 	WBool m_argument;
-	CDataVectorT<mbchar> m_sargument;
+	TMBCharList m_sargument;
 	WBool m_md4;
 	WBool m_md5;
 	WBool m_sha;

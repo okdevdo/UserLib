@@ -1050,7 +1050,7 @@ static void __stdcall CEventLogProvidersDeleteFunc(ConstPointer data, Pointer co
 }
 
 CEventLogProviders::CEventLogProviders(DECL_FILE_LINE0) :
-CDataVectorT<CEventLogProvider>(ARGS_FILE_LINE 16, 256, CEventLogProvidersDeleteFunc, NULL, CEventLogProvidersSearchAndSortFunc)
+	super(ARGS_FILE_LINE 16, 256)
 {}
 
 CEventLogProviders::~CEventLogProviders()
@@ -1127,19 +1127,6 @@ BOOLEAN CEventLogProviders::Load()
 	return TRUE;
 }
 
-BOOLEAN CEventLogProviders::ForEach(TForEachFunc func, Pointer context) const
-{
-	Iterator it = Begin();
-
-	while (it)
-	{
-		if (!func(*it, context))
-			return FALSE;
-		++it;
-	}
-	return TRUE;
-}
-
 Ptr(CEventLogProvider) CEventLogProviders::FindSorted(ConstRef(CStringBuffer) name)
 {
 	CEventLogProvider toFind;
@@ -1148,7 +1135,7 @@ Ptr(CEventLogProvider) CEventLogProviders::FindSorted(ConstRef(CStringBuffer) na
 
 	Iterator fIt = super::FindSorted(&toFind);
 
-	if (fIt)
+	if (super::MatchSorted(fIt, &toFind))
 		return *fIt;
 	return NULL;
 }

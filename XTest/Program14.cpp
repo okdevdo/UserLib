@@ -127,6 +127,8 @@ public:
 		return false;
 	}
 
+	__inline ConstRef(CStringBuffer) get_Name() const { return fname; }
+
 public:
 	CStringBuffer faccess;
 	word fcnt;
@@ -177,16 +179,17 @@ private:
 	Ref(CTestFileInfoVector) _vector;
 };
 
-class CTestFileInfoVector: public CDataVectorT<CTestFileInfo>
+class CTestFileInfoVector: public CDataVectorT<CTestFileInfo, CStringByNameLessFunctor<CTestFileInfo> >
 {
+	typedef CDataVectorT<CTestFileInfo, CStringByNameLessFunctor<CTestFileInfo> > super;
+
 public:
 	CTestFileInfoVector(TListCnt cnt, TListCnt exp):
-		CDataVectorT<CTestFileInfo>(__FILE__LINE__ cnt, exp)
+		super(__FILE__LINE__ cnt, exp)
 	{
 	}
-	~CTestFileInfoVector()
+	virtual ~CTestFileInfoVector()
 	{
-		Close(TestFileInfoDeleteFunc, NULL);
 	}
 
 	void LoadListFile(ConstRef(CFilePath) fpath)
@@ -216,9 +219,9 @@ public:
 			CTestFileInfo finfo;
 
 			finfo.fname = fit.get_Name();
-			Iterator it = FindSorted(&finfo, TestFileInfoSearchAndSortFunc);
+			Iterator it = FindSorted(&finfo);
 
-			if ( it && (*it) && (TestFileInfoSearchAndSortFunc(*it, &finfo) == 0) )
+			if (MatchSorted(it, &finfo))
 			{
 				CTestFileInfo* pfinfo = *it;
 				CDateTime pFTime = fit.get_LastWriteTime();
@@ -242,8 +245,8 @@ public:
 			if ( !(fit.is_SubDir()) )
 			{
 				finfo.fname = fit.get_Name();
-				it = FindSorted(&finfo, TestFileInfoSearchAndSortFunc);
-				if ( it && (*it) && (TestFileInfoSearchAndSortFunc(*it, &finfo) == 0) )
+				it = FindSorted(&finfo);
+				if (MatchSorted(it, &finfo))
 				{
 					CTestFileInfo* pfinfo = *it;
 					CDateTime pFTime = fit.get_LastWriteTime();
@@ -268,7 +271,7 @@ void CTestFileInfoVectorFilterOutput::write(Ref(CByteBuffer) outputbuf)
 	sBuf.convertFromByteBuffer(outputbuf);
 	it = sBuf;
 	pInfo->Parse(it);
-	_vector.InsertSorted(pInfo, TestFileInfoSearchAndSortFunc);
+	_vector.InsertSorted(pInfo);
 }
 
 class CTestFTPClient

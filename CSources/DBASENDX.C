@@ -688,7 +688,7 @@ FBTreeLast(Pointer liste, Ptr(LSearchResultType) result)
 }
 
 static errno_t __stdcall 
-FBTreeFindSortedHelper(_pFBTreeFileNode pNode, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) result)
+FBTreeFindSortedHelper(_pFBTreeFileNode pNode, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context, Ptr(LSearchResultType) result)
 {
 	_pFBTreeFileHead pHead;
 	_pFBTreeFileNodeEntry p;
@@ -722,7 +722,7 @@ FBTreeFindSortedHelper(_pFBTreeFileNode pNode, ConstPointer data, TSearchAndSort
 }
 
 errno_t __stdcall 
-FBTreeFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) result)
+FBTreeFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context, Ptr(LSearchResultType) result)
 {
 	_pFBTreeFileHead pHead = CastAnyPtr(_FBTreeFileHead, liste);
 	_pFBTreeFileNode pNode = pHead->root;
@@ -746,7 +746,7 @@ FBTreeFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFu
 }
 
 static errno_t __stdcall 
-FBTreeUpperBoundHelper(_pFBTreeFileNode pNode, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) result)
+FBTreeUpperBoundHelper(_pFBTreeFileNode pNode, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context, Ptr(LSearchResultType) result)
 {
 	_pFBTreeFileHead pHead;
 	_pFBTreeFileNodeEntry p;
@@ -780,7 +780,7 @@ FBTreeUpperBoundHelper(_pFBTreeFileNode pNode, ConstPointer data, TSearchAndSort
 }
 
 errno_t __stdcall 
-FBTreeUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) result)
+FBTreeUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context, Ptr(LSearchResultType) result)
 {
 	_pFBTreeFileHead pHead = CastAnyPtr(_FBTreeFileHead, liste);
 	_pFBTreeFileNode pNode = pHead->root;
@@ -804,7 +804,7 @@ FBTreeUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFu
 }
 
 static errno_t __stdcall 
-FBTreeLowerBoundHelper(_pFBTreeFileNode pNode, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) result)
+FBTreeLowerBoundHelper(_pFBTreeFileNode pNode, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context, Ptr(LSearchResultType) result)
 {
 	_pFBTreeFileHead pHead;
 	_pFBTreeFileNodeEntry p;
@@ -838,7 +838,7 @@ FBTreeLowerBoundHelper(_pFBTreeFileNode pNode, ConstPointer data, TSearchAndSort
 }
 
 errno_t __stdcall 
-FBTreeLowerBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) result)
+FBTreeLowerBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context, Ptr(LSearchResultType) result)
 {
 	_pFBTreeFileHead pHead = CastAnyPtr(_FBTreeFileHead, liste);
 	_pFBTreeFileNode pNode = pHead->root;
@@ -862,7 +862,7 @@ FBTreeLowerBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFu
 }
 
 static void __stdcall
-FBTreeSortedTester1(_pFBTreeFileNode pNode, TSearchAndSortUserFunc sortFunc, ConstPointer context)
+FBTreeSortedTester1(_pFBTreeFileNode pNode, TSearchAndSortUserFunc sortFunc, Pointer context)
 {
 	_pFBTreeFileHead pHead;
 	_pFBTreeFileNodeEntry p;
@@ -898,7 +898,7 @@ FBTreeSortedTester1(_pFBTreeFileNode pNode, TSearchAndSortUserFunc sortFunc, Con
 }
 
 void __stdcall
-FBTreeSortedTester(Pointer liste, TSearchAndSortUserFunc sortFunc, ConstPointer context)
+FBTreeSortedTester(Pointer liste, TSearchAndSortUserFunc sortFunc, Pointer context)
 {
 	_pFBTreeFileHead pHead = CastAnyPtr(_FBTreeFileHead, liste);
 	_pFBTreeFileNode pNode = pHead->root;
@@ -971,7 +971,7 @@ _FBTreeUpdateKeysHelper(_pFBTreeFileNode pNode)
 }
 
 static _pFBTreeFileNode __stdcall
-FBTreeInsertSortedHelper(_pFBTreeFileNode pNode, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) pResult, Ptr(errno_t) err)
+FBTreeInsertSortedHelper(_pFBTreeFileNode pNode, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context, Ptr(LSearchResultType) pResult, Ptr(errno_t) err)
 {
 	_pFBTreeFileHead pHead;
 	_pFBTreeFileNode pNode1 = NULL;
@@ -1132,7 +1132,7 @@ FBTreeInsertSortedHelper(_pFBTreeFileNode pNode, ConstPointer data, TSearchAndSo
 }
 
 errno_t __stdcall 
-FBTreeInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) result)
+FBTreeInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context, Ptr(LSearchResultType) result)
 {
 	_pFBTreeFileHead pHead = CastAnyPtr(_FBTreeFileHead, liste);
 	_pFBTreeFileNode pNode = pHead->root;
@@ -1250,7 +1250,7 @@ FBTreeRemoveJoinHelper(_pFBTreeFileNode pNodeDest, _pFBTreeFileNode pNodeSrc)
 }
 
 static _pFBTreeFileNode __stdcall
-FBTreeRemoveSortedHelper(_pFBTreeFileNode pNode, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(bool) pResult, Ptr(errno_t) pErr)
+FBTreeRemoveSortedHelper(_pFBTreeFileNode pNode, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context, Ptr(bool) pResult, Ptr(errno_t) pErr)
 {
 	_pFBTreeFileHead pHead = pNode->head;
 	_pFBTreeFileNode pNode1;
@@ -1446,7 +1446,7 @@ FBTreeRemoveSortedHelper(_pFBTreeFileNode pNode, ConstPointer data, TSearchAndSo
 }
 
 errno_t __stdcall 
-FBTreeRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(bool) result)
+FBTreeRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context, Ptr(bool) result)
 {
 	_pFBTreeFileHead pHead = CastAnyPtr(_FBTreeFileHead, liste);
 	_pFBTreeFileNode pNode = pHead->root;

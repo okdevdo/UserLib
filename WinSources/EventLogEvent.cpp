@@ -691,7 +691,7 @@ static sword __stdcall CEventLogEventsSearchAndSortFunc(ConstPointer pa, ConstPo
 
 
 CEventLogEvents::CEventLogEvents(DECL_FILE_LINE0):
-CDataVectorT<CEventLogEvent>(ARGS_FILE_LINE 256, 1024, CEventLogEventsDeleteFunc, NULL, CEventLogEventsSearchAndSortFunc)
+	super(ARGS_FILE_LINE 256, 1024)
 {
 }
 
@@ -741,34 +741,7 @@ BOOLEAN CEventLogEvents::Load(ConstRef(CStringBuffer) channelPath, Ptr(CEventLog
 	return TRUE;
 }
 
-BOOLEAN CEventLogEvents::ForEach(TForEachFunc func, Pointer context, bool bReverse) const
-{
-	Iterator it;
-
-	if (bReverse)
-	{
-		it = Last();
-		while (it)
-		{
-			if (!func(*it, context))
-				return FALSE;
-			--it;
-		}
-	}
-	else
-	{
-		it = Begin();
-		while (it)
-		{
-			if (!func(*it, context))
-				return FALSE;
-			++it;
-		}
-	}
-	return TRUE;
-}
-
-Ptr(CEventLogEvent) CEventLogEvents::FindSorted(DWORD64 eventRecordID) const
+Ptr(CEventLogEvent) CEventLogEvents::FindSorted(DWORD64 eventRecordID)
 {
 	CEventLogEvent toFind;
 
@@ -776,7 +749,7 @@ Ptr(CEventLogEvent) CEventLogEvents::FindSorted(DWORD64 eventRecordID) const
 
 	Iterator it = super::FindSorted(&toFind);
 
-	if (it)
+	if (super::MatchSorted(it, &toFind))
 		return *it;
 	return NULL;
 }

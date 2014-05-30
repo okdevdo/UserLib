@@ -122,8 +122,8 @@ static void DepthFirstSearchInstall(Ref(CPackageInfoBTree) packAll, Ref(CPackage
 	node->SetFinished(true);
 }
 
-void ScanSetupIni(CStringLiteral pInstallDir, CStringLiteral psSetupIniScanDir, CDataVectorT<mbchar>& psSetupIniFiles,	
-	CDataVectorT<CStringBuffer>& psSearchPackage, CDataVectorT<mbchar>& psSearchKey, WUInt flags, WInt iVerbose)
+void ScanSetupIni(CStringLiteral pInstallDir, CStringLiteral psSetupIniScanDir, Ref(TMBCharList) psSetupIniFiles,
+	Ref(CDataVectorT<CStringBuffer>) psSearchPackage, Ref(TMBCharList) psSearchKey, WUInt flags, WInt iVerbose)
 {
 	CInstallPackageInfoVector packInstalled(__FILE__LINE__ 128, 128);
 	CSetupIniFileVector inifiles(__FILE__LINE__ 5, 5);
@@ -197,8 +197,8 @@ void ScanSetupIni(CStringLiteral pInstallDir, CStringLiteral psSetupIniScanDir, 
 		{
 			pPack = *it;
 			ipInfo.SetName(pPack->GetPackageName());
-			itIP = packInstalled.FindSorted(&ipInfo, InstallPackageInfoSearchAndSortFunc);
-			if ( itIP && (*itIP) && (InstallPackageInfoSearchAndSortFunc(&ipInfo, *itIP) == 0) )
+			itIP = packInstalled.FindSorted(&ipInfo);
+			if (packInstalled.MatchSorted(itIP,&ipInfo))
 			{
 				pIpInfo = *itIP;
 				pPack->SetInstallInfo(pIpInfo);
@@ -307,7 +307,7 @@ void ScanSetupIni(CStringLiteral pInstallDir, CStringLiteral psSetupIniScanDir, 
 	if ( psSearchKey.Count() > 0 )
 	{
 		CPackageInfoBTree::Iterator itP = packAll.Begin();
-		CDataVectorT<mbchar>::Iterator itK;
+		TMBCharList::Iterator itK;
 		Ptr(CPackageInfo) pInfo = NULL;
 
 		while ( itP )
@@ -393,12 +393,12 @@ void ScanSetupIni(CStringLiteral pInstallDir, CStringLiteral psSetupIniScanDir, 
 			while ( itDN )
 			{
 				PIinfo.SetPackageName(*itDN);
-				itP2 = packages.FindSorted(&PIinfo, PackageInfoSearchAndSortFunc);
-				if ( itP2 && (*itP2) && (PackageInfoSearchAndSortFunc(*itP2, &PIinfo) == 0) )
+				itP2 = packages.FindSorted(&PIinfo);
+				if (packages.MatchSorted(itP2, &PIinfo))
 				{
 					pInfo2 = *itP2;
 					pInfo2->RemoveAllRequiredBy();
-					packages.Remove(itP2, PackageInfoDeleteFunc, NULL);
+					packages.Remove(itP2);
 				}
 				++itDN;
 			}

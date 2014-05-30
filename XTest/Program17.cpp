@@ -33,6 +33,18 @@
 #include <objbase.h>
 #include <Sddl.h>
 
+class TestEventLogRecordForEachFunctor
+{
+public:
+	bool operator()(Ptr(CEventLogRecord) pRecord)
+	{
+		pRecord->Print(CEventLogRecord::XMLOutput, xmlfile);
+		return true;
+	}
+
+	Ptr(CFile) xmlfile;
+};
+
 static bool __stdcall TestEventLogRecordForEachFunc(ConstPointer data, Pointer context)
 {
 	Ptr(CEventLogRecord) pRecord = CastAnyPtr(CEventLogRecord, CastMutable(Pointer, data));
@@ -44,6 +56,7 @@ static bool __stdcall TestEventLogRecordForEachFunc(ConstPointer data, Pointer c
 static void TestEventLogRecord()
 {
 	CEventLogRecords records __FILE__LINE__0P;
+	TestEventLogRecordForEachFunctor arg;
 	CDiskFile xmlFile;
 	CStringBuffer sBuf;
 	CByteBuffer bBuf;
@@ -55,7 +68,8 @@ static void TestEventLogRecord()
 		sBuf.convertToUTF16(bBuf);
 		xmlFile.Write(bBuf);
 		CEventLogRecord::PrintXMLHeader(_T("EventRecords"), &xmlFile);
-		records.ForEach(TestEventLogRecordForEachFunc, &xmlFile);
+		arg.xmlfile = &xmlFile;
+		records.ForEach<TestEventLogRecordForEachFunctor>(arg);
 		CEventLogRecord::PrintXMLFooter(_T("EventRecords"), &xmlFile);
 		xmlFile.Close();
 	}
@@ -315,7 +329,63 @@ public:
 	Ptr(CFile) _fileOut;
 };
 
+class CEventLogChannelForEachFunctor
+{
+public:
+	bool operator()(Ptr(CEventLogChannel) pInfo)
+	{
+		CStringBuffer name(pInfo->get_name());
+		CFilePath fname;
+		CSAXParser parser;
+		Ptr(CMyCSAXParserHandlers) handlers = OK_NEW_OPERATOR CMyCSAXParserHandlers;
+		CStringBuffer name1(pInfo->get_name());
+		CFilePath fname1;
+		Ptr(CFile) f = NULL;
 
+		name.ReplaceString(_T("/"), _T("_"));
+		name.PrependString(_T("C:\\Users\\Oliver\\Documents\\Visual Studio 2013\\Projects\\EventQueryVista\\wevtutil\\"));
+		name.AppendString(_T(".xml"));
+		fname.set_Path(name);
+
+		parser.Create(handlers, _T("utf-16"));
+		handlers->_info = pInfo;
+		try
+		{
+			if (CDirectoryIterator::FileExists(fname))
+			{
+				name1.ReplaceString(_T("/"), _T("_"));
+				name1.PrependString(_T("C:\\Users\\Oliver\\Documents\\Visual Studio 2013\\Projects\\EventQueryVista\\output\\"));
+				name1.AppendString(_T(".log"));
+				fname1.set_Path(name1);
+
+				f = OK_NEW_OPERATOR CStreamFile;
+				f->Create(fname1, true, CFile::UTF_8_Encoding);
+				f->Write(_T("** Channel Name: %s **********\n"), pInfo->get_name().GetString());
+				handlers->_fileOut = f;
+
+				pInfo->LoadEvents(providers);
+				parser.Parse(fname);
+			}
+		}
+		catch (CFileException*)
+		{
+		}
+		catch (CBaseException* ex)
+		{
+			CERR << ex->GetExceptionMessage() << endl;
+		}
+		if (f)
+		{
+			f->Close();
+			f->release();
+		}
+		delete handlers;
+
+		return true;
+	}
+
+	Ptr(CEventLogProviders) providers;
+};
 
 bool __stdcall CEventLogChannelForEachFunc(ConstPointer data, Pointer context)
 {
@@ -369,6 +439,95 @@ bool __stdcall CEventLogChannelForEachFunc(ConstPointer data, Pointer context)
 
 	return true;
 }
+
+class CEventLogProviderForEachFunctor
+{
+public:
+	bool operator()(Ptr(CEventLogProvider) pInfo)
+	{
+		CStringBuffer spath(__FILE__LINE__ _T("C:\\Users\\Oliver\\Documents\\Visual Studio 2013\\Projects\\EventQueryVista\\output\\"));
+		CFilePath fpath;
+		Ptr(CFile) f = OK_NEW_OPERATOR CStreamFile;
+
+		spath.AppendString(pInfo->get_name());
+		spath.AppendString(_T(".txt"));
+		spath.ReplaceString(_T("/"), _T("_"));
+		fpath.set_Path(spath);
+		f->Create(fpath, true, CFile::UTF_8_Encoding);
+
+		f->Write(_T("** Provider Name: %s **********\n"), pInfo->get_name().GetString());
+		f->Write(_T("Provider Guid: %s\n"), pInfo->get_guid().GetString());
+		f->Write(_T("Help link: %s\n"), pInfo->get_helpLink().GetString());
+		f->Write(_T("MessageFile: %s\n"), pInfo->get_messageFile().GetString());
+		f->Write(_T("ParameterFile: %s\n"), pInfo->get_parameterFile().GetString());
+		f->Write(_T("ResourceFile: %s\n"), pInfo->get_resourceFile().GetString());
+
+		CDataDoubleLinkedListT<CEventLogProviderChannel> channelList = pInfo->get_channelList();
+		CDataDoubleLinkedListT<CEventLogProviderChannel>::Iterator channelListIt = channelList.Begin();
+
+		for (TListCnt i = 0; i < channelList.Count(); ++i)
+		{
+			f->Write(_T("Channel%d: Id=%d, Path=%s, Index=%d, MessageID=%d, Message=%s, Imported=%s\n"), i, (*channelListIt)->get_id(),
+				(*channelListIt)->get_path().GetString(), (*channelListIt)->get_index(), (*channelListIt)->get_messageID(), (*channelListIt)->get_message().GetString(), (*channelListIt)->get_imported() ? _T("True") : _T("False"));
+			++channelListIt;
+		}
+
+		CDataDoubleLinkedListT<CEventLogProviderLevel> levelList = pInfo->get_levelList();
+		CDataDoubleLinkedListT<CEventLogProviderLevel>::Iterator levelListIt = levelList.Begin();
+
+		for (TListCnt i = 0; i < levelList.Count(); ++i)
+		{
+			f->Write(_T("Level%d: Value=0x%08x, Name=%s, MessageID=%d, Message=%s\n"), i, (*levelListIt)->get_value(),
+				(*levelListIt)->get_name().GetString(), (*levelListIt)->get_messageID(), (*levelListIt)->get_message().GetString());
+			++levelListIt;
+		}
+
+		CDataDoubleLinkedListT<CEventLogProviderTask> taskList = pInfo->get_taskList();
+		CDataDoubleLinkedListT<CEventLogProviderTask>::Iterator taskListIt = taskList.Begin();
+
+		for (TListCnt i = 0; i < taskList.Count(); ++i)
+		{
+			f->Write(_T("Task%d: Value=0x%08x, Name=%s, EventGuid=%s, MessageID=%d, Message=%s\n"), i, (*taskListIt)->get_value(),
+				(*taskListIt)->get_name().GetString(), (*taskListIt)->get_eventGuid().GetString(), (*taskListIt)->get_messageID(), (*taskListIt)->get_message().GetString());
+			++taskListIt;
+		}
+
+		CDataDoubleLinkedListT<CEventLogProviderOpCode> opCodeList = pInfo->get_opCodeList();
+		CDataDoubleLinkedListT<CEventLogProviderOpCode>::Iterator opCodeListIt = opCodeList.Begin();
+
+		for (TListCnt i = 0; i < opCodeList.Count(); ++i)
+		{
+			f->Write(_T("OpCode%d: Value=0x%08x, Name=%s, MessageID=%d, Message=%s\n"), i, (*opCodeListIt)->get_value(),
+				(*opCodeListIt)->get_name().GetString(), (*opCodeListIt)->get_messageID(), (*opCodeListIt)->get_message().GetString());
+			++opCodeListIt;
+		}
+
+		CDataDoubleLinkedListT<CEventLogProviderKeyWord> keyWordsList = pInfo->get_keyWordList();
+		CDataDoubleLinkedListT<CEventLogProviderKeyWord>::Iterator keyWordsListIt = keyWordsList.Begin();
+
+		for (TListCnt i = 0; i < keyWordsList.Count(); ++i)
+		{
+			f->Write(_T("KeyWords%d: Value=0x%016llx, Name=%s, MessageID=%d, Message=%s\n"), i, (*keyWordsListIt)->get_value(),
+				(*keyWordsListIt)->get_name().GetString(), (*keyWordsListIt)->get_messageID(), (*keyWordsListIt)->get_message().GetString());
+			++keyWordsListIt;
+		}
+
+		CDataDoubleLinkedListT<CEventLogProviderEvent> eventList = pInfo->get_eventList();
+		CDataDoubleLinkedListT<CEventLogProviderEvent>::Iterator eventListIt = eventList.Begin();
+
+		for (TListCnt i = 0; i < eventList.Count(); ++i)
+		{
+			f->Write(_T("Event%d: Id=(%d, 0x%08x), Version=%d, Channel=%d, Level=0x%08x, OpCode=0x%08x, Task=0x%08x, KeyWord=0x%016llx\n"), i, (*eventListIt)->get_id(), (*eventListIt)->get_id(),
+				(*eventListIt)->get_version(), (*eventListIt)->get_channelValue(), (*eventListIt)->get_levelValue(), (*eventListIt)->get_opCodeValue(), (*eventListIt)->get_taskValue(), (*eventListIt)->get_keyWordValue());
+			f->Write(_T("        MessageId=%08x, Message=%s\n"), (*eventListIt)->get_messageID(), (*eventListIt)->get_message().GetString());
+			f->Write(_T("        Template=%s\n"), (*eventListIt)->get_template().GetString());
+			++eventListIt;
+		}
+		f->Close();
+
+		return true;
+	}
+};
 
 bool __stdcall CEventLogProviderForEachFunc(ConstPointer data, Pointer context)
 {
@@ -467,7 +626,7 @@ static void TestEventLogProviderChannel(void)
 	try
 	{
 		providers.Load();
-		providers.ForEach(CEventLogProviderForEachFunc, NULL);
+		providers.ForEach<CEventLogProviderForEachFunctor>();
 	}
 	catch (CBaseException* ex)
 	{
@@ -475,11 +634,13 @@ static void TestEventLogProviderChannel(void)
 	}
 
 	CEventLogChannels channels __FILE__LINE__0P;
+	CEventLogChannelForEachFunctor arg;
 
 	try
 	{
 		channels.Load();
-		channels.ForEach(CEventLogChannelForEachFunc, &providers);
+		arg.providers = &providers;
+		channels.ForEach<CEventLogChannelForEachFunctor>(arg);
 	}
 	catch (CBaseException* ex)
 	{
@@ -487,9 +648,8 @@ static void TestEventLogProviderChannel(void)
 	}
 }
 
-
 void TestEventLog()
 {
 	TestEventLogRecord();
-	//TestEventLogProviderChannel();
+	TestEventLogProviderChannel();
 }

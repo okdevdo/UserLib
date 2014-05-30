@@ -133,7 +133,7 @@ class CMySQLStatementImpl;
 class WINSOURCES_API CMySQLStatement : public CCppObject
 {
 public:
-	typedef CDataVectorT<CMySQLColumn> CMySQLColumns;
+	typedef CDataVectorT<CMySQLColumn, CStringByNameLessFunctor<CMySQLColumn>> CMySQLColumns;
 
 	CMySQLStatement(CMySQLEnvironment* lpEnv = NULL, CMySQLStatementImpl* lpStmtImpl = NULL);
 	virtual ~CMySQLStatement(void);
@@ -143,7 +143,7 @@ public:
 
 	word get_ColumnCount() const;
 	CMySQLColumn* get_ColumnInfo(word ix) const;
-	CMySQLColumn* get_ColumnInfo(CConstPointer name) const;
+	CMySQLColumn* get_ColumnInfo(CConstPointer name);
 
 	sqword get_RowCount() const;
 

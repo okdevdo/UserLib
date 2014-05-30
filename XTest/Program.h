@@ -55,11 +55,23 @@ using std::endl;
 #endif
 
 sword __stdcall TestSortFunc( ConstPointer pa, ConstPointer pb );
+sword __stdcall TestSortUserFunc( ConstPointer pa, ConstPointer pb, Pointer context );
 sword __stdcall TestSortFuncUInt( ConstPointer pa, ConstPointer pb );
 sword __stdcall TestSortFuncULongPointer(ConstPointer pa, ConstPointer pb);
 int __cdecl TestCompareSRand(const void * pA, const void * pB);
 int __cdecl TestCompareSRand64(const void * pA, const void * pB);
 void __stdcall TestDeleteFunc( ConstPointer data, Pointer context );
+
+class TestFuncUIntLessFunctor
+{
+public:
+	bool operator()(ConstPtr(unsigned int) r1, ConstPtr(unsigned int) r2) const
+	{
+		return *r1 < *r2;
+	}
+};
+
+typedef CDataVectorT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int>> TestFuncUIntVector;
 
 void OpenTestFile(CConstPointer _TestFunction);
 sdword WriteTestFile(int testcase, CConstPointer format, ...);
@@ -92,7 +104,7 @@ void TestCSources();
 void TestLinkedByteBuffer();
 
 void TestDirectoryIterator();
-void ScanDirectory(CDataVectorT<mbchar>&, CStringLiteral);
+void ScanDirectory(TMBCharList&, CStringLiteral);
 
 void TestDbase();
 
@@ -111,7 +123,7 @@ void TestFTPClient();
 void TestConsole();
 void TestSQL();
 
-void TestHTTP1(ConstRef(CDataVectorT<mbchar>));
+void TestHTTP1(ConstRef(TMBCharList));
 void TestHTTP2(CStringLiteral);
 
 void TestAsyncFile();

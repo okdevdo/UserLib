@@ -295,6 +295,7 @@ public:
 	 *  \details Getter full name of the option.
 	 */
 	ConstRef(CStringBuffer) fullname() const;
+	ConstRef(CStringBuffer) get_Name() const;
 	/**
 	 *  \brief Getter short name
 	 *  

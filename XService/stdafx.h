@@ -38,4 +38,4 @@
 #include "Thread.h"
 
 void okInstallServices(void);
-void okStartServices(ConstRef(CDataVectorT<mbchar>));
+void okStartServices(ConstRef(TMBCharList));

@@ -159,7 +159,7 @@ class CODBCStatementImpl;
 class WINSOURCES_API CODBCStatement : public CCppObject
 {
 public:
-	typedef CDataVectorT<CODBCColumn> CODBCColumns;
+	typedef CDataVectorT<CODBCColumn, CStringByNameLessFunctor<CODBCColumn>> CODBCColumns;
 
 	enum TParamDirection
 	{
@@ -186,7 +186,7 @@ public:
 
 	word get_ColumnCount() const;
 	CODBCColumn* get_ColumnInfo(word ix) const;
-	CODBCColumn* get_ColumnInfo(LPCTSTR name) const;
+	CODBCColumn* get_ColumnInfo(LPCTSTR name);
 
 	sqword get_RowCount() const;
 

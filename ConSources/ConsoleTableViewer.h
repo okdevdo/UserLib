@@ -104,6 +104,7 @@ public:
 	{
 	public:
 		DataColumnVector(DECL_FILE_LINE TListCnt cnt, TListCnt exp): CDataVectorT<DataColumn>(ARGS_FILE_LINE cnt, exp) {}
+		virtual ~DataColumnVector() {}
 
 		TListCnt get_width() const;
 		Ptr(DataColumn) get_column(sdword start, Ref(sdword) pos) const;

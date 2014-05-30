@@ -829,7 +829,6 @@ void CDockWindow::ClearNeighbours(TDockingStyle style)
 		RemoveNeighbour(pWin);
 		++it1;
 	}
-	delPtr.Close(TDeleteFunc_Empty, NULL);
 }
 
 void CDockWindow::AppendNeighbour(TDockingStyle style, CDockWindow* win)
@@ -2069,8 +2068,12 @@ LRESULT CDockHint::OnPaint(WPARAM wParam, LPARAM lParam)
 // CDockWindowVector
 //***********************************************************
 CDockWindowVector::CDockWindowVector(DECL_FILE_LINE TListCnt max, TListCnt exp):
-	CDataVectorT<CDockWindow>(ARGS_FILE_LINE max, exp),
+	super(ARGS_FILE_LINE max, exp),
 	m_curtransact(-1)
+{
+}
+
+CDockWindowVector::~CDockWindowVector()
 {
 }
 
@@ -2083,7 +2086,7 @@ void CDockWindowVector::StartTransact()
 void CDockWindowVector::Rollback()
 {
 	while ( m_transact[m_curtransact] < Count() )
-		Remove(Last(), TDeleteFunc_Empty, NULL);
+		Remove(Last());
 	--m_curtransact;
 }
 
@@ -2293,6 +2296,143 @@ void CDockWindowVector::Resize(CDockWindow::TDockingStyle style, bool isNeighbou
 //***********************************************************
 // CDockInfo
 //***********************************************************
+class FloatingWindowForEachFunctor
+{
+public:
+	bool operator()(Ptr(CDockWindow) r1)
+	{
+		r1->DestroyWindow();
+		return true;
+	}
+};
+
+typedef struct _tagFindDockWindowByNameParams
+{
+	CStringLiteral name;
+	CDockWindow* pResult;
+
+	_tagFindDockWindowByNameParams(ConstRef(CStringLiteral) _name):
+		name(_name), pResult(NULL) {}
+} TFindDockWindowByNameParams;
+
+class FindDockWindowByNameForEachFunctor
+{
+public:
+	FindDockWindowByNameForEachFunctor(ConstRef(CStringLiteral) _name) :
+		_params(_name)
+	{}
+
+	bool operator()(Ptr(CDockWindow) r1)
+	{
+		if (_params.name.Compare(r1->get_name(), 0, CStringLiteral::cIgnoreCase) == 0)
+		{
+			_params.pResult = r1;
+			return false;
+		}
+		return true;
+	}
+
+	TFindDockWindowByNameParams _params;
+};
+
+typedef struct _tagFindDockWindowParams
+{
+	POINT pt;
+	CDockWindow* pResult;
+	bool bAnyNonFloatingWindows;
+
+	_tagFindDockWindowParams(POINT _pt) :
+		pt(_pt), pResult(NULL), bAnyNonFloatingWindows(false) {}
+} TFindDockWindowParams;
+
+class FindDockWindowForEachFunctor
+{
+public:
+	FindDockWindowForEachFunctor(POINT pt) :
+		_params(pt)
+	{}
+
+	bool operator()(Ptr(CDockWindow) r1)
+	{
+		RECT r;
+
+		_params.bAnyNonFloatingWindows = true;
+		r1->GetWindowRect(&r);
+		if (::PtInRect(&r, _params.pt))
+		{
+			_params.pResult = r1;
+			return false;
+		}
+		return true;
+	}
+
+	TFindDockWindowParams _params;
+};
+
+typedef struct _tagSortDockWindowsParams
+{
+	enum TSortOrder {
+		TSortOrderLeft,
+		TSortOrderTop,
+		TSortOrderRight,
+		TSortOrderBottom
+	};
+
+	TSortOrder sortorder;
+	bool inverse;
+
+	_tagSortDockWindowsParams(TSortOrder _sortorder, bool _inverse = false) :
+		sortorder(_sortorder), inverse(_inverse) {}
+
+} TSortDockWindowsParams;
+
+class SortDockWindowsLessFunctor
+{
+public:
+	SortDockWindowsLessFunctor(TSortDockWindowsParams::TSortOrder _sortorder, bool _inverse = false):
+		params(_sortorder, _inverse)
+	{}
+
+	bool operator()(ConstPtr(CDockWindow) pWin1, ConstPtr(CDockWindow) pWin2) const
+	{
+		RECT r1;
+		RECT r2;
+
+		CastMutablePtr(CDockWindow, pWin1)->GetWindowRect(&r1);
+		CastMutablePtr(CDockWindow, pWin2)->GetWindowRect(&r2);
+		switch (params.sortorder)
+		{
+		case TSortDockWindowsParams::TSortOrderLeft:
+			if (r1.left < r2.left)
+				return params.inverse;
+			break;
+		case TSortDockWindowsParams::TSortOrderTop:
+			if (r1.top < r2.top)
+				return params.inverse;
+			break;
+		case TSortDockWindowsParams::TSortOrderRight:
+			if (r1.right < r2.right)
+				return params.inverse;
+			break;
+		case TSortDockWindowsParams::TSortOrderBottom:
+			if (r1.bottom < r2.bottom)
+				return params.inverse;
+			break;
+		}
+		return false;
+	}
+
+	TSortDockWindowsParams params;
+};
+
+
+
+
+
+
+
+
+
 static sword __stdcall TSearchAndSortFunc_DockInfoClose( ConstPointer ArrayItem, ConstPointer DataItem )
 {
 	CDockWindow* pWin = CastAnyPtr(CDockWindow, CastMutable(Pointer, ArrayItem));
@@ -2438,9 +2578,7 @@ CDockInfo::CDockInfo(CWin* pFrame):
 CDockInfo::~CDockInfo()
 {
 	m_shutdown = TRUE;
-	m_floatingdockwindows.Find(NULL, TSearchAndSortFunc_DockInfoClose);
-	m_floatingdockwindows.Close(TDeleteFunc_Empty, NULL);
-	m_dockwindows.Close(TDeleteFunc_Empty, NULL);
+	m_floatingdockwindows.ForEach<FloatingWindowForEachFunctor>();
 	if ( m_pTargetCenter )
 	{
 		m_pTargetCenter->DestroyWindow();
@@ -2708,10 +2846,10 @@ void CDockInfo::LoadStatus()
 		nkey.FormatString(__FILE__LINE__ _T("%sDocking.Window%d.Name"), nfile.GetString(), ix);
 		name = theGuiApp->config()->GetValue(nkey);
 
-		TSASFindDockWindowByNameParams params(name);
+		FindDockWindowByNameForEachFunctor arg(name);
 
-		m_dockwindows.FindUser(NULL, TSearchAndSortUserFunc_FindDockWindowByName, &params);
-		if ( !(params.pResult) )
+		m_dockwindows.ForEach<FindDockWindowByNameForEachFunctor>(arg);
+		if ( !(arg._params.pResult) )
 			continue;
 
 		CAbstractConfiguration::Values values(__FILE__LINE__ 16, 16);
@@ -2730,10 +2868,10 @@ void CDockInfo::LoadStatus()
 			tmp.Split(_T(":"), tmpa, 2, &tmpc);
 
 			CDockWindow::TDockingStyle style = CDockWindow::String2DockingStyle(tmpa[0]);
-			TSASFindDockWindowByNameParams params1(tmpa[1]);
+			FindDockWindowByNameForEachFunctor arg1(tmpa[1]);
 
-			m_dockwindows.FindUser(NULL, TSearchAndSortUserFunc_FindDockWindowByName, &params1);
-			params.pResult->AppendNeighbour(style, params1.pResult);
+			m_dockwindows.ForEach<FindDockWindowByNameForEachFunctor>(arg);
+			arg._params.pResult->AppendNeighbour(style, arg1._params.pResult);
 
 			++it;
 		}
@@ -2932,10 +3070,10 @@ void CDockInfo::Destroy(CDockWindow* pWindow)
 		return;
 	if ( pWindow->is_Floating() )
 	{
-		CDockWindowVector::Iterator it = m_floatingdockwindows.Find(pWindow, TSearchAndSortFunc_DockInfoFind);
+		CDockWindowVector::Iterator it = m_floatingdockwindows.Find<CCppObjectLessFunctor<CDockWindow>>(pWindow);
 
 		if ( it )
-			m_floatingdockwindows.Remove(it, TDeleteFunc_Empty, NULL);
+			m_floatingdockwindows.Remove(it);
 	}
 }
 
@@ -3294,20 +3432,20 @@ void CDockInfo::UpdateFrame(CDockWindow* pWin)
 {
 	if ( pWin->is_Floating() )
 	{
-		CDockWindowVector::Iterator it = m_dockwindows.Find(pWin, TSearchAndSortFunc_DockInfoFind);
+		CDockWindowVector::Iterator it = m_dockwindows.Find<CCppObjectLessFunctor<CDockWindow>>(pWin);
 
 		if ( it )
-			m_dockwindows.Remove(it, TDeleteFunc_Empty, NULL);
+			m_dockwindows.Remove(it);
 		m_pundockwin = pWin;
 		//pWin->ClearNeighbours();
 		//m_floatingdockwindows.Append(pWin);
 	}
 	else
 	{
-		CDockWindowVector::Iterator it = m_floatingdockwindows.Find(pWin, TSearchAndSortFunc_DockInfoFind);
+		CDockWindowVector::Iterator it = m_floatingdockwindows.Find<CCppObjectLessFunctor<CDockWindow>>(pWin);
 
 		if ( it )
-			m_floatingdockwindows.Remove(it, TDeleteFunc_Empty, NULL);
+			m_floatingdockwindows.Remove(it);
 		m_pdockwin = pWin;
 		//m_dockwindows.Append(pWin);
 	}
@@ -3345,20 +3483,20 @@ void CDockInfo::ShowDockTargets(CDockWindow* pWin)
 void CDockInfo::FindClientNeighboursLeft2RightTop(RECT r1)
 {
 	POINT pt = { r1.left + 10, r1.top - 10 };
-	TSASFindDockWindowParams params(pt);
+	FindDockWindowForEachFunctor arg(pt);
 	RECT r3;
 	RECT r4;
 
-	m_dockwindows.FindUser(NULL, TSearchAndSortUserFunc_FindDockWindow, &params);
+	m_dockwindows.ForEach<FindDockWindowForEachFunctor>(arg);
 
-	while ( params.pResult )
+	while ( arg._params.pResult )
 	{
-		m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleTop, params.pResult);
-		params.pResult->AppendNeighbour(CDockWindow::TDockingStyleBottom, m_pCurrentFloatingWindow);
-		params.pResult->GetWindowRect(&r3);
+		m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleTop, arg._params.pResult);
+		arg._params.pResult->AppendNeighbour(CDockWindow::TDockingStyleBottom, m_pCurrentFloatingWindow);
+		arg._params.pResult->GetWindowRect(&r3);
 		if ( r3.right < r1.right )
 		{
-			CDockWindow::TNeighbourVector::Iterator it = params.pResult->get_Neighbours();
+			CDockWindow::TNeighbourVector::Iterator it = arg._params.pResult->get_Neighbours();
 			bool bFound = false;
 
 			while ( it )
@@ -3370,7 +3508,7 @@ void CDockInfo::FindClientNeighboursLeft2RightTop(RECT r1)
 					pN->win->GetWindowRect(&r4);
 					if ( (r4.bottom == r1.top) && (r4.left <= r1.right) )
 					{
-						params.pResult = pN->win;
+						arg._params.pResult = pN->win;
 						bFound = true;
 						break;
 					}
@@ -3388,20 +3526,20 @@ void CDockInfo::FindClientNeighboursLeft2RightTop(RECT r1)
 void CDockInfo::FindClientNeighboursLeft2RightBottom(RECT r1)
 {
 	POINT pt = { r1.left + 10, r1.bottom + 10 };
-	TSASFindDockWindowParams params(pt);
+	FindDockWindowForEachFunctor arg(pt);
 	RECT r3;
 	RECT r4;
 
-	m_dockwindows.FindUser(NULL, TSearchAndSortUserFunc_FindDockWindow, &params);
+	m_dockwindows.ForEach<FindDockWindowForEachFunctor>(arg);
 
-	while ( params.pResult )
+	while (arg._params.pResult)
 	{
-		m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleBottom, params.pResult);
-		params.pResult->AppendNeighbour(CDockWindow::TDockingStyleTop, m_pCurrentFloatingWindow);
-		params.pResult->GetWindowRect(&r3);
+		m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleBottom, arg._params.pResult);
+		arg._params.pResult->AppendNeighbour(CDockWindow::TDockingStyleTop, m_pCurrentFloatingWindow);
+		arg._params.pResult->GetWindowRect(&r3);
 		if ( r3.right < r1.right )
 		{
-			CDockWindow::TNeighbourVector::Iterator it = params.pResult->get_Neighbours();
+			CDockWindow::TNeighbourVector::Iterator it = arg._params.pResult->get_Neighbours();
 			bool bFound = false;
 
 			while ( it )
@@ -3413,7 +3551,7 @@ void CDockInfo::FindClientNeighboursLeft2RightBottom(RECT r1)
 					pN->win->GetWindowRect(&r4);
 					if ( (r4.top == r1.bottom) && (r4.left <= r1.right) )
 					{
-						params.pResult = pN->win;
+						arg._params.pResult = pN->win;
 						bFound = true;
 						break;
 					}
@@ -3431,20 +3569,20 @@ void CDockInfo::FindClientNeighboursLeft2RightBottom(RECT r1)
 void CDockInfo::FindClientNeighboursTop2DownLeft(RECT r1)
 {
 	POINT pt = { r1.left - 10, r1.top + 10 };
-	TSASFindDockWindowParams params(pt);
+	FindDockWindowForEachFunctor arg(pt);
 	RECT r3;
 	RECT r4;
 
-	m_dockwindows.FindUser(NULL, TSearchAndSortUserFunc_FindDockWindow, &params);
+	m_dockwindows.ForEach<FindDockWindowForEachFunctor>(arg);
 
-	while ( params.pResult )
+	while (arg._params.pResult)
 	{
-		m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleLeft, params.pResult);
-		params.pResult->AppendNeighbour(CDockWindow::TDockingStyleRight, m_pCurrentFloatingWindow);
-		params.pResult->GetWindowRect(&r3);
+		m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleLeft, arg._params.pResult);
+		arg._params.pResult->AppendNeighbour(CDockWindow::TDockingStyleRight, m_pCurrentFloatingWindow);
+		arg._params.pResult->GetWindowRect(&r3);
 		if ( r3.bottom < r1.bottom )
 		{
-			CDockWindow::TNeighbourVector::Iterator it = params.pResult->get_Neighbours();
+			CDockWindow::TNeighbourVector::Iterator it = arg._params.pResult->get_Neighbours();
 			bool bFound = false;
 
 			while ( it )
@@ -3456,7 +3594,7 @@ void CDockInfo::FindClientNeighboursTop2DownLeft(RECT r1)
 					pN->win->GetWindowRect(&r4);
 					if ( (r4.right == r1.left) && (r4.top <= r1.bottom) )
 					{
-						params.pResult = pN->win;
+						arg._params.pResult = pN->win;
 						bFound = true;
 						break;
 					}
@@ -3474,20 +3612,20 @@ void CDockInfo::FindClientNeighboursTop2DownLeft(RECT r1)
 void CDockInfo::FindClientNeighboursTop2DownRight(RECT r1)
 {
 	POINT pt = { r1.right + 10, r1.top + 10 };
-	TSASFindDockWindowParams params(pt);
+	FindDockWindowForEachFunctor arg(pt);
 	RECT r3;
 	RECT r4;
 
-	m_dockwindows.FindUser(NULL, TSearchAndSortUserFunc_FindDockWindow, &params);
+	m_dockwindows.ForEach<FindDockWindowForEachFunctor>(arg);
 
-	while ( params.pResult )
+	while (arg._params.pResult)
 	{
-		m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleRight, params.pResult);
-		params.pResult->AppendNeighbour(CDockWindow::TDockingStyleLeft, m_pCurrentFloatingWindow);
-		params.pResult->GetWindowRect(&r3);
+		m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleRight, arg._params.pResult);
+		arg._params.pResult->AppendNeighbour(CDockWindow::TDockingStyleLeft, m_pCurrentFloatingWindow);
+		arg._params.pResult->GetWindowRect(&r3);
 		if ( r3.bottom < r1.bottom )
 		{
-			CDockWindow::TNeighbourVector::Iterator it = params.pResult->get_Neighbours();
+			CDockWindow::TNeighbourVector::Iterator it = arg._params.pResult->get_Neighbours();
 			bool bFound = false;
 
 			while ( it )
@@ -3499,7 +3637,7 @@ void CDockInfo::FindClientNeighboursTop2DownRight(RECT r1)
 					pN->win->GetWindowRect(&r4);
 					if ( (r4.left == r1.right) && (r4.top <= r1.bottom) )
 					{
-						params.pResult = pN->win;
+						arg._params.pResult = pN->win;
 						bFound = true;
 						break;
 					}
@@ -3517,20 +3655,20 @@ void CDockInfo::FindClientNeighboursTop2DownRight(RECT r1)
 void CDockInfo::FindClientNeighboursRight2LeftTop(RECT r1)
 {
 	POINT pt = { r1.right - 10, r1.top - 10 };
-	TSASFindDockWindowParams params(pt);
+	FindDockWindowForEachFunctor arg(pt);
 	RECT r3;
 	RECT r4;
 
-	m_dockwindows.FindUser(NULL, TSearchAndSortUserFunc_FindDockWindow, &params);
+	m_dockwindows.ForEach<FindDockWindowForEachFunctor>(arg);
 
-	while ( params.pResult )
+	while (arg._params.pResult)
 	{
-		m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleTop, params.pResult);
-		params.pResult->AppendNeighbour(CDockWindow::TDockingStyleBottom, m_pCurrentFloatingWindow);
-		params.pResult->GetWindowRect(&r3);
+		m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleTop, arg._params.pResult);
+		arg._params.pResult->AppendNeighbour(CDockWindow::TDockingStyleBottom, m_pCurrentFloatingWindow);
+		arg._params.pResult->GetWindowRect(&r3);
 		if ( r3.left > r1.left )
 		{
-			CDockWindow::TNeighbourVector::Iterator it = params.pResult->get_Neighbours();
+			CDockWindow::TNeighbourVector::Iterator it = arg._params.pResult->get_Neighbours();
 			bool bFound = false;
 
 			while ( it )
@@ -3542,7 +3680,7 @@ void CDockInfo::FindClientNeighboursRight2LeftTop(RECT r1)
 					pN->win->GetWindowRect(&r4);
 					if ( (r4.bottom == r1.top) && (r4.right >= r1.left) )
 					{
-						params.pResult = pN->win;
+						arg._params.pResult = pN->win;
 						bFound = true;
 						break;
 					}
@@ -3560,20 +3698,20 @@ void CDockInfo::FindClientNeighboursRight2LeftTop(RECT r1)
 void CDockInfo::FindClientNeighboursRight2LeftBottom(RECT r1)
 {
 	POINT pt = { r1.right - 10, r1.bottom + 10 };
-	TSASFindDockWindowParams params(pt);
+	FindDockWindowForEachFunctor arg(pt);
 	RECT r3;
 	RECT r4;
 
-	m_dockwindows.FindUser(NULL, TSearchAndSortUserFunc_FindDockWindow, &params);
+	m_dockwindows.ForEach<FindDockWindowForEachFunctor>(arg);
 
-	while ( params.pResult )
+	while (arg._params.pResult)
 	{
-		m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleBottom, params.pResult);
-		params.pResult->AppendNeighbour(CDockWindow::TDockingStyleTop, m_pCurrentFloatingWindow);
-		params.pResult->GetWindowRect(&r3);
+		m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleBottom, arg._params.pResult);
+		arg._params.pResult->AppendNeighbour(CDockWindow::TDockingStyleTop, m_pCurrentFloatingWindow);
+		arg._params.pResult->GetWindowRect(&r3);
 		if ( r3.left > r1.left )
 		{
-			CDockWindow::TNeighbourVector::Iterator it = params.pResult->get_Neighbours();
+			CDockWindow::TNeighbourVector::Iterator it = arg._params.pResult->get_Neighbours();
 			bool bFound = false;
 
 			while ( it )
@@ -3585,7 +3723,7 @@ void CDockInfo::FindClientNeighboursRight2LeftBottom(RECT r1)
 					pN->win->GetWindowRect(&r4);
 					if ( (r4.top == r1.bottom) && (r4.right >= r1.left) )
 					{
-						params.pResult = pN->win;
+						arg._params.pResult = pN->win;
 						bFound = true;
 						break;
 					}
@@ -3603,20 +3741,20 @@ void CDockInfo::FindClientNeighboursRight2LeftBottom(RECT r1)
 void CDockInfo::FindClientNeighboursDown2TopLeft(RECT r1)
 {
 	POINT pt = { r1.left - 10, r1.bottom - 10 };
-	TSASFindDockWindowParams params(pt);
+	FindDockWindowForEachFunctor arg(pt);
 	RECT r3;
 	RECT r4;
 
-	m_dockwindows.FindUser(NULL, TSearchAndSortUserFunc_FindDockWindow, &params);
+	m_dockwindows.ForEach<FindDockWindowForEachFunctor>(arg);
 
-	while ( params.pResult )
+	while (arg._params.pResult)
 	{
-		m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleLeft, params.pResult);
-		params.pResult->AppendNeighbour(CDockWindow::TDockingStyleRight, m_pCurrentFloatingWindow);
-		params.pResult->GetWindowRect(&r3);
+		m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleLeft, arg._params.pResult);
+		arg._params.pResult->AppendNeighbour(CDockWindow::TDockingStyleRight, m_pCurrentFloatingWindow);
+		arg._params.pResult->GetWindowRect(&r3);
 		if ( r3.top > r1.top )
 		{
-			CDockWindow::TNeighbourVector::Iterator it = params.pResult->get_Neighbours();
+			CDockWindow::TNeighbourVector::Iterator it = arg._params.pResult->get_Neighbours();
 			bool bFound = false;
 
 			while ( it )
@@ -3628,7 +3766,7 @@ void CDockInfo::FindClientNeighboursDown2TopLeft(RECT r1)
 					pN->win->GetWindowRect(&r4);
 					if ( (r4.right == r1.left) && (r4.bottom <= r1.top) )
 					{
-						params.pResult = pN->win;
+						arg._params.pResult = pN->win;
 						bFound = true;
 						break;
 					}
@@ -3646,20 +3784,20 @@ void CDockInfo::FindClientNeighboursDown2TopLeft(RECT r1)
 void CDockInfo::FindClientNeighboursDown2TopRight(RECT r1)
 {
 	POINT pt = { r1.right + 10, r1.bottom - 10 };
-	TSASFindDockWindowParams params(pt);
+	FindDockWindowForEachFunctor arg(pt);
 	RECT r3;
 	RECT r4;
 
-	m_dockwindows.FindUser(NULL, TSearchAndSortUserFunc_FindDockWindow, &params);
+	m_dockwindows.ForEach<FindDockWindowForEachFunctor>(arg);
 
-	while ( params.pResult )
+	while (arg._params.pResult)
 	{
-		m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleRight, params.pResult);
-		params.pResult->AppendNeighbour(CDockWindow::TDockingStyleLeft, m_pCurrentFloatingWindow);
-		params.pResult->GetWindowRect(&r3);
+		m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleRight, arg._params.pResult);
+		arg._params.pResult->AppendNeighbour(CDockWindow::TDockingStyleLeft, m_pCurrentFloatingWindow);
+		arg._params.pResult->GetWindowRect(&r3);
 		if ( r3.top > r1.top )
 		{
-			CDockWindow::TNeighbourVector::Iterator it = params.pResult->get_Neighbours();
+			CDockWindow::TNeighbourVector::Iterator it = arg._params.pResult->get_Neighbours();
 			bool bFound = false;
 
 			while ( it )
@@ -3671,7 +3809,7 @@ void CDockInfo::FindClientNeighboursDown2TopRight(RECT r1)
 					pN->win->GetWindowRect(&r4);
 					if ( (r4.left == r1.right) && (r4.bottom <= r1.top) )
 					{
-						params.pResult = pN->win;
+						arg._params.pResult = pN->win;
 						bFound = true;
 						break;
 					}
@@ -3716,15 +3854,15 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 			m_pTarget[ix]->SetInitialPos(&rWindow);
 	}
 
-	TSASFindDockWindowParams params(*pt);
+	FindDockWindowForEachFunctor arg(*pt);
 
-	m_dockwindows.FindUser(NULL, TSearchAndSortUserFunc_FindDockWindow, &params);
+	m_dockwindows.ForEach<FindDockWindowForEachFunctor>(arg);
 
-	if ( params.bAnyNonFloatingWindows )
+	if ( arg._params.bAnyNonFloatingWindows )
 	{
-		if ( params.pResult )
+		if ( arg._params.pResult )
 		{
-			params.pResult->GetWindowRect(&r1);
+			arg._params.pResult->GetWindowRect(&r1);
 			m_pTargetCenter->GetWindowRect(&r2);
 			r3.left = r1.left + ((r1.right - r1.left - r2.right + r2.left) / 2);
 			r3.top = r1.top + ((r1.bottom - r1.top - r2.bottom + r2.top) / 2);
@@ -3752,7 +3890,7 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 			m_pTargetCenter->SetInitialPos(&r1);
 
 			CTabControl* pTabCtrl1 = CastDynamicPtr(CTabControl, m_pCurrentFloatingWindow->get_Client());
-			CTabControl* pTabCtrl2 = CastDynamicPtr(CTabControl, params.pResult->get_Client());
+			CTabControl* pTabCtrl2 = CastDynamicPtr(CTabControl, arg._params.pResult->get_Client());
 
 			m_pTargetCenter->set_OverClientArea((!pTabCtrl1) || (!pTabCtrl2));
 		}
@@ -3785,11 +3923,11 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 			if ( m_pHint->is_Visible() )
 				m_pHint->set_Visible(FALSE);
 			m_pCurrentFloatingWindow->set_dockingstyle(CDockWindow::TDockingStyleLeft);
-			if ( params.bAnyNonFloatingWindows )
+			if ( arg._params.bAnyNonFloatingWindows )
 			{
-				TSASSortDockWindowsParams params(TSASSortDockWindowsParams::TSortOrderLeft);
+				SortDockWindowsLessFunctor arg1(TSortDockWindowsParams::TSortOrderLeft);
 
-				m_dockwindows.SortUser(TSearchAndSortUserFunc_SortDockWindows, &params);
+				m_dockwindows.Sort<SortDockWindowsLessFunctor>(arg1);
 
 				CDockWindowVector::Iterator it = m_dockwindows.Begin();
 				
@@ -3835,11 +3973,11 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 			if ( m_pHint->is_Visible() )
 				m_pHint->set_Visible(FALSE);
 			m_pCurrentFloatingWindow->set_dockingstyle(CDockWindow::TDockingStyleTop);
-			if ( params.bAnyNonFloatingWindows )
+			if ( arg._params.bAnyNonFloatingWindows )
 			{
-				TSASSortDockWindowsParams params(TSASSortDockWindowsParams::TSortOrderTop);
+				SortDockWindowsLessFunctor arg1(TSortDockWindowsParams::TSortOrderTop);
 
-				m_dockwindows.SortUser(TSearchAndSortUserFunc_SortDockWindows, &params);
+				m_dockwindows.Sort<SortDockWindowsLessFunctor>(arg1);
 
 				CDockWindowVector::Iterator it = m_dockwindows.Begin();
 				
@@ -3885,11 +4023,11 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 			if ( m_pHint->is_Visible() )
 				m_pHint->set_Visible(FALSE);
 			m_pCurrentFloatingWindow->set_dockingstyle(CDockWindow::TDockingStyleRight);
-			if ( params.bAnyNonFloatingWindows )
+			if ( arg._params.bAnyNonFloatingWindows )
 			{
-				TSASSortDockWindowsParams params(TSASSortDockWindowsParams::TSortOrderRight, true);
+				SortDockWindowsLessFunctor arg1(TSortDockWindowsParams::TSortOrderRight, true);
 
-				m_dockwindows.SortUser(TSearchAndSortUserFunc_SortDockWindows, &params);
+				m_dockwindows.Sort<SortDockWindowsLessFunctor>(arg1);
 
 				CDockWindowVector::Iterator it = m_dockwindows.Begin();
 				
@@ -3935,11 +4073,11 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 			if ( m_pHint->is_Visible() )
 				m_pHint->set_Visible(FALSE);
 			m_pCurrentFloatingWindow->set_dockingstyle(CDockWindow::TDockingStyleBottom);
-			if ( params.bAnyNonFloatingWindows )
+			if ( arg._params.bAnyNonFloatingWindows )
 			{
-				TSASSortDockWindowsParams params(TSASSortDockWindowsParams::TSortOrderBottom, true);
+				SortDockWindowsLessFunctor arg1(TSortDockWindowsParams::TSortOrderBottom, true);
 
-				m_dockwindows.SortUser(TSearchAndSortUserFunc_SortDockWindows, &params);
+				m_dockwindows.Sort<SortDockWindowsLessFunctor>(arg1);
 
 				CDockWindowVector::Iterator it = m_dockwindows.Begin();
 				
@@ -3969,9 +4107,9 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 		switch ( m_pTargetCenter->CheckTarget(pt) )
 		{
 		case 1: // Left
-			if ( params.pResult )
+			if ( arg._params.pResult )
 			{
-				params.pResult->GetWindowRect(&r1);
+				arg._params.pResult->GetWindowRect(&r1);
 				if ( (r1.right - r1.left) <= 150 )
 				{
 					if ( m_pHint->is_Visible() )
@@ -3988,11 +4126,11 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 				{
 					if ( m_pHint->is_Visible() )
 						m_pHint->set_Visible(FALSE);
-					m_pCurrentFloatingWindow->set_dockingstyle(params.pResult->get_dockingstyle());
-					m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleRight, params.pResult);
-					if ( params.pResult->has_Neighbours() )
+					m_pCurrentFloatingWindow->set_dockingstyle(arg._params.pResult->get_dockingstyle());
+					m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleRight, arg._params.pResult);
+					if ( arg._params.pResult->has_Neighbours() )
 					{
-						CDockWindow::TNeighbourVector::Iterator it = params.pResult->get_Neighbours();
+						CDockWindow::TNeighbourVector::Iterator it = arg._params.pResult->get_Neighbours();
 						CDockWindowVector delPtr(__FILE__LINE__ 16,16);
 
 						while ( it )
@@ -4003,7 +4141,7 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 							{
 							case CDockWindow::TDockingStyleLeft:
 								m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleLeft, pN->win);
-								pN->win->RemoveNeighbour(params.pResult);
+								pN->win->RemoveNeighbour(arg._params.pResult);
 								pN->win->AppendNeighbour(CDockWindow::TDockingStyleRight, m_pCurrentFloatingWindow);
 								delPtr.Append(pN->win);
 								break;
@@ -4012,7 +4150,7 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 								if ( r4.right <= r1.right )
 								{
 									delPtr.Append(pN->win);
-									pN->win->RemoveNeighbour(params.pResult);
+									pN->win->RemoveNeighbour(arg._params.pResult);
 								}
 								if ( r4.left <= r1.right )
 								{
@@ -4027,7 +4165,7 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 								if ( r4.right <= r1.right )
 								{
 									delPtr.Append(pN->win);
-									pN->win->RemoveNeighbour(params.pResult);
+									pN->win->RemoveNeighbour(arg._params.pResult);
 								}
 								if ( r4.left <= r1.right )
 								{
@@ -4043,12 +4181,11 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 
 						while ( it2 )
 						{
-							params.pResult->RemoveNeighbour(*it2);
+							arg._params.pResult->RemoveNeighbour(*it2);
 							++it2;
 						}
-						delPtr.Close(TDeleteFunc_Empty, NULL);
 					}
-					params.pResult->AppendNeighbour(CDockWindow::TDockingStyleLeft, m_pCurrentFloatingWindow);
+					arg._params.pResult->AppendNeighbour(CDockWindow::TDockingStyleLeft, m_pCurrentFloatingWindow);
 					m_pCurrentFloatingWindow->Dock(&r1);
 					m_pCurrentFloatingWindow->SizeNeighbours(CDockWindow::TDockingStyleRight, r1.right - r1.left);
 					UpdateFrame(m_pCurrentFloatingWindow);
@@ -4093,9 +4230,9 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 			}
 			break;
 		case 2: // Top
-			if ( params.pResult )
+			if ( arg._params.pResult )
 			{
-				params.pResult->GetWindowRect(&r1);
+				arg._params.pResult->GetWindowRect(&r1);
 				if ( (r1.bottom - r1.top) <= 150 )
 				{
 					if ( m_pHint->is_Visible() )
@@ -4112,11 +4249,11 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 				{
 					if ( m_pHint->is_Visible() )
 						m_pHint->set_Visible(FALSE);
-					m_pCurrentFloatingWindow->set_dockingstyle(params.pResult->get_dockingstyle());
-					m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleBottom, params.pResult);
-					if ( params.pResult->has_Neighbours() )
+					m_pCurrentFloatingWindow->set_dockingstyle(arg._params.pResult->get_dockingstyle());
+					m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleBottom, arg._params.pResult);
+					if ( arg._params.pResult->has_Neighbours() )
 					{
-						CDockWindow::TNeighbourVector::Iterator it = params.pResult->get_Neighbours();
+						CDockWindow::TNeighbourVector::Iterator it = arg._params.pResult->get_Neighbours();
 						CDockWindowVector delPtr(__FILE__LINE__ 16,16);
 
 						while ( it )
@@ -4130,7 +4267,7 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 								if ( r4.bottom <= r1.bottom )
 								{
 									delPtr.Append(pN->win);
-									pN->win->RemoveNeighbour(params.pResult);
+									pN->win->RemoveNeighbour(arg._params.pResult);
 								}
 								if ( r4.top <= r1.bottom )
 								{
@@ -4140,7 +4277,7 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 								break;
 							case CDockWindow::TDockingStyleTop:
 								m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleTop, pN->win);
-								pN->win->RemoveNeighbour(params.pResult);
+								pN->win->RemoveNeighbour(arg._params.pResult);
 								pN->win->AppendNeighbour(CDockWindow::TDockingStyleBottom, m_pCurrentFloatingWindow);
 								delPtr.Append(pN->win);
 								break;
@@ -4149,7 +4286,7 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 								if ( r4.bottom <= r1.bottom )
 								{
 									delPtr.Append(pN->win);
-									pN->win->RemoveNeighbour(params.pResult);
+									pN->win->RemoveNeighbour(arg._params.pResult);
 								}
 								if ( r4.top <= r1.bottom )
 								{
@@ -4167,12 +4304,11 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 
 						while ( it2 )
 						{
-							params.pResult->RemoveNeighbour(*it2);
+							arg._params.pResult->RemoveNeighbour(*it2);
 							++it2;
 						}
-						delPtr.Close(TDeleteFunc_Empty, NULL);
 					}
-					params.pResult->AppendNeighbour(CDockWindow::TDockingStyleTop, m_pCurrentFloatingWindow);
+					arg._params.pResult->AppendNeighbour(CDockWindow::TDockingStyleTop, m_pCurrentFloatingWindow);
 					m_pCurrentFloatingWindow->Dock(&r1);
 					m_pCurrentFloatingWindow->SizeNeighbours(CDockWindow::TDockingStyleBottom, r1.bottom - r1.top);
 					UpdateFrame(m_pCurrentFloatingWindow);
@@ -4217,10 +4353,10 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 			}
 			break;
 		case 3: // Middle
-			if ( params.pResult && bLast )
+			if ( arg._params.pResult && bLast )
 			{
 				CTabControl* pTabCtrl1 = CastDynamicPtr(CTabControl, m_pCurrentFloatingWindow->get_Client());
-				CTabControl* pTabCtrl2 = CastDynamicPtr(CTabControl, params.pResult->get_Client());
+				CTabControl* pTabCtrl2 = CastDynamicPtr(CTabControl, arg._params.pResult->get_Client());
 
 				if ( pTabCtrl1 && pTabCtrl2 )
 				{
@@ -4254,9 +4390,9 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 			}
 			break;
 		case 4: // Right
-			if ( params.pResult )
+			if ( arg._params.pResult )
 			{
-				params.pResult->GetWindowRect(&r1);
+				arg._params.pResult->GetWindowRect(&r1);
 				if ( (r1.right - r1.left) <= 150 )
 				{
 					if ( m_pHint->is_Visible() )
@@ -4273,11 +4409,11 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 				{
 					if ( m_pHint->is_Visible() )
 						m_pHint->set_Visible(FALSE);
-					m_pCurrentFloatingWindow->set_dockingstyle(params.pResult->get_dockingstyle());
-					m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleLeft, params.pResult);
-					if ( params.pResult->has_Neighbours() )
+					m_pCurrentFloatingWindow->set_dockingstyle(arg._params.pResult->get_dockingstyle());
+					m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleLeft, arg._params.pResult);
+					if ( arg._params.pResult->has_Neighbours() )
 					{
-						CDockWindow::TNeighbourVector::Iterator it = params.pResult->get_Neighbours();
+						CDockWindow::TNeighbourVector::Iterator it = arg._params.pResult->get_Neighbours();
 						CDockWindowVector delPtr(__FILE__LINE__ 16, 16);
 
 						while ( it )
@@ -4293,7 +4429,7 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 								if ( r4.left >= r1.left )
 								{
 									delPtr.Append(pN->win);
-									pN->win->RemoveNeighbour(params.pResult);
+									pN->win->RemoveNeighbour(arg._params.pResult);
 								}
 								if ( r4.right >= r1.left )
 								{
@@ -4303,7 +4439,7 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 								break;
 							case CDockWindow::TDockingStyleRight:
 								m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleRight, pN->win);
-								pN->win->RemoveNeighbour(params.pResult);
+								pN->win->RemoveNeighbour(arg._params.pResult);
 								pN->win->AppendNeighbour(CDockWindow::TDockingStyleLeft, m_pCurrentFloatingWindow);
 								delPtr.Append(pN->win);
 								break;
@@ -4312,7 +4448,7 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 								if ( r4.left >= r1.left )
 								{
 									delPtr.Append(pN->win);
-									pN->win->RemoveNeighbour(params.pResult);
+									pN->win->RemoveNeighbour(arg._params.pResult);
 								}
 								if ( r4.right >= r1.left )
 								{
@@ -4328,12 +4464,11 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 
 						while ( it2 )
 						{
-							params.pResult->RemoveNeighbour(*it2);
+							arg._params.pResult->RemoveNeighbour(*it2);
 							++it2;
 						}
-						delPtr.Close(TDeleteFunc_Empty, NULL);
 					}
-					params.pResult->AppendNeighbour(CDockWindow::TDockingStyleRight, m_pCurrentFloatingWindow);
+					arg._params.pResult->AppendNeighbour(CDockWindow::TDockingStyleRight, m_pCurrentFloatingWindow);
 					m_pCurrentFloatingWindow->Dock(&r1);
 					m_pCurrentFloatingWindow->SizeNeighbours(CDockWindow::TDockingStyleLeft, r1.right - r1.left);
 					UpdateFrame(m_pCurrentFloatingWindow);
@@ -4378,9 +4513,9 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 			}
 			break;
 		case 5: // Bottom
-			if ( params.pResult )
+			if ( arg._params.pResult )
 			{
-				params.pResult->GetWindowRect(&r1);
+				arg._params.pResult->GetWindowRect(&r1);
 				if ( (r1.bottom - r1.top) <= 150 )
 				{
 					if ( m_pHint->is_Visible() )
@@ -4397,11 +4532,11 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 				{
 					if ( m_pHint->is_Visible() )
 						m_pHint->set_Visible(FALSE);
-					m_pCurrentFloatingWindow->set_dockingstyle(params.pResult->get_dockingstyle());
-					m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleTop, params.pResult);
-					if ( params.pResult->has_Neighbours() )
+					m_pCurrentFloatingWindow->set_dockingstyle(arg._params.pResult->get_dockingstyle());
+					m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleTop, arg._params.pResult);
+					if ( arg._params.pResult->has_Neighbours() )
 					{
-						CDockWindow::TNeighbourVector::Iterator it = params.pResult->get_Neighbours();
+						CDockWindow::TNeighbourVector::Iterator it = arg._params.pResult->get_Neighbours();
 						CDockWindowVector delPtr(__FILE__LINE__ 16, 16);
 
 						while ( it )
@@ -4415,7 +4550,7 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 								if ( r4.top >= r1.top )
 								{
 									delPtr.Append(pN->win);
-									pN->win->RemoveNeighbour(params.pResult);
+									pN->win->RemoveNeighbour(arg._params.pResult);
 								}
 								if ( r4.bottom >= r1.top )
 								{
@@ -4430,7 +4565,7 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 								if ( r4.top >= r1.top )
 								{
 									delPtr.Append(pN->win);
-									pN->win->RemoveNeighbour(params.pResult);
+									pN->win->RemoveNeighbour(arg._params.pResult);
 								}
 								if ( r4.bottom >= r1.top )
 								{
@@ -4440,7 +4575,7 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 								break;
 							case CDockWindow::TDockingStyleBottom:
 								m_pCurrentFloatingWindow->AppendNeighbour(CDockWindow::TDockingStyleBottom, pN->win);
-								pN->win->RemoveNeighbour(params.pResult);
+								pN->win->RemoveNeighbour(arg._params.pResult);
 								pN->win->AppendNeighbour(CDockWindow::TDockingStyleTop, m_pCurrentFloatingWindow);
 								delPtr.Append(pN->win);
 								break;
@@ -4452,12 +4587,11 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 
 						while ( it2 )
 						{
-							params.pResult->RemoveNeighbour(*it2);
+							arg._params.pResult->RemoveNeighbour(*it2);
 							++it2;
 						}
-						delPtr.Close(TDeleteFunc_Empty, NULL);
 					}
-					params.pResult->AppendNeighbour(CDockWindow::TDockingStyleBottom, m_pCurrentFloatingWindow);
+					arg._params.pResult->AppendNeighbour(CDockWindow::TDockingStyleBottom, m_pCurrentFloatingWindow);
 					m_pCurrentFloatingWindow->Dock(&r1);
 					m_pCurrentFloatingWindow->SizeNeighbours(CDockWindow::TDockingStyleTop, r1.bottom - r1.top);
 					UpdateFrame(m_pCurrentFloatingWindow);
@@ -4530,9 +4664,20 @@ static sword __stdcall TSearchAndSortFunc_ShowFloatingWindows( ConstPointer Arra
 	return 1;
 }
 
+class ShowFloatingWindowsForEachFunctor
+{
+public:
+	bool operator()(Ptr(CDockWindow) pWin)
+	{
+		if ( !(pWin->is_Visible()) )
+			pWin->set_Visible(TRUE);
+		return true;
+	}
+};
+
 void CDockInfo::ShowFloatingWindows()
 {
-	m_floatingdockwindows.Find(NULL, TSearchAndSortFunc_ShowFloatingWindows);
+	m_floatingdockwindows.ForEach<ShowFloatingWindowsForEachFunctor>();
 }
 
 static sword __stdcall TSearchAndSortFunc_HideFloatingWindows( ConstPointer ArrayItem, ConstPointer DataItem )
@@ -4544,9 +4689,20 @@ static sword __stdcall TSearchAndSortFunc_HideFloatingWindows( ConstPointer Arra
 	return 1;
 }
 
+class HideFloatingWindowsForEachFunctor
+{
+public:
+	bool operator()(Ptr(CDockWindow) pWin)
+	{
+		if (pWin->is_Visible())
+			pWin->set_Visible(FALSE);
+		return true;
+	}
+};
+
 void CDockInfo::HideFloatingWindows()
 {
-	m_floatingdockwindows.Find(NULL, TSearchAndSortFunc_HideFloatingWindows);
+	m_floatingdockwindows.ForEach<HideFloatingWindowsForEachFunctor>();
 }
 
 bool CDockInfo::TestSizableLeftTop(CDockWindow* pCurWin, CDockWindowVector* pCurWins, CDockWindow* pCurLeftNeighbour, CDockWindowVector* pCurNeighbours, LONG edge)
@@ -5937,7 +6093,5 @@ bool CDockInfo::Resize(CDockWindow* pWin, INT edge, POINT ptDelta)
 	case HTBOTTOMRIGHT:
 		break;
 	}
-	resizeCurWins.Close(TDeleteFunc_Empty, NULL);
-	resizeCurNeighbours.Close(TDeleteFunc_Empty, NULL);
 	return bResult;
 }

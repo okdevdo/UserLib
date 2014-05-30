@@ -172,6 +172,7 @@ public:
 	virtual ~CWin();
 
 	__inline TWindowType get_windowtype() { return m_wndwtype; }
+	__inline ConstRef(CStringBuffer) get_Name() { return m_name; }
 	__inline ConstRef(CStringBuffer) get_name() { return m_name; }
 	__inline void set_name(ConstRef(CStringBuffer) name) { m_name = name; }
 
@@ -683,31 +684,31 @@ public:
 
 	__inline void get_MaxClientRect(LPRECT r) { ::CopyRect(r, &m_maxClientArea); }
 	
-	__inline TSizeHAlign get_SizeHAlign() { return m_sizeHAlign; }
+	__inline TSizeHAlign get_SizeHAlign() const { return m_sizeHAlign; }
 	__inline void set_SizeHAlign(TSizeHAlign align) { m_sizeHAlign = align; }
 
-	__inline WORD get_LayoutX() { return m_layoutX; }
+	__inline WORD get_LayoutX() const { return m_layoutX; }
 	__inline void set_LayoutX(WORD layout) { m_layoutX = layout; }
 
-	__inline TSizeSpecifier get_SizeSpecX() { return m_sizeSpecX; }
+	__inline TSizeSpecifier get_SizeSpecX() const { return m_sizeSpecX; }
 	__inline void set_SizeSpecX(TSizeSpecifier spec) { m_sizeSpecX = spec; }
 
-	__inline LONG get_LayoutSizeX() { return m_layoutSizeX; }
+	__inline LONG get_LayoutSizeX() const { return m_layoutSizeX; }
 	__inline void set_LayoutSizeX(LONG size) { m_layoutSizeX = size; }
 
-	__inline TSizeVAlign get_SizeVAlign() { return m_sizeVAlign; }
+	__inline TSizeVAlign get_SizeVAlign() const { return m_sizeVAlign; }
 	__inline void set_SizeVAlign(TSizeVAlign align) { m_sizeVAlign = align; }
 
-	__inline WORD get_LayoutY() { return m_layoutY; }
+	__inline WORD get_LayoutY() const { return m_layoutY; }
 	__inline void set_LayoutY(WORD layout) { m_layoutY = layout; }
 
-	__inline TSizeSpecifier get_SizeSpecY() { return m_sizeSpecY; }
+	__inline TSizeSpecifier get_SizeSpecY() const { return m_sizeSpecY; }
 	__inline void set_SizeSpecY(TSizeSpecifier spec) { m_sizeSpecY = spec; }
 
-	__inline LONG get_LayoutSizeY() { return m_layoutSizeY; }
+	__inline LONG get_LayoutSizeY() const { return m_layoutSizeY; }
 	__inline void set_LayoutSizeY(LONG size) { m_layoutSizeY = size; }
 
-	__inline RECT get_Margins() { return m_Margins; }
+	__inline RECT get_Margins() const { return m_Margins; }
 	__inline void set_Margins(RECT rect) { m_Margins = rect; }
 
 	void RenumberLayout(bool xAxis);
@@ -944,7 +945,7 @@ protected:
 	CImageList m_imageshot;
 };
 
-typedef CDataVectorT<CPopupMenu> CMenuVector;
+typedef CDataVectorT<CPopupMenu, CCppObjectLessFunctor<CPopupMenu>, CCppObjectNullFunctor<CPopupMenu>> CMenuVector;
 
 class CMenubar: public CControl
 {

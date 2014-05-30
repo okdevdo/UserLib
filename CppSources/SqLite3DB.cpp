@@ -19,8 +19,8 @@
 
 ******************************************************************************/
 #include "CPPS_PCH.H"
-#include "SqLite3DBImpl.h"
 #include "SqLite3DB.h"
+#include "SqLite3DBImpl.h"
 
 IMPL_EXCEPTION(CSqLite3Exception, CBaseException)
 
@@ -153,11 +153,11 @@ void CSqLite3Connection::create_function(CConstPointer name, create_function_typ
 }
 
 CSqLite3Connection::create_function_infoclass::create_function_infoclass(Ptr(CSqLite3Connection) pConn, CConstPointer name, create_function_type funcbody, sword nArgs) :
-_pConn(pConn), _name(__FILE__LINE__ name), _func(funcbody), _nArgs(nArgs), _args(__FILE__LINE__ 16, 16, CSqLite3ColumnsDeleteFunc)
+_pConn(pConn), _name(__FILE__LINE__ name), _func(funcbody), _nArgs(nArgs), _args(__FILE__LINE__ 16, 16)
 {}
 
 CSqLite3Connection::create_function_infoclass::create_function_infoclass(Ptr(CSqLite3Connection) pConn, ConstRef(CStringBuffer) name, create_function_type funcbody, sword nArgs) :
-_pConn(pConn), _name(name), _func(funcbody), _nArgs(nArgs), _args(__FILE__LINE__ 16, 16, CSqLite3ColumnsDeleteFunc)
+_pConn(pConn), _name(name), _func(funcbody), _nArgs(nArgs), _args(__FILE__LINE__ 16, 16)
 {}
 
 CSqLite3Connection::create_function_infoclass::~create_function_infoclass() {}
@@ -168,7 +168,7 @@ void CSqLite3Connection::create_function_infoclass::Append(Ptr(CSqLite3Column) p
 }
 
 CSqLite3Statement::CSqLite3Statement(CSqLite3Environment* lpEnv, CSqLite3StatementImpl* lpStmtImpl) :
-_lpEnv(lpEnv), _lpImpl(lpStmtImpl), _columns(__FILE__LINE__ 16, 16, CSqLite3ColumnsDeleteFunc)
+_lpEnv(lpEnv), _lpImpl(lpStmtImpl), _columns(__FILE__LINE__ 16, 16)
 {
 	if (_lpEnv)
 		_lpEnv->addRef();
@@ -198,9 +198,10 @@ CSqLite3Column* CSqLite3Statement::get_ColumnInfo(word ix) const
 	return NULL;
 }
 
-CSqLite3Column* CSqLite3Statement::get_ColumnInfo(CConstPointer name) const
+CSqLite3Column* CSqLite3Statement::get_ColumnInfo(CConstPointer name)
 {
-	CSqLite3Columns::Iterator it = _columns.Find(CastAnyPtr(CSqLite3Column, CastMutable(CPointer, name)), CSqLite3ColumnsSearchAndSortFunc);
+	CSqLite3Column cmp(name);
+	CSqLite3Columns::Iterator it = _columns.Find<CStringByNameLessFunctor<CSqLite3Column> >(&cmp);
 
 	if (it)
 		return *it;

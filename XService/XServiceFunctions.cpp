@@ -710,7 +710,7 @@ void okInstallServices(void)
 	}
 }
 
-void okStartServices(ConstRef(CDataVectorT<mbchar>) services)
+void okStartServices(ConstRef(TMBCharList) services)
 {
 	if (!gSCManager)
 		return;

@@ -204,6 +204,7 @@ public:
 	BOOLEAN Load(ConstRef(CStringBuffer) name);
 
 	__inline ConstRef(CStringBuffer) get_name() const { return _name; }
+	__inline ConstRef(CStringBuffer) get_Name() const { return _name; }
 	__inline ConstRef(CStringBuffer) get_guid() const { return _guid; }
 	__inline ConstRef(CFilePath) get_resourceFile() const { return _resourceFile; }
 	__inline ConstRef(CFilePath) get_parameterFile() const { return _parameterFile; }
@@ -247,16 +248,15 @@ private:
 	void _load();
 };
 
-class WINSOURCES_API CEventLogProviders : public CDataVectorT<CEventLogProvider>
+class WINSOURCES_API CEventLogProviders : public CDataVectorT<CEventLogProvider, CStringByNameLessFunctor<CEventLogProvider>>
 {
-	typedef CDataVectorT<CEventLogProvider> super;
+	typedef CDataVectorT<CEventLogProvider, CStringByNameLessFunctor<CEventLogProvider>> super;
 
 public:
 	CEventLogProviders(DECL_FILE_LINE0);
 	virtual ~CEventLogProviders();
 
 	BOOLEAN Load();
-	BOOLEAN ForEach(TForEachFunc func, Pointer context) const;
 	Ptr(CEventLogProvider) FindSorted(ConstRef(CStringBuffer) name);
 };
 

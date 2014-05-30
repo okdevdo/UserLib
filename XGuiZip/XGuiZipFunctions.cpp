@@ -190,10 +190,10 @@ static void _XZipAddFilesRecurse(Ref(CZipArchive) zipArchive, ConstRef(CFilePath
 	}
 }
 
-void _XZipAddFiles(Ref(CZipArchive) zipArchive, WBool recursefolders, ConstRef(CDataVectorT<mbchar>) filespecs)
+void _XZipAddFiles(Ref(CZipArchive) zipArchive, WBool recursefolders, ConstRef(TMBCharList) filespecs)
 {
 	CDirectoryIterator it;
-	CDataVectorT<mbchar>::Iterator itP;
+	TMBCharList::Iterator itP;
 	CFilePath fpath;
 	CSystemTime ftime;
 	CArchiveProperties fprops;
@@ -235,7 +235,7 @@ void _XZipAddFiles(Ref(CZipArchive) zipArchive, WBool recursefolders, ConstRef(C
 	}
 }
 
-void XZipAddFiles(CStringLiteral zipfile, WBool recursefolders, ConstRef(CDataVectorT<mbchar>) filespecs)
+void XZipAddFiles(CStringLiteral zipfile, WBool recursefolders, ConstRef(TMBCharList) filespecs)
 {
 	CFilePath fzipfile(__FILE__LINE__ zipfile);
 	Ptr(CSecurityFile) pFile = NULL;
@@ -291,13 +291,13 @@ static bool _TestFileSpec(ConstRef(CFilePath) file, ConstRef(CFilePath) filespec
 	return false;
 }
 
-static bool _TestFileSpecs(ConstRef(CStringBuffer) afile, ConstRef(CDataVectorT<mbchar>) filespecs)
+static bool _TestFileSpecs(ConstRef(CStringBuffer) afile, ConstRef(TMBCharList) filespecs)
 {
 	CStringBuffer tmp(afile);
 
 	tmp.ReplaceString(CDirectoryIterator::UnixPathSeparatorString(), CDirectoryIterator::WinPathSeparatorString());
 	CFilePath fpath(tmp);
-	CDataVectorT<mbchar>::Iterator it = filespecs.Begin();
+	TMBCharList::Iterator it = filespecs.Begin();
 
 	while ( it )
 	{
@@ -310,7 +310,7 @@ static bool _TestFileSpecs(ConstRef(CStringBuffer) afile, ConstRef(CDataVectorT<
 	return false;
 }
 
-void XGuiZipExtractFiles(CStringLiteral zipfile, WBool usefolders, ConstRef(CDataVectorT<mbchar>) filespecs, Ref(CDataVectorT<CStringBuffer>) messages)
+void XGuiZipExtractFiles(CStringLiteral zipfile, WBool usefolders, ConstRef(TMBCharList) filespecs, Ref(CDataVectorT<CStringBuffer>) messages)
 {
 	CFilePath fzipfile(__FILE__LINE__ zipfile);
 

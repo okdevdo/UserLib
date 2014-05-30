@@ -484,7 +484,7 @@ LRESULT XGuiZip::OnAddFilesCommand(WPARAM wParam, LPARAM lParam)
 	{
 		CPointer p = pFile;
 		CFilePath dir(__FILE__LINE__ p);
-		CDataVectorT<mbchar> filespecs(__FILE__LINE__ 16, 16);
+		TMBCharList filespecs(__FILE__LINE__ 16, 16);
 		dword sz;
 
 		sz = s_strlen(p,1024);
@@ -502,7 +502,6 @@ LRESULT XGuiZip::OnAddFilesCommand(WPARAM wParam, LPARAM lParam)
 		CStringBuffer zipfile(pPage->get_Text());
 
 		XZipAddFiles(zipfile, true, filespecs);
-		filespecs.Close(VectorEmptyDeleteFunc, NULL);
 
 		CTreeView* pTreeView = CastDynamicPtr(CTreeView, pPage->get_childbyID(1000));
 		CStringBuffer name(pTreeView->get_name());
@@ -541,7 +540,7 @@ LRESULT XGuiZip::OnExtractCommand(WPARAM wParam, LPARAM lParam)
 	{
 		CPointer p = pFile;
 		CFilePath dir(__FILE__LINE__ p);
-		CDataVectorT<mbchar> filespecs(__FILE__LINE__ 16, 16);
+		TMBCharList filespecs(__FILE__LINE__ 16, 16);
 		CDataVectorT<CStringBuffer> messages(__FILE__LINE__ 16, 16);
 		dword sz;
 		dword sl = 1024;
@@ -565,7 +564,6 @@ LRESULT XGuiZip::OnExtractCommand(WPARAM wParam, LPARAM lParam)
 		XGuiZipExtractFiles(zipfile, true, filespecs, messages);
 		if ( messages.Count() > 0 )
 			::MessageBox(m_hwnd, messages.Join(_T("\r\n")), _T("Messages"), MB_OK);
-		filespecs.Close(VectorEmptyDeleteFunc, NULL);
 	}
 	return 0;
 }

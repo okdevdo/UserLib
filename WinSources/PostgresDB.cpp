@@ -126,7 +126,7 @@ static sword __stdcall CPostgresColumnsSearchAndSortFunc(ConstPointer item, Cons
 }
 
 CPostgresStatement::CPostgresStatement(CPostgresEnvironment* lpEnv, CPostgresStatementImpl* lpStmtImpl) :
-_lpEnv(lpEnv), _lpImpl(lpStmtImpl), _columns(__FILE__LINE__ 16, 16, CPostgresColumnsDeleteFunc)
+_lpEnv(lpEnv), _lpImpl(lpStmtImpl), _columns(__FILE__LINE__ 16, 16)
 {
 	if (_lpEnv)
 		_lpEnv->addRef();
@@ -156,9 +156,10 @@ CPostgresColumn* CPostgresStatement::get_ColumnInfo(word ix) const
 	return NULL;
 }
 
-CPostgresColumn* CPostgresStatement::get_ColumnInfo(CConstPointer name) const
+CPostgresColumn* CPostgresStatement::get_ColumnInfo(CConstPointer name)
 {
-	CPostgresColumns::Iterator it = _columns.Find(CastAnyPtr(CPostgresColumn, CastMutable(CPointer, name)), CPostgresColumnsSearchAndSortFunc);
+	CPostgresColumn cmp(name);
+	CPostgresColumns::Iterator it = _columns.Find<CStringByNameLessFunctor<CPostgresColumn>>(&cmp);
 
 	if (it)
 		return *it;

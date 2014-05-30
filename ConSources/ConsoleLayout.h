@@ -121,6 +121,12 @@ private:
 	CConsoleLayoutLayoutItem(ConstRef(CConsoleLayoutLayoutItem));
 };
 
+class CConsoleLayoutItemReleaseFunctor
+{
+public:
+	Ref(CConsoleLayoutItemReleaseFunctor) operator()(Ptr(CConsoleLayoutItem) p);
+};
+
 class CONSOURCES_API CConsoleLayout: public CCppObject
 {
 public:
@@ -146,7 +152,7 @@ public:
 	virtual void Resize(COORD newSize) = 0;
 
 protected:
-	typedef CDataVectorT<CConsoleLayoutItem> CConsoleLayoutItemVector;
+	typedef CDataVectorT<CConsoleLayoutItem, CCppObjectLessFunctor<CConsoleLayoutItem>, CConsoleLayoutItemReleaseFunctor> CConsoleLayoutItemVector;
 
 	SMALL_RECT m_Margins;
 	COORD m_Spacing;
@@ -155,6 +161,16 @@ protected:
 private:
 	CConsoleLayout(ConstRef(CConsoleLayout));
 };
+
+__inline Ref(CConsoleLayoutItemReleaseFunctor) CConsoleLayoutItemReleaseFunctor::operator()(Ptr(CConsoleLayoutItem) p)
+{
+	Ptr(CConsoleLayout) pLayout = p->GetLayout();
+
+	if (NotPtrCheck(pLayout))
+		pLayout->release();
+	p->release();
+	return *this;
+}
 
 class CONSOURCES_API CConsoleHBoxLayout: public CConsoleLayout
 {

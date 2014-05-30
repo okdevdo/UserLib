@@ -75,6 +75,7 @@ protected:
 };
 
 typedef CDataVectorT<CListViewNode> CListViewNodeVector;
+typedef CDataVectorT<CListViewNode, CCppObjectLessFunctor<CListViewNode>, CCppObjectNullFunctor<CListViewNode>> CListViewSelectedNodeVector;
 
 class CTextEditor;
 class CListView: public CControl
@@ -175,7 +176,7 @@ protected:
 	bool m_editable;
 	bool m_hasSelection;
 	CListViewNodeVector m_nodes;
-	CListViewNodeVector m_selNodes;
+	CListViewSelectedNodeVector m_selNodes;
 	CImageList m_images;
 	CListViewNode* m_currentNode;
 	CControl* m_editor;

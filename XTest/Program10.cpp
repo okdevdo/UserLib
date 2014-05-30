@@ -89,11 +89,11 @@ void TestHTTP1Internal(CStringLiteral url)
 }
 
 //-thttp1=http://linux.rz.ruhr-uni-bochum.de/download/cygwin/;ftp://ftp.cygwinports.org/pub/cygwinports/
-void TestHTTP1(ConstRef(CDataVectorT<mbchar>) urlList)
+void TestHTTP1(ConstRef(TMBCharList) urlList)
 {
 	try
 	{
-		CDataVectorT<mbchar>::Iterator it = urlList.Begin();
+		TMBCharList::Iterator it = urlList.Begin();
 
 		while ( it )
 		{

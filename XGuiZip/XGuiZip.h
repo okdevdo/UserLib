@@ -60,5 +60,5 @@ protected:
 };
 
 void XGuiZipViewFiles(CConstPointer zipfile, CTreeView* pTreeView);
-void XZipAddFiles(CStringLiteral zipfile, WBool recursefolders, ConstRef(CDataVectorT<mbchar>) filespecs);
-void XGuiZipExtractFiles(CStringLiteral zipfile, WBool usefolders, ConstRef(CDataVectorT<mbchar>) filespecs, Ref(CDataVectorT<CStringBuffer>) messages);
+void XZipAddFiles(CStringLiteral zipfile, WBool recursefolders, ConstRef(TMBCharList) filespecs);
+void XGuiZipExtractFiles(CStringLiteral zipfile, WBool usefolders, ConstRef(TMBCharList) filespecs, Ref(CDataVectorT<CStringBuffer>) messages);

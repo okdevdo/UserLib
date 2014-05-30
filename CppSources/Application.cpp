@@ -60,8 +60,8 @@ CApplication* CApplication::m_instance = NULL;
 
 CApplication::CApplication():
 	m_defaultAppName(),
-	m_definedOptions(__FILE__LINE__ 16, 16, TOptionsDeleteFunc, NULL, TOptionsSortFunc),
-	m_Options(__FILE__LINE__ 16, 16, TOptionsDeleteFunc, NULL, TOptionsSortFunc),
+	m_definedOptions(__FILE__LINE__ 16, 16),
+	m_Options(__FILE__LINE__ 16, 16),
 	m_continueOptionProcessing(true),
 	m_config(NULL)
 {
@@ -69,8 +69,8 @@ CApplication::CApplication():
 
 CApplication::CApplication(ConstRef(CStringBuffer) _defaultAppName) :
     m_defaultAppName(_defaultAppName),
-	m_definedOptions(__FILE__LINE__ 16, 16, TOptionsDeleteFunc, NULL, TOptionsSortFunc),
-	m_Options(__FILE__LINE__ 16, 16, TOptionsDeleteFunc, NULL, TOptionsSortFunc),
+	m_definedOptions(__FILE__LINE__ 16, 16),
+	m_Options(__FILE__LINE__ 16, 16),
 	m_continueOptionProcessing(true),
 	m_config(NULL)
 {
@@ -292,9 +292,9 @@ COption* CApplication::findPositionedOption(int pos)
 
 COption* CApplication::findOption(COption* pOption)
 {
-	COptionVector::Iterator it = m_Options.FindSorted(pOption, TOptionsSortFunc);
+	COptionVector::Iterator it = m_Options.FindSorted(pOption);
 
-	if (it && NotPtrCheck(*it) && (TOptionsSortFunc(*it, pOption) == 0))
+	if (m_Options.MatchSorted(it, pOption))
 		return *it;
 	return NULL;
 }
@@ -334,7 +334,7 @@ void CApplication::_processOption(COption* pOption, CArray args, int argc)
 		if (pOption->hasArgument() && (!(pOption->repeatable())) && (argc > 1))
 			throw OK_NEW_OPERATOR COptionNotRepeatableException(__FILE__LINE__ _T("Option is not repeatable (Option: %s)"), pOption->fullname().GetString());
 		pOption->addRef();
-		m_Options.InsertSorted(pOption, TOptionsSortFunc);
+		m_Options.InsertSorted(pOption);
 	}
 	if ( argc == 0 )
 	{

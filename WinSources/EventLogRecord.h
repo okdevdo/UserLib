@@ -85,15 +85,22 @@ protected:
 	CStringBuffer _data;
 };
 
-class WINSOURCES_API CEventLogRecords : CDataVectorT<CEventLogRecord>
+class WINSOURCES_API CEventLogRecordLessFunctor
 {
 public:
-	typedef CDataVectorT<CEventLogRecord> super;
+	bool operator()(ConstRef(CEventLogRecord) r1, ConstRef(CEventLogRecord) r2) const
+	{
+		return (r1.get_recordno() < r2.get_recordno());
+	}
+};
 
+class WINSOURCES_API CEventLogRecords : public CDataVectorT<CEventLogRecord, CEventLogRecordLessFunctor>
+{
+	typedef CDataVectorT<CEventLogRecord, CEventLogRecordLessFunctor> super;
+
+public:
 	CEventLogRecords(DECL_FILE_LINE0);
-	~CEventLogRecords();
+	virtual ~CEventLogRecords();
 
 	void Load();
-	BOOLEAN ForEach(TForEachFunc func, Pointer context) const;
-
 };

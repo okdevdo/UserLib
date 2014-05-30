@@ -36,23 +36,22 @@
 #include "WinDirectoryIterator.h"
 
 CPackageInfoVector::CPackageInfoVector(DECL_FILE_LINE TListCnt cnt, TListCnt exp):
-    CDataVectorT<CPackageInfo>(ARGS_FILE_LINE cnt, exp)
+    super(ARGS_FILE_LINE cnt, exp)
 {
 }
 
 CPackageInfoVector::~CPackageInfoVector()
 {
-	Close(PackageInfoDeleteFunc, NULL);
 }
 
 bool CPackageInfoVector::InsertSortedUnique(Ptr(CPackageInfo) pInfo)
 {
-	CPackageInfoVector::Iterator itPI = FindSorted(pInfo, PackageInfoSearchAndSortFunc);
+	Iterator itPI = FindSorted(pInfo);
 
-	if ( !(itPI && (*itPI) && (PackageInfoSearchAndSortFunc(pInfo, *itPI) == 0)) )
+	if (!(MatchSorted(itPI, pInfo)))
 	{
 		pInfo->addRef();
-		InsertSorted(pInfo, PackageInfoSearchAndSortFunc);
+		InsertSorted(pInfo);
 		return true;
 	}
 	return false;
@@ -60,9 +59,9 @@ bool CPackageInfoVector::InsertSortedUnique(Ptr(CPackageInfo) pInfo)
 
 bool CPackageInfoVector::AppendUnique(Ptr(CPackageInfo) pInfo)
 {
-	CPackageInfoVector::Iterator itPI = Find(pInfo, PackageInfoSearchAndSortFunc);
+	Iterator itPI = Find<CStringByNameLessFunctor<CPackageInfo>>(pInfo);
 
-	if ( !(itPI && (*itPI) && (PackageInfoSearchAndSortFunc(pInfo, *itPI) == 0)) )
+	if (!(MatchSorted(itPI, pInfo)))
 	{
 		pInfo->addRef();
 		Append(pInfo);

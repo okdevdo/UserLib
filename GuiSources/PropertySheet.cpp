@@ -505,8 +505,6 @@ CPropertySheet::CPropertySheet(ConstRef(CStringBuffer) name):
 
 CPropertySheet::~CPropertySheet(void)
 {
-	m_selNodes.Close(TDeleteFunc_SelectedPropertySheetNodes, NULL);
-	m_nodes.Close(TDeleteFunc_PropertySheetNodes, NULL);
 }
 
 
@@ -554,7 +552,7 @@ void CPropertySheet::set_Node(dword ix, CPropertySheetAbstractNode* node)
 			if ( node2->is_Selected() )
 				node2->set_Selected(false);
 		}
-		m_nodes.Remove(it, TDeleteFunc_PropertySheetNodes, NULL);
+		m_nodes.Remove(it);
 		EndUpdate(TRUE);
 	}
 	else if ( ix >= m_nodes.Count() )
@@ -641,9 +639,9 @@ void CPropertySheet::set_SelNode(dword ix, CPropertySheetAbstractNode* node)
 		if ( ix >= m_selNodes.Count() )
 			return;
 
-		CPropertySheetNodeVector::Iterator it = m_selNodes.Index(ix);
+		CPropertySheetSelectedNodeVector::Iterator it = m_selNodes.Index(ix);
 
-		m_selNodes.Remove(it, TDeleteFunc_SelectedPropertySheetNodes, NULL);
+		m_selNodes.Remove(it);
 	}
 	else if ( ix == m_selNodes.Count() )
 		m_selNodes.Append(node);
@@ -652,7 +650,7 @@ void CPropertySheet::set_SelNode(dword ix, CPropertySheetAbstractNode* node)
 		if ( ix >= m_selNodes.Count() )
 			return;
 
-		CPropertySheetNodeVector::Iterator it = m_selNodes.Index(ix);
+		CPropertySheetSelectedNodeVector::Iterator it = m_selNodes.Index(ix);
 
 		m_selNodes.SetData(it, node);
 	}
@@ -758,7 +756,7 @@ void CPropertySheet::SelectAll(bool selected)
 	else
 	{
 		while ( m_selNodes.Count() )
-			m_selNodes.Remove(m_selNodes.Last(), TDeleteFunc_SelectedPropertySheetNodes, NULL);
+			m_selNodes.Remove(m_selNodes.Last());
 	}
 	EndUpdate(TRUE);
 }

@@ -40,15 +40,15 @@ public:
 	__inline CTreeViewNode* get_Parent() { return m_parent; }
 	__inline void set_Parent(CTreeViewNode* pParent) { m_parent = pParent; }
 
-	__inline ConstRef(CStringBuffer) get_Text() { return m_text; }
+	__inline ConstRef(CStringBuffer) get_Text() const { return m_text; }
 	void set_Text(LPCTSTR pText = NULL, int lench = -1);
 	void set_Text(ConstRef(CStringBuffer) text);
 
-	__inline ConstRef(CStringBuffer) get_Pattern() { return m_pattern; }
+	__inline ConstRef(CStringBuffer) get_Pattern() const { return m_pattern; }
 	void set_Pattern(LPCTSTR pText = NULL, int lench = -1);
 	void set_Pattern(ConstRef(CStringBuffer) text);
 
-	__inline ConstRef(CStringBuffer) get_StringTag() { return m_stringTag; }
+	__inline ConstRef(CStringBuffer) get_StringTag() const { return m_stringTag; }
 	__inline void set_StringTag(LPCTSTR tag, int lench = -1) { m_stringTag.SetString(__FILE__LINE__ tag, lench); }
 	__inline void set_StringTag(ConstRef(CStringBuffer) text) { m_stringTag = text; }
 
@@ -101,7 +101,17 @@ public:
 	void OnCalcRects(Gdiplus::Graphics* graphics, LPRECT pRect, LPINT maxWidth);
 	BOOL OnPaint(Gdiplus::Graphics* graphics, INT xPos, INT yPos, INT cBottom);
 
-	typedef CDataVectorT<CTreeViewNode> CTreeViewNodeVector;
+	class CTreeViewNodeLessFunctor
+	{
+	public:
+		bool operator()(ConstRef(CTreeViewNode) r1, ConstRef(CTreeViewNode) r2) const
+		{
+			return r1.get_Text().LT(r2.get_Text(), 0, CStringLiteral::cIgnoreCase);
+		}
+	};
+
+	typedef CDataVectorT<CTreeViewNode, CTreeViewNodeLessFunctor> CTreeViewNodeVector;
+	typedef CDataVectorT<CTreeViewNode, CTreeViewNodeLessFunctor, CCppObjectNullFunctor<CTreeViewNode>> CTreeViewSelectedNodeVector;
 
 protected:
 	CTreeView* m_treeView;
@@ -215,7 +225,7 @@ private:
 	bool m_virtualLoad;
 
 	CTreeViewNode::CTreeViewNodeVector m_nodes;
-	CTreeViewNode::CTreeViewNodeVector m_selNodes;
+	CTreeViewNode::CTreeViewSelectedNodeVector m_selNodes;
 	CImageList m_images;
 
 	CTreeViewNode* m_currentNode;

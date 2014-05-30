@@ -51,7 +51,6 @@ CAsyncIOManager::CAsyncIOManager(dword iothcnt, dword wmin, dword wexp, dword wm
 
 CAsyncIOManager::~CAsyncIOManager(void)
 {
-	m_tasks.Close(EmptyDeleteFunc, NULL);
 }
 
 void CAsyncIOManager::Create(void)
@@ -128,9 +127,9 @@ dword CAsyncIOManager::RunTask(void)
 		CScopedLock lock;
 		CAsyncIODataVector::Iterator it;
 
-		it = m_tasks.Find(pData, AsyncIOData_SearchAndSortFunc);
+		it = m_tasks.Find<CAsyncIODataLessFunctor>(pData);
 		if ( it )
-			m_tasks.Remove(it, EmptyDeleteFunc, NULL);
+			m_tasks.Remove(it);
 
 		pData->set_bytestransferred(dwIoSize);
 		pData->get_overlapped()->Offset += dwIoSize;

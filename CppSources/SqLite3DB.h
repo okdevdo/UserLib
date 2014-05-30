@@ -87,7 +87,7 @@ class CSqLite3ConnectionImpl;
 class CPPSOURCES_API CSqLite3Connection : public CCppObject
 {
 public:
-	typedef CDataVectorT<CSqLite3Column> CSqLite3Columns;
+	typedef CDataVectorT<CSqLite3Column, CStringByNameLessFunctor<CSqLite3Column> > CSqLite3Columns;
 	typedef void(*create_function_type)(Ptr(CSqLite3Connection), ConstRef(CSqLite3Columns));
 
 	class create_function_infoclass : public CCppObject
@@ -138,7 +138,7 @@ class CSqLite3StatementImpl;
 class CPPSOURCES_API CSqLite3Statement : public CCppObject
 {
 public:
-	typedef CDataVectorT<CSqLite3Column> CSqLite3Columns;
+	typedef CDataVectorT<CSqLite3Column, CStringByNameLessFunctor<CSqLite3Column> > CSqLite3Columns;
 
 	CSqLite3Statement(CSqLite3Environment* lpEnv = NULL, CSqLite3StatementImpl* lpStmtImpl = NULL);
 	virtual ~CSqLite3Statement(void);
@@ -148,7 +148,7 @@ public:
 
 	word get_ColumnCount() const;
 	CSqLite3Column* get_ColumnInfo(word ix) const;
-	CSqLite3Column* get_ColumnInfo(CConstPointer name) const;
+	CSqLite3Column* get_ColumnInfo(CConstPointer name);
 
 	sqword get_RowCount() const;
 

@@ -49,7 +49,7 @@
 #endif
 using std::endl;
 
-void XZipViewFiles(ConstRef(CFilePath) fzipfile, ConstRef(CDataVectorT<mbchar>) filespecs, ConstRef(CDataVectorT<mbchar>) excludespecs, CStringLiteral mode);
-void XZipAddFiles(ConstRef(CFilePath) fzipfile, WBool recursefolders, ConstRef(CDataVectorT<mbchar>) filespecs, ConstRef(CDataVectorT<mbchar>) excludespecs);
-void XZipFreshenFiles(ConstRef(CFilePath) fzipfile, ConstRef(CDataVectorT<mbchar>) filespecs, ConstRef(CDataVectorT<mbchar>) excludespecs);
-void XZipUpdateFiles(ConstRef(CFilePath) fzipfile, WBool recursefolders, ConstRef(CDataVectorT<mbchar>) filespecs, ConstRef(CDataVectorT<mbchar>) excludespecs);
+void XZipViewFiles(ConstRef(CFilePath) fzipfile, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs, CStringLiteral mode);
+void XZipAddFiles(ConstRef(CFilePath) fzipfile, WBool recursefolders, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs);
+void XZipFreshenFiles(ConstRef(CFilePath) fzipfile, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs);
+void XZipUpdateFiles(ConstRef(CFilePath) fzipfile, WBool recursefolders, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs);

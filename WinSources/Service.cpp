@@ -600,7 +600,7 @@ static sword __stdcall CServicesSearchAndSortFunc(ConstPointer item, ConstPointe
 	return pService1->get_ServiceName().Compare(pService2->get_ServiceName(), 0, CStringLiteral::cIgnoreCase);
 }
 
-CServices::CServices(DECL_FILE_LINE0) : CDataVectorT<CService>(ARGS_FILE_LINE 16,16, CServicesDeleteFunc, NULL, CServicesSearchAndSortFunc)
+CServices::CServices(DECL_FILE_LINE0) : super(ARGS_FILE_LINE 16, 16)
 {
 }
 
@@ -724,12 +724,12 @@ void CServiceManager::EnumAll()
 	} while (resumeC != 0);
 }
 
-void CServiceManager::Run(ConstRef(CDataVectorT<mbchar>) services)
+void CServiceManager::Run(ConstRef(TMBCharList) services)
 {
 	if (PtrCheck(_pSCManager) || (services.Count() == 0))
 		throw OK_NEW_OPERATOR CServiceException(__FILE__LINE__ _T("[CServiceManager::Start] Invalid arguments or programming sequence error"));
 
-	CDataVectorT<mbchar>::Iterator it = services.Begin();
+	TMBCharList::Iterator it = services.Begin();
 	LPSERVICE_TABLE_ENTRY pDispatchTable = CastAnyPtr(SERVICE_TABLE_ENTRY, TFalloc(sizeof(SERVICE_TABLE_ENTRY) * services.Count()));
 	LPSERVICE_TABLE_ENTRY p = pDispatchTable;
 

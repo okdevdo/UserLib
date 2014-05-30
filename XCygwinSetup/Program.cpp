@@ -34,19 +34,19 @@ public:
 		CConsoleApplication(CStringBuffer(__FILE__LINE__ APPLICATION_NAME)),
 	    m_help(false),
 		m_SetupIniFiles(false),
-		m_sSetupIniFiles(__FILE__LINE__ 16, 16, VectorEmptyDeleteFunc),
+		m_sSetupIniFiles(__FILE__LINE__ 16, 16),
 		m_SetupIniScanDir(false),
 		m_sSetupIniScanDir(),
 		m_Package(false),
 		m_sPackages(__FILE__LINE__ 16, 16),
 		m_Key(false),
-		m_sKeys(__FILE__LINE__ 16, 16, VectorEmptyDeleteFunc),
+		m_sKeys(__FILE__LINE__ 16, 16),
 		m_InstallDir(false),
 		m_sInstallDir(),
 		m_Verbose(0),
 		m_Installed(false),
 		m_ImportFile(false),
-		m_sImportFile(__FILE__LINE__ 16, 16, VectorEmptyDeleteFunc),
+		m_sImportFile(__FILE__LINE__ 16, 16),
 		m_NoRequiredBy(false),
 		m_NotInstalled(false),
 		m_Install(false),
@@ -324,7 +324,7 @@ public:
 			CERR << _T("Both options 'InstallPackages' and 'UninstallPackages' are found, so that a reinstall with a probably another version will be performed.") << endl;
 		if ( m_ImportFile && (m_sImportFile.Count() > 0) )
 		{
-			CDataVectorT<mbchar>::Iterator it = m_sImportFile.Begin();
+			TMBCharList::Iterator it = m_sImportFile.Begin();
 			CSortedStringVectorFilterOutput* pOutput = OK_NEW_OPERATOR CSortedStringVectorFilterOutput(m_sPackages);
 
 			while ( it )
@@ -387,7 +387,7 @@ public:
 			if (!(m_sSetupIniScanDir.IsEmpty()))
 				COUT << _T("SetupIniScanDir: ") << m_sSetupIniScanDir << endl;
 
-			CDataVectorT<mbchar>::Iterator it0 = m_sSetupIniFiles.Begin();
+			TMBCharList::Iterator it0 = m_sSetupIniFiles.Begin();
 
 			while (it0)
 			{
@@ -403,7 +403,7 @@ public:
 				++it1;
 			}
 
-			CDataVectorT<mbchar>::Iterator it2 = m_sKeys.Begin();
+			TMBCharList::Iterator it2 = m_sKeys.Begin();
 
 			while (it2)
 			{
@@ -453,17 +453,17 @@ public:
 private:
 	WBool m_help;
 	WBool m_SetupIniFiles;
-	CDataVectorT<mbchar> m_sSetupIniFiles;
+	TMBCharList m_sSetupIniFiles;
 	WBool m_SetupIniScanDir;
 	CStringLiteral m_sSetupIniScanDir;
 	WBool m_Package;
 	CDataVectorT<CStringBuffer> m_sPackages;
 	WBool m_Key;
-	CDataVectorT<mbchar> m_sKeys;
+	TMBCharList m_sKeys;
 	WBool m_InstallDir;
 	CStringLiteral m_sInstallDir;
 	WBool m_ImportFile;
-	CDataVectorT<mbchar> m_sImportFile;
+	TMBCharList m_sImportFile;
 	WInt m_Verbose;
 	WBool m_NoRequiredBy;
 	WBool m_Installed;

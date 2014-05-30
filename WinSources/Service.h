@@ -142,6 +142,7 @@ public:
 	virtual ~CService();
 
 	__inline SC_HANDLE get_Handle() const { return _pService; }
+	__inline ConstRef(CStringBuffer) get_Name() const { return _ServiceName; }
 	__inline ConstRef(CStringBuffer) get_ServiceName() const { return _ServiceName; }
 	__inline void set_ServiceName(ConstRef(CStringBuffer) value) { _ServiceName = value; }
 	__inline Ptr(CServiceInfo) get_pInfo() const { return _pInfo; }
@@ -171,11 +172,13 @@ protected:
 	CEvent _StopSignal;
 };
 
-class WINSOURCES_API CServices : public CDataVectorT<CService>
+class WINSOURCES_API CServices : public CDataVectorT<CService, CStringByNameIgnoreCaseLessFunctor<CService>>
 {
+	typedef CDataVectorT<CService, CStringByNameIgnoreCaseLessFunctor<CService>> super;
+
 public:
 	CServices(DECL_FILE_LINE0);
-	~CServices();
+	virtual ~CServices();
 };
 
 class WINSOURCES_API CServiceManager : public CCppObject
@@ -190,7 +193,7 @@ public:
 	void StartUp();
 	void Install(Ptr(CServiceInfoTable) sTable);
 	void Load(Ptr(CServiceInfoTable) sTable);
-	void Run(ConstRef(CDataVectorT<mbchar>) services);
+	void Run(ConstRef(TMBCharList) services);
 	void EnumAll();
 	void Stop(CConstPointer name);
 	void Start(CConstPointer name);

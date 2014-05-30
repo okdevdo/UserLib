@@ -28,7 +28,7 @@ extern "C" {
 #endif
 
 typedef sword ( __stdcall *TSearchAndSortFunc)( ConstPointer ArrayItem, ConstPointer DataItem );
-typedef sword ( __stdcall *TSearchAndSortUserFunc)( ConstPointer ArrayItem, ConstPointer DataItem, ConstPointer Context );
+typedef sword ( __stdcall *TSearchAndSortUserFunc)( ConstPointer ArrayItem, ConstPointer DataItem, Pointer Context );
 
 #define UTLPTR_INSERTMODE 0
 #define UTLPTR_SEARCHMODE 1
@@ -44,9 +44,9 @@ CSOURCES_API sword __stdcall v_ndelete( Array, sword, word, WPointer );
 CSOURCES_API sword __stdcall v_bsearch( Array, ConstPointer, word, TSearchAndSortFunc, sword );
 CSOURCES_API sword __stdcall v_lsearch( Array, ConstPointer, word, TSearchAndSortFunc, sword );
 CSOURCES_API void __stdcall v_heapsort( Array _heap, word cnt, TSearchAndSortFunc _cmp );
-CSOURCES_API void __stdcall v_uheapsort( Array _heap, word cnt, TSearchAndSortUserFunc _cmp, ConstPointer user );
+CSOURCES_API void __stdcall v_uheapsort( Array _heap, word cnt, TSearchAndSortUserFunc _cmp, Pointer user );
 CSOURCES_API void __stdcall v_quicksort( Array _heap, word cnt, TSearchAndSortFunc _cmp );
-CSOURCES_API void __stdcall v_uquicksort( Array _heap, word cnt, TSearchAndSortUserFunc _cmp, ConstPointer user );
+CSOURCES_API void __stdcall v_uquicksort( Array _heap, word cnt, TSearchAndSortUserFunc _cmp, Pointer user );
 
 CSOURCES_API sdword __stdcall _lv_binsert( Array, ConstPointer, DWPointer, TSearchAndSortFunc );
 CSOURCES_API sdword __stdcall _lv_linsert( Array, ConstPointer, DWPointer, TSearchAndSortFunc );
@@ -57,12 +57,13 @@ CSOURCES_API sdword __stdcall _lv_ldelete( Array, ConstPointer, DWPointer, TSear
 CSOURCES_API sdword __stdcall _lv_delete( Array, sdword, DWPointer );
 CSOURCES_API sdword __stdcall _lv_ndelete( Array, sdword, dword, DWPointer );
 CSOURCES_API sdword __stdcall _lv_bsearch( Array, ConstPointer, dword, TSearchAndSortFunc, sword );
+CSOURCES_API sdword __stdcall _lv_ubsearch(Array, ConstPointer, dword, TSearchAndSortUserFunc, Pointer, sword);
 CSOURCES_API sdword __stdcall _lv_lsearch( Array, ConstPointer, dword, TSearchAndSortFunc, sword );
-CSOURCES_API sdword __stdcall _lv_ulsearch( Array, ConstPointer, dword, TSearchAndSortUserFunc, ConstPointer, sword );
+CSOURCES_API sdword __stdcall _lv_ulsearch( Array, ConstPointer, dword, TSearchAndSortUserFunc, Pointer, sword );
 CSOURCES_API void __stdcall _lv_heapsort( Array _heap, dword cnt, TSearchAndSortFunc _cmp );
-CSOURCES_API void __stdcall _lv_uheapsort( Array _heap, dword cnt, TSearchAndSortUserFunc _cmp, ConstPointer user );
+CSOURCES_API void __stdcall _lv_uheapsort( Array _heap, dword cnt, TSearchAndSortUserFunc _cmp, Pointer user );
 CSOURCES_API void __stdcall _lv_quicksort( Array _heap, dword cnt, TSearchAndSortFunc _cmp );
-CSOURCES_API void __stdcall _lv_uquicksort( Array _heap, dword cnt, TSearchAndSortUserFunc _cmp, ConstPointer user );
+CSOURCES_API void __stdcall _lv_uquicksort( Array _heap, dword cnt, TSearchAndSortUserFunc _cmp, Pointer user );
 
 CSOURCES_API sword __stdcall s_binsert( Pointer, dword, ConstPointer, WPointer, TSearchAndSortFunc );
 CSOURCES_API sword __stdcall s_linsert( Pointer, dword, ConstPointer, WPointer, TSearchAndSortFunc );
@@ -72,11 +73,11 @@ CSOURCES_API sword __stdcall s_bdelete( Pointer, dword, ConstPointer, WPointer, 
 CSOURCES_API sword __stdcall s_ldelete( Pointer, dword, ConstPointer, WPointer, TSearchAndSortFunc );
 CSOURCES_API sword __stdcall s_delete( Pointer, dword, sword, WPointer );
 CSOURCES_API sword __stdcall s_ndelete( Pointer, dword, sword, word, WPointer );
-CSOURCES_API sword __stdcall s_ubsearch( Pointer, dword, ConstPointer, word, TSearchAndSortUserFunc, ConstPointer, sword );
+CSOURCES_API sword __stdcall s_ubsearch( Pointer, dword, ConstPointer, word, TSearchAndSortUserFunc, Pointer, sword );
 CSOURCES_API sword __stdcall s_bsearch( Pointer, dword, ConstPointer, word, TSearchAndSortFunc, sword );
 CSOURCES_API sword __stdcall s_lsearch( Pointer, dword, ConstPointer, word, TSearchAndSortFunc, sword );
 CSOURCES_API void __stdcall s_heapsort( Pointer _heap, dword _size, word cnt, TSearchAndSortFunc _cmp );
-CSOURCES_API void __stdcall s_uheapsort( Pointer _heap, dword _size, word cnt, TSearchAndSortUserFunc _cmp, ConstPointer user );
+CSOURCES_API void __stdcall s_uheapsort( Pointer _heap, dword _size, word cnt, TSearchAndSortUserFunc _cmp, Pointer user );
 
 CSOURCES_API sdword __stdcall _ls_binsert( Pointer, dword, ConstPointer, DWPointer, TSearchAndSortFunc );
 CSOURCES_API sdword __stdcall _ls_linsert( Pointer, dword, ConstPointer, DWPointer, TSearchAndSortFunc );
@@ -87,13 +88,13 @@ CSOURCES_API sdword __stdcall _ls_ldelete( Pointer, dword, ConstPointer, DWPoint
 CSOURCES_API sdword __stdcall _ls_delete( Pointer, dword, sdword, DWPointer );
 CSOURCES_API sdword __stdcall _ls_ndelete( Pointer, dword, sdword, dword, DWPointer );
 CSOURCES_API sdword __stdcall _ls_bsearch( Pointer, dword, ConstPointer, dword, TSearchAndSortFunc, sword );
-CSOURCES_API sdword __stdcall _ls_ubsearch( Pointer, dword, ConstPointer, dword, TSearchAndSortUserFunc, ConstPointer, sword );
+CSOURCES_API sdword __stdcall _ls_ubsearch( Pointer, dword, ConstPointer, dword, TSearchAndSortUserFunc, Pointer, sword );
 CSOURCES_API sdword __stdcall _ls_lsearch( Pointer, dword, ConstPointer, dword, TSearchAndSortFunc, sword );
-CSOURCES_API sdword __stdcall _ls_ulsearch( Pointer, dword, ConstPointer, dword, TSearchAndSortUserFunc, ConstPointer, sword );
+CSOURCES_API sdword __stdcall _ls_ulsearch( Pointer, dword, ConstPointer, dword, TSearchAndSortUserFunc, Pointer, sword );
 CSOURCES_API void __stdcall _ls_heapsort( Pointer _heap, dword _size, dword cnt, TSearchAndSortFunc _cmp );
-CSOURCES_API void __stdcall _ls_uheapsort( Pointer _heap, dword _size, dword cnt, TSearchAndSortUserFunc _cmp, ConstPointer user );
+CSOURCES_API void __stdcall _ls_uheapsort( Pointer _heap, dword _size, dword cnt, TSearchAndSortUserFunc _cmp, Pointer user );
 CSOURCES_API void __stdcall _ls_quicksort( Pointer _heap, dword _size, dword cnt, TSearchAndSortFunc _cmp );
-CSOURCES_API void __stdcall _ls_uquicksort( Pointer _heap, dword _size, dword cnt, TSearchAndSortUserFunc _cmp, ConstPointer user );
+CSOURCES_API void __stdcall _ls_uquicksort( Pointer _heap, dword _size, dword cnt, TSearchAndSortUserFunc _cmp, Pointer user );
 
 CSOURCES_API sword __stdcall v_searchptr( Array, Pointer, word );
 CSOURCES_API sdword __stdcall _lv_searchptr( Array, Pointer, dword );

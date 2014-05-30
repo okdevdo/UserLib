@@ -23,18 +23,10 @@
 #include "OpenSSL.h"
 
 template <typename c>
-void __stdcall CStackDeleteFunc(ConstPointer data, Pointer context)
-{
-	c* pInfo = CastAnyPtr(c, CastMutable(Pointer, data));
-
-	pInfo->release();
-}
-
-template <typename c>
 class OPENSSL_API CStack
 {
 public:
-	CStack(DECL_FILE_LINE0) : _stack(ARGS_FILE_LINE 64, 64, CStackDeleteFunc<c>) {}
+	CStack(DECL_FILE_LINE0) : _stack(ARGS_FILE_LINE 64, 64) {}
 	~CStack() {}
 
 	TListCnt Count() const

@@ -1106,7 +1106,7 @@ VectorForEach(Pointer liste, TForEachFunc func, Pointer context)
 	assert(func != NULL);
 	for (ix = 0; ix < head->cnt; ++ix, pt = CastAny(Array, _l_ptradd(pt, szPointer)))
 	{
-		if (0 == func(*pt, context))
+		if (!(func(*pt, context)))
 		{
 			result = false;
 			break;
@@ -1115,27 +1115,8 @@ VectorForEach(Pointer liste, TForEachFunc func, Pointer context)
 	return result;
 }
 
-LSearchResultType __stdcall
-VectorFind(Pointer liste, ConstPointer data, TSearchAndSortFunc findFunc)
-{
-	_pVectorHead head = CastAny(_pVectorHead,liste);
-	Array dataVector = head->data;
-	LSearchResultType result = _LNULL;
-
-	assert(liste != NULL);
-	assert(head->max > 0);
-	assert(findFunc != NULL);
-	if ( 0 == head->cnt )
-		return result;
-	_Lnode(result) = head;
-	_Loffset(result) = _lv_lsearch( dataVector, data, head->cnt, findFunc, UTLPTR_MATCHMODE );
-	if ( _Loffset(result) < 0 )
-		return _LNULL;
-	return result;
-}
-
 LSearchResultType __stdcall 
-VectorFindUser(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, ConstPointer context)
+VectorFind(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, Pointer context)
 {
 	_pVectorHead head = CastAny(_pVectorHead,liste);
 	Array dataVector = head->data;
@@ -1154,7 +1135,7 @@ VectorFindUser(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc
 }
 
 LSearchResultType __stdcall 
-VectorFindSorted(Pointer liste, ConstPointer data, TSearchAndSortFunc sortFunc)
+VectorFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
 {
 	_pVectorHead head = CastAny(_pVectorHead,liste);
 	Array dataVector = head->data;
@@ -1166,12 +1147,12 @@ VectorFindSorted(Pointer liste, ConstPointer data, TSearchAndSortFunc sortFunc)
 	if ( 0 == head->cnt )
 		return result;
 	_Lnode(result) = head;
-	_Loffset(result) = _lv_bsearch( dataVector, data, head->cnt, sortFunc, UTLPTR_INSERTMODE);
+	_Loffset(result) = _lv_ubsearch( dataVector, data, head->cnt, sortFunc, context, UTLPTR_INSERTMODE);
 	return result;
 }
 
 LSearchResultType __stdcall 
-VectorUpperBound(Pointer liste, ConstPointer data, TSearchAndSortFunc sortFunc)
+VectorUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
 {
 	_pVectorHead head = CastAny(_pVectorHead,liste);
 	Array dataVector = head->data;
@@ -1183,12 +1164,12 @@ VectorUpperBound(Pointer liste, ConstPointer data, TSearchAndSortFunc sortFunc)
 	if ( 0 == head->cnt )
 		return result;
 	_Lnode(result) = head;
-	_Loffset(result) = _lv_bsearch( dataVector, data, head->cnt, sortFunc, UTLPTR_INSERTMODE);
+	_Loffset(result) = _lv_ubsearch( dataVector, data, head->cnt, sortFunc, context, UTLPTR_INSERTMODE);
 	return result;
 }
 
 LSearchResultType __stdcall 
-VectorLowerBound(Pointer liste, ConstPointer data, TSearchAndSortFunc sortFunc)
+VectorLowerBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
 {
 	_pVectorHead head = CastAny(_pVectorHead,liste);
 	Array dataVector = head->data;
@@ -1200,34 +1181,12 @@ VectorLowerBound(Pointer liste, ConstPointer data, TSearchAndSortFunc sortFunc)
 	if ( 0 == head->cnt )
 		return result;
 	_Lnode(result) = head;
-	_Loffset(result) = _lv_bsearch( dataVector, data, head->cnt, sortFunc, UTLPTR_SEARCHMODE);
+	_Loffset(result) = _lv_ubsearch( dataVector, data, head->cnt, sortFunc, context, UTLPTR_SEARCHMODE);
 	return result;
 }
 
 void __stdcall 
-VectorSort(Pointer liste, TSearchAndSortFunc sortFunc, word mode)
-{
-	_pVectorHead head = CastAny(_pVectorHead,liste);
-	Array dataVector = head->data;
-
-	assert(liste != NULL);
-	assert(head->max > 0);
-	assert(sortFunc != NULL);
-	if ( 0 == head->cnt )
-		return;
-	switch ( mode )
-	{
-	case LSORTMODE_HEAPSORT:
-		_lv_heapsort(dataVector, head->cnt, sortFunc);
-		break;
-	case LSORTMODE_QUICKSORT:
-		_lv_quicksort(dataVector, head->cnt, sortFunc);
-		break;
-	}
-}
-
-void __stdcall 
-VectorSortUser(Pointer liste, TSearchAndSortUserFunc sortFunc, ConstPointer context, word mode)
+VectorSort(Pointer liste, TSearchAndSortUserFunc sortFunc, Pointer context, word mode)
 {
 	_pVectorHead head = CastAny(_pVectorHead,liste);
 	Array dataVector = head->data;
@@ -1356,7 +1315,7 @@ VectorRemove(LSearchResultType node, TDeleteFunc freeFunc, Pointer context)
 }
 
 LSearchResultType __stdcall 
-VectorInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortFunc sortFunc)
+VectorInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
 {
 	_pVectorHead head = CastAny(_pVectorHead,liste);
 	Array dataVector = head->data;
@@ -1368,12 +1327,12 @@ VectorInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortFunc sortFunc
 	if ( 0 == head->cnt )
 		return VectorAppend(liste, data);
 	_Lnode(result) = head;
-	_Loffset(result) = _lv_bsearch( dataVector, data, head->cnt, sortFunc, UTLPTR_INSERTMODE);
+	_Loffset(result) = _lv_ubsearch( dataVector, data, head->cnt, sortFunc, context, UTLPTR_INSERTMODE);
 	return VectorInsertAfter(result, data);
 }
 
 bool __stdcall 
-VectorRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortFunc sortFunc, TDeleteFunc freeFunc, Pointer context)
+VectorRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer sortContext, TDeleteFunc freeFunc, Pointer freeContext)
 {
 	_pVectorHead head = CastAny(_pVectorHead,liste);
 	Array dataVector = head->data;
@@ -1384,16 +1343,16 @@ VectorRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortFunc sortFunc
 	assert(head->max > 0);
 	assert(sortFunc != NULL);
 	_Lnode(result) = head;
-	_Loffset(result) = _lv_bsearch( dataVector, data, head->cnt, sortFunc, UTLPTR_SEARCHMODE);
+	_Loffset(result) = _lv_ubsearch( dataVector, data, head->cnt, sortFunc, sortContext, UTLPTR_SEARCHMODE);
 	if ( _Loffset(result) < 0 )
 		return false;
-	cmp = sortFunc(VectorGetData(result), data);
+	cmp = sortFunc(VectorGetData(result), data, sortContext);
 	while ( cmp == 0 )
 	{
-		VectorRemove(result, freeFunc, context);
+		VectorRemove(result, freeFunc, freeContext);
 		if ( _Loffset(result) >= Cast(TListIndex, head->cnt) )
 			break;
-		cmp = sortFunc(VectorGetData(result), data);
+		cmp = sortFunc(VectorGetData(result), data, sortContext);
 	}
 	return true;
 }

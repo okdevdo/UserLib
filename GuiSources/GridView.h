@@ -93,6 +93,7 @@ protected:
 };
 
 typedef CDataVectorT<CGridViewCell> CGridViewCells;
+typedef CDataVectorT<CGridViewCell, CCppObjectLessFunctor<CGridViewCell>, CCppObjectNullFunctor<CGridViewCell>> CGridViewSelectedCells;
 
 class CTextEditor;
 class CGridViewColumn: public CCppObject
@@ -136,6 +137,7 @@ protected:
 };
 
 typedef CDataVectorT<CGridViewColumn> CGridViewColumns;
+typedef CDataVectorT<CGridViewColumn, CCppObjectLessFunctor<CGridViewColumn>, CCppObjectNullFunctor<CGridViewColumn>> CGridViewSelectedColumns;
 
 class CGridViewRow: public CCppObject
 {
@@ -177,6 +179,7 @@ protected:
 };
 
 typedef CDataVectorT<CGridViewRow> CGridViewRows;
+typedef CDataVectorT<CGridViewRow, CCppObjectLessFunctor<CGridViewRow>, CCppObjectNullFunctor<CGridViewRow>> CGridViewSelectedRows;
 
 class CGridView: public CControl
 {
@@ -269,9 +272,9 @@ protected:
 	CGridViewEmptyCell* m_emptyCell;
 	CGridViewColumns m_columns;
 	CGridViewRows m_rows;
-	CGridViewCells m_selCells;
-	CGridViewRows m_selRows;
-	CGridViewColumns m_selColumns;
+	CGridViewSelectedCells m_selCells;
+	CGridViewSelectedRows m_selRows;
+	CGridViewSelectedColumns m_selColumns;
 
 	CGridViewCell* m_currentCell;
 

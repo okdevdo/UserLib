@@ -49,8 +49,8 @@ using std::endl;
 #include "Service.h"
 
 void okEnumAllServices();
-void okStartServices(ConstRef(CDataVectorT<mbchar>));
-void okStopServices(ConstRef(CDataVectorT<mbchar>));
-void okEnableServices(ConstRef(CDataVectorT<mbchar>));
-void okDisableServices(ConstRef(CDataVectorT<mbchar>));
-void okDeleteServices(ConstRef(CDataVectorT<mbchar>));
+void okStartServices(ConstRef(TMBCharList));
+void okStopServices(ConstRef(TMBCharList));
+void okEnableServices(ConstRef(TMBCharList));
+void okDisableServices(ConstRef(TMBCharList));
+void okDeleteServices(ConstRef(TMBCharList));

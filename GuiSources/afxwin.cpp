@@ -3690,12 +3690,29 @@ int CControl::CountChildren()
 	return param.cnt;
 }
 
+class CControlLessFunctor
+{
+public:
+	bool operator()(ConstPtr(CControl) r1, ConstPtr(CControl) r2) const
+	{
+		if (r1->get_LayoutX() < r2->get_LayoutX())
+			return true;
+		if (r1->get_LayoutX() > r2->get_LayoutX())
+			return false;
+		if (r1->get_LayoutY() < r2->get_LayoutY())
+			return true;
+		return false;
+	}
+};
+
+typedef CDataVectorT<CControl, CControlLessFunctor, CCppObjectNullFunctor<CControl>> TChildren;
+
 typedef struct _tagEnumChildProcCControlOnSizeParam
 {
 	HWND parent;
-	CDataVectorT<CControl>* children;
+	Ptr(TChildren) children;
 
-	_tagEnumChildProcCControlOnSizeParam(HWND _parent, CDataVectorT<CControl>* _children):
+	_tagEnumChildProcCControlOnSizeParam(HWND _parent, Ptr(TChildren) _children) :
 	    parent(_parent), children(_children) {}
 } TEnumChildProcCControlOnSizeParam;
 
@@ -3741,7 +3758,7 @@ LRESULT CControl::OnSize(WPARAM wParam, LPARAM lParam)
 #endif
 	if ( ::GetWindow(m_hwnd, GW_CHILD) )
 	{
-		CDataVectorT<CControl> children(__FILE__LINE__ 32, 32);
+		TChildren children(__FILE__LINE__ 32, 32);
 		TEnumChildProcCControlOnSizeParam param(m_hwnd, &children);
 
 		::EnumChildWindows(m_hwnd, EnumChildProc_CControl_OnSize, (LPARAM)&param);
@@ -3750,11 +3767,11 @@ LRESULT CControl::OnSize(WPARAM wParam, LPARAM lParam)
 #ifdef __DEBUG1__
 			theGuiApp->DebugString("%ls OnSize %d, children.Count()=%d\n", get_name().GetString(), debugID, children.Count());
 #endif
-			children.Sort(TSearchAndSortFunc_OnSize);
+			children.Sort();
 
 			WORD fmaxX = 0;
 			WORD fmaxY = 0;
-			CDataVectorT<CControl>::Iterator it = children.Begin();
+			TChildren::Iterator it = children.Begin();
 
 			while ( it )
 			{
@@ -4024,7 +4041,7 @@ LRESULT CControl::OnSize(WPARAM wParam, LPARAM lParam)
 			size_X.Close(TDeleteFunc_Empty, NULL);
 			size_Y.Close(TDeleteFunc_Empty, NULL);
 		}
-		children.Close(TDeleteFunc_Empty, NULL);
+		children.Close();
 	}
 	if ( IsRectEmpty(&m_maxClientArea) )
 	{
@@ -5392,7 +5409,6 @@ CMenubar::CMenubar(ConstRef(CStringBuffer) name):
 
 CMenubar::~CMenubar()
 {
-	m_menus.Close(TDeleteFunc_Empty, NULL);
 }
 
 BOOL CMenubar::PreRegisterClass(WNDCLASSEX& cls)

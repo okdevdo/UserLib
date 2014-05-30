@@ -26,9 +26,19 @@ static bool __stdcall TAttributesForEachFunc(ConstPointer data, Pointer context)
 {
 	Ptr(CSAXParserAttribute) pAttribute = CastAnyPtr(CSAXParserAttribute, CastMutable(Pointer, data));
 
-	COUT << _T(" ") << pAttribute->get_name() << _T("=\"") << pAttribute->get_value() << _T("\"");
+	COUT << _T(" ") << pAttribute->get_Name() << _T("=\"") << pAttribute->get_Value() << _T("\"");
 	return true;
 }
+
+class CSAXParserAttributeForEachFunctor
+{
+public:
+	bool operator()(Ptr(CSAXParserAttribute) pAttribute)
+	{
+		COUT << _T(" ") << pAttribute->get_Name() << _T("=\"") << pAttribute->get_Value() << _T("\"");
+		return true;
+	}
+};
 
 class TestContentHandler : public CSAXParserContentHandler
 {
@@ -47,7 +57,7 @@ public:
 	virtual void StartElementHandler(ConstRef(CStringBuffer) name, ConstRef(CSAXParserAttributes) attributes)
 	{
 		COUT << _T("StartElementHandler: name=") << name;
-		attributes.ForEach(TAttributesForEachFunc);
+		attributes.ForEach<CSAXParserAttributeForEachFunctor>();
 		COUT << endl;
 	}
 	virtual void EndElementHandler(ConstRef(CStringBuffer) name)

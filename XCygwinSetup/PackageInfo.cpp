@@ -88,13 +88,12 @@ void CPackageInstallInfo::Print(WInt iVerbose, dword indent) const
 }
 
 CPackageInstallInfoVector::CPackageInstallInfoVector(DECL_FILE_LINE TListCnt cnt, TListCnt exp):
-    CDataVectorT<CPackageInstallInfo>(ARGS_FILE_LINE cnt, exp)
+    super(ARGS_FILE_LINE cnt, exp)
 {
 }
 
 CPackageInstallInfoVector::~CPackageInstallInfoVector()
 {
-	Close(PackageInstallInfoDeleteFunc, NULL);
 }
 
 void CPackageInstallInfoVector::Print(WInt iVerbose, dword indent) const
@@ -162,7 +161,6 @@ CPackageInfo::CPackageInfo(ConstRef(CStringBuffer) packageName):
 
 CPackageInfo::~CPackageInfo()
 {
-	_requiredBy.Close(EmptyDeleteFunc, NULL);
 }
 
 Ptr(CPackageInstallInfo) CPackageInfo::FindToBeInstalled()
@@ -193,21 +191,16 @@ Ptr(CPackageInstallInfo) CPackageInfo::FindToBeInstalled()
 
 void CPackageInfo::AddRequiredBy(CPackageInfo* pInfo) 
 {
-	CDataVectorT<CPackageInfo>::Iterator it = _requiredBy.FindSorted(pInfo, PackageInfoSearchAndSortFunc);
+	CRequiredByList::Iterator it = _requiredBy.FindSorted(pInfo);
 
-	if ( !(it && (*it) && (PackageInfoSearchAndSortFunc(*it, pInfo) == 0)) )
-		_requiredBy.InsertSorted(pInfo, PackageInfoSearchAndSortFunc);
+	if (!(_requiredBy.MatchSorted(it, pInfo)))
+		_requiredBy.InsertSorted(pInfo);
 }
 
 void CPackageInfo::RemoveAllRequiredBy()
 {
-	CDataVectorT<CPackageInfo>::Iterator it = _requiredBy.Last();
-
-	while ( it )
-	{
-		_requiredBy.Remove(it, EmptyDeleteFunc, NULL);
-		--it;
-	}
+	while (_requiredBy.Count())
+		_requiredBy.Remove(_requiredBy.Last());
 }
 
 void CPackageInfo::PrintHeader(WInt iVerbose)
@@ -230,7 +223,7 @@ void CPackageInfo::PrintRequiredBy(WInt iVerbose)
 	if ( iVerbose == 0 )
 		return;
 
-	CDataVectorT<CPackageInfo>::Iterator it = _requiredBy.Begin();
+	CRequiredByList::Iterator it = _requiredBy.Begin();
 
 	while ( it )
 	{

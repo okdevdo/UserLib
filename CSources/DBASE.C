@@ -1659,11 +1659,11 @@ static void __stdcall dbaseindex_fillkey_from_backup(dbasefile* fileinfo, dword 
 }
 
 static sword __stdcall
-dbaseindex_usersearchfunc( ConstPointer pa, ConstPointer pb, ConstPointer context )
+dbaseindex_usersearchfunc( ConstPointer pa, ConstPointer pb, Pointer context )
 {
     Pointer ppa = CastAnyPtr(byte, _l_ptradd(CastMutable(Pointer, pa), szFBTreeFileNodeEntry));
     Pointer ppb = CastAnyPtr(byte, _l_ptradd(CastMutable(Pointer, pb), szFBTreeFileNodeEntry));
-	dbaseindex* pIndex = CastAnyPtr(dbaseindex, CastMutable(Pointer, context));
+	dbaseindex* pIndex = CastAnyPtr(dbaseindex, context);
 	dword ix;
 	dbasefield* p1;
 	int result;

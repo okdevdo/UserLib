@@ -26,7 +26,7 @@ public:
 	CSetupIniFileVector(DECL_FILE_LINE TListCnt cnt, TListCnt exp);
 	~CSetupIniFileVector();
 
-	void Fill(CStringLiteral psSetupIniScanDir, CDataVectorT<mbchar>& psSetupIniFiles);
+	void Fill(CStringLiteral psSetupIniScanDir, Ref(TMBCharList) psSetupIniFiles);
 	void Load();
 
 private:

@@ -863,7 +863,7 @@ static sword __stdcall CEventLogRecordsSearchAndSortFunc(ConstPointer pa, ConstP
 }
 
 CEventLogRecords::CEventLogRecords(DECL_FILE_LINE0):
-	super(ARGS_FILE_LINE 16, 256, CEventLogRecordsDeleteFunc, NULL, CEventLogRecordsSearchAndSortFunc)
+	super(ARGS_FILE_LINE 16, 256)
 {
 }
 
@@ -972,18 +972,5 @@ cleanup:
 
 	if (ERROR_HANDLE_EOF != status)
 		ThrowDefaultException(__FILE__LINE__ _T("CEventLogRecords::Load"), status);
-}
-
-BOOLEAN CEventLogRecords::ForEach(TForEachFunc func, Pointer context) const
-{
-	Iterator it = Begin();
-
-	while (it)
-	{
-		if (!func(*it, context))
-			return FALSE;
-		++it;
-	}
-	return TRUE;
 }
 

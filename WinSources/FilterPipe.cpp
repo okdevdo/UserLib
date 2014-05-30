@@ -125,7 +125,7 @@ static void __stdcall CFilterVectorDeleteFunc(ConstPointer data, Pointer context
 	pFilter->release();
 }
 
-CFilterVector::CFilterVector() : CDataVectorT<CFilter>(__FILE__LINE__ 16, 256, CFilterVectorDeleteFunc) {}
+CFilterVector::CFilterVector() : CDataVectorT<CFilter>(__FILE__LINE__ 32, 32) {}
 CFilterVector::~CFilterVector() {}
 
 CFilterPipe::CFilterPipe(Ptr(CFilter) _input, Ptr(CFilter) _output)

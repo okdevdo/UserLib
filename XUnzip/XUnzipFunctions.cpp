@@ -42,13 +42,13 @@ static bool _TestFileSpec(ConstRef(CFilePath) file, ConstRef(CFilePath) filespec
 	return false;
 }
 
-static bool _TestFileSpecs(ConstRef(CStringBuffer) afile, ConstRef(CDataVectorT<mbchar>) filespecs)
+static bool _TestFileSpecs(ConstRef(CStringBuffer) afile, ConstRef(TMBCharList) filespecs)
 {
 	CStringBuffer tmp(afile);
 
 	tmp.ReplaceString(CDirectoryIterator::UnixPathSeparatorString(), CDirectoryIterator::WinPathSeparatorString());
 	CFilePath fpath(tmp);
-	CDataVectorT<mbchar>::Iterator it = filespecs.Begin();
+	TMBCharList::Iterator it = filespecs.Begin();
 
 	while ( it )
 	{
@@ -93,14 +93,14 @@ static bool _TestExcludeSpec(ConstRef(CFilePath) file, ConstRef(CFilePath) files
 	return false;
 }
 
-static bool _TestExcludeSpecs(ConstRef(CStringBuffer) afile, ConstRef(CDataVectorT<mbchar>) filespecs)
+static bool _TestExcludeSpecs(ConstRef(CStringBuffer) afile, ConstRef(TMBCharList) filespecs)
 {
 	CStringBuffer tmp(afile);
 
 	tmp.ReplaceString(CDirectoryIterator::UnixPathSeparatorString(), CDirectoryIterator::WinPathSeparatorString());
 
 	CFilePath fpath(tmp);
-	CDataVectorT<mbchar>::Iterator it = filespecs.Begin();
+	TMBCharList::Iterator it = filespecs.Begin();
 
 	while (it)
 	{
@@ -113,7 +113,7 @@ static bool _TestExcludeSpecs(ConstRef(CStringBuffer) afile, ConstRef(CDataVecto
 	return false;
 }
 
-void XUnzipViewFiles(ConstRef(CFilePath) fzipfile, ConstRef(CDataVectorT<mbchar>) filespecs, ConstRef(CDataVectorT<mbchar>) excludespecs, CStringLiteral mode)
+void XUnzipViewFiles(ConstRef(CFilePath) fzipfile, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs, CStringLiteral mode)
 {
 	CSecurityFile* pArchiveFile = NULL;
 	CArchiveIterator *zipIt = NULL;
@@ -307,7 +307,7 @@ void XUnzipViewFiles(ConstRef(CFilePath) fzipfile, ConstRef(CDataVectorT<mbchar>
 	}
 }
 
-void XUnzipExtractFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, WBool overwrite, ConstRef(CDataVectorT<mbchar>) filespecs, ConstRef(CDataVectorT<mbchar>) excludespecs)
+void XUnzipExtractFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, WBool overwrite, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs)
 {
 	CFilePath fcurDir;
 	CSecurityFile* pArchiveFile = NULL;
@@ -458,7 +458,7 @@ void XUnzipExtractFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, WBool ov
 	}
 }
 
-void XUnzipFreshenFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, ConstRef(CDataVectorT<mbchar>) filespecs, ConstRef(CDataVectorT<mbchar>) excludespecs)
+void XUnzipFreshenFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs)
 {
 	CFilePath fcurDir;
 	CSecurityFile* pArchiveFile = NULL;
@@ -642,7 +642,7 @@ void XUnzipFreshenFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, ConstRef
 	}
 }
 
-void XUnzipNewerFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, ConstRef(CDataVectorT<mbchar>) filespecs, ConstRef(CDataVectorT<mbchar>) excludespecs)
+void XUnzipNewerFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs)
 {
 	CFilePath fcurDir;
 	CSecurityFile* pArchiveFile = NULL;

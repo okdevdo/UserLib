@@ -64,5 +64,5 @@ using std::endl;
 
 #define APPLICATION_NAME _T("XCygwinSetup")
 
-void ScanSetupIni(CStringLiteral pInstallDir, CStringLiteral psSetupIniScanDir, CDataVectorT<mbchar>& psSetupIniFiles,
-	CDataVectorT<CStringBuffer>& psSearchPackage, CDataVectorT<mbchar>& psSearchKey, WUInt flags, WInt iVerbose);
+void ScanSetupIni(CStringLiteral pInstallDir, CStringLiteral psSetupIniScanDir, Ref(TMBCharList) psSetupIniFiles,
+	Ref(CDataVectorT<CStringBuffer>) psSearchPackage, Ref(TMBCharList) psSearchKey, WUInt flags, WInt iVerbose);

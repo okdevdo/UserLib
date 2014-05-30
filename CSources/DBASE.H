@@ -139,7 +139,7 @@ CSOURCES_API bool __stdcall dbasefile_getfielddata_bool(dbasefile* fileinfo, dwo
 CSOURCES_API sdword __stdcall dbasefile_getfielddata_long(dbasefile* fileinfo, dword fieldno);
 CSOURCES_API double __stdcall dbasefile_getfielddata_double(dbasefile* fileinfo, dword fieldno);
 CSOURCES_API CPointer __stdcall dbasefile_getfielddata_string(dbasefile* fileinfo, dword fieldno);
-CSOURCES_API bool _stdcall dbasefile_cmpfielddata(dbasefile* fileinfo, dword fieldno);
+CSOURCES_API bool __stdcall dbasefile_cmpfielddata(dbasefile* fileinfo, dword fieldno);
 CSOURCES_API void __stdcall dbasefile_setfielddata(dbasefile* fileinfo, dword fieldno, Pointer data);
 CSOURCES_API void __stdcall dbasefile_setfielddata_bool(dbasefile* fileinfo, dword fieldno, bool data);
 CSOURCES_API void __stdcall dbasefile_setfielddata_long(dbasefile* fileinfo, dword fieldno, sdword data);

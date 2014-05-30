@@ -114,16 +114,51 @@ protected:
 	CStringBuffer _template;
 };
 
-class WINSOURCES_API CEventLogEvents : public CDataVectorT<CEventLogEvent>
+class WINSOURCES_API CEventLogEventLessFunctor
 {
-	typedef CDataVectorT<CEventLogEvent> super;
+public:
+	bool operator()(ConstPtr(CEventLogEvent) r1, ConstPtr(CEventLogEvent) r2) const
+	{
+		return (r1->get_eventRecordID() < r2->get_eventRecordID());
+	}
+};
+
+class WINSOURCES_API CEventLogEvents : public CDataVectorT<CEventLogEvent, CEventLogEventLessFunctor>
+{
+	typedef CDataVectorT<CEventLogEvent, CEventLogEventLessFunctor> super;
 
 public:
 
 	CEventLogEvents(DECL_FILE_LINE0);
-	~CEventLogEvents();
+	virtual ~CEventLogEvents();
 
 	BOOLEAN Load(ConstRef(CStringBuffer) channelPath, Ptr(CEventLogProviders) pProviders);
-	BOOLEAN ForEach(TForEachFunc func, Pointer context, bool bReverse = false) const;
-	Ptr(CEventLogEvent) FindSorted(DWORD64 eventRecordID) const;
+	template <typename D> // CCppObjectForEachFunctor<Item>
+	bool ForEach(Ref(D) rD = D(), bool bReverse = false)
+	{
+		Iterator it;
+
+		if (bReverse)
+		{
+			it = Last();
+			while (it)
+			{
+				if (!(rD(*it)))
+					return false;
+				--it;
+			}
+		}
+		else
+		{
+			it = Begin();
+			while (it)
+			{
+				if (!(rD(*it)))
+					return false;
+				++it;
+			}
+		}
+		return true;
+	}
+	Ptr(CEventLogEvent) FindSorted(DWORD64 eventRecordID);
 };

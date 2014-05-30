@@ -75,7 +75,7 @@ void __stdcall ContentPointers_DeleteFunc(ConstPointer data, Pointer context)
 CHtmlPage::ResourceItem::ResourceItem(ConstRef(CStringBuffer) resource) :
 	_resource(resource),
 	_filePath(),
-	_pointers(__FILE__LINE__ 16, 16, ContentPointers_DeleteFunc),
+	_pointers(__FILE__LINE__ 16, 16),
 	_updated(false)
 {
 }
@@ -105,7 +105,7 @@ sword __stdcall ResourceItems_SearchAndSortFunc( ConstPointer pa, ConstPointer p
 
 CHtmlPage::ServerItem::ServerItem(ConstRef(CStringBuffer) server) :
 	_server(server),
-	_items(__FILE__LINE__ 16, 16, ResourceItems_DeleteFunc, NULL, ResourceItems_SearchAndSortFunc)
+	_items(__FILE__LINE__ 16, 16)
 {
 }
 
@@ -136,7 +136,7 @@ CHtmlPage::CHtmlPage(void):
     _cachePath(),
     _serverPath(),
     _documentBuffer(),
-	_serverItems(__FILE__LINE__ 16, 16, ServerItems_DeleteFunc, NULL, ServerItems_SearchAndSortFunc)
+	_serverItems(__FILE__LINE__ 16, 16)
 {
 }
 
@@ -144,7 +144,7 @@ CHtmlPage::CHtmlPage(ConstRef(CFilePath) fpath, ConstRef(CStringBuffer) spath, C
     _cachePath(fpath),
     _serverPath(spath),
     _documentBuffer(buffer),
-	_serverItems(__FILE__LINE__ 16, 16, ServerItems_DeleteFunc, NULL, ServerItems_SearchAndSortFunc)
+	_serverItems(__FILE__LINE__ 16, 16)
 {
 }
 
@@ -246,15 +246,15 @@ void CHtmlPage::ReplaceImages()
 				}
 				{
 					ServerItem serverItem(urlHelper.get_Server());
-					ServerItems::Iterator itS = _serverItems.FindSorted(&serverItem, ServerItems_SearchAndSortFunc);
+					ServerItems::Iterator itS = _serverItems.FindSorted(&serverItem);
 					ServerItem* pServerItem = NULL;
 
-					if (itS && (*itS) && (ServerItems_SearchAndSortFunc(*itS, &serverItem) == 0))
+					if (_serverItems.MatchSorted(itS, &serverItem))
 						pServerItem = (*itS);
 					else
 					{
 						pServerItem = OK_NEW_OPERATOR ServerItem(urlHelper.get_Server());
-						itS = _serverItems.InsertSorted(pServerItem, ServerItems_SearchAndSortFunc);
+						itS = _serverItems.InsertSorted(pServerItem);
 						if (itS)
 							pServerItem = (*itS);
 						else
@@ -263,15 +263,15 @@ void CHtmlPage::ReplaceImages()
 					if ((pServerItem != NULL) && (!(urlHelper.get_Resource().IsEmpty())))
 					{
 						ResourceItem resourceItem(urlHelper.get_Resource());
-						ResourceItems::Iterator itR = pServerItem->_items.FindSorted(&resourceItem, ResourceItems_SearchAndSortFunc);
+						ResourceItems::Iterator itR = pServerItem->_items.FindSorted(&resourceItem);
 						ResourceItem* pResourceItem = NULL;
 
-						if (itR && (*itR) && (ResourceItems_SearchAndSortFunc(*itR, &resourceItem) == 0))
+						if (pServerItem->_items.MatchSorted(itR, &resourceItem))
 							pResourceItem = *itR;
 						else
 						{
 							pResourceItem = OK_NEW_OPERATOR ResourceItem(urlHelper.get_Resource());
-							itR = pServerItem->_items.InsertSorted(pResourceItem, ResourceItems_SearchAndSortFunc);
+							itR = pServerItem->_items.InsertSorted(pResourceItem);
 							if (itR)
 								pResourceItem = (*itR);
 							else
@@ -444,7 +444,7 @@ void CHtmlPage::ReplaceImages()
 				{
 					pReplacePointer = OK_NEW_OPERATOR ReplacePointer(pContentPointer->_begin, pContentPointer->_end, pResourceItem->_filePath);
 
-					replacePointers.InsertSorted(pReplacePointer, ReplacePointers_SearchAndSortFunc);
+					replacePointers.InsertSorted(pReplacePointer);
 				}
 				++itC;
 			}
@@ -466,7 +466,7 @@ void CHtmlPage::ReplaceImages()
 		_documentBuffer.ReplaceSubBuffer(pReplacePointer->_begin, pReplacePointer->_end - pReplacePointer->_begin, buffer);
 		--itRe;
 	}
-	replacePointers.Close(ReplacePointers_DeleteFunc, NULL);
+	replacePointers.Close();
 
 	ccit = _documentBuffer.Begin();
 	ccit.Find(CastAnyPtr(byte, CastMutablePtr(char, "<head>")), 6);
@@ -488,12 +488,12 @@ bool CHtmlPage::GetAssocPath(ConstRef(CStringBuffer) url, Ref(CFilePath) path)
 	ServerItem sItem(vUrl.get_Server());
 	ServerItems::Iterator itS = _serverItems.FindSorted(&sItem);
 
-	if (itS && (*itS) && (ServerItems_SearchAndSortFunc(*itS, &sItem) == 0))
+	if (_serverItems.MatchSorted(itS, &sItem))
 	{
 		ResourceItem rItem(vUrl.get_Resource());
 		ResourceItems::Iterator itR = (*itS)->_items.FindSorted(&rItem);
 
-		if (itR && (*itR) && (ResourceItems_SearchAndSortFunc(*itR, &rItem) == 0))
+		if ((*itS)->_items.MatchSorted(itR, &rItem))
 		{
 			path = (*itR)->_filePath;
 			(*itR)->_updated = true;

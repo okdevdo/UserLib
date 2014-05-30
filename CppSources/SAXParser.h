@@ -36,21 +36,21 @@ public:
 	CSAXParserAttribute(ConstRef(CStringBuffer) name, ConstRef(CStringBuffer) value);
 	virtual ~CSAXParserAttribute();
 
-	__inline ConstRef(CStringBuffer) get_name() const { return _name; }
-	__inline ConstRef(CStringBuffer) get_value() const { return _value; }
+	__inline ConstRef(CStringBuffer) get_Name() const { return _name; }
+	__inline ConstRef(CStringBuffer) get_Value() const { return _value; }
 
 protected:
 	CStringBuffer _name;
 	CStringBuffer _value;
 };
 
-class CPPSOURCES_API CSAXParserAttributes : public CDataVectorT<CSAXParserAttribute>
+class CPPSOURCES_API CSAXParserAttributes : public CDataVectorT<CSAXParserAttribute, CStringByNameLessFunctor<CSAXParserAttribute>>
 {
 public:
-	typedef CDataVectorT<CSAXParserAttribute> super;
+	typedef CDataVectorT<CSAXParserAttribute, CStringByNameLessFunctor<CSAXParserAttribute>> super;
 
 	CSAXParserAttributes(DECL_FILE_LINE0);
-	~CSAXParserAttributes();
+	virtual ~CSAXParserAttributes();
 };
 
 class CPPSOURCES_API CSAXParserContentHandler : public CCppObject

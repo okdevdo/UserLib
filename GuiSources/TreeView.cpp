@@ -100,7 +100,6 @@ CTreeViewNode::~CTreeViewNode(void)
 			node->set_Selected(false);
 		++it;
 	}
-	m_nodes.Close(TDeleteFunc_TreeViewNodes, NULL);
 }
 
 void CTreeViewNode::_init(int ix, bool before)
@@ -194,7 +193,7 @@ void CTreeViewNode::set_Node(dword ix, CTreeViewNode* node)
 			node1->set_Focused(false);
 			if ( node1->is_Selected() )
 				node1->set_Selected(false);
-			m_nodes.Remove(m_nodes.Index(ix), TDeleteFunc_TreeViewNodes, NULL);
+			m_nodes.Remove(m_nodes.Index(ix));
 		}
 		else if ( ix >= m_nodes.Count() )
 			m_nodes.Append(node);
@@ -832,8 +831,6 @@ CTreeView::CTreeView(ConstRef(CStringBuffer) name):
 
 CTreeView::~CTreeView(void)
 {
-	m_selNodes.Close(TDeleteFunc_SelectedTreeViewNodes, NULL);
-	m_nodes.Close(TDeleteFunc_TreeViewNodes, NULL);
 }
 
 BOOL CTreeView::PreRegisterClass(WNDCLASSEX& cls)
@@ -1097,7 +1094,7 @@ void CTreeView::set_Node(dword ix, CTreeViewNode* node)
 			m_currentNode = NULL;
 		if ( node1->is_Selected() )
 			node1->set_Selected(false);
-		m_nodes.Remove(m_nodes.Index(ix), TDeleteFunc_TreeViewNodes, NULL);
+		m_nodes.Remove(m_nodes.Index(ix));
 	}
 	else if ( ix >= m_nodes.Count() )
 		m_nodes.Append(node);
@@ -1282,7 +1279,7 @@ void CTreeView::set_SelNode(dword ix, CTreeViewNode* node)
 	{
 		if ( ix >= m_selNodes.Count() )
 			return;
-		m_selNodes.Remove(m_selNodes.Index(ix), TDeleteFunc_SelectedTreeViewNodes, NULL);
+		m_selNodes.Remove(m_selNodes.Index(ix));
 	}
 	else if ( ix >= m_selNodes.Count() )
 		m_selNodes.Append(node);

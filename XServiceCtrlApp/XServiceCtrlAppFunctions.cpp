@@ -31,10 +31,10 @@ void okEnumAllServices()
 	pManager->release();
 }
 
-void okStartServices(ConstRef(CDataVectorT<mbchar>) services)
+void okStartServices(ConstRef(TMBCharList) services)
 {
 	Ptr(CServiceManager) pManager = OK_NEW_OPERATOR CServiceManager;
-	CDataVectorT<mbchar>::Iterator it = services.Begin();
+	TMBCharList::Iterator it = services.Begin();
 
 	pManager->StartUp();
 	while (it)
@@ -46,10 +46,10 @@ void okStartServices(ConstRef(CDataVectorT<mbchar>) services)
 	pManager->release();
 }
 
-void okStopServices(ConstRef(CDataVectorT<mbchar>) services)
+void okStopServices(ConstRef(TMBCharList) services)
 {
 	Ptr(CServiceManager) pManager = OK_NEW_OPERATOR CServiceManager;
-	CDataVectorT<mbchar>::Iterator it = services.Begin();
+	TMBCharList::Iterator it = services.Begin();
 
 	pManager->StartUp();
 	while (it)
@@ -61,10 +61,10 @@ void okStopServices(ConstRef(CDataVectorT<mbchar>) services)
 	pManager->release();
 }
 
-void okEnableServices(ConstRef(CDataVectorT<mbchar>) services)
+void okEnableServices(ConstRef(TMBCharList) services)
 {
 	Ptr(CServiceManager) pManager = OK_NEW_OPERATOR CServiceManager;
-	CDataVectorT<mbchar>::Iterator it = services.Begin();
+	TMBCharList::Iterator it = services.Begin();
 
 	pManager->StartUp();
 	while (it)
@@ -76,10 +76,10 @@ void okEnableServices(ConstRef(CDataVectorT<mbchar>) services)
 	pManager->release();
 }
 
-void okDisableServices(ConstRef(CDataVectorT<mbchar>) services)
+void okDisableServices(ConstRef(TMBCharList) services)
 {
 	Ptr(CServiceManager) pManager = OK_NEW_OPERATOR CServiceManager;
-	CDataVectorT<mbchar>::Iterator it = services.Begin();
+	TMBCharList::Iterator it = services.Begin();
 
 	pManager->StartUp();
 	while (it)
@@ -91,10 +91,10 @@ void okDisableServices(ConstRef(CDataVectorT<mbchar>) services)
 	pManager->release();
 }
 
-void okDeleteServices(ConstRef(CDataVectorT<mbchar>) services)
+void okDeleteServices(ConstRef(TMBCharList) services)
 {
 	Ptr(CServiceManager) pManager = OK_NEW_OPERATOR CServiceManager;
-	CDataVectorT<mbchar>::Iterator it = services.Begin();
+	TMBCharList::Iterator it = services.Begin();
 
 	pManager->StartUp();
 	while (it)

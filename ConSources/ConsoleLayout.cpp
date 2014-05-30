@@ -155,7 +155,6 @@ CConsoleLayout::CConsoleLayout(SMALL_RECT margins, COORD spacing):
 
 CConsoleLayout::~CConsoleLayout(void)
 {
-	m_Items.Close(CConsoleLayoutItemDeleteFunc, NULL);
 }
 
 void CConsoleLayout::addLayout(Ptr(CConsoleLayout) item)

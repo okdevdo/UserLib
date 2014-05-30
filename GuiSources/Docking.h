@@ -136,10 +136,13 @@ protected:
 	INT m_SizingEdge;
 };
 
-class CDockWindowVector: public CDataVectorT<CDockWindow>
+class CDockWindowVector: public CDataVectorT<CDockWindow, CStringByNameLessFunctor<CDockWindow>, CCppObjectNullFunctor<CDockWindow>>
 {
+	typedef CDataVectorT<CDockWindow, CStringByNameLessFunctor<CDockWindow>, CCppObjectNullFunctor<CDockWindow>> super;
+
 public:
 	CDockWindowVector(DECL_FILE_LINE TListCnt max, TListCnt exp);
+	virtual ~CDockWindowVector();
 
 	void StartTransact();
 	void Rollback();

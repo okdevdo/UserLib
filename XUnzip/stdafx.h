@@ -49,7 +49,7 @@
 #endif
 using std::endl;
 
-void XUnzipViewFiles(ConstRef(CFilePath) fzipfile, ConstRef(CDataVectorT<mbchar>) filespecs, ConstRef(CDataVectorT<mbchar>) excludespecs, CStringLiteral mode);
-void XUnzipExtractFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, WBool overwrite, ConstRef(CDataVectorT<mbchar>) filespecs, ConstRef(CDataVectorT<mbchar>) excludespecs);
-void XUnzipFreshenFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, ConstRef(CDataVectorT<mbchar>) filespecs, ConstRef(CDataVectorT<mbchar>) excludespecs);
-void XUnzipNewerFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, ConstRef(CDataVectorT<mbchar>) filespecs, ConstRef(CDataVectorT<mbchar>) excludespecs);
+void XUnzipViewFiles(ConstRef(CFilePath) fzipfile, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs, CStringLiteral mode);
+void XUnzipExtractFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, WBool overwrite, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs);
+void XUnzipFreshenFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs);
+void XUnzipNewerFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs);

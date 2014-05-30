@@ -79,6 +79,7 @@ public:
 
 	__inline ConstRef(CFilePath) GetRelativePath() const { return m_RelativePath; }
 	__inline void SetRelativePath(ConstRef(CFilePath) p) { m_RelativePath = p; }
+	__inline ConstRef(CStringBuffer) get_Name() const { return m_sName; }
 	__inline ConstRef(CStringBuffer) GetName() const { return m_sName; }
 	__inline void SetName(ConstRef(CStringBuffer) name) { m_sName = name; }
 	__inline ConstRef(CPackageVersion) GetVersion() const { return m_Version; }
@@ -111,8 +112,10 @@ private:
 	bool m_IsInstalled;
 };
 
-class CInstallPackageInfoVector: public CDataVectorT<CInstallPackageInfo>
+class CInstallPackageInfoVector: public CDataVectorT<CInstallPackageInfo, CStringByNameLessFunctor<CInstallPackageInfo>>
 {
+	typedef CDataVectorT<CInstallPackageInfo, CStringByNameLessFunctor<CInstallPackageInfo>> super;
+
 public:
 	CInstallPackageInfoVector(DECL_FILE_LINE TListCnt cnt, TListCnt exp);
 	~CInstallPackageInfoVector();

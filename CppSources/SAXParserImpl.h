@@ -27,8 +27,8 @@
 #include "CppSources.h"
 #include "expat.h"
 
-class CPPSOURCES_API CSAXParserContentHandler;
-class CPPSOURCES_API CSAXParserDTDHandler;
+class CSAXParserContentHandler;
+class CSAXParserDTDHandler;
 class CPPSOURCES_LOCAL CSAXParserImpl : public CCppObject
 {
 public:

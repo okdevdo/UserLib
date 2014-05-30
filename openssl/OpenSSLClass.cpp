@@ -51,7 +51,7 @@ static sword __stdcall COpenSSLClassVectorSearchAndSortFunc1(ConstPointer pa, Co
 	return 1;
 }
 
-CDataVectorT<COpenSSLClass> COpenSSLClass::_objs(__FILE__LINE__ 16, 16, COpenSSLClassVectorDeleteFunc);
+COpenSSLClass::COpenSSLClasses COpenSSLClass::_objs(__FILE__LINE__ 16, 16);
 
 COpenSSLClass::COpenSSLClass(ConstPointer raw) : _raw(CastMutable(Pointer, raw))
 {
@@ -63,26 +63,27 @@ COpenSSLClass::~COpenSSLClass()
 
 Ptr(COpenSSLClass) COpenSSLClass::find_obj(ConstPointer raw)
 {
-	CDataVectorT<COpenSSLClass>::Iterator it = _objs.FindSorted(CastAnyConstPtr(COpenSSLClass, raw), COpenSSLClassVectorSearchAndSortFunc1);
+	COpenSSLClass cmp(raw);
+	COpenSSLClasses::Iterator it = _objs.FindSorted(&cmp);
 
-	if (it && *it && (COpenSSLClassVectorSearchAndSortFunc1(*it, raw) == 0))
+	if (_objs.MatchSorted(it, &cmp))
 		return *it;
 	return NULL;
 }
 
 void COpenSSLClass::insert_obj()
 {
-	CDataVectorT<COpenSSLClass>::Iterator it = _objs.FindSorted(this, COpenSSLClassVectorSearchAndSortFunc);
+	COpenSSLClasses::Iterator it = _objs.FindSorted(this);
 
-	if (it && *it && (COpenSSLClassVectorSearchAndSortFunc(*it, this) == 0))
+	if (_objs.MatchSorted(it, this))
 		return;
-	_objs.InsertSorted(this, COpenSSLClassVectorSearchAndSortFunc);
+	_objs.InsertSorted(this);
 }
 
 void COpenSSLClass::remove_obj()
 {
-	CDataVectorT<COpenSSLClass>::Iterator it = _objs.FindSorted(this, COpenSSLClassVectorSearchAndSortFunc);
+	COpenSSLClasses::Iterator it = _objs.FindSorted(this);
 
-	if (it && *it && (COpenSSLClassVectorSearchAndSortFunc(*it, this) == 0))
-		_objs.Remove(it, COpenSSLClassVectorDeleteFunc);
+	if (_objs.MatchSorted(it, this))
+		_objs.Remove(it);
 }

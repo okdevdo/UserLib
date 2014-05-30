@@ -48,11 +48,11 @@ static sword __stdcall SAXParserAttributeSearchAndSortFunc(ConstPointer ArrayIte
 	Ptr(CSAXParserAttribute) pArrayItem = CastAnyPtr(CSAXParserAttribute, CastMutable(Pointer, ArrayItem));
 	Ptr(CSAXParserAttribute) pDataItem = CastAnyPtr(CSAXParserAttribute, CastMutable(Pointer, DataItem));
 
-	return pArrayItem->get_name().Compare(pDataItem->get_name());
+	return pArrayItem->get_Name().Compare(pDataItem->get_Name());
 }
 
 CSAXParserAttributes::CSAXParserAttributes(DECL_FILE_LINE0) :
-	super(ARGS_FILE_LINE 16, 16, SAXParserAttributeDeleteFunc, NULL, SAXParserAttributeSearchAndSortFunc)
+	super(ARGS_FILE_LINE 16, 16)
 {
 }
 
@@ -81,7 +81,7 @@ static void __stdcall SAXParseElementDefinitionDeleteFunc(ConstPointer data, Poi
 }
 
 CSAXParserElementDefinition::CSAXParserElementDefinition(XML_Content_Type contentType, XML_Content_Quant contentQuant, CConstPointer name) :
-_contentType(contentType), _contentQuant(contentQuant), _name(__FILE__LINE__ name), _children(__FILE__LINE__ 16, 32, SAXParseElementDefinitionDeleteFunc)
+_contentType(contentType), _contentQuant(contentQuant), _name(__FILE__LINE__ name), _children(__FILE__LINE__ 16, 32)
 {}
 CSAXParserElementDefinition::~CSAXParserElementDefinition() {}
 

@@ -281,3 +281,23 @@ struct CStringHashStdFunctor {
     WLong            prime;
 
 };
+
+template <typename T>
+class CStringByNameLessFunctor
+{
+public:
+	bool operator()(ConstPtr(T) r1, ConstPtr(T) r2) const
+	{
+		return r1->get_Name().LT(r2->get_Name());
+	}
+};
+
+template <typename T>
+class CStringByNameIgnoreCaseLessFunctor
+{
+public:
+	bool operator()(ConstPtr(T) r1, ConstPtr(T) r2) const
+	{
+		return r1->get_Name().LT(r2->get_Name(), 0, CStringLiteral::cIgnoreCase);
+	}
+};

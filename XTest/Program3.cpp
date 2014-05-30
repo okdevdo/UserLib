@@ -530,7 +530,7 @@ static void ScanDirectoryHelper(CStringLiteral dir, CStringLiteral pattern)
 	}
 }
 
-void ScanDirectory(CDataVectorT<mbchar>& dirs, CStringLiteral pattern)
+void ScanDirectory(TMBCharList& dirs, CStringLiteral pattern)
 {
 	if ( pattern.IsEmpty() )
 		pattern = _T("*");
@@ -553,7 +553,7 @@ void ScanDirectory(CDataVectorT<mbchar>& dirs, CStringLiteral pattern)
 		return;
 	}
 
-	CDataVectorT<mbchar>::Iterator it = dirs.Begin();
+	TMBCharList::Iterator it = dirs.Begin();
 
 	while ( it )
 	{
