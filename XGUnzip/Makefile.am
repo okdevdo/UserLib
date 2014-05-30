@@ -5,7 +5,7 @@ XGUnzip_LDADD = ../WinSources/libWinSources.la
 XGUnzip_LDFLAGS = 
 XGUnzip_CFLAGS = 
 XGUnzip_CPPFLAGS = -I$(top_srcdir)/CSources -I$(top_srcdir)/CppSources -I$(top_srcdir)/WinSources
-XGUnzip_CXXFLAGS = -fexceptions -Wall
+XGUnzip_CXXFLAGS = -fexceptions -Wall -std=gnu++11
 
 if DEBUG
 XGUnzip_CPPFLAGS += -D_DEBUG

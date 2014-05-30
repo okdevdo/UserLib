@@ -6,17 +6,17 @@ include_HEADERS = CIPHER.H DES.H HASH.H TWOFISH.H
 libCryptSources_la_LDFLAGS = -no-undefined -version-info 1
 libCryptSources_la_LIBADD = 
 libCryptSources_la_CPPFLAGS = -I$(top_srcdir)/CSources
-libCryptSources_la_CXXFLAGS =
+libCryptSources_la_CFLAGS =
 if DEBUG
 libCryptSources_la_CPPFLAGS += -D_DEBUG
-libCryptSources_la_CXXFLAGS += -g
+libCryptSources_la_CFLAGS += -g
 else
 libCryptSources_la_CPPFLAGS += -DNDEBUG
-libCryptSources_la_CXXFLAGS += -O
+libCryptSources_la_CFLAGS += -O
 endif
 if COND_MINGW
 libCryptSources_la_LDFLAGS += -mthreads
-libCryptSources_la_CXXFLAGS += -mthreads
+libCryptSources_la_CFLAGS += -mthreads
 endif
 if COND_UNICODE
 libCryptSources_la_CPPFLAGS += -DUNICODE

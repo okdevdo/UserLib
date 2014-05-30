@@ -21,7 +21,7 @@ libWinSources_la_LIBADD = ../CppSources/libCppSources.la
 
 libWinSources_la_CFLAGS = 
 libWinSources_la_CPPFLAGS = -I$(top_srcdir)/CSources -I$(top_srcdir)/CppSources
-libWinSources_la_CXXFLAGS = -fexceptions -Wall
+libWinSources_la_CXXFLAGS = -fexceptions -Wall -std=gnu++11
 if DEBUG
 libWinSources_la_CPPFLAGS += -D_DEBUG
 libWinSources_la_CXXFLAGS += -g

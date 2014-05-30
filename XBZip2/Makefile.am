@@ -5,7 +5,7 @@ XBZip2_LDADD = ../WinSources/libWinSources.la
 XBZip2_LDFLAGS = 
 XBZip2_CFLAGS = 
 XBZip2_CPPFLAGS = -I$(top_srcdir)/CSources -I$(top_srcdir)/CppSources -I$(top_srcdir)/WinSources
-XBZip2_CXXFLAGS = -fexceptions -Wall
+XBZip2_CXXFLAGS = -fexceptions -Wall -std=gnu++11
 
 if DEBUG
 XBZip2_CPPFLAGS += -D_DEBUG

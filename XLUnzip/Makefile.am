@@ -5,7 +5,7 @@ XLUnzip_LDADD = ../WinSources/libWinSources.la
 XLUnzip_LDFLAGS = 
 XLUnzip_CFLAGS = 
 XLUnzip_CPPFLAGS = -I$(top_srcdir)/CSources -I$(top_srcdir)/CppSources -I$(top_srcdir)/WinSources
-XLUnzip_CXXFLAGS = -fexceptions -Wall
+XLUnzip_CXXFLAGS = -fexceptions -Wall -std=gnu++11
 
 if DEBUG
 XLUnzip_CPPFLAGS += -D_DEBUG

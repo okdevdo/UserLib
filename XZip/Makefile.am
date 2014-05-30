@@ -5,7 +5,7 @@ XZip_LDFLAGS =
 XZip_LDADD = ../WinSources/libWinSources.la
 XZip_CFLAGS = 
 XZip_CPPFLAGS = -I$(top_srcdir)/CSources -I$(top_srcdir)/CppSources -I$(top_srcdir)/WinSources
-XZip_CXXFLAGS = -fexceptions -Wall
+XZip_CXXFLAGS = -fexceptions -Wall -std=gnu++11
 
 if DEBUG
 XZip_CPPFLAGS += -D_DEBUG

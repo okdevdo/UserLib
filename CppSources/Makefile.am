@@ -21,7 +21,7 @@ libCppSources_la_LDFLAGS = -no-undefined -version-info 1 -L/usr/local/lib
 libCppSources_la_LIBADD = ../CSources/libCSources.la ../CryptSources/libCryptSources.la -lbz2 -llzma -lz -lsqlite3 -lexpat
 libCppSources_la_CFLAGS = 
 libCppSources_la_CPPFLAGS = -DXML_LARGE_SIZE -DHAVE_EXPAT_CONFIG_H -I$(top_srcdir)/CSources -I$(top_srcdir)/CryptSources -I/usr/local/include
-libCppSources_la_CXXFLAGS = -fexceptions -Wall
+libCppSources_la_CXXFLAGS = -fexceptions -Wall -std=gnu++11
 if DEBUG
 libCppSources_la_CPPFLAGS += -D_DEBUG
 libCppSources_la_CXXFLAGS += -g
