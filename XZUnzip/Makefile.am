@@ -5,8 +5,18 @@ XZUnzip_LDFLAGS =
 XZUnzip_LDADD = ../WinSources/libWinSources.la
 XZUnzip_CFLAGS = 
 XZUnzip_CPPFLAGS = -I$(top_srcdir)/CSources -I$(top_srcdir)/CppSources -I$(top_srcdir)/WinSources
-XZUnzip_CXXFLAGS = -fexceptions -Wall -std=gnu++11
-
+XZUnzip_CXXFLAGS = -fexceptions -Wall
+if !HAVE_NATCXX_11
+if !HAVE_NATCXX_0X
+if HAVE_GNUCXX_11
+XZUnzip_CXXFLAGS += -std=gnu++11
+else
+if HAVE_GNUCXX_0X
+XZUnzip_CXXFLAGS += -std=gnu++0x
+endif
+endif
+endif
+endif
 if DEBUG
 XZUnzip_CPPFLAGS += -D_DEBUG
 XZUnzip_CXXFLAGS += -g

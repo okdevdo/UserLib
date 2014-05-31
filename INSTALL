@@ -6,7 +6,7 @@ Under WINDOWS
 =============
 
 Microsoft Visual Studio
-=======================
+-----------------------
 
 Run the xsetup client. For example:
 
@@ -29,7 +29,8 @@ Run the xsetup client. For example:
 		Sometimes reloading does not really work. Then you have to restart 
 		Visual Studio. 
 
-Minimum operating system for the xsetup client is Vista. 
+Minimum operating system for the xsetup client is Vista. Supported Visual Studio
+versions will be printed in the usage screen (see next).
 
 ===============================================================================
 Usage:
@@ -65,9 +66,92 @@ are welcome to redistribute it under certain conditions. See file 'LICENSE'
 for details.
 ===============================================================================
 
-The following software packages are required for building UserLib. They should
-be installed in parallel to UserLib. There are make files and command files in
-a subfolder 'Scripts' ('makefile-ok.msc', 'dowin32.cmd', 'dowin64.cmd')
+The following software packages are required for building UserLib. You may edit 
+'ProjectFile.xml' to remove any package you want to remove. Below the entry 
+'Usage' is given with every package. The named files and folders have to be 
+removed from the xml file. Then call 'XSetup -g2' to create the Visual Studio 
+files.
+
+If you want to install any package, it should be installed in parallel to 
+UserLib. There are make files and command files in a subfolder 'Scripts'.
+Run  'dowin32 <Version>' or 'dowin64 <Version>' as appropriate. Notice that, if
+you run both, the second call should have an additional parameter 'clean'.
+
+- bzip2-1.0.6
+  Homepage: http://www.bzip.org/
+  Usage: CppSources/BZip2Filter.h CppSources/BZip2Filter.cpp XBUnzip2/*
+  XBZip2/*
+  Remark: Updated by dowin32 or dowin64.
+  
+- expat-2.1.0
+  Homepage: http://expat.sourceforge.net/
+  Usage: CppSources/SAXParser.h CppSources/SAXParserImpl.h 
+  CppSources/SAXParser.cpp CppSources/SAXParserImpl.cpp XSetup/Program2.cpp
+  Remark: Updated by dowin32 or dowin64.
+  
+- mysql-connector-c-6.1.3
+  Homepage: http://dev.mysql.com/downloads/connector/c/
+  Usage: WinSources/MySQLDB.h WinSources/MySQLDBImpl.h WinSources/MySQLDB.cpp
+  WinSources/MySQLDBImpl.cpp
+  ODBC
+  Homepage: http://dev.mysql.com/downloads/connector/odbc/
+  Usage: WinSources/ODBC.h WinSources/ODBCImpl.h WinSources/ODBC.cpp
+  WinSources/ODBCImpl.cpp
+  Remark: Not updated by dowin32 or dowin64. You need cmake for windows.
+  
+- openssl-1.0.1g
+  Homepage: http://www.openssl.org/source/
+  Usage: openssl/*
+  Remark: Not updated by dowin32 or dowin64.
+  
+- postgresql-9.3.4
+  Homepage: http://www.postgresql.org/download/
+  Usage: WinSources/PostgresDB.h WinSources/PostgresDBImpl.h 
+  WinSources/PostgresDB.cpp WinSources/PostgresDBImpl.cpp
+  ODBC
+  Homepage: http://www.postgresql.org/ftp/odbc/
+  Usage: WinSources/ODBC.h WinSources/ODBCImpl.h WinSources/ODBC.cpp
+  WinSources/ODBCImpl.cpp
+  Remark: Not updated by dowin32 or dowin64.
+  
+- sqlite-autoconf-3080403
+  Homepage: http://www.sqlite.org/
+  Usage: CppSources/SqLite3DB.h CppSources/SqLite3DBImpl.h 
+  CppSources/SqLite3DB.cpp CppSources/SqLite3DBImpl.h
+  ODBC
+  Homepage: http://www.ch-werner.de/sqliteodbc/
+  Usage: WinSources/ODBC.h WinSources/ODBCImpl.h WinSources/ODBC.cpp
+  WinSources/ODBCImpl.cpp
+  Remark: Updated by dowin32 or dowin64.
+  
+- xz-5.0.5
+  Homepage: http://tukaani.org/xz/
+  Usage: CppSources/LZMAFilter.h CppSources/LZMALibFilter.h 
+  CppSources/XZFilter.h CppSources/LZMAFilter.cpp CppSources/LZMALibFilter.cpp
+  CppSources/XZFilter.cpp XLUnzip/* XLZip/* XZUnzip/* XZZip/*
+  Remark: xz cannot be compiled with MSC. You can use a patch located in 
+  'Scripts/xz-5.0.5' folder. Call 'patch -u -p0 <patch file>' in the 'xz-5.0.5'
+  source folder.
+  Remark: Updated by dowin32 or dowin64.
+  
+- zlib-1.2.8
+  Homepage: http://www.zlib.net/
+  Usage: CppSources/GZipFilter.h CppSources/ZipArchive.h CppSources/ZipFilter.h
+  CppSources/ZLibFilter.h CppSources/GZipFilter.cpp CppSources/ZipArchive.cpp
+  CppSources/ZipFilter.cpp CppSources/ZLibFilter.cpp XGUnzip/* XGZip/* XUnzip/*
+  XZip/*
+  Remark: Updated by dowin32 or dowin64.
+
+  
+GNU Compiler (Mingw, Cyqwin)
+----------------------------
+
+At least autotools version 1.12 are needed. Call 'libtoolize' once. Call 'aclocal', 
+'autoheader', 'automake -ac', 'autoconf' to create 'configure'. From the shell 
+call 'configure'. To build a debug version call 'configure --enable-debug'. To 
+build a unicode version call 'configure --enable-unicode'.
+
+UserLib is tested with gnu compiler version 4.5.3 and above.
 
 - bzip2-1.0.6
   Homepage: http://www.bzip.org/
@@ -125,15 +209,3 @@ a subfolder 'Scripts' ('makefile-ok.msc', 'dowin32.cmd', 'dowin64.cmd')
   CppSources/ZLibFilter.h CppSources/GZipFilter.cpp CppSources/ZipArchive.cpp
   CppSources/ZipFilter.cpp CppSources/ZLibFilter.cpp XGUnzip/* XGZip/* XUnzip/*
   XZip/*
-
-  
-GNU Compiler (Mingw, Cyqwin)
-============================
-
-Autotools version 1.12 are needed. Call 'libtoolize' once. Call 'aclocal', 
-'autoheader', 'automake -ac', 'autoconf' to create 'configure'. From the shell 
-call 'configure'. To build a debug version call 'configure --enable-debug'. To 
-build a unicode version call 'configure --enable-unicode'.
-
-The above software packages can be compiled in the shell with their configure
-script. Install them in '/usr/local'.

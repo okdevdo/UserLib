@@ -8,8 +8,18 @@ XTest_LDFLAGS =
 XTest_LDADD = ../openssl/libOpenSSL.la ../ConSources/libConSources.la 
 XTest_CFLAGS = 
 XTest_CPPFLAGS = -I$(top_srcdir)/openssl -I$(top_srcdir)/CSources -I$(top_srcdir)/CppSources -I$(top_srcdir)/WinSources -I$(top_srcdir)/ConSources
-XTest_CXXFLAGS = -fexceptions -Wall -std=gnu++11
-
+XTest_CXXFLAGS = -fexceptions -Wall
+if !HAVE_NATCXX_11
+if !HAVE_NATCXX_0X
+if HAVE_GNUCXX_11
+XTest_CXXFLAGS += -std=gnu++11
+else
+if HAVE_GNUCXX_0X
+XTest_CXXFLAGS += -std=gnu++0x
+endif
+endif
+endif
+endif
 if DEBUG
 XTest_CPPFLAGS += -D_DEBUG
 XTest_CXXFLAGS += -g

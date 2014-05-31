@@ -5,8 +5,18 @@ XTar_LDADD = ../WinSources/libWinSources.la
 XTar_LDFLAGS = 
 XTar_CFLAGS = 
 XTar_CPPFLAGS = -I$(top_srcdir)/CSources -I$(top_srcdir)/CppSources -I$(top_srcdir)/WinSources
-XTar_CXXFLAGS = -fexceptions -Wall -std=gnu++11
-
+XTar_CXXFLAGS = -fexceptions -Wall
+if !HAVE_NATCXX_11
+if !HAVE_NATCXX_0X
+if HAVE_GNUCXX_11
+XTar_CXXFLAGS += -std=gnu++11
+else
+if HAVE_GNUCXX_0X
+XTar_CXXFLAGS += -std=gnu++0x
+endif
+endif
+endif
+endif
 if DEBUG
 XTar_CPPFLAGS += -D_DEBUG
 XTar_CXXFLAGS += -g

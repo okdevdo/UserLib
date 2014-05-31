@@ -5,7 +5,18 @@ XBUnzip2_LDADD = ../WinSources/libWinSources.la
 XBUnzip2_LDFLAGS = 
 XBUnzip2_CFLAGS = 
 XBUnzip2_CPPFLAGS = -I$(top_srcdir)/CSources -I$(top_srcdir)/CppSources -I$(top_srcdir)/WinSources
-XBUnzip2_CXXFLAGS = -fexceptions -Wall -std=gnu++11
+XBUnzip2_CXXFLAGS = -fexceptions -Wall
+if !HAVE_NATCXX_11
+if !HAVE_NATCXX_0X
+if HAVE_GNUCXX_11
+XBUnzip2_CXXFLAGS += -std=gnu++11
+else
+if HAVE_GNUCXX_0X
+XBUnzip2_CXXFLAGS += -std=gnu++0x
+endif
+endif
+endif
+endif
 if DEBUG
 XBUnzip2_CPPFLAGS += -D_DEBUG
 XBUnzip2_CXXFLAGS += -g

@@ -63,6 +63,7 @@
 #include "DataVector.h"
 #include "DataHashtable.h"
 
+#include <stdio.h>
 #include "OpenSSLClass.h"
 #include "MISC.h"
 
