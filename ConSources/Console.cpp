@@ -31,26 +31,6 @@
 
 IMPL_WINEXCEPTION(CConsoleException, CWinException)
 
-static void __stdcall WindowListDeleteFunc( ConstPointer data, Pointer context )
-{
-	CConsoleWindow* p = CastAnyPtr(CConsoleWindow, CastMutable(Pointer, data));
-
-	p->release();
-}
-
-static void __stdcall WindowListNullDeleteFunc( ConstPointer data, Pointer context )
-{
-}
-
-static sword __stdcall WindowListSearchAndSortFunc( ConstPointer pa, ConstPointer pb )
-{
-	if ( pa < pb )
-		return -1;
-	if ( pa > pb )
-		return 1;
-	return 0;
-}
-
 #ifdef OK_SYS_WINDOWS
 static void ThrowDefaultException(DECL_FILE_LINE CConstPointer func)
 {
@@ -91,10 +71,6 @@ CConsole::CConsole(void):
 
 CConsole::~CConsole(void)
 {
-	m_WindowList.Close(WindowListDeleteFunc, NULL);
-	m_ModalDialogs.Close(WindowListDeleteFunc, NULL);
-	m_DeleteModalDialogs.Close(WindowListDeleteFunc, NULL);
-	m_PopupMenus.Close(WindowListNullDeleteFunc, NULL);
 	if ( m_MainMenu )
 		m_MainMenu->release();
 	if ( m_ScreenBuffer )
@@ -304,7 +280,7 @@ void CConsole::Run()
 		{
 			CConsoleWindowList::Iterator it = m_DeleteModalDialogs.Begin();
 
-			m_DeleteModalDialogs.Remove(it, WindowListDeleteFunc, NULL);
+			m_DeleteModalDialogs.Remove(it);
 		}
 
 		if ( !ReadConsoleInput( 
@@ -339,7 +315,7 @@ void CConsole::Run()
 		{
 			CConsoleWindowList::Iterator it = m_DeleteModalDialogs.Begin();
 
-			m_DeleteModalDialogs.Remove(it, WindowListDeleteFunc, NULL);
+			m_DeleteModalDialogs.Remove(it);
 		}
 
 		input = getch();
@@ -414,7 +390,7 @@ bool CConsole::DispatchMouseEvent(ConstRef(MOUSE_EVENT_RECORD) mouseEvent)
 					 if ( pWindow->IsPosInClientRect(mouseEvent.dwMousePosition) 
 						 || pWindow->IsPosInNonClientRect(mouseEvent.dwMousePosition) )
 					 {
-						 BringToFront(it);
+						 BringToFront(pWindow);
 						 return true;
 					 }
 					 ++it;
@@ -790,11 +766,13 @@ bool CConsole::DispatchInputRecord(int input)
 }
 #endif
 
-void CConsole::BringToFront(CConsoleWindowList::Iterator it)
+void CConsole::BringToFront(CConsoleWindow* pWindow)
 {
-	CConsoleWindow* pWindow = m_WindowList.GetData(it);
+	CConsoleWindowNullList::Iterator it = m_WindowList.Find<CCppObjectEqualFunctor<CConsoleWindow> >(pWindow);
 
-	m_WindowList.Remove(it, WindowListNullDeleteFunc, NULL);
+	if (!it)
+		return;
+	m_WindowList.Remove(it);
 	m_WindowList.Prepend(pWindow);
 
 	PostPaintEvent(pWindow);
@@ -895,7 +873,7 @@ void CConsole::CloseConsolePopupMenu()
 {
 	if ( m_PopupMenus.Count() > 0 )
 	{
-		m_PopupMenus.Remove(m_PopupMenus.Begin(), WindowListNullDeleteFunc, NULL);
+		m_PopupMenus.Remove(m_PopupMenus.Begin());
 		PostPaintEvent(NULL, true);
 	}
 }
@@ -954,15 +932,15 @@ void CConsole::CloseConsoleModalDialog(CConsoleWindow* pWindow)
 {
 	if ( m_ModalDialogs.Count() > 0 )
 	{
-		CConsoleWindowList::Iterator it = 
-			PtrCheck(pWindow)?(m_ModalDialogs.Begin()):(m_ModalDialogs.Find(pWindow, WindowListSearchAndSortFunc));
+		CConsoleWindowNullList::Iterator it = 
+			PtrCheck(pWindow) ? (m_ModalDialogs.Begin()) : (m_ModalDialogs.Find<CCppObjectEqualFunctor<CConsoleWindow>>(pWindow));
 
 		if ( it )
 		{
 			CConsoleDialog* pDialog = CastDynamic(CConsoleDialog*, *it);
 
 			pDialog->SetFocus(false);
-			m_ModalDialogs.Remove(it, WindowListNullDeleteFunc, NULL);
+			m_ModalDialogs.Remove(it);
 			m_DeleteModalDialogs.Append(pDialog);
 			PostPaintEvent(NULL, true);
 		}
@@ -1009,7 +987,7 @@ void CConsole::PostPaintEvent(CConsoleWindow* pWindow, bool repaintall)
 		if ( m_MainMenu )
 			m_MainMenu->Paint(m_ScreenBufferSize, m_ScreenBuffer);
 
-		CConsoleWindowList::Iterator it;
+		CConsoleWindowNullList::Iterator it;
 		CConsoleWindow* pWindow1;
 
 		it = m_WindowList.Last();
@@ -1101,20 +1079,20 @@ void CConsole::MaximizeWindow(CConsoleWindow* pWindow)
 
 void CConsole::CloseWindow(CConsoleWindow* pWindow)
 {
-	CConsoleWindowList::Iterator it;
+	CConsoleWindowNullList::Iterator it;
 
-	it = m_ModalDialogs.Find(pWindow, WindowListSearchAndSortFunc);
+	it = m_ModalDialogs.Find<CCppObjectEqualFunctor<CConsoleWindow> >(pWindow);
 	if ( it )
 	{
 		CloseConsoleModalDialog(*it);
 		return;
 	}
 
-	it = m_WindowList.Find(pWindow, WindowListSearchAndSortFunc);
+	it = m_WindowList.Find<CCppObjectEqualFunctor<CConsoleWindow> >(pWindow);
 	if ( it )
 	{
 		(*it)->SetFocus(false);
-		m_WindowList.Remove(it, WindowListDeleteFunc, NULL);
+		m_WindowList.Remove<CCppObjectReleaseFunctor<CConsoleWindow> >(it);
 		PostPaintEvent(NULL, true);
 		if ( m_WindowList.Count() > 0 )
 		{

@@ -201,7 +201,7 @@ CSqLite3Column* CSqLite3Statement::get_ColumnInfo(word ix) const
 CSqLite3Column* CSqLite3Statement::get_ColumnInfo(CConstPointer name)
 {
 	CSqLite3Column cmp(name);
-	CSqLite3Columns::Iterator it = _columns.Find<CStringByNameLessFunctor<CSqLite3Column> >(&cmp);
+	CSqLite3Columns::Iterator it = _columns.Find<CStringByNameEqualFunctor<CSqLite3Column> >(&cmp);
 
 	if (it)
 		return *it;

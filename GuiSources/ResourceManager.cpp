@@ -27,43 +27,6 @@
 //***********************************************************
 // CResourceManager
 //***********************************************************
-static sword __stdcall TResourceManagerSearchAndSortFunc( ConstPointer ArrayItem, ConstPointer DataItem )
-{
-	Ptr(CResourceManager::TResourceItem) ppa = CastAnyPtr(CResourceManager::TResourceItem, CastMutable(Pointer, ArrayItem));
-	Ptr(CResourceManager::TResourceItem) ppd = CastAnyPtr(CResourceManager::TResourceItem, CastMutable(Pointer, DataItem));
-
-	int res = s_stricmp(ppa->WindowClass, ppd->WindowClass);
-
-	if ( res < 0 )
-		return -1;
-	if ( res > 0 )
-		return 1;
-	return (ppa->ResourceType - ppd->ResourceType);
-}
-
-static void __stdcall TResourceManagerDeleteFunc( ConstPointer data, Pointer context )
-{
-	Ptr(CResourceManager::TResourceItem) ppa = CastAnyPtr(CResourceManager::TResourceItem, CastMutable(Pointer, data));
-
-	if ( ppa->CachedResource == NULL )
-		return;
-	switch ( ppa->ResourceType ) 
-	{
-	case CResourceManager::WindowTitle:
-		TFfree(ppa->CachedResource);
-		break;
-	case CResourceManager::WindowAccelarator:
-		break;
-	case CResourceManager::WindowIcon:
-		break;
-	case CResourceManager::WindowSmallIcon:
-		break;
-	case CResourceManager::WindowMenu:
-		::DestroyMenu((HMENU)(ppa->CachedResource));
-		break;
-	}
-}
-
 CResourceManager::CResourceManager(void):
 	m_resourceCache(__FILE__LINE__ 64, 64)
 {
@@ -71,28 +34,27 @@ CResourceManager::CResourceManager(void):
 
 CResourceManager::~CResourceManager(void)
 {
-	m_resourceCache.Close(TResourceManagerDeleteFunc, NULL);
 }
 
 void CResourceManager::add_resource(LPTSTR wndclass, CResourceManager::TResourceType rsrctype, DWORD id)
 {
-	TResourceItem item(wndclass, rsrctype, id);
-	TResourceItems::Iterator it = m_resourceCache.FindSorted(&item, &TResourceManagerSearchAndSortFunc);
+	Ptr(TResourceItem) item = OK_NEW_OPERATOR TResourceItem(wndclass, rsrctype, id);
+	TResourceItems::Iterator it = m_resourceCache.FindSorted(item);
 
-	if ( it && ((*it) != NULL) && (TResourceManagerSearchAndSortFunc(*it, &item) == 0) )
+	if (m_resourceCache.MatchSorted(it, item))
 	{
-		m_resourceCache.SetData(it, &item);
+		m_resourceCache.SetData(it, item);
 		return;
 	}
-	m_resourceCache.InsertSorted(&item, &TResourceManagerSearchAndSortFunc);
+	m_resourceCache.InsertSorted(item);
 }
 
 HANDLE CResourceManager::get_resource(LPTSTR wndclass, CResourceManager::TResourceType rsrctype)
 {
 	TResourceItem item(wndclass, rsrctype);
-	TResourceItems::Iterator it = m_resourceCache.FindSorted(&item, &TResourceManagerSearchAndSortFunc);
+	TResourceItems::Iterator it = m_resourceCache.FindSorted(&item);
 
-	if ( it && ((*it) != NULL) && (TResourceManagerSearchAndSortFunc(*it, &item) == 0) )
+	if (m_resourceCache.MatchSorted(it, &item))
 	{
 		if ( (*it)->CachedResource != NULL )
 			return (*it)->CachedResource;
@@ -126,9 +88,9 @@ HANDLE CResourceManager::get_resource(LPTSTR wndclass, CResourceManager::TResour
 DWORD CResourceManager::get_resourceID(LPTSTR wndclass, CResourceManager::TResourceType rsrctype)
 {
 	TResourceItem item(wndclass, rsrctype);
-	TResourceItems::Iterator it = m_resourceCache.FindSorted(&item, &TResourceManagerSearchAndSortFunc);
+	TResourceItems::Iterator it = m_resourceCache.FindSorted(&item);
 
-	if ( it && ((*it) != NULL) && (TResourceManagerSearchAndSortFunc(*it, &item) == 0) )
+	if (m_resourceCache.MatchSorted(it, &item))
 		return (*it)->ResourceID;
 	return 0;
 }
@@ -136,22 +98,6 @@ DWORD CResourceManager::get_resourceID(LPTSTR wndclass, CResourceManager::TResou
 //***********************************************************
 // CFontManager
 //***********************************************************
-static sword __stdcall TFontManagerSearchAndSortFunc( ConstPointer ArrayItem, ConstPointer DataItem )
-{
-	Ptr(CFontManager::TFontItem) ppa = CastAnyPtr(CFontManager::TFontItem, CastMutable(Pointer, ArrayItem));
-	Ptr(CFontManager::TFontItem) ppd = CastAnyPtr(CFontManager::TFontItem, CastMutable(Pointer, DataItem));
-
-	return ppa->prefix.Compare(ppd->prefix, 0, CStringLiteral::cIgnoreCase);
-}
-
-static void __stdcall TFontManagerDeleteFunc( ConstPointer data, Pointer context )
-{
-	Ptr(CFontManager::TFontItem) ppa = CastAnyPtr(CFontManager::TFontItem, CastMutable(Pointer, data));
-
-	ppa->prefix.Clear();
-	delete ppa->font;
-}
-
 CFontManager::CFontManager(void):
 	m_prefix(),
 	m_pDefaultFont(new Gdiplus::Font(TEXT("Arial"), 8)),
@@ -169,7 +115,6 @@ CFontManager::CFontManager(CStringLiteral _prefix):
 CFontManager::~CFontManager(void)
 {
 	delete m_pDefaultFont;
-	m_fontCache.Close(TFontManagerDeleteFunc, NULL);
 }
 
 Gdiplus::Font* CFontManager::parse_Font(ConstRef(CStringBuffer) _text)
@@ -260,9 +205,9 @@ bool CFontManager::has_Font(CStringLiteral _key)
 		return false;
 
 	TFontItem item(_key);
-	TFontItems::Iterator it = m_fontCache.FindSorted(&item, &TFontManagerSearchAndSortFunc);
+	TFontItems::Iterator it = m_fontCache.FindSorted(&item);
 
-	if ( it && ((*it) != NULL) && (TFontManagerSearchAndSortFunc(*it, &item) == 0) )
+	if (m_fontCache.MatchSorted(it, &item))
 		return true;
 
 	if ( !(m_prefix.IsEmpty()) )
@@ -291,9 +236,9 @@ Gdiplus::Font* CFontManager::get_Font(CStringLiteral _key)
 		return m_pDefaultFont;
 
 	TFontItem item(_key);
-	TFontItems::Iterator it = m_fontCache.FindSorted(&item, &TFontManagerSearchAndSortFunc);
+	TFontItems::Iterator it = m_fontCache.FindSorted(&item);
 
-	if ( it && ((*it) != NULL) && (TFontManagerSearchAndSortFunc(*it, &item) == 0) )
+	if (m_fontCache.MatchSorted(it, &item))
 		return (*it)->font;
 
 	if ( !(m_prefix.IsEmpty()) )
@@ -310,7 +255,7 @@ Gdiplus::Font* CFontManager::get_Font(CStringLiteral _key)
 			if ( !(item.font) )
 				return m_pDefaultFont;
 			item.prefix.addRef();
-			m_fontCache.InsertSorted(&item, TFontManagerSearchAndSortFunc);
+			m_fontCache.InsertSorted(OK_NEW_OPERATOR TFontItem(item));
 			return item.font;
 		}
 
@@ -324,7 +269,7 @@ Gdiplus::Font* CFontManager::get_Font(CStringLiteral _key)
 			if ( !(item.font) )
 				return m_pDefaultFont;
 			item.prefix.addRef();
-			m_fontCache.InsertSorted(&item, TFontManagerSearchAndSortFunc);
+			m_fontCache.InsertSorted(OK_NEW_OPERATOR TFontItem(item));
 			return item.font;
 		}
 	}
@@ -334,7 +279,7 @@ Gdiplus::Font* CFontManager::get_Font(CStringLiteral _key)
 		if ( !(item.font) )
 			return m_pDefaultFont;
 		item.prefix.addRef();
-		m_fontCache.InsertSorted(&item, TFontManagerSearchAndSortFunc);
+		m_fontCache.InsertSorted(OK_NEW_OPERATOR TFontItem(item));
 		return item.font;
 	}
 	return m_pDefaultFont;
@@ -368,12 +313,12 @@ void CFontManager::set_Font(CStringLiteral _key, ConstRef(CStringBuffer) _text)
 		theGuiApp->config()->SetValue(_key, _text);
 
 	TFontItem item(_key);
-	TFontItems::Iterator it = m_fontCache.FindSorted(&item, &TFontManagerSearchAndSortFunc);
+	TFontItems::Iterator it = m_fontCache.FindSorted(&item);
 
-	if ( it && ((*it) != NULL) && (TFontManagerSearchAndSortFunc(*it, &item) == 0) )
+	if (m_fontCache.MatchSorted(it, &item))
 	{
 		if ( bDelete )
-			m_fontCache.Remove(it, TFontManagerDeleteFunc, NULL);
+			m_fontCache.Remove(it);
 		else
 		{
 			delete (*it)->font;
@@ -385,44 +330,28 @@ void CFontManager::set_Font(CStringLiteral _key, ConstRef(CStringBuffer) _text)
 	{
 		item.font = pFont;
 		item.prefix.addRef();
-		m_fontCache.InsertSorted(&item, &TFontManagerSearchAndSortFunc);
+		m_fontCache.InsertSorted(OK_NEW_OPERATOR TFontItem(item));
 	}
 }
 
 //***********************************************************
 // CBrushManager
 //***********************************************************
-static sword __stdcall TBrushManagerSearchAndSortFunc_Prefix( ConstPointer ArrayItem, ConstPointer DataItem )
+class TBrushItemEqualFunctor
 {
-	Ptr(CBrushManager::TBrushItem) ppa = CastAnyPtr(CBrushManager::TBrushItem, CastMutable(Pointer, ArrayItem));
-	Ptr(CBrushManager::TBrushItem) ppd = CastAnyPtr(CBrushManager::TBrushItem, CastMutable(Pointer, DataItem));
-
-	return ppa->prefix.Compare(ppd->prefix, 0, CStringLiteral::cIgnoreCase);
-}
-
-static sword __stdcall TBrushManagerSearchAndSortFunc_Brush( ConstPointer ArrayItem, ConstPointer DataItem )
-{
-	Ptr(CBrushManager::TBrushItem) ppa = CastAnyPtr(CBrushManager::TBrushItem, CastMutable(Pointer, ArrayItem));
-	Ptr(CBrushManager::TBrushItem) ppd = CastAnyPtr(CBrushManager::TBrushItem, CastMutable(Pointer, DataItem));
-
-	LONG res = Castsdword(v_ptrdiff(ppa->brush, ppd->brush));
-
-	if ( res == 0 )
+public:
+	bool operator()(ConstPtr(CBrushManager::TBrushItem) ppa, ConstPtr(CBrushManager::TBrushItem) ppd) const
 	{
-		if ( ppa->bPrivateCopy == ppd->bPrivateCopy )
-			return 0;
+		sdword res = Castsdword(v_ptrdiff(ppa->brush, ppd->brush));
+
+		if (res == 0)
+		{
+			if (ppa->bPrivateCopy == ppd->bPrivateCopy)
+				return false;
+		}
+		return true;
 	}
-	return 1;
-}
-
-static void __stdcall TBrushManagerDeleteFunc( ConstPointer data, Pointer context )
-{
-	Ptr(CBrushManager::TBrushItem) ppa = CastAnyPtr(CBrushManager::TBrushItem, CastMutable(Pointer, data));
-
-	ppa->prefix.Clear();
-	if ( ppa->bPrivateCopy )
-		delete ppa->brush;
-}
+};
 
 static struct TBrushManagerNamedColors
 {
@@ -586,6 +515,61 @@ static sword __stdcall TBrushManagerNamedColorsSearchAndSortFunc( ConstPointer A
 	return 0;
 }
 
+static sword __stdcall
+s_bsearch(Pointer table, dword size, ConstPointer ptr, word max, TSearchAndSortFunc func, sword _mode)
+{
+	sword ux = 1;
+	sword ox = max;
+	sword ix = -1;
+	sword erg;
+	if (PtrCheck(table) || PtrCheck(func) || (size == 0))
+		return -1;
+	while (ox >= ux)
+	{
+		ix = ((ox + ux) / 2) - 1;
+		erg = func(l_ptradd(table, ((long)size) * ((long)ix)), CastMutable(Pointer, ptr));
+		if (erg < 0)
+			ux = ix + 2;
+		else if (erg > 0)
+			ox = ix;
+		else if (_mode == UTLPTR_INSERTMODE)
+		{
+			max--;
+			for (; ix < max; ix++)
+				if ((erg = func(l_ptradd(table, ((long)size) * ((long)(ix + 1))), CastMutable(Pointer, ptr))) != 0)
+					return ix;
+			return max;
+		}
+		else
+		{
+			for (; ix > 0; ix--)
+				if ((erg = func(l_ptradd(table, ((long)size) * ((long)(ix - 1))), CastMutable(Pointer, ptr))) != 0)
+					return ix;
+			return 0;
+		}
+	}
+	if (ix >= 0)
+	{
+		switch (_mode)
+		{
+		case UTLPTR_INSERTMODE:
+			if (func(l_ptradd(table, ((long)size) * ((long)ix)), CastMutable(Pointer, ptr)) > 0)
+				ix--;
+			break;
+		case UTLPTR_SEARCHMODE:
+			if (func(l_ptradd(table, ((long)size) * ((long)ix)), CastMutable(Pointer, ptr)) >= 0)
+				break;
+			if (ix < (max - 1))
+				ix++;
+			break;
+		default:
+			ix = -1;
+			break;
+		}							   /* endswitch */
+	}
+	return ix;
+}								   /* end of s_bsearch */
+
 CBrushManager::CBrushManager(void):
 	m_brushCache(__FILE__LINE__ 16, 16)
 {
@@ -599,7 +583,6 @@ CBrushManager::CBrushManager(CStringLiteral _prefix):
 
 CBrushManager::~CBrushManager(void)
 {
-	m_brushCache.Close(TBrushManagerDeleteFunc, NULL);
 }
 
 bool CBrushManager::has_Brush(CStringLiteral _key)
@@ -608,9 +591,9 @@ bool CBrushManager::has_Brush(CStringLiteral _key)
 		return false;
 
 	TBrushItem item(_key);
-	TBrushItems::Iterator it = m_brushCache.FindSorted(&item, &TBrushManagerSearchAndSortFunc_Prefix);
+	TBrushItems::Iterator it = m_brushCache.FindSorted(&item);
 
-	if ( it && ((*it) != NULL) && (TBrushManagerSearchAndSortFunc_Prefix(*it, &item) == 0) )
+	if (m_brushCache.MatchSorted(it, &item))
 		return true;
 
 	if ( !(m_prefix.IsEmpty()) )
@@ -639,9 +622,9 @@ Gdiplus::Brush* CBrushManager::get_Brush(CStringLiteral _key, ConstRef(Gdiplus::
 		return NULL;
 
 	TBrushItem item(_key);
-	TBrushItems::Iterator it = m_brushCache.FindSorted(&item, &TBrushManagerSearchAndSortFunc_Prefix);
+	TBrushItems::Iterator it = m_brushCache.FindSorted(&item);
 
-	if ( it && ((*it) != NULL) && (TBrushManagerSearchAndSortFunc_Prefix(*it, &item) == 0) )
+	if (m_brushCache.MatchSorted(it, &item))
 		return (*it)->brush;
 
 	if ( !(m_prefix.IsEmpty()) )
@@ -661,7 +644,7 @@ Gdiplus::Brush* CBrushManager::get_Brush(CStringLiteral _key, ConstRef(Gdiplus::
 		{
 			item.brush = vBrush;
 			item.prefix.addRef();
-			m_brushCache.InsertSorted(&item, TBrushManagerSearchAndSortFunc_Prefix);
+			m_brushCache.InsertSorted(OK_NEW_OPERATOR TBrushItem(item));
 			return item.brush;
 		}
 
@@ -676,13 +659,13 @@ Gdiplus::Brush* CBrushManager::get_Brush(CStringLiteral _key, ConstRef(Gdiplus::
 		{
 			item.brush = vBrush;
 			item.prefix.addRef();
-			m_brushCache.InsertSorted(&item, TBrushManagerSearchAndSortFunc_Prefix);
+			m_brushCache.InsertSorted(OK_NEW_OPERATOR TBrushItem(item));
 			return item.brush;
 		}
 	}
 	item.brush = new Gdiplus::SolidBrush(_defaultcolor);
 	item.prefix.addRef();
-	m_brushCache.InsertSorted(&item, TBrushManagerSearchAndSortFunc_Prefix);
+	m_brushCache.InsertSorted(OK_NEW_OPERATOR TBrushItem(item));
 	return item.brush;
 }
 
@@ -692,15 +675,15 @@ void CBrushManager::set_Brush(CStringLiteral _key, ConstRef(Gdiplus::Color) _bru
 		return;
 
 	TBrushItem item(_key);
-	TBrushItems::Iterator it = m_brushCache.FindSorted(&item, &TBrushManagerSearchAndSortFunc_Prefix);
+	TBrushItems::Iterator it = m_brushCache.FindSorted(&item);
 
-	if ( it && ((*it) != NULL) && (TBrushManagerSearchAndSortFunc_Prefix(*it, &item) == 0) )
+	if (m_brushCache.MatchSorted(it, &item))
 	{
 		if ( (*it)->bPrivateCopy )
 		{
 			remove_Duplicates((*it)->brush);
-			it = m_brushCache.FindSorted(&item, &TBrushManagerSearchAndSortFunc_Prefix);
-			if ( !(it && ((*it) != NULL) && (TBrushManagerSearchAndSortFunc_Prefix(*it, &item) == 0)) )
+			it = m_brushCache.FindSorted(&item);
+			if (!(m_brushCache.MatchSorted(it, &item)))
 				return;
 			delete (*it)->brush;
 		}
@@ -711,7 +694,7 @@ void CBrushManager::set_Brush(CStringLiteral _key, ConstRef(Gdiplus::Color) _bru
 	item.brush = new Gdiplus::SolidBrush(_brushColor);
 	item.bPrivateCopy = true;
 	item.prefix.addRef();
-	m_brushCache.InsertSorted(&item, TBrushManagerSearchAndSortFunc_Prefix);
+	m_brushCache.InsertSorted(OK_NEW_OPERATOR TBrushItem(item));
 }
 
 void CBrushManager::set_Brush(CStringLiteral _key, Gdiplus::Brush* _brush, bool _bPrivateCopy)
@@ -720,15 +703,15 @@ void CBrushManager::set_Brush(CStringLiteral _key, Gdiplus::Brush* _brush, bool 
 		return;
 
 	TBrushItem item(_key);
-	TBrushItems::Iterator it = m_brushCache.FindSorted(&item, &TBrushManagerSearchAndSortFunc_Prefix);
+	TBrushItems::Iterator it = m_brushCache.FindSorted(&item);
 
-	if ( it && ((*it) != NULL) && (TBrushManagerSearchAndSortFunc_Prefix(*it, &item) == 0) )
+	if (m_brushCache.MatchSorted(it, &item))
 	{
 		if ( (*it)->bPrivateCopy )
 		{
 			remove_Duplicates((*it)->brush);
-			it = m_brushCache.FindSorted(&item, &TBrushManagerSearchAndSortFunc_Prefix);
-			if ( !(it && ((*it) != NULL) && (TBrushManagerSearchAndSortFunc_Prefix(*it, &item) == 0)) )
+			it = m_brushCache.FindSorted(&item);
+			if (!(m_brushCache.MatchSorted(it, &item)))
 				return;
 			delete (*it)->brush;
 		}
@@ -739,7 +722,7 @@ void CBrushManager::set_Brush(CStringLiteral _key, Gdiplus::Brush* _brush, bool 
 	item.brush = _brush;
 	item.bPrivateCopy = _bPrivateCopy;
 	item.prefix.addRef();
-	m_brushCache.InsertSorted(&item, TBrushManagerSearchAndSortFunc_Prefix);
+	m_brushCache.InsertSorted(OK_NEW_OPERATOR TBrushItem(item));
 }
 
 void CBrushManager::set_Brush(CStringLiteral _key, ConstRef(CStringBuffer) _text)
@@ -770,21 +753,21 @@ void CBrushManager::set_Brush(CStringLiteral _key, ConstRef(CStringBuffer) _text
 		theGuiApp->config()->SetValue(_key, _text);
 
 	TBrushItem item(_key);
-	TBrushItems::Iterator it = m_brushCache.FindSorted(&item, &TBrushManagerSearchAndSortFunc_Prefix);
+	TBrushItems::Iterator it = m_brushCache.FindSorted(&item);
 
-	if ( it && ((*it) != NULL) && (TBrushManagerSearchAndSortFunc_Prefix(*it, &item) == 0) )
+	if (m_brushCache.MatchSorted(it, &item))
 	{
 		if ( (*it)->bPrivateCopy )
 		{
 			remove_Duplicates((*it)->brush);
-			it = m_brushCache.FindSorted(&item, &TBrushManagerSearchAndSortFunc_Prefix);
-			if ( !(it && ((*it) != NULL) && (TBrushManagerSearchAndSortFunc_Prefix(*it, &item) == 0)) )
+			it = m_brushCache.FindSorted(&item);
+			if (!(m_brushCache.MatchSorted(it, &item)))
 				return;
 			if ( !bDelete )
 				delete (*it)->brush;
 		}
 		if ( bDelete )
-			m_brushCache.Remove(it, TBrushManagerDeleteFunc, NULL);
+			m_brushCache.Remove(it);
 		else
 		{
 			(*it)->bPrivateCopy = true;
@@ -797,7 +780,7 @@ void CBrushManager::set_Brush(CStringLiteral _key, ConstRef(CStringBuffer) _text
 		item.brush = pBrush;
 		item.bPrivateCopy = true;
 		item.prefix.addRef();
-		m_brushCache.InsertSorted(&item, TBrushManagerSearchAndSortFunc_Prefix);
+		m_brushCache.InsertSorted(OK_NEW_OPERATOR TBrushItem(item));
 	}
 }
 
@@ -810,12 +793,12 @@ void CBrushManager::enumerate_Colors(Ref(CDataVectorT<CStringBuffer>) _colors)
 void CBrushManager::remove_Duplicates(Gdiplus::Brush* _brush)
 {
 	TBrushItem item(_brush);
-	TBrushItems::Iterator it = m_brushCache.Find(&item, &TBrushManagerSearchAndSortFunc_Brush);
+	TBrushItems::Iterator it = m_brushCache.Find<TBrushItemEqualFunctor>(&item);
 
 	while ( it )
 	{
-		m_brushCache.Remove(it, TBrushManagerDeleteFunc, NULL);
-		it = m_brushCache.Find(&item, &TBrushManagerSearchAndSortFunc_Brush);
+		m_brushCache.Remove(it);
+		it = m_brushCache.Find<TBrushItemEqualFunctor>(&item);
 	}
 }
 

@@ -112,9 +112,9 @@ private:
 	bool m_IsInstalled;
 };
 
-class CInstallPackageInfoVector: public CDataVectorT<CInstallPackageInfo, CStringByNameLessFunctor<CInstallPackageInfo>>
+class CInstallPackageInfoVector: public CDataVectorT<CInstallPackageInfo, CStringByNameLessFunctor<CInstallPackageInfo> >
 {
-	typedef CDataVectorT<CInstallPackageInfo, CStringByNameLessFunctor<CInstallPackageInfo>> super;
+	typedef CDataVectorT<CInstallPackageInfo, CStringByNameLessFunctor<CInstallPackageInfo> > super;
 
 public:
 	CInstallPackageInfoVector(DECL_FILE_LINE TListCnt cnt, TListCnt exp);
@@ -133,6 +133,3 @@ private:
 
 	bool m_Modified;
 };
-
-sword __stdcall InstallPackageInfoSearchAndSortFunc( ConstPointer pa, ConstPointer pb);
-void __stdcall InstallPackageInfoDeleteFunc( ConstPointer data, Pointer context );

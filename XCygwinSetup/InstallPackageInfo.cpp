@@ -117,21 +117,6 @@ sword CPackageVersion::Compare(ConstRef(CPackageVersion) _other) const
 	return ((apos2 < alen) ? 1 : -1);
 }
 
-void __stdcall InstallPackageInfoDeleteFunc( ConstPointer data, Pointer context )
-{
-	CInstallPackageInfo* pInfo = CastAnyPtr(CInstallPackageInfo, CastMutable(Pointer, data));
-
-	pInfo->release();
-}
-
-sword __stdcall InstallPackageInfoSearchAndSortFunc( ConstPointer pa, ConstPointer pb)
-{
-	CInstallPackageInfo* ppa = CastAnyPtr(CInstallPackageInfo, CastMutable(Pointer, pa));
-	CInstallPackageInfo* ppb = CastAnyPtr(CInstallPackageInfo, CastMutable(Pointer, pb));
-
-	return (ppa->GetName().Compare(ppb->GetName()));
-}
-
 CInstallPackageInfo::CInstallPackageInfo(void):
 	m_RelativePath(__FILE__LINE__ CStringBuffer::null(), CDirectoryIterator::UnixPathSeparatorString()),
 	m_sName(),

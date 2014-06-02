@@ -365,7 +365,7 @@ _opCode(NULL),
 _taskValue(0),
 _task(NULL),
 _keyWordValue(0),
-_keyWordList(__FILE__LINE__ CEventLogProviderEventKeyWordDeleteFunc),
+_keyWordList(__FILE__LINE__0),
 _messageID(0),
 _message(),
 _template()
@@ -426,12 +426,12 @@ _parameterFile(),
 _messageFile(),
 _helpLink(),
 _message(),
-_channelList(__FILE__LINE__ CEventLogProviderChannelDeleteFunc),
-_levelList(__FILE__LINE__ CEventLogProviderLevelDeleteFunc),
-_taskList(__FILE__LINE__ CEventLogProviderTaskDeleteFunc),
-_opCodeList(__FILE__LINE__ CEventLogProviderOpCodeDeleteFunc),
-_keyWordList(__FILE__LINE__ CEventLogProviderKeyWordDeleteFunc),
-_eventList(__FILE__LINE__ CEventLogProviderEventDeleteFunc)
+_channelList(__FILE__LINE__0),
+_levelList(__FILE__LINE__0),
+_taskList(__FILE__LINE__0),
+_opCodeList(__FILE__LINE__0),
+_keyWordList(__FILE__LINE__0),
+_eventList(__FILE__LINE__0)
 {
 }
 
@@ -514,21 +514,20 @@ Ptr(CEventLogProviderOpCode) CEventLogProvider::get_opCode(UINT32 vOpCode, UINT3
 // contains a bit mask that has bits set for each keyword specified on the event. Search the 
 // messages block sequentially for items that have the same keyword bit set. Concatenate all the
 // message strings.
-CDataDoubleLinkedListT<CEventLogProviderKeyWord> CEventLogProvider::get_keyWords(UINT64 v) const
+CEventLogProviderKeyWords CEventLogProvider::get_keyWords(UINT64 v) const
 {
-#ifdef __DEBUG__
-	CDataDoubleLinkedListT<CEventLogProviderKeyWord> result(__FILE__LINE__ CEventLogProviderEventKeyWordDeleteFunc);
-#else
-	CDataDoubleLinkedListT<CEventLogProviderKeyWord> result(CEventLogProviderEventKeyWordDeleteFunc);
-#endif
-	CDataDoubleLinkedListT<CEventLogProviderKeyWord>::Iterator it = _keyWordList.Begin();
+	CEventLogProviderKeyWords result __FILE__LINE__0P;
+	CEventLogProviderKeyWords::Iterator it = _keyWordList.Begin();
 	Ptr(CEventLogProviderKeyWord) p = NULL;
 
 	while (it)
 	{
 		p = *it;
 		if (p->get_value() & v)
+		{
+			p->addRef();
 			result.Append(p);
+		}
 		++it;
 	}
 	return result;
@@ -976,9 +975,7 @@ void CEventLogProvider::_load()
 				pEvent->set_keyWordValue(pProperty->UInt64Val);
 				if ((pProperty->UInt64Val & 0x00FFFFFFFFFFFFFF) > 0)
 				{
-					CDataDoubleLinkedListT<CEventLogProviderKeyWord> l(get_keyWords(pProperty->UInt64Val));
-
-					pEvent->set_keyWordList(l);
+					pEvent->set_keyWordList(get_keyWords(pProperty->UInt64Val));
 				}
 				break;
 

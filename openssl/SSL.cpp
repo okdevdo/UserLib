@@ -241,78 +241,71 @@ public:
 	CSSL_CTX::TCallbackTmpECDH cbTmpECDH;
 };
 
-typedef struct __tagSSLCTXCallbackAssoc
-{
-	ConstPointer raw;
-	Ptr(TSSLCTXCallbackData) cdata;
-} TSSLCTXCallbackAssoc;
-
-static void __stdcall SSLCTXCallbackAssocListDeleteFunc(ConstPointer data, Pointer context)
-{
-	TSSLCTXCallbackAssoc* pInfo = CastAnyPtr(TSSLCTXCallbackAssoc, CastMutable(Pointer, data));
-
-	pInfo->cdata->release();
-}
-
-static sword __stdcall SSLCTXCallbackAssocListSearchAndSortFunc(ConstPointer pa, ConstPointer pb)
-{
-	TSSLCTXCallbackAssoc* ppa = CastAnyPtr(TSSLCTXCallbackAssoc, CastMutable(Pointer, pa));
-	TSSLCTXCallbackAssoc* ppb = CastAnyPtr(TSSLCTXCallbackAssoc, CastMutable(Pointer, pb));
-
-	if (ppa->raw < ppb->raw)
-		return -1;
-	if (ppa->raw == ppb->raw)
-		return 0;
-	return 1;
-}
-
-static sword __stdcall SSLCTXCallbackAssocListSearchAndSortFunc1(ConstPointer pa, ConstPointer pb)
-{
-	TSSLCTXCallbackAssoc* ppa = CastAnyPtr(TSSLCTXCallbackAssoc, CastMutable(Pointer, pa));
-
-	if (ppa->raw < pb)
-		return -1;
-	if (ppa->raw == pb)
-		return 0;
-	return 1;
-}
-
-class OPENSSL_LOCAL TSSLCTXCallbackAssocList : public CDataSVectorT<TSSLCTXCallbackAssoc>
+class TSSLCTXCallbackAssoc: public CCppObject
 {
 public:
-	typedef CDataSVectorT<TSSLCTXCallbackAssoc> super;
+	ConstPointer raw;
+	Ptr(TSSLCTXCallbackData) cdata;
 
-	TSSLCTXCallbackAssocList(DECL_FILE_LINE TListCnt cnt, TListCnt exp, TDeleteFunc pDeleteFunc = NULL, Pointer pDeleteContext = NULL, TSearchAndSortFunc pSearchAndSortFunc = NULL):
-		super(ARGS_FILE_LINE cnt, exp, pDeleteFunc, pDeleteContext, pSearchAndSortFunc) {}
+	virtual sdword release()
+	{
+		cdata->release();
+		return CCppObject::release();
+	}
+};
+
+class TSSLCTXCallbackAssocLessFunctor
+{
+public:
+	bool operator()(ConstPtr(TSSLCTXCallbackAssoc) r1, ConstPtr(TSSLCTXCallbackAssoc) r2) const
+	{
+		return r1->raw < r2->raw;
+	}
+};
+
+class OPENSSL_LOCAL TSSLCTXCallbackAssocList : public CDataVectorT<TSSLCTXCallbackAssoc, TSSLCTXCallbackAssocLessFunctor>
+{
+public:
+	typedef CDataVectorT<TSSLCTXCallbackAssoc, TSSLCTXCallbackAssocLessFunctor> super;
+
+	TSSLCTXCallbackAssocList(DECL_FILE_LINE TListCnt cnt, TListCnt exp):
+		super(ARGS_FILE_LINE cnt, exp) {}
 	~TSSLCTXCallbackAssocList() {}
 
-	Ptr(TSSLCTXCallbackData) Find(ConstPointer raw)
+	Ptr(TSSLCTXCallbackData) FindSorted(ConstPointer raw)
 	{
-		super::Iterator it = super::FindSorted(CastAnyConstPtr(TSSLCTXCallbackAssoc, raw), SSLCTXCallbackAssocListSearchAndSortFunc1);
+		TSSLCTXCallbackAssoc assoc;
 
-		if (it && *it && (SSLCTXCallbackAssocListSearchAndSortFunc1(*it, raw) == 0))
+		assoc.raw = raw;
+		super::Iterator it = super::FindSorted(&assoc);
+
+		if (super::MatchSorted(it, &assoc))
 			return (*it)->cdata;
 		return NULL;
 	}
 
 	void Insert(ConstPointer raw, Ptr(TSSLCTXCallbackData) cdata)
 	{
-		if (Find(raw))
+		if (FindSorted(raw))
+			return;
+
+		Ptr(TSSLCTXCallbackAssoc) assoc = OK_NEW_OPERATOR TSSLCTXCallbackAssoc;
+
+		assoc->raw = raw;
+		assoc->cdata = cdata;
+
+		super::InsertSorted(assoc);
+	}
+
+	void Remove(ConstPointer raw)
+	{
+		if (!FindSorted(raw))
 			return;
 
 		TSSLCTXCallbackAssoc assoc;
 
 		assoc.raw = raw;
-		assoc.cdata = cdata;
-
-		super::InsertSorted(&assoc);
-	}
-
-	void Remove(ConstPointer raw)
-	{
-		if (!Find(raw))
-			return;
-		super::RemoveSorted(CastAnyConstPtr(TSSLCTXCallbackAssoc, raw), SSLCTXCallbackAssocListSearchAndSortFunc1);
+		super::RemoveSorted(&assoc);
 	}
 
 private:
@@ -320,7 +313,7 @@ private:
 
 };
 
-static TSSLCTXCallbackAssocList _sslctxcallbackassoclist(__FILE__LINE__ 16, 16, SSLCTXCallbackAssocListDeleteFunc, NULL, SSLCTXCallbackAssocListSearchAndSortFunc);
+static TSSLCTXCallbackAssocList _sslctxcallbackassoclist(__FILE__LINE__ 16, 16);
 
 CSSL_CTX::CSSL_CTX(ConstPointer sslCtx) : COpenSSLClass(sslCtx) {}
 CSSL_CTX::~CSSL_CTX() { free(); }
@@ -382,7 +375,7 @@ unsigned long CSSL_CTX::get_mode()
 static void MsgCallback(int write_p, int version, int content_type, const void *buf, size_t len, SSL *ssl, void *arg)
 {
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(pCtx);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	Ptr(CSSL) pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
 
 	if (!pSSL)
@@ -396,7 +389,7 @@ static void MsgCallback(int write_p, int version, int content_type, const void *
 
 void CSSL_CTX::set_msg_callback(TCallbackMsg cb)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -503,7 +496,7 @@ int CSSL_CTX::sess_cache_full()
 static int NewSessionCallback(SSL *ssl, SSL_SESSION *sess)
 {
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(pCtx);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	CSSL* pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
 	CSSL_SESSION* pSSL_SESSION = CastDynamicPtr(CSSL_SESSION, COpenSSLClass::find_obj(sess));
 	int ret;
@@ -524,7 +517,7 @@ static int NewSessionCallback(SSL *ssl, SSL_SESSION *sess)
 
 void CSSL_CTX::sess_set_new_cb(TCallbackNewSession cb)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -548,7 +541,7 @@ void CSSL_CTX::sess_set_new_cb(TCallbackNewSession cb)
 
 CSSL_CTX::TCallbackNewSession CSSL_CTX::sess_get_new_cb()
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (pCallbackData)
 		return pCallbackData->cbNewSession;
@@ -557,7 +550,7 @@ CSSL_CTX::TCallbackNewSession CSSL_CTX::sess_get_new_cb()
 
 static void RemoveSessionCallback(SSL_CTX *ctx, SSL_SESSION *sess)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(ctx);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(ctx);
 	CSSL_CTX* pSSL_CTX = CastDynamicPtr(CSSL_CTX, COpenSSLClass::find_obj(ctx));
 	CSSL_SESSION* pSSL_SESSION = CastDynamicPtr(CSSL_SESSION, COpenSSLClass::find_obj(sess));
 
@@ -576,7 +569,7 @@ static void RemoveSessionCallback(SSL_CTX *ctx, SSL_SESSION *sess)
 
 void CSSL_CTX::sess_set_remove_cb(TCallbackRemoveSession cb)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -600,7 +593,7 @@ void CSSL_CTX::sess_set_remove_cb(TCallbackRemoveSession cb)
 
 CSSL_CTX::TCallbackRemoveSession CSSL_CTX::sess_get_remove_cb()
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (pCallbackData)
 		return pCallbackData->cbRemoveSession;
@@ -610,7 +603,7 @@ CSSL_CTX::TCallbackRemoveSession CSSL_CTX::sess_get_remove_cb()
 SSL_SESSION *GetSessionCallback(SSL *ssl, unsigned char *data, int len, int *copy)
 {
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(pCtx);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	CSSL* pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
 	CSSL_SESSION* pSSL_SESSION = NULL;
 
@@ -625,7 +618,7 @@ SSL_SESSION *GetSessionCallback(SSL *ssl, unsigned char *data, int len, int *cop
 
 void CSSL_CTX::sess_set_get_cb(TCallbackGetSession cb)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -649,7 +642,7 @@ void CSSL_CTX::sess_set_get_cb(TCallbackGetSession cb)
 
 CSSL_CTX::TCallbackGetSession CSSL_CTX::sess_get_get_cb()
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (pCallbackData)
 		return pCallbackData->cbGetSession;
@@ -659,7 +652,7 @@ CSSL_CTX::TCallbackGetSession CSSL_CTX::sess_get_get_cb()
 static void InfoCallback(const SSL *ssl, int where, int ret)
 {
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(pCtx);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	CSSL* pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
 
 	if (!pSSL)
@@ -672,7 +665,7 @@ static void InfoCallback(const SSL *ssl, int where, int ret)
 
 void CSSL_CTX::set_info_callback(TCallbackInfo cb)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -696,7 +689,7 @@ void CSSL_CTX::set_info_callback(TCallbackInfo cb)
 
 CSSL_CTX::TCallbackInfo CSSL_CTX::get_info_callback()
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (pCallbackData)
 		return pCallbackData->cbInfo;
@@ -706,7 +699,7 @@ CSSL_CTX::TCallbackInfo CSSL_CTX::get_info_callback()
 static int ClientCertCallback(SSL *ssl, X509 **x509, EVP_PKEY **pkey)
 {
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(pCtx);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	CSSL* pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
 	CX509* pX509 = NULL;
 	CEVP_PKEY* ppKey = NULL;
@@ -725,7 +718,7 @@ static int ClientCertCallback(SSL *ssl, X509 **x509, EVP_PKEY **pkey)
 
 void CSSL_CTX::set_client_cert_cb(TCallbackClientCert cb)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -749,7 +742,7 @@ void CSSL_CTX::set_client_cert_cb(TCallbackClientCert cb)
 
 CSSL_CTX::TCallbackClientCert CSSL_CTX::get_client_cert_cb()
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (pCallbackData)
 		return pCallbackData->cbClientCert;
@@ -764,7 +757,7 @@ int CSSL_CTX::set_client_cert_engine(CENGINE *e)
 static int GenerateCookieCallback(SSL *ssl, unsigned char *cookie, unsigned int *cookie_len)
 {
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(pCtx);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	CSSL* pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
 	int ret;
 
@@ -779,7 +772,7 @@ static int GenerateCookieCallback(SSL *ssl, unsigned char *cookie, unsigned int 
 
 void CSSL_CTX::set_cookie_generate_cb(TCallbackGenerateCookie cb)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -804,7 +797,7 @@ void CSSL_CTX::set_cookie_generate_cb(TCallbackGenerateCookie cb)
 static int VerifyCookieCallback(SSL *ssl, unsigned char *cookie, unsigned int cookie_len)
 {
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(pCtx);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	CSSL* pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
 	int ret;
 
@@ -819,7 +812,7 @@ static int VerifyCookieCallback(SSL *ssl, unsigned char *cookie, unsigned int co
 
 void CSSL_CTX::set_cookie_verify_cb(TCallbackVerifyCookie cb)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -844,7 +837,7 @@ void CSSL_CTX::set_cookie_verify_cb(TCallbackVerifyCookie cb)
 static int NextProtosAdvertisedCallback(SSL *ssl, const unsigned char **out, unsigned int *outlen, void *arg)
 {
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(pCtx);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	CSSL* pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
 	int ret;
 
@@ -859,7 +852,7 @@ static int NextProtosAdvertisedCallback(SSL *ssl, const unsigned char **out, uns
 
 void CSSL_CTX::set_next_protos_advertised_cb(TCallbackNextProtosAdvertised cb, void *arg)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -884,7 +877,7 @@ void CSSL_CTX::set_next_protos_advertised_cb(TCallbackNextProtosAdvertised cb, v
 static int NextProtoSelectCallback(SSL *ssl, unsigned char **out, unsigned char *outlen, const unsigned char *in, unsigned int inlen, void *arg)
 {
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(pCtx);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	CSSL* pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
 	int ret;
 
@@ -899,7 +892,7 @@ static int NextProtoSelectCallback(SSL *ssl, unsigned char **out, unsigned char 
 
 void CSSL_CTX::set_next_proto_select_cb(TCallbackNextProtoSelect cb, void *arg)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -924,7 +917,7 @@ void CSSL_CTX::set_next_proto_select_cb(TCallbackNextProtoSelect cb, void *arg)
 static unsigned int PSKClientCallback(SSL *ssl, const char *hint, char *identity, unsigned int max_identity_len, unsigned char *psk, unsigned int max_psk_len)
 {
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(pCtx);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	CSSL* pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
 	unsigned int ret;
 
@@ -939,7 +932,7 @@ static unsigned int PSKClientCallback(SSL *ssl, const char *hint, char *identity
 
 void CSSL_CTX::set_psk_client_callback(TCallbackPSKClient cb)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -964,7 +957,7 @@ void CSSL_CTX::set_psk_client_callback(TCallbackPSKClient cb)
 static unsigned int PSKServerCallback(SSL *ssl, const char *identity, unsigned char *psk, unsigned int max_psk_len)
 {
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(pCtx);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	CSSL* pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
 	unsigned int ret;
 
@@ -979,7 +972,7 @@ static unsigned int PSKServerCallback(SSL *ssl, const char *identity, unsigned c
 
 void CSSL_CTX::set_psk_server_callback(TCallbackPSKServer cb)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -1138,7 +1131,7 @@ int CSSL_CTX::remove_session(CSSL_SESSION *c)
 static int GenerateSessionIdCallback(const SSL *ssl, unsigned char *id, unsigned int *id_len)
 {
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(pCtx);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	CSSL* pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
 	int ret;
 
@@ -1153,7 +1146,7 @@ static int GenerateSessionIdCallback(const SSL *ssl, unsigned char *id, unsigned
 
 void CSSL_CTX::set_generate_session_id(TCallbackGenerateSessionId cb)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -1202,7 +1195,7 @@ static int CertVerifyCallback(X509_STORE_CTX *ctx, void *arg)
 
 void CSSL_CTX::set_cert_verify_callback(TCallbackCertVerify cb, void *arg)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -1299,7 +1292,7 @@ int CSSL_CTX::set_srp_strength(int strength)
 static char *SRPClientPwdCallback(SSL *ssl, void *u)
 {
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(pCtx);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	CSSL* pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
 	char* ret;
 
@@ -1314,7 +1307,7 @@ static char *SRPClientPwdCallback(SSL *ssl, void *u)
 
 void CSSL_CTX::set_srp_client_pwd_callback(TCallbackSRPClientPwd cb)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -1336,7 +1329,7 @@ void CSSL_CTX::set_srp_client_pwd_callback(TCallbackSRPClientPwd cb)
 static int SRPVerifyParamCallback(SSL *ssl, void *u)
 {
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(pCtx);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	CSSL* pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
 	int ret;
 
@@ -1351,7 +1344,7 @@ static int SRPVerifyParamCallback(SSL *ssl, void *u)
 
 void CSSL_CTX::set_srp_verify_param_callback(TCallbackSRPVerifyParam cb)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -1373,7 +1366,7 @@ void CSSL_CTX::set_srp_verify_param_callback(TCallbackSRPVerifyParam cb)
 static int SRPUsernameCallback(SSL *ssl, int *i, void *u)
 {
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(pCtx);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	CSSL* pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
 	int ret;
 
@@ -1388,7 +1381,7 @@ static int SRPUsernameCallback(SSL *ssl, int *i, void *u)
 
 void CSSL_CTX::set_srp_username_callback(TCallbackSRPUsername cb)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -1429,9 +1422,8 @@ void CSSL_CTX::set_client_CA_list(CStack<CX509_NAME>& list)
 	SSL_CTX_set_client_CA_list(CastAnyPtr(SSL_CTX, _raw), CastAnyPtr(stack_st_X509_NAME, pStack));
 }
 
-CStack<CX509_NAME> CSSL_CTX::get_client_CA_list()
+void CSSL_CTX::get_client_CA_list(Ref(CStack<CX509_NAME>) result)
 {
-	CStack<CX509_NAME> result __FILE__LINE__0P;
 	Ptr(X509_NAME) value;
 	_STACK *ret = CastAnyPtr(_STACK, SSL_CTX_get_client_CA_list(CastAnyPtr(SSL_CTX, _raw)));
 
@@ -1441,7 +1433,6 @@ CStack<CX509_NAME> CSSL_CTX::get_client_CA_list()
 
 		result.Push(item);
 	}
-	return result;
 }
 
 int CSSL_CTX::add_client_CA(CX509 *x)
@@ -1532,7 +1523,7 @@ void CSSL_CTX::set_max_send_fragment(int m)
 static RSA* TmpRSACallback(SSL *ssl, int is_export, int keylength)
 {
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(pCtx);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	CSSL* pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
 	Ptr(CRSA_KEY) ret;
 
@@ -1547,7 +1538,7 @@ static RSA* TmpRSACallback(SSL *ssl, int is_export, int keylength)
 
 void CSSL_CTX::set_tmp_rsa_callback(TCallbackTmpRSA cb)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -1569,7 +1560,7 @@ void CSSL_CTX::set_tmp_rsa_callback(TCallbackTmpRSA cb)
 static DH* TmpDHCallback(SSL *ssl, int is_export, int keylength)
 {
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(pCtx);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	CSSL* pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
 	Ptr(CDH_KEY) ret;
 
@@ -1584,7 +1575,7 @@ static DH* TmpDHCallback(SSL *ssl, int is_export, int keylength)
 
 void CSSL_CTX::set_tmp_dh_callback(TCallbackTmpDH cb)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -1606,7 +1597,7 @@ void CSSL_CTX::set_tmp_dh_callback(TCallbackTmpDH cb)
 static EC_KEY* TmpECDHCallback(SSL *ssl, int is_export, int keylength)
 {
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(pCtx);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	CSSL* pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
 	Ptr(CEC_KEY) ret;
 
@@ -1621,7 +1612,7 @@ static EC_KEY* TmpECDHCallback(SSL *ssl, int is_export, int keylength)
 
 void CSSL_CTX::set_tmp_ecdh_callback(TCallbackTmpECDH cb)
 {
-	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.Find(_raw);
+	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(_raw);
 
 	if (cb)
 	{
@@ -2563,10 +2554,9 @@ CX509 *CSSL::get_peer_certificate()
 	return p;
 }
 
-CStack<CX509> CSSL::get_peer_cert_chain()
+void CSSL::get_peer_cert_chain(Ref(CStack<CX509>) ret)
 {
 	STACK_OF(X509) * pStack = SSL_get_peer_cert_chain(CastAnyPtr(SSL, _raw));
-	CStack<CX509> ret __FILE__LINE__0P;
 
 	for (int i = 0; i < sk_X509_num(pStack); ++i)
 	{
@@ -2580,7 +2570,6 @@ CStack<CX509> CSSL::get_peer_cert_chain()
 		}
 		ret.Push(p);
 	}
-	return ret;
 }
 
 int CSSL::check_private_key()
@@ -2643,10 +2632,9 @@ const char *CSSL::get_version()
 	return SSL_get_version(CastAnyPtr(SSL, _raw));
 }
 
-CStack<CSSL_CIPHER> CSSL::get_ciphers()
+void CSSL::get_ciphers(Ref(CStack<CSSL_CIPHER>) ret)
 {
 	STACK_OF(SSL_CIPHER) * pStack = SSL_get_ciphers(CastAnyPtr(SSL, _raw));
-	CStack<CSSL_CIPHER> ret __FILE__LINE__0P;
 
 	for (int i = 0; i < sk_SSL_CIPHER_num(pStack); ++i)
 	{
@@ -2660,7 +2648,6 @@ CStack<CSSL_CIPHER> CSSL::get_ciphers()
 		}
 		ret.Push(p);
 	}
-	return ret;
 }
 
 int CSSL::do_handshake()
@@ -2723,10 +2710,9 @@ void CSSL::set_client_CA_list(ConstRef(CStack<CX509_NAME>) name_list)
 	SSL_set_client_CA_list(CastAnyPtr(SSL, _raw), pStack);
 }
 
-CStack<CX509_NAME> CSSL::get_client_CA_list()
+void CSSL::get_client_CA_list(Ref(CStack<CX509_NAME>) ret)
 {
 	STACK_OF(X509_NAME) * pStack = SSL_get_client_CA_list(CastAnyPtr(SSL, _raw));
-	CStack<CX509_NAME> ret __FILE__LINE__0P;
 
 	for (int i = 0; i < sk_X509_NAME_num(pStack); ++i)
 	{
@@ -2740,7 +2726,6 @@ CStack<CX509_NAME> CSSL::get_client_CA_list()
 		}
 		ret.Push(p);
 	}
-	return ret;
 }
 
 int CSSL::add_client_CA(CX509 *x)

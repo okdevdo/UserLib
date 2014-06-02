@@ -29,6 +29,7 @@ class WINSOURCES_API CAsyncTCPClient: public CAsyncIOBuffer
 {
 public:
 	CAsyncTCPClient(Ptr(CAsyncIOManager) pManager = NULL);
+	CAsyncTCPClient(Ptr(CAsyncIOData) pData);
 	virtual ~CAsyncTCPClient(void);
 
 	void Open(CConstPointer pServer, CConstPointer pProtocol);

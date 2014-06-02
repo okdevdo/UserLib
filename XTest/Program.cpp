@@ -569,7 +569,9 @@ public:
 		m_DebugServer(false),
 		m_StopDebugServer(false),
 		m_Debug(false),
-		m_Special(false)
+		m_Special(false),
+		m_TestDir(false),
+		m_sTestDir()
 	{
 		COptionCallback<TestApplication> cb(this, &TestApplication::handleHelp);
 
@@ -579,8 +581,13 @@ public:
 			.callBack(cb));
 		addOption(COption(_T("All"))
 			.shortName(_T("a"))
-			.category(_T("Test"))
+			.category(_T("Util"))
 			.description(_T("Test All Options.")));
+		addOption(COption(_T("TestDir"))
+			.shortName(_T("d"))
+			.argument(_T("testdir"), true)
+			.category(_T("Util"))
+			.description(_T("Path to Testdir.")));
 		addOption(COption(_T("Output"))
 			.shortName(_T("o"))
 			.argument(_T("outputfile"), false)
@@ -751,6 +758,11 @@ public:
 			m_Output = true;
 			m_sOutput = value;
 		}
+		if (name == CStringLiteral(_T("TestDir")))
+		{
+			m_TestDir = true;
+			m_sTestDir = value;
+		}
 		if (name == CStringLiteral(_T("AcceptTest")))
 			_AcceptsTests = true;
 		if (name == CStringLiteral(_T("All")))
@@ -889,6 +901,17 @@ public:
 			return 0;
 		}
 
+		if (m_AllOption)
+		{
+			m_TestDataStructures = true;
+			m_TestCppSources = true;
+			m_TestFilter = true;
+			m_TestWinSources = true;
+			m_TestCSources = true;
+		}
+
+		if (m_TestDir)
+			curdir.set_Path(__FILE__LINE__ m_sTestDir);
 		try
 		{
 			CDirectoryIterator::SetCurrentDirectory(curdir);
@@ -896,6 +919,10 @@ public:
 		catch (CBaseException *ex)
 		{
 			CERR << ex->GetExceptionMessage() << endl;
+			m_TestCppSources = false;
+			m_TestDataStructures = false;
+			m_TestCSources = false;
+
 		}
 
 		if (m_Output)
@@ -918,14 +945,6 @@ public:
 			pOutFile->ReOpen(foutf, stdout);
 		}
 
-		if (m_AllOption)
-		{
-			m_TestDataStructures = true;
-			m_TestCppSources = true;
-			m_TestFilter = true;
-			m_TestWinSources = true;
-			m_TestCSources = true;
-		}
 
 		if (m_TestCppSources)
 			TestCppSources();
@@ -1010,7 +1029,10 @@ public:
 		if (m_TestSSLServer)
 			TestSSLServerFunc();
 		if (m_Debug)
+		{
+			CDebug() << _T("... exit debug session") << eodbg;
 			CDebugClient::FreeInstance();
+		}
 #ifdef OK_COMP_MSC
 		if (NotPtrCheck(pOutFile))
 		{
@@ -1068,6 +1090,8 @@ private:
 	WBool m_StopDebugServer;
 	WBool m_Debug;
 	WBool m_Special;
+	WBool m_TestDir;
+	CStringLiteral m_sTestDir;
 };
 
 int

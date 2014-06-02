@@ -33,8 +33,9 @@ public:
 		WindowMenu
 	};
 
-	struct TResourceItem
+	class TResourceItem: public CCppObject
 	{
+	public:
 		TResourceItem(LPTSTR wndclass, TResourceType rsrctype):
 	        WindowClass(wndclass), ResourceType(rsrctype), ResourceID(0), CachedResource(NULL)
 		{}
@@ -43,13 +44,61 @@ public:
 	        WindowClass(wndclass), ResourceType(rsrctype), ResourceID(id), CachedResource(NULL)
 		{}
 
+		virtual ~TResourceItem()
+		{}
+
 		LPTSTR WindowClass;
 		TResourceType ResourceType;
 		DWORD ResourceID;
 		HANDLE CachedResource;
 	};
 
-	typedef CDataSVectorT<TResourceItem> TResourceItems;
+	class TResourceItemLessFunctor
+	{
+	public:
+		bool operator()(ConstPtr(TResourceItem) ppa, ConstPtr(TResourceItem) ppd) const
+		{
+			int res = s_stricmp(ppa->WindowClass, ppd->WindowClass);
+
+			if (res < 0)
+				return true;
+			if (res == 0)
+			{
+				if (ppa->ResourceType < ppd->ResourceType)
+					return true;
+			}
+			return false;
+		}
+	};
+
+	class TResourceItemReleaseFunctor
+	{
+	public:
+		Ref(TResourceItemReleaseFunctor) operator()(Ptr(TResourceItem) ppa)
+		{
+			if (ppa->CachedResource == NULL)
+				return *this;
+			switch (ppa->ResourceType)
+			{
+			case CResourceManager::WindowTitle:
+				TFfree(ppa->CachedResource);
+				break;
+			case CResourceManager::WindowAccelarator:
+				break;
+			case CResourceManager::WindowIcon:
+				break;
+			case CResourceManager::WindowSmallIcon:
+				break;
+			case CResourceManager::WindowMenu:
+				::DestroyMenu((HMENU)(ppa->CachedResource));
+				break;
+			}
+			ppa->release();
+			return *this;
+		}
+	};
+
+	typedef CDataVectorT<TResourceItem, TResourceItemLessFunctor, TResourceItemReleaseFunctor> TResourceItems;
 
 	CResourceManager(void);
 	virtual ~CResourceManager(void);
@@ -66,15 +115,37 @@ private:
 class CFontManager: public CCppObject
 {
 public:
-	struct TFontItem
+	class TFontItem: public CCppObject
 	{
+	public:
 		TFontItem(CStringLiteral _prefix): prefix(__FILE__LINE__ _prefix), font(NULL) {}
+		virtual ~TFontItem() {}
 
 		CStringBuffer prefix;
 		Gdiplus::Font* font;
 	};
 
-	typedef CDataSVectorT<TFontItem> TFontItems;
+	class TFontItemLessFunctor
+	{
+	public:
+		bool operator()(ConstPtr(TFontItem) ppa, ConstPtr(TFontItem) ppd) const
+		{
+			return ppa->prefix.LT(ppd->prefix, 0, CStringLiteral::cIgnoreCase);
+		}
+	};
+
+	class TFontItemReleaseFunctor
+	{
+	public:
+		Ref(TFontItemReleaseFunctor) operator()(Ptr(TFontItem) ppa)
+		{
+			delete ppa->font;
+			ppa->release();
+			return *this;
+		}
+	};
+
+	typedef CDataVectorT<TFontItem, TFontItemLessFunctor, TFontItemReleaseFunctor> TFontItems;
 
 	CFontManager(void);
 	CFontManager(CStringLiteral _prefix);
@@ -95,17 +166,40 @@ private:
 class CBrushManager: public CCppObject
 {
 public:
-	struct TBrushItem
+	class TBrushItem: public CCppObject
 	{
+	public:
 		TBrushItem(CStringLiteral _prefix): prefix(__FILE__LINE__ _prefix), brush(NULL), bPrivateCopy(true) {}
 		TBrushItem(Gdiplus::Brush* _brush): prefix(), brush(_brush), bPrivateCopy(false) {}
+		virtual ~TBrushItem() {}
 
 		CStringBuffer prefix;
 		Gdiplus::Brush* brush;
 		bool bPrivateCopy;
 	};
 
-	typedef CDataSVectorT<TBrushItem> TBrushItems;
+	class TBrushItemLessFunctor
+	{
+	public:
+		bool operator()(ConstPtr(TBrushItem) ppa, ConstPtr(TBrushItem) ppd) const
+		{
+			return ppa->prefix.LT(ppd->prefix, 0, CStringLiteral::cIgnoreCase);
+		}
+	};
+
+	class TBrushItemReleaseFunctor
+	{
+	public:
+		Ref(TBrushItemReleaseFunctor) operator()(Ptr(TBrushItem) ppa)
+		{
+			if (ppa->bPrivateCopy)
+				delete ppa->brush;
+			ppa->release();
+			return *this;
+		}
+	};
+
+	typedef CDataVectorT<TBrushItem, TBrushItemLessFunctor, TBrushItemReleaseFunctor> TBrushItems;
 
 public:
 	CBrushManager(void);

@@ -23,8 +23,10 @@
 #include "DataBTree.h"
 #include "PackageInfo.h"
 
-class CPackageInfoBTree: public CDataBTreeT<CPackageInfo>
+class CPackageInfoBTree: public CDataBTreeT<CPackageInfo, CStringByNameLessFunctor<CPackageInfo> >
 {
+	typedef CDataBTreeT<CPackageInfo, CStringByNameLessFunctor<CPackageInfo> > super;
+
 public:
 	CPackageInfoBTree(DECL_FILE_LINE TListCnt maxEntriesPerNode);
 	~CPackageInfoBTree();

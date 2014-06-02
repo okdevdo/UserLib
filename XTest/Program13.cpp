@@ -521,13 +521,13 @@ static void _TestFilterThreadedPipe()
 static void _TestFilterPipe()
 {
 	CDataVectorT<CStringBuffer> _output(__FILE__LINE__ 16, 16);
-	CSecurityFile* pInputFile = OK_NEW_OPERATOR CSecurityFile(CFilePath(__FILE__LINE__ _T("aspell.lst.gz")));
-	CFileFilterInput* pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
-	CStringVectorFilterOutput* pTestOutput = OK_NEW_OPERATOR CStringVectorFilterOutput(_output);
-	CFilterPipeConnector* pConnector = OK_NEW_OPERATOR CFilterPipeConnector();
-	CGZipDeCompressFilter* pDeCompressFilter = OK_NEW_OPERATOR CGZipDeCompressFilter(pTestInput, pConnector);
-	CLineReadFilter* pLineReadFilter = OK_NEW_OPERATOR CLineReadFilter(pConnector, pTestOutput, CLineReadFilter::UnixLineEnd);
-	CFilterPipe* pPipe = OK_NEW_OPERATOR CFilterPipe(pDeCompressFilter, pLineReadFilter);
+	CCppObjectPtr<CSecurityFile> pInputFile = OK_NEW_OPERATOR CSecurityFile(CFilePath(__FILE__LINE__ _T("aspell.lst.gz")));
+	CCppObjectPtr<CFileFilterInput> pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
+	CCppObjectPtr<CStringVectorFilterOutput> pTestOutput = OK_NEW_OPERATOR CStringVectorFilterOutput(_output);
+	CCppObjectPtr<CFilterPipeConnector> pConnector = OK_NEW_OPERATOR CFilterPipeConnector();
+	CCppObjectPtr<CGZipDeCompressFilter> pDeCompressFilter = OK_NEW_OPERATOR CGZipDeCompressFilter(pTestInput, pConnector);
+	CCppObjectPtr<CLineReadFilter> pLineReadFilter = OK_NEW_OPERATOR CLineReadFilter(pConnector, pTestOutput, CLineReadFilter::UnixLineEnd);
+	CCppObjectPtr<CFilterPipe> pPipe = OK_NEW_OPERATOR CFilterPipe(pDeCompressFilter, pLineReadFilter);
 
 	pPipe->do_pipe();
 
@@ -541,17 +541,6 @@ static void _TestFilterPipe()
 		++ix;
 	}
 	COUT << _T("#LineCount=") << ix << endl;
-
-	pPipe->release();
-	pLineReadFilter->release();
-	pDeCompressFilter->release();
-	pConnector->release();
-
-	pTestInput->release();
-	pTestOutput->release();
-
-	pInputFile->release();
-
 }
 
 static void _TestFilter()

@@ -45,6 +45,12 @@ public:
 	{
 	}
 
+	CServiceAsyncTCPClient(Ptr(CAsyncIOData) pData) :
+		CAsyncTCPClient(), _env(NULL), _conn(NULL), _stmt(NULL), _resultset(__FILE__LINE__ 16, 32), _bQuit(false)
+	{
+		m_pData = pData;
+	}
+
 	virtual ~CServiceAsyncTCPClient() 
 	{
 	}
@@ -262,6 +268,15 @@ protected:
 	bool _bQuit;
 };
 
+class AsyncTCPClientListEqualFunctor
+{
+public:
+	bool operator()(ConstPtr(CServiceAsyncTCPClient) r1, ConstPtr(CServiceAsyncTCPClient) r2) const
+	{
+		return r1->GetData() == r2->GetData();
+	}
+};
+
 static sword __stdcall AsyncTCPClientListSearchAndSortFunc(ConstPointer item, ConstPointer data)
 {
 	Ptr(CServiceAsyncTCPClient) pClient = CastAnyPtr(CServiceAsyncTCPClient, CastMutable(Pointer, item));
@@ -287,7 +302,7 @@ public:
 	CServiceAsyncTCPServer() :
 		io_manager(),
 		server(&io_manager),
-		clientlist(__FILE__LINE__ AsyncTCPClientListDeleteFunc),
+		clientlist(__FILE__LINE__0),
 		_env(OK_NEW_OPERATOR CSqLite3Environment),
 		_verbose(true)
 	{
@@ -328,7 +343,8 @@ public:
 	dword read_callback(Ptr(CAsyncIOData) pData)
 	{
 		CScopedLock lock;
-		CAsyncTCPClientList::Iterator it = clientlist.Find(CastAnyPtr(CServiceAsyncTCPClient, pData), AsyncTCPClientListSearchAndSortFunc);
+		CServiceAsyncTCPClient client(pData);
+		CAsyncTCPClientList::Iterator it = clientlist.Find<AsyncTCPClientListEqualFunctor>(&client);
 
 		if (it)
 		{
@@ -337,7 +353,7 @@ public:
 			if ((pData->get_bytestransferred() == 0) || (pData->get_errorcode() != 0))
 			{
 				pClient->Close();
-				clientlist.Remove(it, AsyncTCPClientListDeleteFunc, NULL);
+				clientlist.Remove(it);
 				return 1;
 			}
 
@@ -360,7 +376,7 @@ public:
 			{
 				CEventLogger::WriteLog(CEventLogger::Error, ex->GetExceptionMessage());
 				pClient->Close();
-				clientlist.Remove(it, AsyncTCPClientListDeleteFunc, NULL);
+				clientlist.Remove(it);
 				return 1;
 			}
 		}
@@ -370,7 +386,7 @@ public:
 	dword write_callback(Ptr(CAsyncIOData) pData)
 	{
 		CScopedLock lock;
-		CAsyncTCPClientList::Iterator it = clientlist.Find(CastAnyPtr(CServiceAsyncTCPClient, pData), AsyncTCPClientListSearchAndSortFunc);
+		CAsyncTCPClientList::Iterator it = clientlist.Find<AsyncTCPClientListEqualFunctor>(CastAnyPtr(CServiceAsyncTCPClient, pData));
 
 		if (it)
 		{
@@ -379,7 +395,7 @@ public:
 			if (pData->get_errorcode() != 0)
 			{
 				pClient->Close();
-				clientlist.Remove(it, AsyncTCPClientListDeleteFunc, NULL);
+				clientlist.Remove(it);
 				return 1;
 			}
 
@@ -395,7 +411,7 @@ public:
 			{
 				pClient->Close();
 				pClient->reset_database();
-				clientlist.Remove(it, AsyncTCPClientListDeleteFunc, NULL);
+				clientlist.Remove(it);
 #ifdef __DEBUG__
 			if (_verbose)
 				CEventLogger::WriteFormattedLog(CEventLogger::Information, _T("XService: Client %llx removed"), pClient);
@@ -413,7 +429,7 @@ public:
 			{
 				CEventLogger::WriteLog(CEventLogger::Error, ex->GetExceptionMessage());
 				pClient->Close();
-				clientlist.Remove(it, AsyncTCPClientListDeleteFunc, NULL);
+				clientlist.Remove(it);
 				return 1;
 			}
 		}

@@ -59,9 +59,9 @@ bool CPackageInfoVector::InsertSortedUnique(Ptr(CPackageInfo) pInfo)
 
 bool CPackageInfoVector::AppendUnique(Ptr(CPackageInfo) pInfo)
 {
-	Iterator itPI = Find<CStringByNameLessFunctor<CPackageInfo>>(pInfo);
+	Iterator itPI = Find<CStringByNameEqualFunctor<CPackageInfo>>(pInfo);
 
-	if (!(MatchSorted(itPI, pInfo)))
+	if (!itPI)
 	{
 		pInfo->addRef();
 		Append(pInfo);
@@ -1262,8 +1262,8 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 			tmp += _T(".tar.bz2");
 
 			ipInfo.SetName(pInfo->GetPackageName());
-			itIP = packInstalled.FindSorted(&ipInfo, InstallPackageInfoSearchAndSortFunc);
-			if ( (itIP && (*itIP) && (InstallPackageInfoSearchAndSortFunc(&ipInfo, *itIP) == 0)) )
+			itIP = packInstalled.FindSorted(&ipInfo);
+			if (packInstalled.MatchSorted(itIP, &ipInfo))
 			{
 				pIPInfo = *itIP;
 				pIPInfo->SetIsInstalled(true);
@@ -1273,7 +1273,7 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 			else
 			{
 				pIPInfo = OK_NEW_OPERATOR CInstallPackageInfo(pInfo->GetPackageName(), tmp, true);
-				packInstalled.InsertSorted(pIPInfo, InstallPackageInfoSearchAndSortFunc);
+				packInstalled.InsertSorted(pIPInfo);
 			}
 			packInstalled.SetModified(true);
 		}

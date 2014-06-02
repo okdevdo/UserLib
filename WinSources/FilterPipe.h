@@ -57,8 +57,9 @@ protected:
 	CByteLinkedBuffer m_buffer;
 };
 
-class WINSOURCES_API CFilterVector : public CDataVectorT<CFilter>
+class WINSOURCES_API CFilterVector : public CDataVectorT<CFilter, CCppObjectLessFunctor<CFilter>, CCppObjectNullFunctor<CFilter> >
 {
+	typedef CDataVectorT<CFilter, CCppObjectLessFunctor<CFilter>, CCppObjectNullFunctor<CFilter> > super;
 public:
 	CFilterVector();
 	~CFilterVector();

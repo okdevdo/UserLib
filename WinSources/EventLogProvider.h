@@ -53,6 +53,8 @@ protected:
 	BOOLEAN _imported;
 };
 
+typedef CDataDoubleLinkedListT<CEventLogProviderChannel> CEventLogProviderChannels;
+
 class WINSOURCES_API CEventLogProviderLevel : public CCppObject
 {
 public:
@@ -72,6 +74,8 @@ protected:
 	CStringBuffer _name;
 	UINT32 _value;
 };
+
+typedef CDataDoubleLinkedListT<CEventLogProviderLevel> CEventLogProviderLevels;
 
 class WINSOURCES_API CEventLogProviderTask : public CCppObject
 {
@@ -95,6 +99,8 @@ protected:
 	UINT32 _value;
 };
 
+typedef CDataDoubleLinkedListT<CEventLogProviderTask> CEventLogProviderTasks;
+
 class WINSOURCES_API CEventLogProviderOpCode : public CCppObject
 {
 public:
@@ -115,6 +121,8 @@ protected:
 	UINT32 _value;
 };
 
+typedef CDataDoubleLinkedListT<CEventLogProviderOpCode> CEventLogProviderOpCodes;
+
 class WINSOURCES_API CEventLogProviderKeyWord : public CCppObject
 {
 public:
@@ -134,6 +142,8 @@ protected:
 	CStringBuffer _name;
 	UINT64 _value;
 };
+
+typedef CDataDoubleLinkedListT<CEventLogProviderKeyWord> CEventLogProviderKeyWords;
 
 class WINSOURCES_API CEventLogProviderEvent : public CCppObject
 {
@@ -163,8 +173,8 @@ public:
 	__inline void set_task(Ptr(CEventLogProviderTask) p) { _task = p; }
 	__inline UINT64 get_keyWordValue() const { return _keyWordValue; }
 	__inline void set_keyWordValue(UINT64 v) { _keyWordValue = v; }
-	__inline ConstRef(CDataDoubleLinkedListT<CEventLogProviderKeyWord>) get_keyWordList() const { return _keyWordList; }
-	__inline void set_keyWordList(ConstRef(CDataDoubleLinkedListT<CEventLogProviderKeyWord>) p) 
+	__inline ConstRef(CEventLogProviderKeyWords) get_keyWordList() const { return _keyWordList; }
+	__inline void set_keyWordList(RefRef(CEventLogProviderKeyWords) p)
 	{ 
 		_keyWordList = p; 
 		//COUT << _T("set_keyWordList: ") << _keyWordList.RefCount() << endl;
@@ -188,11 +198,13 @@ protected:
 	UINT32 _taskValue;
 	Ptr(CEventLogProviderTask) _task;
 	UINT64 _keyWordValue;
-	CDataDoubleLinkedListT<CEventLogProviderKeyWord> _keyWordList;
+	CEventLogProviderKeyWords _keyWordList;
 	UINT32 _messageID;
 	CStringBuffer _message;
 	CStringBuffer _template;
 };
+
+typedef CDataDoubleLinkedListT<CEventLogProviderEvent> CEventLogProviderEvents;
 
 class WINSOURCES_API CEventLogProvider : public CCppObject
 {
@@ -211,12 +223,12 @@ public:
 	__inline ConstRef(CFilePath) get_messageFile() const { return _messageFile; }
 	__inline ConstRef(CStringBuffer) get_helpLink() const { return _helpLink; }
 	__inline ConstRef(CStringBuffer) get_message() const { return _message; }
-	__inline ConstRef(CDataDoubleLinkedListT<CEventLogProviderChannel>) get_channelList() const { return _channelList; }
-	__inline ConstRef(CDataDoubleLinkedListT<CEventLogProviderLevel>) get_levelList() const { return _levelList; }
-	__inline ConstRef(CDataDoubleLinkedListT<CEventLogProviderTask>) get_taskList() const { return _taskList; }
-	__inline ConstRef(CDataDoubleLinkedListT<CEventLogProviderOpCode>) get_opCodeList() const { return _opCodeList; }
-	__inline ConstRef(CDataDoubleLinkedListT<CEventLogProviderKeyWord>) get_keyWordList() const { return _keyWordList; }
-	__inline ConstRef(CDataDoubleLinkedListT<CEventLogProviderEvent>) get_eventList() const { return _eventList; }
+	__inline ConstRef(CEventLogProviderChannels) get_channelList() const { return _channelList; }
+	__inline ConstRef(CEventLogProviderLevels) get_levelList() const { return _levelList; }
+	__inline ConstRef(CEventLogProviderTasks) get_taskList() const { return _taskList; }
+	__inline ConstRef(CEventLogProviderOpCodes) get_opCodeList() const { return _opCodeList; }
+	__inline ConstRef(CEventLogProviderKeyWords) get_keyWordList() const { return _keyWordList; }
+	__inline ConstRef(CEventLogProviderEvents) get_eventList() const { return _eventList; }
 
 	__inline void set_name(ConstRef(CStringBuffer) name) { _name = name; }
 	__inline void set_name(CConstPointer pName) { _name.SetString(__FILE__LINE__ pName); }
@@ -225,7 +237,7 @@ public:
 	Ptr(CEventLogProviderLevel) get_level(UINT32 v) const;
 	Ptr(CEventLogProviderTask) get_task(UINT32 v) const;
 	Ptr(CEventLogProviderOpCode) get_opCode(UINT32 vOpCode, UINT32 vTask) const;
-	CDataDoubleLinkedListT<CEventLogProviderKeyWord> get_keyWords(UINT64 v) const;
+	CEventLogProviderKeyWords get_keyWords(UINT64 v) const;
 	Ptr(CEventLogProviderEvent) get_event(UINT32 eventID) const;
 
 protected:
@@ -236,12 +248,12 @@ protected:
 	CFilePath _messageFile;
 	CStringBuffer _helpLink;
 	CStringBuffer _message;
-	CDataDoubleLinkedListT<CEventLogProviderChannel> _channelList;
-	CDataDoubleLinkedListT<CEventLogProviderLevel> _levelList;
-	CDataDoubleLinkedListT<CEventLogProviderTask> _taskList;
-	CDataDoubleLinkedListT<CEventLogProviderOpCode> _opCodeList;
-	CDataDoubleLinkedListT<CEventLogProviderKeyWord> _keyWordList;
-	CDataDoubleLinkedListT<CEventLogProviderEvent> _eventList;
+	CEventLogProviderChannels _channelList;
+	CEventLogProviderLevels _levelList;
+	CEventLogProviderTasks _taskList;
+	CEventLogProviderOpCodes _opCodeList;
+	CEventLogProviderKeyWords _keyWordList;
+	CEventLogProviderEvents _eventList;
 
 private:
 

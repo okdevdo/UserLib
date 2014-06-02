@@ -3034,14 +3034,13 @@ void CDialog::CenterWindow()
 
 void CDialog::AddDialogControl(CControl* pControl)
 {
-	TDialogControl item;
+	Ptr(TDialogControl) item = OK_NEW_OPERATOR TDialogControl;
 	WNDCLASSEX wcex;
 
 	pControl->RegisterClass(wcex);
-	item.pControl = pControl;
-	item.m_classname.SetString(__FILE__LINE__ wcex.lpszClassName);
-	item.m_classname.addRef();
-	m_DialogControls.InsertSorted(&item, TSearchAndSortFunc_DialogControls);
+	item->pControl = pControl;
+	item->m_classname.SetString(__FILE__LINE__ wcex.lpszClassName);
+	m_DialogControls.InsertSorted(item);
 }
 
 CControl* CDialog::GetDialogControl(LPCTSTR className)
@@ -3050,16 +3049,16 @@ CControl* CDialog::GetDialogControl(LPCTSTR className)
 
 	item.m_classname.SetString(__FILE__LINE__ className);
 
-	TDialogControls::Iterator it = m_DialogControls.FindSorted(&item, TSearchAndSortFunc_DialogControls);
+	TDialogControls::Iterator it = m_DialogControls.FindSorted(&item);
 
-	if ( it && (*it) && (TSearchAndSortFunc_DialogControls(*it, &item) == 0) )
+	if (m_DialogControls.MatchSorted(it, &item))
 		return (*it)->pControl;
 	return NULL;
 }
 
 void CDialog::RemoveDialogControls()
 {
-	m_DialogControls.Close(TDeleteFunc_DialogControls, NULL);
+	m_DialogControls.Close();
 }
 
 //***********************************************************
@@ -3784,14 +3783,13 @@ LRESULT CControl::OnSize(WPARAM wParam, LPARAM lParam)
 				++it;
 			}
 
-			CDataSVectorT<LONG> size_X(__FILE__LINE__ fmaxX + 1, 1);
-			CDataSVectorT<LONG> size_Y(__FILE__LINE__ fmaxY + 1, 1);
-			LONG vInit = 0;
+			CDataVectorT<sdword> size_X(__FILE__LINE__ fmaxX + 1, 1);
+			CDataVectorT<sdword> size_Y(__FILE__LINE__ fmaxY + 1, 1);
 
 			for ( int ix = 0; ix <= fmaxX; ++ix )
-				size_X.Append(&vInit);
+				size_X.Append(0);
 			for ( int ix = 0; ix <= fmaxY; ++ix )
-				size_Y.Append(&vInit);
+				size_Y.Append(0);
 
 			int xPos = get_HScrollOffset();
 			int yPos = get_VScrollOffset();
@@ -3831,15 +3829,15 @@ LRESULT CControl::OnSize(WPARAM wParam, LPARAM lParam)
 				}
 				if ( control->get_LayoutX() == 0 )
 				{
-					if ( r.right > (*(*(size_X.Index(0)))) )
-						size_X.SetData(size_X.Index(0), &(r.right));
+					if ( r.right > (*(size_X.Index(0))) )
+						size_X.SetData(size_X.Index(0), r.right);
 				}
 				else
 				{
-					r.left = (*(*(size_X.Index(control->get_LayoutX() - 1))));
+					r.left = (*(size_X.Index(control->get_LayoutX() - 1)));
 					r.right += r.left;
-					if ( r.right > (*(*(size_X.Index(control->get_LayoutX())))) )
-						size_X.SetData(size_X.Index(control->get_LayoutX()), &(r.right));
+					if ( r.right > (*(size_X.Index(control->get_LayoutX()))) )
+						size_X.SetData(size_X.Index(control->get_LayoutX()), r.right);
 				}
 				switch ( control->get_SizeSpecY() )
 				{
@@ -3860,22 +3858,22 @@ LRESULT CControl::OnSize(WPARAM wParam, LPARAM lParam)
 				}
 				if ( control->get_LayoutY() == 0 )
 				{
-					if ( r.bottom > (*(*(size_Y.Index(0)))) )
-						size_Y.SetData(size_Y.Index(0), &(r.bottom));
+					if ( r.bottom > (*(size_Y.Index(0))) )
+						size_Y.SetData(size_Y.Index(0), r.bottom);
 				}
 				else
 				{
-					r.top = (*(*(size_Y.Index(control->get_LayoutY() - 1))));
+					r.top = (*(size_Y.Index(control->get_LayoutY() - 1)));
 					r.bottom += r.top;
-					if ( r.bottom > (*(*(size_Y.Index(control->get_LayoutY())))) )
-						size_Y.SetData(size_Y.Index(control->get_LayoutY()), &(r.bottom));
+					if ( r.bottom > (*(size_Y.Index(control->get_LayoutY()))) )
+						size_Y.SetData(size_Y.Index(control->get_LayoutY()), r.bottom);
 				}
 				++it;
 			}
 			if ( bRelativePercentSizeX )
-				rect1.right -= (*(*(size_X.Index((fmaxX)))));
+				rect1.right -= (*(size_X.Index((fmaxX))));
 			if ( bRelativePercentSizeY )
-				rect1.bottom -= (*(*(size_X.Index((fmaxY)))));
+				rect1.bottom -= (*(size_X.Index((fmaxY))));
 			if ( bRelativePercentSizeX || bRelativePercentSizeY )
 			{
 				it = children.Begin();
@@ -3903,15 +3901,15 @@ LRESULT CControl::OnSize(WPARAM wParam, LPARAM lParam)
 					}
 					if ( control->get_LayoutX() == 0 )
 					{
-						if ( r.right > (*(*(size_X.Index(0)))) )
-							size_X.SetData(size_X.Index(0), &(r.right));
+						if ( r.right > (*(size_X.Index(0))) )
+							size_X.SetData(size_X.Index(0), r.right);
 					}
 					else
 					{
-						r.left = (*(*(size_X.Index(control->get_LayoutX() - 1))));
+						r.left = (*(size_X.Index(control->get_LayoutX() - 1)));
 						r.right += r.left;
-						if ( r.right > (*(*(size_X.Index(control->get_LayoutX())))) )
-							size_X.SetData(size_X.Index(control->get_LayoutX()), &(r.right));
+						if ( r.right > (*(size_X.Index(control->get_LayoutX()))) )
+							size_X.SetData(size_X.Index(control->get_LayoutX()), r.right);
 					}
 					switch ( control->get_SizeSpecY() )
 					{
@@ -3931,15 +3929,15 @@ LRESULT CControl::OnSize(WPARAM wParam, LPARAM lParam)
 					}
 					if ( control->get_LayoutY() == 0 )
 					{
-						if ( r.bottom > (*(*(size_Y.Index(0)))) )
-							size_Y.SetData(size_Y.Index(0), &(r.bottom));
+						if ( r.bottom > (*(size_Y.Index(0))) )
+							size_Y.SetData(size_Y.Index(0), r.bottom);
 					}
 					else
 					{
-						r.top = (*(*(size_Y.Index(control->get_LayoutY() - 1))));
+						r.top = (*(size_Y.Index(control->get_LayoutY() - 1)));
 						r.bottom += r.top;
-						if ( r.bottom > (*(*(size_Y.Index(control->get_LayoutY())))) )
-							size_Y.SetData(size_Y.Index(control->get_LayoutY()), &(r.bottom));
+						if ( r.bottom > (*(size_Y.Index(control->get_LayoutY()))) )
+							size_Y.SetData(size_Y.Index(control->get_LayoutY()), r.bottom);
 					}
 					++it;
 				}
@@ -3971,18 +3969,18 @@ LRESULT CControl::OnSize(WPARAM wParam, LPARAM lParam)
 				{
 					if ( control->get_SizeHAlign() == TSizeHAlignRight )
 					{
-						r.left = rect.right - (*(*(size_X.Index(fmaxX))));
+						r.left = rect.right - (*(size_X.Index(fmaxX)));
 						r.right += r.left;
 					}
 				}
 				else if ( control->get_SizeHAlign() == TSizeHAlignRight )
 				{
-					r.left = rect.right - (*(*(size_X.Index(fmaxX)))) + (*(*(size_X.Index(control->get_LayoutX() - 1))));
+					r.left = rect.right - (*(size_X.Index(fmaxX))) + (*(size_X.Index(control->get_LayoutX() - 1)));
 					r.right += r.left;
 				}
 				else
 				{
-					r.left = (*(*(size_X.Index(control->get_LayoutX() - 1))));
+					r.left = (*(size_X.Index(control->get_LayoutX() - 1)));
 					r.right += r.left;
 				}
 				switch ( control->get_SizeSpecY() )
@@ -4005,18 +4003,18 @@ LRESULT CControl::OnSize(WPARAM wParam, LPARAM lParam)
 				{
 					if ( control->get_SizeVAlign() == TSizeVAlignBottom )
 					{
-						r.top = rect.bottom - (*(*(size_Y.Index(fmaxY))));
+						r.top = rect.bottom - (*(size_Y.Index(fmaxY)));
 						r.bottom += r.top;
 					}
 				}
 				else if ( control->get_SizeVAlign() == TSizeVAlignBottom )
 				{
-					r.top = rect.bottom - (*(*(size_Y.Index(fmaxY)))) + (*(*(size_Y.Index(control->get_LayoutY() - 1))));
+					r.top = rect.bottom - (*(size_Y.Index(fmaxY))) + (*(size_Y.Index(control->get_LayoutY() - 1)));
 					r.bottom += r.top;
 				}
 				else
 				{
-					r.top = (*(*(size_Y.Index(control->get_LayoutY() - 1))));
+					r.top = (*(size_Y.Index(control->get_LayoutY() - 1)));
 					r.bottom += r.top;
 				}
 				::OffsetRect(&r, -xPos, -yPos);
@@ -4031,15 +4029,13 @@ LRESULT CControl::OnSize(WPARAM wParam, LPARAM lParam)
 				++it;
 			}
 			::SetRectEmpty(&m_maxClientArea);
-			m_maxClientArea.right = (*(*(size_X.Index((fmaxX)))));
-			m_maxClientArea.bottom = (*(*(size_Y.Index((fmaxY)))));
+			m_maxClientArea.right = (*(size_X.Index((fmaxX))));
+			m_maxClientArea.bottom = (*(size_Y.Index((fmaxY))));
 
 #ifdef __DEBUG1__
 			theGuiApp->DebugString("%ls OnSize %d, m_maxClientArea.right=%d, m_maxClientArea.bottom=%d\n", get_name().GetString(), debugID,
 				m_maxClientArea.right, m_maxClientArea.bottom);
 #endif
-			size_X.Close(TDeleteFunc_Empty, NULL);
-			size_Y.Close(TDeleteFunc_Empty, NULL);
 		}
 		children.Close();
 	}
@@ -4389,42 +4385,29 @@ static LRESULT CALLBACK KeyboardProc_StatusInfo(int code, WPARAM wParam, LPARAM 
 	return ::CallNextHookEx(hKeyboardProc_StatusInfo, code, wParam, lParam);
 }
 
-static void __stdcall TDeleteFunc_StatusInfo( ConstPointer data, Pointer context )
-{
-	CStatusbar::TStatusInfo* pData = CastAnyPtr(CStatusbar::TStatusInfo, CastMutable(Pointer, data));
-	CStatusbar* pSB = CastAnyPtr(CStatusbar, context);
-
-	switch ( pData->style )
-	{
-	case CStatusbar::TStatusStyleClock:
-		pSB->StopTimer(1000);
-		break;
-	case CStatusbar::TStatusStyleKeyboardStatus:
-		::UnhookWindowsHookEx(hKeyboardProc_StatusInfo);
-		break;
-	}
-	pData->defaultText.Clear();
-}
-
-static sword __stdcall TSearchAndSortFunc_StatusInfo( ConstPointer ArrayItem, ConstPointer DataItem )
-{
-	CStatusbar::TStatusInfo* elem1 = CastAnyPtr(CStatusbar::TStatusInfo, CastMutable(Pointer, ArrayItem));
-	CStatusbar::TStatusInfo* elem2 = CastAnyPtr(CStatusbar::TStatusInfo, CastMutable(Pointer, DataItem));
-
-	if ( elem1->style < elem2->style )
-		return -1;
-	if ( elem1->style > elem2->style )
-		return 1;
-	return 0;
-}
-
 BEGIN_MESSAGE_MAP(CControl, CStatusbar)
 	ON_WM_PAINT()
 	ON_WM_TIMER()
 	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
-CStatusbar::CStatusbar(LPCTSTR name): 
+Ref(CStatusbar::TStatusInfoReleaseFunctor) CStatusbar::TStatusInfoReleaseFunctor::operator()(Ptr(TStatusInfo) pData)
+{
+	switch (pData->style)
+	{
+	case CStatusbar::TStatusStyleClock:
+		pStatusbar->StopTimer(1000);
+		break;
+	case CStatusbar::TStatusStyleKeyboardStatus:
+		::UnhookWindowsHookEx(hKeyboardProc_StatusInfo);
+		break;
+	}
+	pData->defaultText.Clear();
+	pData->release();
+	return *this;
+}
+
+CStatusbar::CStatusbar(LPCTSTR name) :
     CControl(name),
 	m_statusinfo(__FILE__LINE__ 16, 16)
 {
@@ -4442,7 +4425,7 @@ CStatusbar::~CStatusbar()
 
 BOOL CStatusbar::PreRegisterClass(WNDCLASSEX& cls)
 {
-	cls.lpszClassName	= _T("CSTATUSBAR");
+	cls.lpszClassName = _T("CSTATUSBAR");
 	return TRUE;
 }
 
@@ -4465,7 +4448,7 @@ UINT CStatusbar::add_item(TStatusStyle style, UINT width, LPCTSTR defaulttext, i
 
 UINT CStatusbar::add_item(TStatusStyle style, UINT width, ConstRef(CStringBuffer) defaulttext)
 {
-	TStatusInfo info;
+	Ptr(TStatusInfo) info = OK_NEW_OPERATOR TStatusInfo;
 	CStringBuffer name;
 	dword cnt = m_statusinfo.Count();
 
@@ -4504,13 +4487,12 @@ UINT CStatusbar::add_item(TStatusStyle style, UINT width, ConstRef(CStringBuffer
 	}
 	pStatic->Create(m_hwnd, cnt + 1000);
 
-	info.style = style;
-	info.width = width;
-	info.defaultText = defaulttext;
-	info.defaultText.addRef();
-	info.pControl = CastDynamicPtr(CControl, pStatic);
+	info->style = style;
+	info->width = width;
+	info->defaultText = defaulttext;
+	info->pControl = CastDynamicPtr(CControl, pStatic);
 
-	m_statusinfo.Append(&info);
+	m_statusinfo.Append(info);
 
 	switch ( style )
 	{
@@ -4538,9 +4520,9 @@ void CStatusbar::set_text(CStatusbar::TStatusStyle style, ConstRef(CStringBuffer
 
 	info.style = style;
 
-	TStatusInfoVector::Iterator it = m_statusinfo.Find(&info, TSearchAndSortFunc_StatusInfo);
+	TStatusInfoVector::Iterator it = m_statusinfo.FindSorted(&info);
 
-	if ( it && (*it) && (TSearchAndSortFunc_StatusInfo(*it, &info) == 0) )
+	if (m_statusinfo.MatchSorted(it, &info))
 	{
 		CStatic* pStatic = CastDynamicPtr(CStatic, (*it)->pControl);
 
@@ -4591,7 +4573,11 @@ LRESULT CStatusbar::OnTimer(WPARAM wParam, LPARAM lParam)
 
 LRESULT CStatusbar::OnDestroy(WPARAM wParam, LPARAM lParam)
 {
-	m_statusinfo.Close(TDeleteFunc_StatusInfo, this);
+	TStatusInfoReleaseFunctor rD;
+
+	rD.pStatusbar = this;
+	rD.hKeyboardProc_StatusInfo = hKeyboardProc_StatusInfo;
+	m_statusinfo.Close<TStatusInfoReleaseFunctor>(rD);
 	return 0;
 }
 

@@ -42,56 +42,105 @@ public:
 #endif
 	void operator delete(void *p);
 
-	sdword addRef();
-	sdword refCount();
-	sdword release();
-	
+	virtual sdword addRef();
+	virtual sdword refCount();
+	virtual sdword release();
 };
 
-#ifndef OK_MODERN_CPLUSPLUS
 template <typename cppobj>
 class CCppObjectPtr
 {
 public:
 
-	typedef cppobj type;
+	typedef CCppObjectPtr this_type;
+	typedef cppobj element_type;
 
-	CCppObjectPtr(Ptr(type) p) : _p(p)
+	CCppObjectPtr(): _p(NULL) {}
+	CCppObjectPtr(Ptr(element_type) p, bool _addref = false) : _p(p)
 	{
 		assert(_p);
+		if (_addref)
+			addRef();
 	}
-	CCppObjectPtr(ConstRef(CCppObjectPtr) _copy) : _p(_copy._p) 
+	CCppObjectPtr(ConstRef(this_type) _copy) : _p(_copy._p)
 	{
-		addRef(); 
+		if (_p)
+			addRef();
 	}
-	~CCppObjectPtr() 
+	template <typename other_type>
+	CCppObjectPtr(ConstRef(CCppObjectPtr<other_type>) _copy) : _p(_copy._p)
+	{
+		if (_p)
+			addRef();
+	}
+	CCppObjectPtr(RefRef(this_type) _copy) : _p(_copy._p)
+	{
+		_copy._p = NULL;
+	}
+	~CCppObjectPtr()
 	{
 		if (_p)
 			release(); 
 	}
 
-	Ref(CCppObjectPtr) operator=(ConstRef(CCppObjectPtr) _copy)
+	Ref(this_type) operator=(Ptr(element_type) _copy)
+	{
+		if (_p)
+			release(); 
+		_p = _copy;
+		return *this;
+	}
+	Ref(this_type) operator=(ConstRef(this_type) _copy)
 	{
 		if (this != &_copy)
 		{
+			if (_p)
+				release();
 			_p = _copy._p;
+			if (_p)
+				addRef();
+		}
+		return *this;
+	}
+	template <typename other_type>
+	Ref(this_type) operator=(ConstRef(CCppObjectPtr<other_type>) _copy)
+	{
+		if (_p)
+			release();
+		_p = CastAnyPtr(element_type, CastMutablePtr(other_type, _copy._p));
+		if (_p)
 			addRef();
+		return *this;
+	}
+	Ref(this_type) operator=(RefRef(this_type) _copy)
+	{
+		if (this != &_copy)
+		{
+			if (_p)
+				release();
+			_p = _copy._p;
+			_copy._p = NULL;
 		}
 		return *this;
 	}
 
-	Ptr(type) get() const
+	operator Ptr(element_type)()
 	{
 		return _p;
 	}
 
-	Ptr(type) operator->() const
+	Ptr(element_type) get() const
+	{
+		return _p;
+	}
+
+	Ptr(element_type) operator->() const
 	{ 
 		assert(_p);
 		return _p; 
 	}
 
-	Ref(type) operator*() const
+	Ref(element_type) operator*() const
 	{ 
 		assert(_p);
 		return *_p; 
@@ -113,15 +162,27 @@ public:
 		return _ret;
 	}
 
-private:
 	sdword addRef()
 	{
 		assert(_p);
 		return _p->addRef();
 	}
 
-	Ptr(type) _p;
+private:
+	Ptr(element_type) _p;
 };
+
+template <typename cppobj>
+__inline bool operator == (ConstRef(CCppObjectPtr<cppobj>) a, ConstRef(CCppObjectPtr<cppobj>) b)
+{
+	return a.get() == b.get();
+}
+
+template <typename cppobj>
+__inline bool operator != (ConstRef(CCppObjectPtr<cppobj>) a, ConstRef(CCppObjectPtr<cppobj>) b)
+{
+	return a.get() != b.get();
+}
 
 template <typename T>
 class CCppObjectReleaseFunctor
@@ -179,6 +240,28 @@ sword __stdcall TCppObjectSearchAndSortUserFunc(ConstPointer ArrayItem, ConstPoi
 }
 
 template <typename T>
+class CCppObjectEqualFunctor
+{
+public:
+	bool operator()(ConstPtr(T) r1, ConstPtr(T) r2) const
+	{
+		return r1 != r2;
+	}
+};
+
+template <typename C, typename D>
+sword __stdcall TCppObjectFindUserFunc(ConstPointer ArrayItem, ConstPointer DataItem, Pointer Context)
+{
+	ConstPtr(C) pCA = CastAnyConstPtr(C, ArrayItem);
+	ConstPtr(C) pCD = CastAnyConstPtr(C, DataItem);
+	Ptr(D) pD = CastAnyPtr(D, Context);
+
+	if ((*pD)(pCA, pCD))
+		return 0;
+	return 1;
+}
+
+template <typename T>
 class CCppObjectForEachFunctor
 {
 public:
@@ -196,4 +279,4 @@ bool __stdcall TCppObjectForEachFunc(ConstPointer data, Pointer context)
 
 	return (*pD)(pC);
 }
-#endif
+

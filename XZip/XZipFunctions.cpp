@@ -29,10 +29,6 @@
 #include "SecurityFile.h"
 #include "WinDirectoryIterator.h"
 
-static void __stdcall VectorEmptyDeleteFunc( ConstPointer data, Pointer context )
-{
-}
-
 static bool _TestFileSpec(ConstRef(CFilePath) file, ConstRef(CFilePath) filespec)
 {
 	CStringBuffer tmp(file.get_Directory());
@@ -495,8 +491,9 @@ void XZipAddFiles(ConstRef(CFilePath) fzipfile, WBool recursefolders, ConstRef(T
 	}
 }
 
-typedef struct _tagGetFileList
+class TGetFileItem: public CCppObject
 {
+public:
 	CStringBuffer fPath;
 	bool bfTime;
 	CDateTime fTime;
@@ -529,32 +526,20 @@ typedef struct _tagGetFileList
 	//	pft->dwLowDateTime = (DWORD)ll;
 	//	pft->dwHighDateTime = ll >> 32;
 	//}
-} TGetFileList;
+};
 
-static void __stdcall TGetFileListDeleteFunc( ConstPointer data, Pointer context )
+class TGetFileItemLessFunctor
 {
-	Ptr(TGetFileList) pData = CastAnyPtr(TGetFileList, CastMutable(Pointer, data));
+public:
+	bool operator()(ConstPtr(TGetFileItem) pArrayItem, ConstPtr(TGetFileItem) pDataItem) const
+	{
+		return pArrayItem->fPath.LT(pDataItem->fPath, 0, CStringLiteral::cIgnoreCase);
+	}
+};
 
-	pData->fPath.Clear();
-}
+typedef CDataVectorT<TGetFileItem, TGetFileItemLessFunctor> TGetFileItems;
 
-static sword __stdcall TGetFileListSortFunc( ConstPointer ArrayItem, ConstPointer DataItem )
-{
-	Ptr(TGetFileList) pArrayItem = CastAnyPtr(TGetFileList, CastMutable(Pointer, ArrayItem));
-	Ptr(TGetFileList) pDataItem = CastAnyPtr(TGetFileList, CastMutable(Pointer, DataItem));
-
-	return pArrayItem->fPath.Compare(pDataItem->fPath, 0, CStringLiteral::cIgnoreCase);
-}
-
-static sword __stdcall TGetFileListSearchFunc( ConstPointer ArrayItem, ConstPointer DataItem )
-{
-	Ptr(TGetFileList) pArrayItem = CastAnyPtr(TGetFileList, CastMutable(Pointer, ArrayItem));
-	CStringLiteral vDataItem(CastAny(CConstPointer, DataItem));
-
-	return pArrayItem->fPath.Compare(vDataItem, 0, CStringLiteral::cIgnoreCase);
-}
-
-static void _XZipGetFileList(Ptr(CArchiveIterator) zipIt, ConstRef(TMBCharList) filespecs, Ref(CDataSVectorT<TGetFileList>) list)
+static void _XZipGetFileList(Ptr(CArchiveIterator) zipIt, ConstRef(TMBCharList) filespecs, Ref(TGetFileItems) list)
 {
 	while ( zipIt->Next() )
 	{
@@ -570,7 +555,7 @@ static void _XZipGetFileList(Ptr(CArchiveIterator) zipIt, ConstRef(TMBCharList) 
 
 					sqword lastmodfiletime;
 					bool isNull;
-					TGetFileList gfl;
+					TGetFileItem gfl;
 
 					zipIt->GetProperty(_T("NTFSMTIME"), lastmodfiletime, isNull);
 					if (!isNull)
@@ -610,8 +595,8 @@ void XZipFreshenFiles(ConstRef(CFilePath) fzipfile, ConstRef(TMBCharList) filesp
 			return;
 		}
 
-		CDataSVectorT<TGetFileList> fileList(__FILE__LINE__ 128, 128, TGetFileListDeleteFunc);
-		CDataSVectorT<TGetFileList>::Iterator itFileList;
+		TGetFileItems fileList(__FILE__LINE__ 128, 128);
+		TGetFileItems::Iterator itFileList;
 		CFilePath fpath;
 		CArchiveProperties fprops;
 		CStringBuffer tmp;
@@ -627,7 +612,7 @@ void XZipFreshenFiles(ConstRef(CFilePath) fzipfile, ConstRef(TMBCharList) filesp
 		itFileList = fileList.Begin();
 		while ( itFileList )
 		{
-			Ptr(TGetFileList) pGfl = *itFileList;
+			Ptr(TGetFileItem) pGfl = *itFileList;
 
 			fpath.set_Path(pGfl->fPath);
 			if (CWinDirectoryIterator::FileExists(fpath) && (!(_TestExcludeSpecs(fpath.get_Path(), excludespecs))))
@@ -729,10 +714,10 @@ void XZipFreshenFiles(ConstRef(CFilePath) fzipfile, ConstRef(TMBCharList) filesp
 	}
 }
 
-static void _XZipUpdateAddFilesRecurse(Ref(CZipArchive) zipArchive, ConstRef(CFilePath) dir, ConstRef(CStringBuffer) pattern, ConstRef(TMBCharList) excludespecs, ConstRef(CDataSVectorT<TGetFileList>) fileList, bool bIsFSNTFS)
+static void _XZipUpdateAddFilesRecurse(Ref(CZipArchive) zipArchive, ConstRef(CFilePath) dir, ConstRef(CStringBuffer) pattern, ConstRef(TMBCharList) excludespecs, Ref(TGetFileItems) fileList, bool bIsFSNTFS)
 {
 	CDirectoryIterator it;
-	CDataSVectorT<TGetFileList>::Iterator itG;
+	TGetFileItems::Iterator itG;
 	CFilePath fpath;
 	FILETIME cftime;
 	FILETIME aftime;
@@ -746,11 +731,13 @@ static void _XZipUpdateAddFilesRecurse(Ref(CZipArchive) zipArchive, ConstRef(CFi
 	{
 		if ( !(it.is_SubDir()) )
 		{
+			TGetFileItem item;
 			CFilePath fpath1(fpath);
 
 			fpath1.set_Filename(it.get_Name());
-			itG = fileList.FindSorted(CastAnyPtr(const TGetFileList, fpath1.GetString()), TGetFileListSearchFunc);
-			if ( !(itG && (*itG) && (TGetFileListSearchFunc(*itG, fpath1.GetString()) == 0)) )
+			item.fPath = fpath1.get_Path();
+			itG = fileList.FindSorted(&item);
+			if (!(fileList.MatchSorted(itG, &item)))
 			{
 				if (!_TestExcludeSpecs(fpath1.get_Path(), excludespecs))
 				{
@@ -792,11 +779,11 @@ static void _XZipUpdateAddFilesRecurse(Ref(CZipArchive) zipArchive, ConstRef(CFi
 	}
 }
 
-void _XZipUpdateAddFiles(Ref(CZipArchive) zipArchive, WBool recursefolders, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs, ConstRef(CDataSVectorT<TGetFileList>) fileList)
+void _XZipUpdateAddFiles(Ref(CZipArchive) zipArchive, WBool recursefolders, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs, Ref(TGetFileItems) fileList)
 {
 	CDirectoryIterator it;
 	TMBCharList::Iterator itP;
-	CDataSVectorT<TGetFileList>::Iterator itG;
+	TGetFileItems::Iterator itG;
 	CFilePath fpath;
 	FILETIME cftime;
 	FILETIME aftime;
@@ -814,9 +801,12 @@ void _XZipUpdateAddFiles(Ref(CZipArchive) zipArchive, WBool recursefolders, Cons
 		{
 			if ( !(it.is_SubDir()) )
 			{
+				TGetFileItem item;
+
 				fpath.set_Filename(it.get_Name());
-				itG = fileList.FindSorted(CastAnyPtr(const TGetFileList, fpath.GetString()), TGetFileListSearchFunc);
-				if ( !(itG && (*itG) && (TGetFileListSearchFunc(*itG, fpath.GetString()) == 0)) )
+				item.fPath = fpath.get_Path();
+				itG = fileList.FindSorted(&item);
+				if (!(fileList.MatchSorted(itG, &item)))
 				{
 					if (!_TestExcludeSpecs(fpath.get_Path(), excludespecs))
 					{
@@ -879,8 +869,8 @@ void XZipUpdateFiles(ConstRef(CFilePath) fzipfile, WBool recursefolders, ConstRe
 			return;
 		}
 
-		CDataSVectorT<TGetFileList> fileList(__FILE__LINE__ 128, 128);
-		CDataSVectorT<TGetFileList>::Iterator itFileList;
+		TGetFileItems fileList(__FILE__LINE__ 128, 128);
+		TGetFileItems::Iterator itFileList;
 		CFilePath fpath;
 		CArchiveProperties fprops;
 		CStringBuffer tmp;
@@ -896,7 +886,7 @@ void XZipUpdateFiles(ConstRef(CFilePath) fzipfile, WBool recursefolders, ConstRe
 		itFileList = fileList.Begin();
 		while ( itFileList )
 		{
-			Ptr(TGetFileList) pGfl = *itFileList;
+			Ptr(TGetFileItem) pGfl = *itFileList;
 
 			fpath.set_Path(pGfl->fPath);
 			if (!_TestExcludeSpecs(fpath.get_Path(), excludespecs))
@@ -993,10 +983,10 @@ void XZipUpdateFiles(ConstRef(CFilePath) fzipfile, WBool recursefolders, ConstRe
 			++itFileList;
 		}
 
-		fileList.Sort(TGetFileListSortFunc);
+		fileList.Sort();
 		_XZipUpdateAddFiles(zipArchive, recursefolders, filespecs, excludespecs, fileList);
 
-		fileList.Close(TGetFileListDeleteFunc, NULL);
+		fileList.Close();
 
 		zipArchive.AddClose();
 

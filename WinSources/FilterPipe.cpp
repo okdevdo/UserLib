@@ -118,14 +118,7 @@ void CFilterThreadedPipeConnector::close()
 {
 }
 
-static void __stdcall CFilterVectorDeleteFunc(ConstPointer data, Pointer context)
-{
-	Ptr(CFilter) pFilter = CastAnyPtr(CFilter, CastMutable(Pointer, data));
-
-	pFilter->release();
-}
-
-CFilterVector::CFilterVector() : CDataVectorT<CFilter>(__FILE__LINE__ 32, 32) {}
+CFilterVector::CFilterVector() : super(__FILE__LINE__ 32, 32) {}
 CFilterVector::~CFilterVector() {}
 
 CFilterPipe::CFilterPipe(Ptr(CFilter) _input, Ptr(CFilter) _output)

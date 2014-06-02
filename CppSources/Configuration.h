@@ -496,13 +496,23 @@ protected:
 class CPPSOURCES_API CMapConfiguration: public CAbstractConfiguration
 {
 public:
-	typedef struct tagMapItem
+	class MapItem: public CCppObject
 	{
+	public:
+		MapItem(RefRef(CStringBuffer) n) : _name(n), _value() {}
+		MapItem(ConstRef(CStringBuffer) n, ConstRef(CStringBuffer)v) : _name(n), _value(v) {}
+		MapItem(RefRef(CStringBuffer) n, ConstRef(CStringBuffer)v) : _name(n), _value(v) {}
+		virtual ~MapItem() {}
+
+		__inline ConstRef(CStringBuffer) get_Name() const { return _name; }
+		__inline ConstRef(CStringBuffer) get_Value() const { return _value; }
+
+	protected:
 		CStringBuffer _name;
 		CStringBuffer _value;
-	} MapItem;
+	};
 
-	typedef CDataSAVLBinaryTreeT<MapItem> MapItems;
+	typedef CDataAVLBinaryTreeT<MapItem, CStringByNameIgnoreCaseLessFunctor<MapItem> > MapItems;
 
 	/**
 	 *  \brief Standard Constructor

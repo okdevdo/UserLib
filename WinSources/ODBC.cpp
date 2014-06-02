@@ -239,7 +239,7 @@ CODBCColumn* CODBCStatement::get_ColumnInfo(word ix) const
 CODBCColumn* CODBCStatement::get_ColumnInfo(LPCTSTR name)
 {
 	CODBCColumn cmp(name);
-	CODBCColumns::Iterator it = _columns.Find<CStringByNameLessFunctor<CODBCColumn>>(&cmp);
+	CODBCColumns::Iterator it = _columns.Find<CStringByNameEqualFunctor<CODBCColumn>>(&cmp);
 
 	if (it)
 		return *it;

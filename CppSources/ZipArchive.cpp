@@ -1236,11 +1236,86 @@ protected:
 	CByteBuffer m_zipfilecomment;
 };
 
-CZipArchiveFile::CZipArchiveFile(Ref(CZipArchive) _archive, ConstRef(LSearchResultType) dataPtr):
+class CPPSOURCES_API CZipArchiveImpl : public CArchive
+{
+public:
+	class TFileCacheItem: public CCppObject
+	{
+	public:
+		TFileCacheItem() {}
+		virtual ~TFileCacheItem() {}
+
+		CCppObjectPtr<ZipLocalFileHeader> localFileHeader;
+		CCppObjectPtr<ZipFileHeader> fileHeader;
+		CByteLinkedBuffer fileContent;
+
+		void Reserve(CFile::TFileSize sz, CFile::TFileSize parts)
+		{
+			fileContent.Clear();
+			if (sz == 0)
+				return;
+			while (sz > parts)
+			{
+				fileContent.AddBufferItem(Cast(dword, parts));
+				sz -= parts;
+			}
+			if (sz > 0)
+				fileContent.AddBufferItem(Cast(dword, sz));
+		}
+	};
+
+	class TFileCacheItemLessFunctor
+	{
+	public:
+		bool operator()(ConstPtr(TFileCacheItem) pA, ConstPtr(TFileCacheItem) pB) const
+		{
+			return pA->localFileHeader->get_filename().LT(pB->localFileHeader->get_filename(), 0, CStringLiteral::cIgnoreCase);
+		}
+	};
+
+	class TFileCacheItemEqualFunctor
+	{
+	public:
+		bool operator()(ConstPtr(TFileCacheItem) pA, ConstPtr(TFileCacheItem) pB) const
+		{
+			Ptr(CStringBuffer) tmp = CastAnyPtr(CStringBuffer, CastMutablePtr(TFileCacheItem, pB));
+			return pA->localFileHeader->get_filename().EQ(*tmp, 0, CStringLiteral::cIgnoreCase);
+		}
+	};
+
+	typedef CDataVectorT<TFileCacheItem, TFileCacheItemLessFunctor> TFileCacheItems;
+
+public:
+	CZipArchiveImpl(Ptr(CFile) _file);
+	virtual ~CZipArchiveImpl(void);
+
+	virtual Ptr(CArchiveIterator) begin();
+
+	virtual void AddOpen();
+	virtual void AddFile(ConstRef(CFilePath) fname, ConstRef(CArchiveProperties) props);
+	virtual void AddDelete(ConstRef(CFilePath) fname);
+	virtual void AddClose();
+
+protected:
+	CDataVectorT<ZipArchiveInfo> m_Disks;
+	TFileCacheItems m_FileCache;
+	bool m_opened;
+	bool m_modified;
+
+	friend class CZipArchiveIterator;
+	friend class CZipArchiveFile;
+
+private:
+	CZipArchiveImpl();
+	CZipArchiveImpl(ConstRef(CZipArchiveImpl));
+	Ref(CZipArchiveImpl) operator=(ConstRef(CZipArchiveImpl));
+};
+
+CZipArchiveFile::CZipArchiveFile(Ref(CZipArchiveImpl) _archive, ConstRef(LSearchResultType) dataPtr) :
     CArchiveFile(_archive, 0), m_ziparchive(_archive), m_dataPtr(dataPtr)
 {
-	CZipArchive::TFileCacheItems::Iterator it(m_dataPtr);
-	Ptr(CZipArchive::TFileCacheItem) pCacheItem = *it;
+	CZipArchiveImpl::TFileCacheItems::Iterator it(m_dataPtr);
+	Ptr(CZipArchiveImpl::TFileCacheItem) pCacheItem = *it;
 
 	m_length = pCacheItem->fileContent.GetTotalLength();
 }
@@ -1251,8 +1326,8 @@ CZipArchiveFile::~CZipArchiveFile()
 
 void CZipArchiveFile::Read(Ref(CByteBuffer) _buffer)
 {
-	CZipArchive::TFileCacheItems::Iterator it(m_dataPtr);
-	Ptr(CZipArchive::TFileCacheItem) pCacheItem = *it;
+	CZipArchiveImpl::TFileCacheItems::Iterator it(m_dataPtr);
+	Ptr(CZipArchiveImpl::TFileCacheItem) pCacheItem = *it;
 	CByteLinkedBuffer::Iterator it2(pCacheItem->fileContent.Begin());
 	dword bufSize = _buffer.get_BufferSize();
 	dword restLen = m_length - m_offset;
@@ -1269,7 +1344,7 @@ void CZipArchiveFile::Read(Ref(CByteBuffer) _buffer)
 	}
 }
 
-CZipArchiveIterator::CZipArchiveIterator(Ref(CZipArchive) _archive):
+CZipArchiveIterator::CZipArchiveIterator(Ref(CZipArchiveImpl) _archive):
     CArchiveIterator(_archive), m_ziparchive(_archive), m_dataPtr(_LNULL)
 {
 	m_ziparchive.AddOpen();
@@ -1293,10 +1368,10 @@ CStringBuffer CZipArchiveIterator::GetFileName() const
 	if ( LPtrCheck(m_dataPtr) )
 		return tmp;
 
-	CZipArchive::TFileCacheItems::Iterator it(m_dataPtr);
-	Ptr(CZipArchive::TFileCacheItem) pCacheItem = *it;
+	CZipArchiveImpl::TFileCacheItems::Iterator it(m_dataPtr);
+	Ptr(CZipArchiveImpl::TFileCacheItem) pCacheItem = *it;
 
-	return CastAnyPtr(ZipLocalFileHeader, pCacheItem->localFileHeader)->get_filename();
+	return pCacheItem->localFileHeader->get_filename();
 }
 
 Ptr(CArchiveFile) CZipArchiveIterator::GetFile()
@@ -1306,7 +1381,7 @@ Ptr(CArchiveFile) CZipArchiveIterator::GetFile()
 
 bool CZipArchiveIterator::Next()
 {
-	CZipArchive::TFileCacheItems::Iterator it(m_dataPtr);
+	CZipArchiveImpl::TFileCacheItems::Iterator it(m_dataPtr);
 
 	for ( ;; )
 	{
@@ -1319,7 +1394,7 @@ bool CZipArchiveIterator::Next()
 		if ( !it )
 			return false;
 
-		Ptr(CZipArchive::TFileCacheItem) pCacheItem = *it;
+		Ptr(CZipArchiveImpl::TFileCacheItem) pCacheItem = *it;
 #ifdef HAVE_PRAGMA_PACK
 		TNTFSExtraInfo info;
 #endif
@@ -1327,10 +1402,10 @@ bool CZipArchiveIterator::Next()
 		CDateTime dt;
 		time_t t;
 
-		dt = CastAnyPtr(ZipLocalFileHeader, pCacheItem->localFileHeader)->get_last_mod_file();
+		dt = pCacheItem->localFileHeader->get_last_mod_file();
 		dt.GetTime(t);
 		SetProperty(_T("DOSFILETIME"), Cast(sqword, t));
-		buf = CastAnyPtr(ZipLocalFileHeader, pCacheItem->localFileHeader)->get_extra_field();
+		buf = pCacheItem->localFileHeader->get_extra_field();
 		if (buf.get_BufferSize() > 0)
 		{
 #ifdef HAVE_PRAGMA_PACK
@@ -1351,8 +1426,8 @@ bool CZipArchiveIterator::Next()
 			}
 #endif
 		}
-		SetProperty(_T("CRC32"), CastAnyPtr(ZipLocalFileHeader, pCacheItem->localFileHeader)->get_crc32());
-		SetProperty(_T("UNCOMPRESSEDSIZE"), CastAnyPtr(ZipLocalFileHeader, pCacheItem->localFileHeader)->get_uncompressed_size());
+		SetProperty(_T("CRC32"), pCacheItem->localFileHeader->get_crc32());
+		SetProperty(_T("UNCOMPRESSEDSIZE"), pCacheItem->localFileHeader->get_uncompressed_size());
 		return true;
 	}
 	return false;
@@ -1362,72 +1437,31 @@ void CZipArchiveIterator::Skip()
 {
 }
 
-static void __stdcall TDisksDeleteFunc( ConstPointer data, Pointer context )
-{
-	Ptr(ZipArchiveInfo) p = CastAnyPtr(ZipArchiveInfo, CastMutable(Pointer, data));
+CZipArchive::CZipArchive(Ptr(CFile) _file) : CArchive(_file), _impl(OK_NEW_OPERATOR CZipArchiveImpl(_file)) {}
+CZipArchive::~CZipArchive(void) { if (_impl) _impl->release(); }
 
-	p->release();
-}
+Ptr(CArchiveIterator) CZipArchive::begin() { if (_impl) return _impl->begin(); return NULL; }
 
-static void __stdcall TFileCacheDeleteFunc( ConstPointer data, Pointer context )
-{
-	Ptr(CZipArchive::TFileCacheItem) p = CastAnyPtr(CZipArchive::TFileCacheItem, CastMutable(Pointer, data));
-	Ptr(ZipLocalFileHeader) pLocalFileHeader = CastAnyPtr(ZipLocalFileHeader, p->localFileHeader);
-	Ptr(ZipFileHeader) pFileHeader = CastAnyPtr(ZipFileHeader, p->fileHeader);
+void CZipArchive::AddOpen() { if (_impl) _impl->AddOpen(); }
+void CZipArchive::AddFile(ConstRef(CFilePath) fname, ConstRef(CArchiveProperties) props)  { if (_impl) _impl->AddFile(fname, props); }
+void CZipArchive::AddDelete(ConstRef(CFilePath) fname) { if (_impl) _impl->AddDelete(fname); }
+void CZipArchive::AddClose() { if (_impl) _impl->AddClose(); }
 
-	p->fileContent.Release();
-	pLocalFileHeader->release();
-	pFileHeader->release();
-}
-
-static sword __stdcall TFileCacheSortFunc( ConstPointer ArrayItem, ConstPointer DataItem )
-{
-	Ptr(CZipArchive::TFileCacheItem) pArrayItem = CastAnyPtr(CZipArchive::TFileCacheItem, CastMutable(Pointer, ArrayItem));
-	Ptr(ZipLocalFileHeader) pArrayLocalFileHeader = CastAnyPtr(ZipLocalFileHeader, pArrayItem->localFileHeader);
-	Ptr(CZipArchive::TFileCacheItem) pDataItem = CastAnyPtr(CZipArchive::TFileCacheItem, CastMutable(Pointer, DataItem));
-	Ptr(ZipLocalFileHeader) pDataLocalFileHeader = CastAnyPtr(ZipLocalFileHeader, pDataItem->localFileHeader);
-
-	return pArrayLocalFileHeader->get_filename().Compare(pDataLocalFileHeader->get_filename(), 0, CStringLiteral::cIgnoreCase);
-}
-
-static sword __stdcall TFileCacheSearchFunc( ConstPointer ArrayItem, ConstPointer DataItem )
-{
-	Ptr(CZipArchive::TFileCacheItem) pArrayItem = CastAnyPtr(CZipArchive::TFileCacheItem, CastMutable(Pointer, ArrayItem));
-	Ptr(ZipLocalFileHeader) pArrayLocalFileHeader = CastAnyPtr(ZipLocalFileHeader, pArrayItem->localFileHeader);
-	Ptr(CStringBuffer) pDataItem = CastAnyPtr(CStringBuffer, CastMutable(Pointer, DataItem));
-
-	return pArrayLocalFileHeader->get_filename().Compare(*pDataItem, 0, CStringLiteral::cIgnoreCase);
-}
-
-void CZipArchive::TFileCacheItem::Reserve(CFile::TFileSize sz, CFile::TFileSize parts)
-{
-	fileContent.Clear();
-	if ( sz == 0 )
-		return;
-	while ( sz > parts )
-	{
-		fileContent.AddBufferItem(Cast(dword, parts));
-		sz -= parts;
-	}
-	if ( sz > 0 )
-		fileContent.AddBufferItem(Cast(dword, sz));
-}
-
-CZipArchive::CZipArchive(Ptr(CFile) _file) :
-CArchive(_file), m_Disks(__FILE__LINE__ 8, 8, TDisksDeleteFunc), m_FileCache(__FILE__LINE__ 256, 256, TFileCacheDeleteFunc), m_opened(false), m_modified(false)
+CZipArchiveImpl::CZipArchiveImpl(Ptr(CFile) _file) :
+CArchive(_file), m_Disks(__FILE__LINE__ 8, 8), m_FileCache(__FILE__LINE__ 256, 256), m_opened(false), m_modified(false)
 {
 }
 	
-CZipArchive::~CZipArchive(void)
+CZipArchiveImpl::~CZipArchiveImpl(void)
 {
 }
 
-Ptr(CArchiveIterator) CZipArchive::begin()
+Ptr(CArchiveIterator) CZipArchiveImpl::begin()
 {
 	return OK_NEW_OPERATOR CZipArchiveIterator(*this);
 }
 
-void CZipArchive::AddOpen()
+void CZipArchiveImpl::AddOpen()
 {
 	if (m_opened)
 		return;
@@ -1439,14 +1473,13 @@ void CZipArchive::AddOpen()
 	while ( DerefAnyPtr(dword, signature.get_Buffer()) == ZipLocalFileHeader::get_signature() )
 	{
 		Ptr(ZipLocalFileHeader) pLocalFileHeader = OK_NEW_OPERATOR ZipLocalFileHeader();
-		TFileCacheItem fci;
+		Ptr(TFileCacheItem) fci = OK_NEW_OPERATOR TFileCacheItem;
 
 		pLocalFileHeader->read(m_file);
-		fci.localFileHeader = pLocalFileHeader;
-		fci.Reserve(pLocalFileHeader->get_compressed_size(), 8192);
-		m_file->Read(fci.fileContent);
-		fci.fileContent.AddRef();
-		m_FileCache.InsertSorted(&fci, TFileCacheSortFunc);
+		fci->localFileHeader = pLocalFileHeader;
+		fci->Reserve(pLocalFileHeader->get_compressed_size(), 8192);
+		m_file->Read(fci->fileContent);
+		m_FileCache.InsertSorted(fci);
 		m_file->Read(signature);
 	}
 	while ( DerefAnyPtr(dword, signature.get_Buffer()) == ZipFileHeader::get_signature() )
@@ -1457,9 +1490,9 @@ void CZipArchive::AddOpen()
 		pFileHeader->read(m_file);
 		tmp = pFileHeader->get_filename();
 
-		TFileCacheItems::Iterator itFileCacheItem = m_FileCache.FindSorted(CastAnyPtr(TFileCacheItem, &tmp), TFileCacheSearchFunc);
+		TFileCacheItems::Iterator itFileCacheItem = m_FileCache.Find<TFileCacheItemEqualFunctor>(CastAnyPtr(TFileCacheItem, &tmp));
 
-		if ( itFileCacheItem && (*itFileCacheItem) && (TFileCacheSearchFunc(*itFileCacheItem, &tmp) == 0) )
+		if (itFileCacheItem)
 		{
 			Ptr(TFileCacheItem) pCacheItem = *itFileCacheItem;
 
@@ -1473,33 +1506,38 @@ void CZipArchive::AddOpen()
 class CPPSOURCES_LOCAL CZipArchiveFilterOutput: public CFilterOutput
 {
 public:
-	CZipArchiveFilterOutput(CZipArchive* archive);
+	CZipArchiveFilterOutput(CZipArchiveImpl* archive);
 	virtual ~CZipArchiveFilterOutput();
 
-	__inline Ptr(CZipArchive::TFileCacheItem) get_CacheItem() { return &m_item; }
+	__inline Ptr(CZipArchiveImpl::TFileCacheItem) get_CacheItem()
+	{ 
+		if (!m_item)
+			m_item = OK_NEW_OPERATOR CZipArchiveImpl::TFileCacheItem;
+		return m_item; 
+	}
 
 	virtual void open();
 	virtual void write(Ref(CByteBuffer) outputbuf);
 	virtual void close();
 
 protected:
-	CZipArchive* m_archive;
-	CZipArchive::TFileCacheItem m_item;
+	Ptr(CZipArchiveImpl) m_archive;
+	Ptr(CZipArchiveImpl::TFileCacheItem) m_item;
 };
 
-CZipArchiveFilterOutput::CZipArchiveFilterOutput(CZipArchive* archive): m_archive(archive) {}
+CZipArchiveFilterOutput::CZipArchiveFilterOutput(CZipArchiveImpl* archive): m_archive(archive), m_item(NULL) {}
 CZipArchiveFilterOutput::~CZipArchiveFilterOutput() {}
 
 void CZipArchiveFilterOutput::open() {}
 
 void CZipArchiveFilterOutput::write(Ref(CByteBuffer) outputbuf) 
 {
-	m_item.fileContent.AddBufferItem(outputbuf);
+	get_CacheItem()->fileContent.AddBufferItem(outputbuf);
 }
 
 void CZipArchiveFilterOutput::close() {}
 
-void CZipArchive::AddFile(ConstRef(CFilePath) fname, ConstRef(CArchiveProperties) props)
+void CZipArchiveImpl::AddFile(ConstRef(CFilePath) fname, ConstRef(CArchiveProperties) props)
 {
 	CStringBuffer tmp;
 	sqword vDateTime;
@@ -1541,7 +1579,7 @@ void CZipArchive::AddFile(ConstRef(CFilePath) fname, ConstRef(CArchiveProperties
 			vCreationTime = 0;
 	}
 
-	Ptr(ZipLocalFileHeader) pLocalFileHeader = OK_NEW_OPERATOR ZipLocalFileHeader();
+	Ptr(ZipLocalFileHeader) pLocalFileHeader = OK_NEW_OPERATOR ZipLocalFileHeader;
 
 	pLocalFileHeader->set_filename(tmp);
 	pLocalFileHeader->set_compressed_size(0);
@@ -1588,7 +1626,7 @@ void CZipArchive::AddFile(ConstRef(CFilePath) fname, ConstRef(CArchiveProperties
 		pLocalFileHeader->set_extra_field(buf);
 	}
 
-	Ptr(ZipFileHeader) pFileHeader = OK_NEW_OPERATOR ZipFileHeader();
+	Ptr(ZipFileHeader) pFileHeader = OK_NEW_OPERATOR ZipFileHeader;
 
 	pFileHeader->set_filename(tmp);
 	pFileHeader->set_compressed_size(0);
@@ -1609,9 +1647,9 @@ void CZipArchive::AddFile(ConstRef(CFilePath) fname, ConstRef(CArchiveProperties
 	pFileHeader->set_relative_offset_of_local_header(0);
 	pFileHeader->set_version_made_by(20);
 
-	CFileFilterInput* pInput = OK_NEW_OPERATOR CFileFilterInput(fname);
-	CZipArchiveFilterOutput* pOutput = OK_NEW_OPERATOR CZipArchiveFilterOutput(this);
-	CZipCompressFilter* pFilter = OK_NEW_OPERATOR CZipCompressFilter(pInput, pOutput);
+	CCppObjectPtr<CFileFilterInput> pInput = OK_NEW_OPERATOR CFileFilterInput(fname);
+	CCppObjectPtr<CZipArchiveFilterOutput> pOutput = OK_NEW_OPERATOR CZipArchiveFilterOutput(this);
+	CCppObjectPtr<CZipCompressFilter> pFilter = OK_NEW_OPERATOR CZipCompressFilter(pInput, pOutput);
 
 	pFilter->open();
 	if (shouldFetchFileSize)
@@ -1631,21 +1669,15 @@ void CZipArchive::AddFile(ConstRef(CFilePath) fname, ConstRef(CArchiveProperties
 	pOutput->get_CacheItem()->localFileHeader = pLocalFileHeader;
 	pOutput->get_CacheItem()->fileHeader = pFileHeader;
 
-	TFileCacheItems::Iterator itFileCacheItems = m_FileCache.FindSorted(pOutput->get_CacheItem(), TFileCacheSortFunc);
+	TFileCacheItems::Iterator itFileCacheItems = m_FileCache.FindSorted(pOutput->get_CacheItem());
 
-	if ( itFileCacheItems && (*itFileCacheItems) && (TFileCacheSortFunc(*itFileCacheItems, pOutput->get_CacheItem()) == 0) )
-		m_FileCache.Remove(itFileCacheItems, TFileCacheDeleteFunc, NULL);
-
-	pOutput->get_CacheItem()->fileContent.AddRef();
-	m_FileCache.InsertSorted(pOutput->get_CacheItem(), TFileCacheSortFunc);
-
-	pFilter->release();
-	pInput->release();
-	pOutput->release();
+	if (m_FileCache.MatchSorted(itFileCacheItems, pOutput->get_CacheItem()))
+		m_FileCache.Remove(itFileCacheItems);
+	m_FileCache.InsertSorted(pOutput->get_CacheItem());
 	m_modified = true;
 }
 
-void CZipArchive::AddDelete(ConstRef(CFilePath) fname)
+void CZipArchiveImpl::AddDelete(ConstRef(CFilePath) fname)
 {
 	CStringBuffer tmp;
 
@@ -1658,14 +1690,14 @@ void CZipArchive::AddDelete(ConstRef(CFilePath) fname)
 	tmp = fname.get_Path();
 #endif
 
-	TFileCacheItems::Iterator itFileCacheItems = m_FileCache.FindSorted(CastAnyPtr(TFileCacheItem, &tmp), TFileCacheSearchFunc);
+	TFileCacheItems::Iterator itFileCacheItems = m_FileCache.Find<TFileCacheItemEqualFunctor>(CastAnyPtr(TFileCacheItem, &tmp));
 
-	if (itFileCacheItems && (*itFileCacheItems) && (TFileCacheSearchFunc(*itFileCacheItems, &tmp) == 0))
-		m_FileCache.Remove(itFileCacheItems, TFileCacheDeleteFunc, NULL);
+	if (itFileCacheItems)
+		m_FileCache.Remove(itFileCacheItems);
 	m_modified = true;
 }
 
-void CZipArchive::AddClose()
+void CZipArchiveImpl::AddClose()
 {
 	if (!m_modified)
 		return;
@@ -1679,13 +1711,11 @@ void CZipArchive::AddClose()
 	while ( it )
 	{
 		Ptr(TFileCacheItem) pCacheItem = CastAnyPtr(TFileCacheItem, *it);
-		Ptr(ZipLocalFileHeader) pLocalFileHeader = CastAnyPtr(ZipLocalFileHeader, pCacheItem->localFileHeader);
-		Ptr(ZipFileHeader) pFileHeader = CastAnyPtr(ZipFileHeader, pCacheItem->fileHeader);
 
-		pFileHeader->set_relative_offset_of_local_header(Cast(dword, m_file->GetFilePos()));
+		pCacheItem->fileHeader->set_relative_offset_of_local_header(Cast(dword, m_file->GetFilePos()));
 		DerefAnyPtr(dword, signature.get_Buffer()) = ZipLocalFileHeader::get_signature();
 		m_file->Write(signature);
-		pLocalFileHeader->write(m_file);
+		pCacheItem->localFileHeader->write(m_file);
 		m_file->Write(pCacheItem->fileContent);
 		++it;
 	}
@@ -1701,12 +1731,11 @@ void CZipArchive::AddClose()
 	while ( it )
 	{
 		Ptr(TFileCacheItem) pCacheItem = CastAnyPtr(TFileCacheItem, *it);
-		Ptr(ZipFileHeader) pFileHeader = CastAnyPtr(ZipFileHeader, pCacheItem->fileHeader);
 
 		DerefAnyPtr(dword, signature.get_Buffer()) = ZipFileHeader::get_signature();
 		m_file->Write(signature);
-		pFileHeader->write(m_file);
-		sizeofcentraldir += pFileHeader->get_entry_size();
+		pCacheItem->fileHeader->write(m_file);
+		sizeofcentraldir += pCacheItem->fileHeader->get_entry_size();
 		++it;
 	}
 

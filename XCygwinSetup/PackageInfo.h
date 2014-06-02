@@ -82,9 +82,6 @@ public:
 	void Print(WInt iVerbose, dword indent = 0) const;
 };
 
-sword __stdcall PackageInstallInfoSearchAndSortFunc( ConstPointer pa, ConstPointer pb);
-void __stdcall PackageInstallInfoDeleteFunc( ConstPointer data, Pointer context );
-
 class CPackageInfo: public CCppObject
 {
 public:
@@ -138,7 +135,7 @@ public:
 	__inline void AddRequiredPackage(ConstRef(CStringBuffer) pack) { if ( (!(pack.IsEmpty())) && (!(IsRequiredPackage(pack))) ) _requiredPackages.InsertSorted(pack); }
 
 	__inline Ref(CPackageInstallInfoVector) GetPackageInstallInfos() { return _installPackages; }
-	__inline void AddPackageInstallInfo(Ptr(CPackageInstallInfo) info) { _installPackages.InsertSorted(info, PackageInstallInfoSearchAndSortFunc); }
+	__inline void AddPackageInstallInfo(Ptr(CPackageInstallInfo) info) { _installPackages.InsertSorted(info); }
 	Ptr(CPackageInstallInfo) FindToBeInstalled();
 
 	__inline Ptr(CPackageInstallInfo) GetToBeInstalled() { return _tobeInstalled; }

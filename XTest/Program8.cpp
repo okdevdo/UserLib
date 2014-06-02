@@ -110,8 +110,8 @@ public:
 	{
 		CScopedLock _lock;
 
-		_tcpclients.Close(CTestTCPServerDeleteFunc, NULL);
-		_callback.Close(CAbstractThreadCallbackDeleteFunc, NULL);
+		_tcpclients.Close();
+		_callback.Close();
 		if ( _current )
 			_current->release();
 	}
@@ -120,12 +120,12 @@ public:
 	{
 		CScopedLock _lock;
 		CTcpClient* pClient = NULL;
-		CDataDoubleLinkedListT<CTcpClient>::Iterator it = _tcpclients.Begin();
+		tcpclients_t::Iterator it = _tcpclients.Begin();
 				
 		if ( it && (*it) )
 		{
 			pClient = *it;
-			_tcpclients.Remove(it, EmptyDeleteFunc, NULL);
+			_tcpclients.Remove(it);
 		}
 		if ( !pClient )
 			return 0;
@@ -216,8 +216,10 @@ public:
 	}
 
 private:
+	typedef CDataDoubleLinkedListT<CTcpClient, CCppObjectLessFunctor<CTcpClient>, CCppObjectNullFunctor<CTcpClient> > tcpclients_t;
+
 	CDataDoubleLinkedListT<CAbstractThreadCallback> _callback;
-	CDataDoubleLinkedListT<CTcpClient> _tcpclients;
+	tcpclients_t _tcpclients;
 	CTcpClient* _current;
 	CThreadPool _threadpool;
 	volatile bool _bExit;

@@ -46,6 +46,14 @@ CAsyncTCPClient::CAsyncTCPClient(Ptr(CAsyncIOManager) pManager):
 	CTcpClientImpl::Initialize();
 }
 
+CAsyncTCPClient::CAsyncTCPClient(Ptr(CAsyncIOData) pData):
+    CAsyncIOBuffer(),
+	m_Server(),
+	m_Protocol()
+{
+	m_pData = pData;
+}
+
 CAsyncTCPClient::~CAsyncTCPClient(void)
 {
 	CTcpClientImpl::Deinitialize();

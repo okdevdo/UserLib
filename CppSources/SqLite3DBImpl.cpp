@@ -488,7 +488,7 @@ _lpDBHandle(NULL),
 _bConnected(false),
 _numStmts(0),
 _cntStmts(0),
-_funcList(__FILE__LINE__ CSqLite3FuncListDeleteFunc, NULL, CSqLite3FuncListSearchAndSortFunc)
+_funcList(__FILE__LINE__0)
 {
 }
 
@@ -569,11 +569,10 @@ void CSqLite3ConnectionImpl::Close()
 static void xFunc_Implementation(sqlite3_context* context, int cnt, sqlite3_value** args)
 {
 	Ptr(CSqLite3Connection::create_function_infoclass) pImpl = CastAnyPtr(CSqLite3Connection::create_function_infoclass, sqlite3_user_data(context));
-	CSqLite3Connection::CSqLite3Columns vColumns(pImpl->get_Args());
 
 	for (int i = 0; i < cnt; ++i)
 	{
-		CSqLite3Connection::CSqLite3Columns::Iterator it = vColumns.Index(i+1);
+		CSqLite3Connection::CSqLite3Columns::Iterator it = pImpl->get_Args().Index(i + 1);
 		Ptr(CSqLite3Column) pColumn = *it;
 		CByteBuffer bBuf;
 		double vDouble;
@@ -604,9 +603,9 @@ static void xFunc_Implementation(sqlite3_context* context, int cnt, sqlite3_valu
 		}
 		pColumn->set_Data(bBuf);
 	}
-	pImpl->get_Func()(pImpl->get_DBConnection(), vColumns);
+	pImpl->get_Func()(pImpl->get_DBConnection(), pImpl->get_Args());
 
-	CSqLite3Connection::CSqLite3Columns::Iterator it = vColumns.Index(0);
+	CSqLite3Connection::CSqLite3Columns::Iterator it = pImpl->get_Args().Index(0);
 	Ptr(CSqLite3Column) pColumn = *it;
 	double vDouble;
 	sqword vInteger;

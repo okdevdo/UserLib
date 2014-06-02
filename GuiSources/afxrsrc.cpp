@@ -289,13 +289,21 @@ HGLOBAL CBitmap::get_clipboarddata()
 class CImageListData: public CBitmapData
 {
 public:
-	typedef struct tagImageInfo
+	class ImageInfo: public CCppObject
 	{
+	public:
 		LPVOID pixeldata;
 		Gdiplus::Bitmap* bitmap;
-	} ImageInfo;
 
-	typedef CDataSVectorT<ImageInfo> ImageInfoList;
+		virtual sdword release()
+		{
+			TFfree(pixeldata);
+			delete bitmap;
+			return CCppObject::release();
+		}
+	};
+
+	typedef CDataVectorT<ImageInfo> ImageInfoList;
 
 public:
 	CImageListData(HBITMAP hBitmap);
@@ -372,11 +380,11 @@ void CImageListData::_createentry()
 			*lptstrCopy++ = color.GetBlue() + (color.GetGreen() << 8) + (color.GetRed() << 16);
 		}
 
-	ImageInfo info;
+	Ptr(ImageInfo) info = OK_NEW_OPERATOR ImageInfo;
 
-	info.pixeldata = lptstrCopySave;
-	info.bitmap = Gdiplus::Bitmap::FromBITMAPINFO((BITMAPINFO*)(&bi), lptstrCopySave);
-	m_list.Append(&info);
+	info->pixeldata = lptstrCopySave;
+	info->bitmap = Gdiplus::Bitmap::FromBITMAPINFO((BITMAPINFO*)(&bi), lptstrCopySave);
+	m_list.Append(info);
 }
 
 CImageListData::CImageListData(HBITMAP hBitmap):
@@ -397,17 +405,8 @@ CImageListData::CImageListData(LPCTSTR pResourceID, UINT fflag):
 {
 }
 
-static void __stdcall TDeleteFunc_CImageListData( ConstPointer data, Pointer context )
-{
-	CImageListData::ImageInfo* pInfo = CastAnyPtr(CImageListData::ImageInfo, CastMutable(Pointer, data));
-
-	TFfree(pInfo->pixeldata);
-	delete pInfo->bitmap;
-}
-
 CImageListData::~CImageListData()
 {
-	m_list.Close(TDeleteFunc_CImageListData, NULL);
 }
 
 //***********************************************************

@@ -29,17 +29,17 @@
 #include "okDateTime.h"
 #include "DataVector.h"
 
-class CPPSOURCES_API CZipArchive;
+class CPPSOURCES_API CZipArchiveImpl;
 class CPPSOURCES_API CZipArchiveFile: public CArchiveFile
 {
 public:
-	CZipArchiveFile(Ref(CZipArchive) _archive, ConstRef(LSearchResultType) dataPtr);
+	CZipArchiveFile(Ref(CZipArchiveImpl) _archive, ConstRef(LSearchResultType) dataPtr);
 	virtual ~CZipArchiveFile();
 
 	virtual void Read(Ref(CByteBuffer) _buffer);
 
 protected:
-	Ref(CZipArchive) m_ziparchive;
+	Ref(CZipArchiveImpl) m_ziparchive;
 	LSearchResultType m_dataPtr;
 
 private:
@@ -51,7 +51,7 @@ private:
 class CPPSOURCES_API CZipArchiveIterator: public CArchiveIterator
 {
 public:
-	CZipArchiveIterator(Ref(CZipArchive) _archive);
+	CZipArchiveIterator(Ref(CZipArchiveImpl) _archive);
 	virtual ~CZipArchiveIterator();
 
 	virtual archive_file_t GetType() const;
@@ -62,7 +62,7 @@ public:
 	virtual void Skip();
 
 protected:
-	Ref(CZipArchive) m_ziparchive;
+	Ref(CZipArchiveImpl) m_ziparchive;
 	LSearchResultType m_dataPtr;
 
 private:
@@ -73,18 +73,6 @@ private:
 
 class CPPSOURCES_API CZipArchive: public CArchive
 {
-public:
-	typedef struct _tagFileCacheItem
-	{
-		Pointer localFileHeader;
-		Pointer fileHeader;
-		CByteLinkedBuffer fileContent;
-
-		void Reserve(CFile::TFileSize sz, CFile::TFileSize parts); 
-	} TFileCacheItem;
-
-	typedef CDataSVectorT<TFileCacheItem> TFileCacheItems;
-
 public:
 	CZipArchive(Ptr(CFile) _file);
 	virtual ~CZipArchive(void);
@@ -97,13 +85,7 @@ public:
 	virtual void AddClose();
 
 protected:
-	CDataVector m_Disks;
-	TFileCacheItems m_FileCache;
-	bool m_opened;
-	bool m_modified;
-
-	friend class CZipArchiveIterator;
-	friend class CZipArchiveFile;
+	Ptr(CZipArchiveImpl) _impl;
 
 private:
 	CZipArchive();

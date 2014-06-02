@@ -32,6 +32,7 @@ class CONSOURCES_API CConsole: public CCppObject
 {
 public:
 	typedef CDataDoubleLinkedListT<CConsoleWindow> CConsoleWindowList;
+	typedef CDataDoubleLinkedListT<CConsoleWindow, CCppObjectLessFunctor<CConsoleWindow>, CCppObjectNullFunctor<CConsoleWindow> > CConsoleWindowNullList;
 
 public:
 	CConsole(void);
@@ -44,8 +45,8 @@ public:
 
 	void CreateConsoleWindow(CConsoleWindow* pWindow);
 	__inline CConsoleWindow* GetTopMostWindow() { return (m_WindowList.Count() == 0)?NULL:(*(m_WindowList.Begin())); }
-	__inline Ref(CConsoleWindowList) GetConsoleWindowList() { return m_WindowList; }
-	void BringToFront(CConsoleWindowList::Iterator it);
+	__inline Ref(CConsoleWindowNullList) GetConsoleWindowList() { return m_WindowList; }
+	void BringToFront(CConsoleWindow* pWindow);
 
 	void SetConsoleMainMenu(CConsoleMainMenu* pMainMenu);
 	__inline CConsoleMainMenu* GetConsoleMainMenu() { return m_MainMenu; }
@@ -103,9 +104,9 @@ protected:
 	PCHAR_INFO m_ScreenBuffer;
 	COORD m_LastWindowPos;
 	CConsoleMainMenu* m_MainMenu;
-	CConsoleWindowList m_WindowList;
-	CConsoleWindowList m_PopupMenus;
-	CConsoleWindowList m_ModalDialogs;
+	CConsoleWindowNullList m_WindowList;
+	CConsoleWindowNullList m_PopupMenus;
+	CConsoleWindowNullList m_ModalDialogs;
 	CConsoleWindowList m_DeleteModalDialogs;
 	CConsoleWindow* m_PopupControl;
 	bool m_PopupControlRemove;

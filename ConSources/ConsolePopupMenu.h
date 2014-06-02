@@ -24,6 +24,7 @@
 
 #include "ConSources.h"
 #include "ConsoleWindow.h"
+#include "ConsoleMenuItem.h"
 
 class CConsolePopupMenu;
 class CONSOURCES_API CAbstractConsoleMenuNavigationCallback: public CCppObject

@@ -1170,7 +1170,7 @@ protected:
 	TBuffer m_buffer;
 };
 
-class CTextViewUndoStruct
+class CTextViewUndoStruct: public CCppObject
 {
 public:
 	CStringBuffer deleteChars;
@@ -1191,36 +1191,22 @@ public:
 		insertPosEnde.x = -1;
 		insertPosEnde.y = -1;
 	}
-
-	void addRef() 
-	{
-		deleteChars.addRef();
-		insertChars.addRef();
-	}
 };
 
-typedef CDataSVectorT<CTextViewUndoStruct> CTextViewUndoVector;
-
-static void __stdcall TDeleteFunc_CTextViewUndoStack( ConstPointer data, Pointer context )
-{
-	Ptr(CTextViewUndoStruct) p = CastAnyPtr(CTextViewUndoStruct, CastMutable(Pointer, data));
-
-	p->deleteChars.Clear();
-	p->insertChars.Clear();
-}
+typedef CDataVectorT<CTextViewUndoStruct> CTextViewUndoVector;
 
 class CTextViewUndoStack: public CCppObject
 {
 public:
 	CTextViewUndoStack() : m_currentPos(0), m_vector(__FILE__LINE__ 64, 32) {}
-	virtual ~CTextViewUndoStack() { m_vector.Close(TDeleteFunc_CTextViewUndoStack, NULL); }
+	virtual ~CTextViewUndoStack() {}
 
 	__inline dword get_CurrentPos() const { return m_currentPos; }
 	__inline dword size() const { return m_vector.Count(); }
 
 	__inline void reset()
 	{
-		m_vector.Close(TDeleteFunc_CTextViewUndoStack, NULL);
+		m_vector.Close();
 		m_vector.Open(__FILE__LINE__ 64, 32);
 		m_currentPos = 0;
 	}
@@ -1235,22 +1221,26 @@ public:
 			return;
 		if ( !m_currentPos )
 		{
+			Ptr(CTextViewUndoStruct) u = OK_NEW_OPERATOR CTextViewUndoStruct(undoStruct);
+
 			reset();
-			undoStruct.addRef();
-			m_vector.Append(&undoStruct);
+			m_vector.Append(u);
 			m_currentPos = 1;
 			return;
 		}
 		while ( m_currentPos < m_vector.Count() )
-			m_vector.Remove(m_vector.Last(), TDeleteFunc_CTextViewUndoStack, NULL);
-		undoStruct.addRef();
-		m_vector.Append(&undoStruct);
+			m_vector.Remove(m_vector.Last());
+
+		Ptr(CTextViewUndoStruct) u = OK_NEW_OPERATOR CTextViewUndoStruct(undoStruct);
+
+		m_vector.Append(u);
 		++m_currentPos;
 	}
 
 	__inline CTextViewUndoStruct& current()
 	{
-		return *(*(m_vector.Index(m_currentPos)));
+		m_current = *(*(m_vector.Index(m_currentPos)));
+		return m_current;
 	}
 
 	__inline void undo()
@@ -1267,6 +1257,7 @@ public:
 
 protected:
 	dword m_currentPos;
+	CTextViewUndoStruct m_current;
 	CTextViewUndoVector m_vector;
 };
 

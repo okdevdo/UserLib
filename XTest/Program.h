@@ -27,7 +27,11 @@
 #include "StringLiteral.h"
 #include "StringBuffer.h"
 #include "ByteBuffer.h"
+#include "DataDoubleLinkedList.h"
+#include "DataArray.h"
 #include "DataVector.h"
+#include "DataBinaryTree.h"
+#include "DataBTree.h"
 
 #include <search.h>
 #if defined(OK_COMP_MSC) && defined(__DEBUG__)
@@ -71,7 +75,12 @@ public:
 	}
 };
 
-typedef CDataVectorT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int>> TestFuncUIntVector;
+typedef CDataVectorT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntVector;
+typedef CDataDoubleLinkedListT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntDoubleLinkedList;
+typedef CDataArrayT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntArray;
+typedef CDataAVLBinaryTreeT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntAVLBinaryTree;
+typedef CDataRBBinaryTreeT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntRBBinaryTree;
+typedef CDataBTreeT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntBTree;
 
 void OpenTestFile(CConstPointer _TestFunction);
 sdword WriteTestFile(int testcase, CConstPointer format, ...);

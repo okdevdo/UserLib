@@ -589,7 +589,6 @@ void CGridViewRow::set_Cell(dword ix, CGridViewCell* cell)
 
 		if ( cell1->is_Selected() )
 			cell1->set_Selected(false);
-		delete cell1;
 		m_cells.SetData(m_cells.Index(ix), cell);
 	}
 	if ( m_gridView )

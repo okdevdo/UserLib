@@ -22,10 +22,9 @@
 
 #include "DataDoubleLinkedList.h"
 #include "ConSources.h"
-#include "ConsoleWindow.h"
+#include "ConsoleControl.h"
 
 class CConsole;
-class CConsoleControl;
 class CConsoleLayout;
 class CONSOURCES_API CConsoleDialog: public CConsoleWindow
 {
@@ -63,15 +62,25 @@ public:
 	virtual bool WheelMouse(COORD mousePos, sword rotateCnt, DWORD controlKeyState);
 
 public:
-	typedef struct __tagControlData
+	class ControlData: public CCppObject
 	{
+	public:
 		COORD pos;
 		COORD size;
-		CConsoleControl* control;
-	} ControlData;
+		CCppObjectPtr<CConsoleControl> control;
+	};
 
 protected:
-	typedef CDataSDoubleLinkedListT<ControlData> ControlDataList;
+	class ControlDataLessFunctor
+	{
+	public:
+		bool operator()(ConstPtr(ControlData) ppa, ConstPtr(ControlData) ppd) const
+		{
+			return ppa->control->GetName().LT(ppd->control->GetName());
+		}
+	};
+
+	typedef CDataDoubleLinkedListT<ControlData, ControlDataLessFunctor> ControlDataList;
 
 	CConsoleControl* GetNextTabOrder(bool bnext = true);
 	CConsoleControl* GetFirstTabOrder();

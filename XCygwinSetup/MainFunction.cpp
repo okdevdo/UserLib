@@ -64,8 +64,8 @@ static void DepthFirstSearchFindCycles(Ref(CPackageInfoBTree) packAll, Ptr(CPack
 	while ( it )
 	{
 		packInfo.SetPackageName(*it);
-		itF = packAll.FindSorted(&packInfo, PackageInfoSearchAndSortFunc);
-		if ( itF && (*itF) && (PackageInfoSearchAndSortFunc(*itF, &packInfo) == 0) )
+		itF = packAll.FindSorted(&packInfo);
+		if (packAll.MatchSorted(itF, &packInfo))
 			DepthFirstSearchFindCycles(packAll, *itF);
 		else
 		{
@@ -100,8 +100,8 @@ static void DepthFirstSearchInstall(Ref(CPackageInfoBTree) packAll, Ref(CPackage
 	while ( it )
 	{
 		packInfo.SetPackageName(*it);
-		itF = packAll.FindSorted(&packInfo, PackageInfoSearchAndSortFunc);
-		if ( itF && (*itF) && (PackageInfoSearchAndSortFunc(*itF, &packInfo) == 0) )
+		itF = packAll.FindSorted(&packInfo);
+		if (packAll.MatchSorted(itF, &packInfo))
 		{
 			node1 = *itF;
 			if ( PtrCheck(node1->GetInstallInfo()) || (!(node1->GetInstallInfo()->GetIsInstalled())) )
@@ -282,8 +282,8 @@ void ScanSetupIni(CStringLiteral pInstallDir, CStringLiteral psSetupIniScanDir, 
 			itS = packInfo.GetPackageName();
 			if ( itS.FirstOf(_T("*?")).IsEnd() )
 			{
-				itP = packAll.FindSorted(&packInfo, PackageInfoSearchAndSortFunc);
-				if ( itP && (*itP) && (PackageInfoSearchAndSortFunc(&packInfo, *itP) == 0) )
+				itP = packAll.FindSorted(&packInfo);
+				if (packAll.MatchSorted(itP, &packInfo))
 				{
 					pInfo = *itP;
 					if ( InstalledFilter(pInfo, flags) )

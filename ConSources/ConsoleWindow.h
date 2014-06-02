@@ -105,6 +105,7 @@ public:
 	virtual ~CConsoleWindow(void);
 
 	__inline ConstRef(CStringBuffer) GetName() const { return m_Name; }
+	__inline ConstRef(CStringBuffer) get_Name() const { return m_Name; }
 
 	enum BorderGraphics
 	{

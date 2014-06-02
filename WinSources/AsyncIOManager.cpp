@@ -127,7 +127,7 @@ dword CAsyncIOManager::RunTask(void)
 		CScopedLock lock;
 		CAsyncIODataVector::Iterator it;
 
-		it = m_tasks.Find<CAsyncIODataLessFunctor>(pData);
+		it = m_tasks.Find<CCppObjectEqualFunctor<CAsyncIOData>>(pData);
 		if ( it )
 			m_tasks.Remove(it);
 

@@ -25,13 +25,12 @@
 #include "Filter.h"
 
 CPackageInfoBTree::CPackageInfoBTree(DECL_FILE_LINE TListCnt maxEntriesPerNode):
-	CDataBTreeT<CPackageInfo>(ARGS_FILE_LINE maxEntriesPerNode)
+	super(ARGS_FILE_LINE maxEntriesPerNode)
 {
 }
 
 CPackageInfoBTree::~CPackageInfoBTree()
 {
-	Close(PackageInfoDeleteFunc, NULL);
 }
 
 class CPackageInfoBTreeFilterOutput: public CFilterOutput
@@ -84,14 +83,14 @@ void CPackageInfoBTreeFilterOutput::write(Ref(CByteBuffer) outputbuf)
 			tmp.Trim();
 			
 			m_search.SetPackageName(tmp);
-			CPackageInfoBTree::Iterator itP = m_btree.FindSorted(&m_search, PackageInfoSearchAndSortFunc);
+			CPackageInfoBTree::Iterator itP = m_btree.FindSorted(&m_search);
 
-			if ( itP && (*itP) && (PackageInfoSearchAndSortFunc(&m_search, *itP) == 0) )
+			if (m_btree.MatchSorted(itP, &m_search))
 				m_current = *itP;
 			else
 			{
 				m_current = OK_NEW_OPERATOR CPackageInfo(tmp);
-				m_btree.InsertSorted(m_current, PackageInfoSearchAndSortFunc);
+				m_btree.InsertSorted(m_current);
 			}
 			m_installInfo = NULL;
 			m_installCat.SetString(__FILE__LINE__ _T("Curr"));

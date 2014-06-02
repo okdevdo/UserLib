@@ -576,7 +576,6 @@ void CPropertySheet::set_Node(dword ix, CPropertySheetAbstractNode* node)
 			if ( node2->is_Selected() )
 				node2->set_Selected(false);
 		}
-		delete node1;
 		m_nodes.SetData(it, node);
 		EndUpdate(TRUE);
 	}

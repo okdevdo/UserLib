@@ -38,3 +38,16 @@ sword __stdcall CDataVectorT_StringBuffer_SearchAndSortUserFunc(ConstPointer pa,
 	tmpa.release(); tmpb.release();
 	return cmp;
 }
+
+CPPSOURCES_API void __stdcall CDataVectorT_dword_DeleteFunc(ConstPointer data, Pointer context)
+{
+}
+
+CPPSOURCES_API sword __stdcall CDataVectorT_dword_SearchAndSortUserFunc(ConstPointer pa, ConstPointer pb, Pointer context)
+{
+	if (pa < pb)
+		return -1;
+	if (pa > pb)
+		return -1;
+	return 0;
+}

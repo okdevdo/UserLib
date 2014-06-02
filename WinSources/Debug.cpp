@@ -71,8 +71,8 @@ public:
 	{ 
 		CScopedLock _lock;
 
-		_tcpclients.Close(DebugServerPrivateDeleteFunc, NULL);
-		_callback.Close(AbstractThreadCallbackDeleteFunc, NULL);
+		_tcpclients.Close();
+		_callback.Close();
 	}
 
 	void SendData(CTcpClient* tcpClient, const CStringBuffer& buffer)
@@ -130,12 +130,12 @@ public:
 	{
 		CScopedLock _lock;
 		CTcpClient* pClient = NULL;
-		CDataDoubleLinkedListT<CTcpClient>::Iterator it = _tcpclients.Begin();
+		tcpclients_t::Iterator it = _tcpclients.Begin();
 				
 		if ( it && (*it) )
 		{
 			pClient = *it;
-			_tcpclients.Remove(it, EmptyDeleteFunc, NULL);
+			_tcpclients.Remove(it);
 		}
 		if ( !pClient )
 			return 0;
@@ -225,8 +225,10 @@ public:
 	}
 
 private:
+	typedef CDataDoubleLinkedListT<CTcpClient, CCppObjectLessFunctor<CTcpClient>, CCppObjectNullFunctor<CTcpClient> > tcpclients_t;
+
 	CDataDoubleLinkedListT<CAbstractThreadCallback> _callback;
-	CDataDoubleLinkedListT<CTcpClient> _tcpclients;
+	tcpclients_t _tcpclients;
 	CThreadPool _threadpool;
 	volatile bool _bExit;
 };

@@ -769,41 +769,6 @@ WBool CAbstractConfiguration::Enumerate(ConstRef(CStringLiteral) _prefix, Ref(Ke
 }
 
 /* CMapConfiguration */
-static void __stdcall CMapConfigurationDeleteFunc(ConstPointer ptr, Pointer context)
-{
-	Ptr(CMapConfiguration::MapItem) pMapItem = CastAnyPtr(CMapConfiguration::MapItem, CastMutable(Pointer, ptr));
-
-	if (!(pMapItem->_name.IsEmpty()))
-	{
-		assert(pMapItem->_name.countRef() > 0);
-		pMapItem->_name.Clear();
-	}
-	if (!(pMapItem->_value.IsEmpty()))
-	{
-		assert(pMapItem->_value.countRef() > 0);
-		pMapItem->_value.Clear();
-	}
-}
-
-static bool __stdcall CMapConfigurationForEachFunc(ConstPointer ptr, Pointer context)
-{
-	Ptr(CMapConfiguration::MapItem) pMapItem = CastAnyPtr(CMapConfiguration::MapItem, CastMutable(Pointer, ptr));
-
-	if (!(pMapItem->_name.IsEmpty()))
-		assert(pMapItem->_name.countRef() > 0);
-	if (!(pMapItem->_value.IsEmpty()))
-		assert(pMapItem->_value.countRef() > 0);
-	return true;
-}
-
-static sword __stdcall CMapConfigurationSearchAndSortFunc(ConstPointer ptrA, ConstPointer ptrB)
-{
-	Ptr(CMapConfiguration::MapItem) pMapItemA = CastAnyPtr(CMapConfiguration::MapItem, CastMutable(Pointer, ptrA));
-	Ptr(CMapConfiguration::MapItem) pMapItemB = CastAnyPtr(CMapConfiguration::MapItem, CastMutable(Pointer, ptrB));
-
-	return (pMapItemA->_name.Compare(pMapItemB->_name, 0, CStringLiteral::cIgnoreCase));
-}
-
 CMapConfiguration::CMapConfiguration(DECL_FILE_LINE0):
 	m_mapItems(ARGS_FILE_LINE0)
 {
@@ -817,26 +782,16 @@ CMapConfiguration::CMapConfiguration(DECL_FILE_LINE ConstRef(CStringLiteral) _pr
 
 CMapConfiguration::~CMapConfiguration(void)
 {
-	m_mapItems.Close(CMapConfigurationDeleteFunc, NULL);
 }
 
 WBool CMapConfiguration::GetRawValue(ConstRef(CStringLiteral) _name, Ref(CStringBuffer) _value)
 {
-	MapItem item;
+	MapItem item(CStringBuffer(__FILE__LINE__ _name));
+	MapItems::Iterator it = m_mapItems.FindSorted(&item);
 
-	item._name.assign(_name);
-
-	MapItems::Iterator it = m_mapItems.FindSorted(&item, CMapConfigurationSearchAndSortFunc);
-
-	if ( !(it && (*it) && (CMapConfigurationSearchAndSortFunc(*it, &item) == 0)) )
-	{
-		item._name.release();
-		m_mapItems.ForEach(CMapConfigurationForEachFunc);
+	if (!(m_mapItems.MatchSorted(it, &item)))
 		return false;
-	}
-	item._name.release();
-	_value = (*it)->_value;
-	m_mapItems.ForEach(CMapConfigurationForEachFunc);
+	_value = (*it)->get_Value();
 	return true;
 }
 
@@ -845,34 +800,25 @@ WBool CMapConfiguration::SetRawValue(ConstRef(CStringLiteral) _name, ConstRef(CS
 	if ( !m_writable )
 		return false;
 
-	MapItem item;
+	Ptr(MapItem) item = OK_NEW_OPERATOR MapItem(CStringBuffer(__FILE__LINE__ _name), _value);
+	MapItems::Iterator it = m_mapItems.FindSorted(item);
 
-	item._name.SetString(__FILE__LINE__ _name);
-	item._value.SetString(__FILE__LINE__ _value);
-
-	MapItems::Iterator it = m_mapItems.FindSorted(&item, CMapConfigurationSearchAndSortFunc);
-
-	if ( !(it && (*it) && (CMapConfigurationSearchAndSortFunc(*it, &item) == 0)) )
+	if (!(m_mapItems.MatchSorted(it, item)))
 	{
-		if ( _value.IsEmpty() )
+		if (_value.IsEmpty())
+		{
+			item->release();
 			return true;
-		item._name.addRef();
-		item._value.addRef();
-		m_mapItems.InsertSorted(&item, CMapConfigurationSearchAndSortFunc);
-		m_mapItems.ForEach(CMapConfigurationForEachFunc);
+		}
+		m_mapItems.InsertSorted(item);
 		return true;
 	}
 	if ( _value.IsEmpty() )
 	{
-		m_mapItems.RemoveSorted(&item, CMapConfigurationSearchAndSortFunc, CMapConfigurationDeleteFunc, NULL);
-		m_mapItems.ForEach(CMapConfigurationForEachFunc);
+		m_mapItems.RemoveSorted(item);
 		return true;
 	}
-	item._name.addRef();
-	item._value.addRef();
-	CMapConfigurationDeleteFunc((*it), NULL);
-	m_mapItems.SetData(it, &item);
-	m_mapItems.ForEach(CMapConfigurationForEachFunc);
+	m_mapItems.SetData(it, item);
 	return true;
 }
 
@@ -884,7 +830,7 @@ WBool CMapConfiguration::Enumerate(ConstRef(CStringLiteral) _prefix, Ref(Keys) _
 
 	while ( it )
 	{
-		_keys.Append((*it)->_name);
+		_keys.Append((*it)->get_Name());
 		++it;
 	}
 	return (_keys.Count() > 0);
@@ -892,31 +838,23 @@ WBool CMapConfiguration::Enumerate(ConstRef(CStringLiteral) _prefix, Ref(Keys) _
 
 WBool CMapConfiguration::AddValue(ConstRef(CStringLiteral) _name, ConstRef(CStringBuffer) _value)
 {
-	MapItem item;
+	CStringBuffer tmp(CStringBuffer(__FILE__LINE__ _name));
 
-	item._name.SetString(__FILE__LINE__ _name);
 	if ( !(m_prefix.IsEmpty()) )
 	{
-		item._name.PrependString(_T("."));
-		item._name.PrependString(m_prefix);
+		tmp.PrependString(_T("."));
+		tmp.PrependString(m_prefix);
 	}
-	item._value = _value;
 
-	item._name.addRef();
-	item._value.addRef();
+	Ptr(MapItem) item = OK_NEW_OPERATOR MapItem(tmp, _value);
+	MapItems::Iterator it = m_mapItems.FindSorted(item);
 
-	MapItems::Iterator it = m_mapItems.FindSorted(&item, CMapConfigurationSearchAndSortFunc);
-
-	if ( !(it && (*it) && (CMapConfigurationSearchAndSortFunc(*it, &item) == 0)) )
+	if (!(m_mapItems.MatchSorted(it, item)))
 	{
-		m_mapItems.InsertSorted(&item, CMapConfigurationSearchAndSortFunc);
-		m_mapItems.ForEach(CMapConfigurationForEachFunc);
+		m_mapItems.InsertSorted(item);
 		return true;
 	}
-	(*it)->_name.Clear();
-	(*it)->_value.Clear();
-	m_mapItems.SetData(it, &item);
-	m_mapItems.ForEach(CMapConfigurationForEachFunc);
+	m_mapItems.SetData(it, item);
 	return true;
 }
 
@@ -1082,12 +1020,12 @@ WBool CFileConfiguration::SaveConfig()
 		++plen;
 	while ( it )
 	{
-		name = (*it)->_name;
+		name = (*it)->get_Name();
 		if ( plen )
 			name.DeleteString(0, plen);
 		buf += name;
 		buf += _T(" = ");
-		buf += (*it)->_value;
+		buf += (*it)->get_Value();
 		buf += _T("\r\n");
 		++it;
 	}
@@ -1285,7 +1223,7 @@ static void __stdcall CConfigurationListDeleteFunc(ConstPointer ptr, Pointer con
 
 CConfigurationList::CConfigurationList(DECL_FILE_LINE0):
     CAbstractConfiguration(),
-	m_configList(ARGS_FILE_LINE CConfigurationListDeleteFunc)
+	m_configList(ARGS_FILE_LINE0)
 {
 	m_writable = true;
 }
@@ -1296,7 +1234,7 @@ CConfigurationList::~CConfigurationList(void)
 
 void CConfigurationList::Remove(CConfigurationList::Iterator it)
 { 
-	m_configList.Remove(it, CConfigurationListDeleteFunc, NULL);
+	m_configList.Remove(it);
 }
 
 WBool CConfigurationList::GetRawValue(ConstRef(CStringLiteral) _name, Ref(CStringBuffer) _value)

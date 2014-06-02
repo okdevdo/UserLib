@@ -84,45 +84,19 @@ static void* CThreadMain(void *p)
 
 IMPL_WINEXCEPTION(CThreadException, CWinException)
 
-static void __stdcall EmptyDeleteFunc( ConstPointer data, Pointer context )
+class ThreadListEqualFunctor
 {
-}
-
-static sword __stdcall ThreadListSearchAndSortFunc( ConstPointer item, ConstPointer data )
-{
-	CThread* pThread1 = CastAnyPtr(CThread, CastMutable(Pointer, item));
-	CThread* pThread2 = CastAnyPtr(CThread, CastMutable(Pointer, data));
-
+public:
+	bool operator()(ConstPtr(CThread) r1, ConstPtr(CThread) r2) const
+	{
 #ifdef OK_SYS_WINDOWS
-	if (pThread1->GetHandle() == pThread2->GetHandle())
+		return (r1->GetHandle() == r2->GetHandle());
 #endif
 #ifdef OK_SYS_UNIX
-	if (pthread_equal(pThread1->GetHandle(), pThread2->GetHandle()))
+		return (pthread_equal(r1->GetHandle(), r2->GetHandle()));
 #endif
-		return 0;
-	return 1;
-}
-
-static void __stdcall ThreadListDeleteFunc( ConstPointer data, Pointer context )
-{
-	CThread* pThread = CastAnyPtr(CThread, CastMutable(Pointer, data));
-
-	pThread->release();
-}
-
-static void __stdcall ThreadCallbackDeleteFunc( ConstPointer data, Pointer context )
-{
-	CAbstractThreadCallback* pCallback = CastAnyPtr(CAbstractThreadCallback, CastMutable(Pointer, data));
-
-	pCallback->release();
-}
-
-static void __stdcall ResultQueueDeleteFunc( ConstPointer data, Pointer context )
-{
-	CPooledThread::TCallback* pCallback = CastAnyPtr(CPooledThread::TCallback, CastMutable(Pointer, data));
-
-	pCallback->callback->release();
-}
+	}
+};
 
 static sword __stdcall ResultQueueSearchAndSortFunc( ConstPointer item, ConstPointer data )
 {
@@ -134,8 +108,9 @@ static sword __stdcall ResultQueueSearchAndSortFunc( ConstPointer item, ConstPoi
 	return 1;
 }
 
+typedef CDataDoubleLinkedListT<CThread, CCppObjectLessFunctor<CThread>, CCppObjectNullFunctor<CThread> > gThreadList_t;
 static CMutex gMutex;
-static CDataDoubleLinkedListT<CThread> gThreadList(__FILE__LINE__ ThreadListDeleteFunc);
+static gThreadList_t gThreadList(__FILE__LINE__0);
 
 /*******************************************************************
  CAbstractThreadCallback
@@ -187,10 +162,10 @@ void CThread::_removeFromThreadGlobalList()
 
 	if ( gThreadList.Count() > 0 )
 	{
-		CDataDoubleLinkedListT<CThread>::Iterator it = gThreadList.Find(this, ThreadListSearchAndSortFunc);
+		gThreadList_t::Iterator it = gThreadList.Find<ThreadListEqualFunctor>(this, ThreadListEqualFunctor());
 
 		if ( it )
-			gThreadList.Remove(it, EmptyDeleteFunc, NULL);
+			gThreadList.Remove(it);
 	}
 }
 
@@ -366,7 +341,7 @@ void CThread::JoinAll()
 
 	while ( gThreadList.Count() > 0 )
 	{
-		CDataDoubleLinkedListT<CThread>::Iterator it = gThreadList.Begin();
+		gThreadList_t::Iterator it = gThreadList.Begin();
 
 		while ( it )
 		{
@@ -443,9 +418,9 @@ dword CThreadEx::Run()
 /*******************************************************************
  CPooledThread
 *******************************************************************/
-CPooledThread::CPooledThread():
-m_TaskQueue(__FILE__LINE__ ThreadCallbackDeleteFunc),
-m_ResultQueue(__FILE__LINE__ ResultQueueDeleteFunc),
+CPooledThread::CPooledThread() :
+m_TaskQueue(__FILE__LINE__0),
+m_ResultQueue(__FILE__LINE__0),
 m_condition()
 {
 }
@@ -476,16 +451,16 @@ dword CPooledThread::GetTaskResultAndRemove(CAbstractThreadCallback* pCallback)
 {
 	dword result = E_NORESULT;
 	TCallback findRec;
-	CDataSDoubleLinkedListT<TCallback>::Iterator it;
+	ResultQueue_t::Iterator it;
 
 	m_condition.lock();
 	findRec.callback = pCallback;
-	it = m_ResultQueue.Find(&findRec, ResultQueueSearchAndSortFunc);
+	it = m_ResultQueue.Find<TCallbackEqualFunctor>(&findRec);
 
-	if ( it && (*it) )
+	if (it)
 	{
 		result = (*it)->result;
-		m_ResultQueue.Remove(it, ResultQueueDeleteFunc, NULL);
+		m_ResultQueue.Remove(it);
 	}
 	m_condition.unlock();
 	return result;
@@ -494,7 +469,7 @@ dword CPooledThread::GetTaskResultAndRemove(CAbstractThreadCallback* pCallback)
 dword CPooledThread::Run()
 {
 	CAbstractThreadCallback* pCallback = NULL;
-	CDataDoubleLinkedListT<CAbstractThreadCallback>::Iterator it;
+	TaskQueue_t::Iterator it;
 
 	while ( !_checkForStop() )
 	{
@@ -505,12 +480,12 @@ dword CPooledThread::Run()
 			pCallback = *it;
 			m_condition.unlock();
 
-			TCallback result;
+			Ptr(TCallback) result = OK_NEW_OPERATOR TCallback;
 
-			result.callback = pCallback;
+			result->callback = pCallback;
 			try
 			{
-				result.result = pCallback->invoke();
+				result->result = pCallback->invoke();
 			}
 			catch ( CBaseException* ex )
 			{
@@ -518,12 +493,12 @@ dword CPooledThread::Run()
 				CEventLogger::WriteClassicLog(CEventLogger::Error, CEventLogger::NetworkCategory, ex->GetExceptionMessage());
 				CEventLogger::CleanUp();
 #endif
-				result.result = -4;
+				result->result = -4;
 			}
 
 			m_condition.lock();
-			m_TaskQueue.Remove(m_TaskQueue.Begin(), EmptyDeleteFunc, NULL);
-			m_ResultQueue.Append(&result);
+			m_TaskQueue.Remove(m_TaskQueue.Begin());
+			m_ResultQueue.Append(result);
 		}
 		m_condition.sleep(100);
 		m_condition.unlock();
@@ -548,7 +523,7 @@ CThreadPool::~CThreadPool()
 {
 	CScopedLock _lock;
 
-	m_Threads.Close(ThreadListDeleteFunc, NULL);
+	m_Threads.Close();
 }
 
 bool CThreadPool::MoreThreads(void)
@@ -751,7 +726,7 @@ void CThreadPool::JoinAll()
 			++it;
 		else
 		{
-			m_Threads.Remove(it, ThreadListDeleteFunc, NULL);
+			m_Threads.Remove(it);
 			it = m_Threads.Begin();
 		}
 	}

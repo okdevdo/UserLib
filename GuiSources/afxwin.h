@@ -577,41 +577,6 @@ protected:
 	CWin* m_focuswindow;
 };
 
-class CDialog: public CWin
-{
-public:
-	typedef struct tagDialogControl
-	{
-		CStringBuffer m_classname;
-		CControl* pControl;
-	} TDialogControl;
-
-	typedef CDataSVectorT<TDialogControl> TDialogControls;
-
-public:
-	CDialog(LPCTSTR name = NULL, LPCTSTR resID = NULL, CWin* pParent = NULL);
-	CDialog(ConstRef(CStringBuffer) name, LPCTSTR resID = NULL, CWin* pParent = NULL);
-	virtual ~CDialog();
-
-	__inline LPCTSTR get_resID() { return m_resID; }
-	__inline CWin* get_dialogOwner() { return m_pParent; }
-	
-	INT_PTR DoModal();
-	void CenterWindow();
-
-	static void AddDialogControl(CControl* pControl);
-	static CControl* GetDialogControl(LPCTSTR className);
-	static void RemoveDialogControls();
-
-	DECLARE_MESSAGE_MAP()
-
-protected:
-	LPCTSTR m_resID;
-	CWin* m_pParent;
-
-	static TDialogControls m_DialogControls;
-};
-
 class CControl: public CWin
 {
 public:
@@ -748,7 +713,45 @@ protected:
 	RECT m_Margins;
 };
 
-class CPanel: public CControl
+class CDialog : public CWin
+{
+public:
+	class TDialogControl : public CCppObject
+	{
+	public:
+		CStringBuffer m_classname;
+		CCppObjectPtr<CControl> pControl;
+
+		__inline ConstRef(CStringBuffer) get_Name() const { return m_classname; }
+	};
+
+	typedef CDataVectorT<TDialogControl, CStringByNameLessFunctor<TDialogControl> > TDialogControls;
+
+public:
+	CDialog(LPCTSTR name = NULL, LPCTSTR resID = NULL, CWin* pParent = NULL);
+	CDialog(ConstRef(CStringBuffer) name, LPCTSTR resID = NULL, CWin* pParent = NULL);
+	virtual ~CDialog();
+
+	__inline LPCTSTR get_resID() { return m_resID; }
+	__inline CWin* get_dialogOwner() { return m_pParent; }
+
+	INT_PTR DoModal();
+	void CenterWindow();
+
+	static void AddDialogControl(CControl* pControl);
+	static CControl* GetDialogControl(LPCTSTR className);
+	static void RemoveDialogControls();
+
+	DECLARE_MESSAGE_MAP()
+
+protected:
+	LPCTSTR m_resID;
+	CWin* m_pParent;
+
+	static TDialogControls m_DialogControls;
+};
+
+class CPanel : public CControl
 {
 public:
 	CPanel(LPCTSTR name = NULL);
@@ -810,15 +813,37 @@ public:
 		TStatusStyleKeyboardStatus
 	};
 
-	typedef struct _tagStatusInfo
+	class TStatusInfo: public CCppObject
 	{
+	public:
 		TStatusStyle style;
 		UINT width;
 		CStringBuffer defaultText;
 		CControl* pControl;
-	} TStatusInfo;
-	
-	typedef CDataSVectorT<TStatusInfo> TStatusInfoVector;
+
+	};
+
+	class TStatusInfoLessFunctor
+	{
+	public:
+		bool operator()(ConstPtr(TStatusInfo) elem1, ConstPtr(TStatusInfo) elem2) const
+		{
+			if (elem1->style < elem2->style)
+				return true;
+			return false;
+		}
+	};
+
+	class TStatusInfoReleaseFunctor
+	{
+	public:
+		Ref(TStatusInfoReleaseFunctor) operator()(Ptr(TStatusInfo) pData);
+
+		Ptr(CStatusbar) pStatusbar;
+		HHOOK hKeyboardProc_StatusInfo;
+	};
+
+	typedef CDataVectorT<TStatusInfo, TStatusInfoLessFunctor, CCppObjectReleaseFunctor<TStatusInfo> > TStatusInfoVector;
 
 public:
 	CStatusbar(LPCTSTR name = NULL);

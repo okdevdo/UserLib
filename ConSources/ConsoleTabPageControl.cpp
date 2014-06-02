@@ -23,21 +23,6 @@
 #include "Console.h"
 #include "ConsoleLayout.h"
 
-static void __stdcall ControlListDeleteFunc( ConstPointer data, Pointer context )
-{
-	CConsoleTabPageControl::ControlData* p = CastAnyPtr(CConsoleTabPageControl::ControlData, CastMutable(Pointer, data));
-
-	p->control->release();
-}
-
-static sword __stdcall ControlListFindByName(ConstPointer item, ConstPointer data)
-{
-	CConsoleTabPageControl::ControlData* pItem = CastAnyPtr(CConsoleTabPageControl::ControlData, CastMutable(Pointer, item));
-	CConsoleControl* pControl = pItem->control;
-	
-	return s_strcmp(pControl->GetName().GetString(), Cast(CConstPointer, data));
-}
-
 CConsoleTabPageControl::CConsoleTabPageControl(CConstPointer name, CConsole* pConsole):
     CConsoleControl(name, pConsole),
 	m_ControlList(__FILE__LINE__0),
@@ -80,27 +65,29 @@ CConsoleTabPageControl::CConsoleTabPageControl(word taborder, CAbstractConsoleCo
 
 CConsoleTabPageControl::~CConsoleTabPageControl(void)
 {
-	m_ControlList.Close(ControlListDeleteFunc, NULL);
 	if ( m_pLayout )
 		m_pLayout->release();
 }
 
 void CConsoleTabPageControl::AddControl(CConsoleControl* pControl, COORD pos, COORD size)
 {
-	ControlData data;
+	Ptr(ControlData) data = OK_NEW_OPERATOR ControlData;
 
-	data.pos = pos;
-	data.size = size;
-	data.control = pControl;
+	data->pos = pos;
+	data->size = size;
+	data->control = pControl;
 
-	m_ControlList.Append(&data);
+	m_ControlList.InsertSorted(data);
 }
 
 CConsoleControl* CConsoleTabPageControl::GetControl(CConstPointer name)
 {
-	ControlDataList::Iterator it = m_ControlList.Find(CastAnyPtr(ControlData, CastMutable(CPointer, name)), ControlListFindByName);
+	ControlData data;
 
-	if ( it )
+	data.control = OK_NEW_OPERATOR CConsoleControl(name, NULL);
+	ControlDataList::Iterator it = m_ControlList.FindSorted(&data);
+
+	if (m_ControlList.MatchSorted(it, &data))
 		return (*it)->control;
 	return NULL;
 }

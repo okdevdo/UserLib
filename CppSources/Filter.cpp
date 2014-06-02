@@ -22,6 +22,19 @@
 #include "Filter.h"
 
 #include <stdio.h>
+#include <iostream>
+#include <iomanip>
+
+#ifdef _UNICODE
+#define COUT std::wcout
+#define CERR std::wcerr
+#define OSTREAM std::wostream
+#else
+#define COUT std::cout
+#define CERR std::cerr
+#define OSTREAM std::ostream
+#endif
+using std::endl;
 
 IMPL_EXCEPTION(CFilterException, CBaseException)
 
@@ -308,9 +321,12 @@ void CStdOutFilterOutput::open()
 
 void CStdOutFilterOutput::write(Ref(CByteBuffer) outputbuf)
 {
-	fwrite(outputbuf.get_Buffer(), 1, outputbuf.get_BufferSize(), stdout);
+	CStringBuffer tmp;
+
+	tmp.convertFromByteBuffer(outputbuf);
+	COUT << tmp;
 	if ( m_bNewLine )
-		fputc('\n', stdout);
+		COUT << endl;
 }
 
 void CStdOutFilterOutput::close()
@@ -331,9 +347,12 @@ void CStdErrFilterOutput::open()
 
 void CStdErrFilterOutput::write(Ref(CByteBuffer) outputbuf)
 {
-	fwrite(outputbuf.get_Buffer(), 1, outputbuf.get_BufferSize(), stderr);
+	CStringBuffer tmp;
+
+	tmp.convertFromByteBuffer(outputbuf);
+	CERR << tmp;
 	if (m_bNewLine)
-		fputc('\n', stderr);
+		CERR << endl;
 }
 
 void CStdErrFilterOutput::close()

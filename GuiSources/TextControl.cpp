@@ -33,7 +33,7 @@
 #define MOUSEHIT_LBUTTONUP				3
 #define MOUSEHIT_LBUTTONDOUBLEDOWN		4
 
-class CTextControlChar
+class CTextControlChar: public CCppObject
 {
 public:
 	Gdiplus::RectF charRect;
@@ -52,44 +52,35 @@ public:
 		whiteSpace(0) {}
 };
 
-typedef CDataSVectorT<CTextControlChar> CTextControlCharVector;
+typedef CDataVectorT<CTextControlChar> CTextControlCharVector;
 
-static void __stdcall TDeleteFunc_CTextControlChars( ConstPointer data, Pointer context )
+class CTextControlCharForEachFunctor
 {
-}
+public:
+	bool operator()(Ptr(CTextControlChar) r1)
+	{
+		++cntCh;
+		if ( r1->isNewLine )
+			--cntNL;
+		if (cntNL)
+			return true;
+		return false;
+	}
 
-typedef struct _tagCTextControlChars_FindNL
-{
 	dword cntNL;
 	dword cntCh;
-
-	_tagCTextControlChars_FindNL(dword _cntNL): cntNL(_cntNL), cntCh(0) {}
-
-} TCTextControlChars_FindNL;
-
-static sword __stdcall TSearchAndSortUserFunc_CTextControlChars_FindNL( ConstPointer ArrayItem, ConstPointer DataItem, Pointer Context )
-{
-	Ptr(CTextControlChar) pArrayItem = CastAnyPtr(CTextControlChar, CastMutable(Pointer, ArrayItem));
-	Ptr(TCTextControlChars_FindNL) pContext = CastAnyPtr(TCTextControlChars_FindNL, Context);
-
-	++(pContext->cntCh);
-	if ( pArrayItem->isNewLine )
-		--(pContext->cntNL);
-	if ( pContext->cntNL )
-		return 1;
-	return 0;
-}
+};
 
 class CTextControlChars: public CCppObject
 {
 public:
 	CTextControlChars(): m_sellb(-1), m_selub(-1), m_lastSellb(-1), m_lastSelub(-1), m_vector(__FILE__LINE__ 1024, 1024) {}
-	virtual ~CTextControlChars() { m_vector.Close(TDeleteFunc_CTextControlChars, NULL); }
+	virtual ~CTextControlChars() {}
 
 	__inline dword Count() const { return m_vector.Count(); }
 	__inline void Clear() 
 	{
-		m_vector.Close(TDeleteFunc_CTextControlChars, NULL);
+		m_vector.Close();
 		m_vector.Open(__FILE__LINE__ 1024, 1024);
 		m_sellb = -1;
 		m_selub = -1;
@@ -99,12 +90,15 @@ public:
 
 	__inline void Append(CTextControlChar& charInfo)
 	{
-		m_vector.Append(&charInfo);
+		Ptr(CTextControlChar) p = OK_NEW_OPERATOR CTextControlChar(charInfo);
+
+		m_vector.Append(p);
 	}
 
 	CTextControlChar& Index(dword ix)
 	{
-		return (*(*(m_vector.Index(ix))));
+		m_current = (*(*(m_vector.Index(ix))));
+		return m_current;
 	}
 
 	__inline int get_LowerBound() { return m_sellb; }
@@ -323,10 +317,12 @@ public:
 			return scrollpos.x;
 		}
 
-		TCTextControlChars_FindNL param(scrollpos.y);
-		CTextControlCharVector::Iterator it = m_vector.FindUser(NULL, TSearchAndSortUserFunc_CTextControlChars_FindNL, &param);
+		CTextControlCharForEachFunctor param;
 
-		if ( !it )
+		param.cntNL = scrollpos.y;
+		m_vector.ForEach<CTextControlCharForEachFunctor>(param);
+
+		if (!(m_vector.ForEach<CTextControlCharForEachFunctor>(param)))
 			return -1;
 		param.cntCh += scrollpos.x;
 		if ( param.cntCh >= m_vector.Count() )
@@ -543,10 +539,11 @@ protected:
 	int m_selub;
 	int m_lastSellb;
 	int m_lastSelub;
+	CTextControlChar m_current;
 	CTextControlCharVector m_vector;
 };
 
-class CTextControlUndoStruct
+class CTextControlUndoStruct: public CCppObject
 {
 public:
 	CStringBuffer deleteChars;
@@ -557,38 +554,22 @@ public:
 	CTextControlUndoStruct():
 		deletePos(-1),
 		insertPos(-1) {}
-
-	void addRef() 
-	{
-		if ( NotPtrCheck(deleteChars.GetString()) )
-			deleteChars.addRef();
-		if ( NotPtrCheck(insertChars.GetString()) )
-			insertChars.addRef();
-	}
 };
 
-typedef CDataSVectorT<CTextControlUndoStruct> CTextControlUndoVector;
-
-static void __stdcall TDeleteFunc_CTextControlUndoStack( ConstPointer data, Pointer context )
-{
-	Ptr(CTextControlUndoStruct) p = CastAnyPtr(CTextControlUndoStruct, CastMutable(Pointer, data));
-
-	p->deleteChars.Clear();
-	p->insertChars.Clear();
-}
+typedef CDataVectorT<CTextControlUndoStruct> CTextControlUndoVector;
 
 class CTextControlUndoStack: public CCppObject
 {
 public:
 	CTextControlUndoStack(): m_currentPos(0), m_vector(__FILE__LINE__ 64,32) {}
-	virtual ~CTextControlUndoStack() { m_vector.Close(TDeleteFunc_CTextControlUndoStack, NULL); }
+	virtual ~CTextControlUndoStack() {}
 
 	__inline dword get_CurrentPos() const { return m_currentPos; }
 	__inline dword size() const { return m_vector.Count(); }
 
 	__inline void reset()
 	{
-		m_vector.Close(TDeleteFunc_CTextControlUndoStack, NULL);
+		m_vector.Close();
 		m_vector.Open(__FILE__LINE__ 64, 32);
 		m_currentPos = 0;
 	}
@@ -599,22 +580,26 @@ public:
 			return;
 		if ( !m_currentPos )
 		{
+			Ptr(CTextControlUndoStruct) p = OK_NEW_OPERATOR CTextControlUndoStruct(undoStruct);
+
 			reset();
-			undoStruct.addRef();
-			m_vector.Append(&undoStruct);
+			m_vector.Append(p);
 			m_currentPos = 1;
 			return;
 		}
 		while ( m_currentPos < m_vector.Count() )
-			m_vector.Remove(m_vector.Last(), TDeleteFunc_CTextControlUndoStack, NULL);
-		undoStruct.addRef();
-		m_vector.Append(&undoStruct);
+			m_vector.Remove(m_vector.Last());
+
+		Ptr(CTextControlUndoStruct) p = OK_NEW_OPERATOR CTextControlUndoStruct(undoStruct);
+
+		m_vector.Append(p);
 		++m_currentPos;
 	}
 
 	__inline CTextControlUndoStruct& current()
 	{
-		return *(*(m_vector.Index(m_currentPos)));
+		m_current = *(*(m_vector.Index(m_currentPos)));
+		return m_current;
 	}
 
 	__inline void undo()
@@ -631,6 +616,7 @@ public:
 
 protected:
 	dword m_currentPos;
+	CTextControlUndoStruct m_current;
 	CTextControlUndoVector m_vector;
 };
 

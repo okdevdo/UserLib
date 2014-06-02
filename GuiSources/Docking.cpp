@@ -68,25 +68,23 @@ static void __stdcall TDeleteFunc_Empty( ConstPointer data, Pointer context )
 //***********************************************************
 // CDockWindow
 //***********************************************************
-static sword __stdcall TSearchAndSortFunc_CDockWindowNeighbourFind( ConstPointer ArrayItem, ConstPointer DataItem )
+class CDockWindowNeighbourEqualFunctor
 {
-	CDockWindow::TNeighbour* pArray = CastAnyPtr(CDockWindow::TNeighbour, CastMutable(Pointer, ArrayItem));
-	CDockWindow::TNeighbour* pData = CastAnyPtr(CDockWindow::TNeighbour, CastMutable(Pointer, DataItem));
+public:
+	bool operator()(ConstPtr(CDockWindow::TNeighbour) pArray, ConstPtr(CDockWindow::TNeighbour) pData) const
+	{
+		return pArray->win != pData->win;
+	}
+};
 
-	if ( pArray->win == pData->win )
-		return 0;
-	return 1;
-}
-
-static sword __stdcall TSearchAndSortFunc_CDockWindowNeighbourFindFull( ConstPointer ArrayItem, ConstPointer DataItem )
+class CDockWindowNeighbourFullEqualFunctor
 {
-	CDockWindow::TNeighbour* pArray = CastAnyPtr(CDockWindow::TNeighbour, CastMutable(Pointer, ArrayItem));
-	CDockWindow::TNeighbour* pData = CastAnyPtr(CDockWindow::TNeighbour, CastMutable(Pointer, DataItem));
-
-	if ( (pArray->win == pData->win) && (pArray->style == pData->style) )
-		return 0;
-	return 1;
-}
+public:
+	bool operator()(ConstPtr(CDockWindow::TNeighbour) pArray, ConstPtr(CDockWindow::TNeighbour) pData) const
+	{
+		return (pArray->win != pData->win) || (pArray->style != pData->style);
+	}
+};
 
 BEGIN_MESSAGE_MAP(CWin, CDockWindow)
 	ON_WM_NCACTIVATE()
@@ -138,7 +136,6 @@ CDockWindow::CDockWindow(ConstRef(CStringBuffer) name):
 
 CDockWindow::~CDockWindow()
 {
-	m_neighbours.Close(TDeleteFunc_Empty, NULL);
 }
 
 BOOL CDockWindow::PreRegisterClass(WNDCLASSEX& cls)
@@ -799,9 +796,9 @@ void CDockWindow::ClearNeighbours()
 		RemoveNeighbour(pWin);
 		++it1;
 	}
-	delPtr.Close(TDeleteFunc_Empty, NULL);
+	delPtr.Close();
 #else
-	m_neighbours.Close(TDeleteFunc_Empty, NULL);
+	m_neighbours.Close();
 	m_neighbours.Open(__FILE__LINE__ 16,16);
 #endif
 }
@@ -834,11 +831,11 @@ void CDockWindow::ClearNeighbours(TDockingStyle style)
 void CDockWindow::AppendNeighbour(TDockingStyle style, CDockWindow* win)
 {
 	TNeighbour nb(style, win);
-	TNeighbourVector::Iterator it = m_neighbours.Find(&nb, TSearchAndSortFunc_CDockWindowNeighbourFindFull);
+	TNeighbourVector::Iterator it = m_neighbours.Find<CDockWindowNeighbourFullEqualFunctor>(&nb);
 
 	if ( it )
 		return;
-	it = m_neighbours.Find(&nb, TSearchAndSortFunc_CDockWindowNeighbourFind);
+	it = m_neighbours.Find<CDockWindowNeighbourEqualFunctor>(&nb);
 	assert(!it);
 #ifdef __DEBUG1__
 	CTabControl* pTabControl = CastDynamicPtr(CTabControl, m_control);
@@ -846,17 +843,17 @@ void CDockWindow::AppendNeighbour(TDockingStyle style, CDockWindow* win)
 	CListView* pListView = CastDynamicPtr(CListView, pTabPage->get_childbyID(1000));
 	CListViewNode* pNode = OK_NEW_OPERATOR CListViewNode(pListView, win->get_name());
 #endif
-	m_neighbours.Append(&nb);
+	m_neighbours.Append(OK_NEW_OPERATOR TNeighbour(nb));
 }
 
 void CDockWindow::RemoveNeighbour(CDockWindow* win)
 {
 	TNeighbour nb(win);
-	TNeighbourVector::Iterator it = m_neighbours.Find(&nb, TSearchAndSortFunc_CDockWindowNeighbourFind);
+	TNeighbourVector::Iterator it = m_neighbours.Find<CDockWindowNeighbourEqualFunctor>(&nb);
 
 	if ( it )
 	{
-		m_neighbours.Remove(it, TDeleteFunc_Empty, NULL);
+		m_neighbours.Remove(it);
 #ifdef __DEBUG1__
 	CTabControl* pTabControl = CastDynamicPtr(CTabControl, m_control);
 	CTabPage* pTabPage = CastDynamicPtr(CTabPage, pTabControl->get_childbyID(1000));
@@ -3070,7 +3067,7 @@ void CDockInfo::Destroy(CDockWindow* pWindow)
 		return;
 	if ( pWindow->is_Floating() )
 	{
-		CDockWindowVector::Iterator it = m_floatingdockwindows.Find<CCppObjectLessFunctor<CDockWindow>>(pWindow);
+		CDockWindowVector::Iterator it = m_floatingdockwindows.Find<CCppObjectEqualFunctor<CDockWindow> >(pWindow);
 
 		if ( it )
 			m_floatingdockwindows.Remove(it);
@@ -3432,7 +3429,7 @@ void CDockInfo::UpdateFrame(CDockWindow* pWin)
 {
 	if ( pWin->is_Floating() )
 	{
-		CDockWindowVector::Iterator it = m_dockwindows.Find<CCppObjectLessFunctor<CDockWindow>>(pWin);
+		CDockWindowVector::Iterator it = m_dockwindows.Find<CCppObjectEqualFunctor<CDockWindow>>(pWin);
 
 		if ( it )
 			m_dockwindows.Remove(it);
@@ -3442,7 +3439,7 @@ void CDockInfo::UpdateFrame(CDockWindow* pWin)
 	}
 	else
 	{
-		CDockWindowVector::Iterator it = m_floatingdockwindows.Find<CCppObjectLessFunctor<CDockWindow>>(pWin);
+		CDockWindowVector::Iterator it = m_floatingdockwindows.Find<CCppObjectEqualFunctor<CDockWindow>>(pWin);
 
 		if ( it )
 			m_floatingdockwindows.Remove(it);

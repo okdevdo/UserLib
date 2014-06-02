@@ -57,7 +57,6 @@ static
 #endif /* __MT__ */
 
 #define MAX_DEFAULTPOOL_ENTRIESPERNODE 256
-#define MAX_MEMITEMS 32
 
 #define MEMITEM_MODE_SMALLBLOCK 0x00
 #define MEMITEM_MODE_LARGEBLOCK 0x01
@@ -694,6 +693,8 @@ _TFBTreeGetData(LSearchResultType node)
 typedef struct _MEMITEM
 {
 	size_t size;
+	size_t bsize;
+	size_t asize;
 	dword refCnt;
 	dword mode;
 #ifdef __DEBUG__
@@ -706,9 +707,35 @@ typedef struct _MEMITEM
 static Pointer _defaultpoola = NULL;
 static Pointer _defaultpoolf = NULL;
 #ifdef __DEBUG__
-#define MAX_DBGLISTE 199
-static PMEMITEM _dbgListe[MAX_DBGLISTE + 1];
+typedef struct _DBGLISTE
+{
+	size_t size;
+	Pointer p;
+} DBGLISTE;
+
+#define MAX_DBGLISTE 10240
+
+static DBGLISTE _dbgListe[MAX_DBGLISTE + 1];
 static int _dbgListeNum = -1;
+
+static void findDbgListe(Pointer p)
+{
+	int i;
+
+	for (i = 0; i <= _dbgListeNum; ++i)
+	{
+		if (_dbgListe[i].p == p)
+		{
+			PMEMITEM pmi = (PMEMITEM)p;
+
+			if (_dbgListe[i].size == pmi->asize)
+				return;
+			_ftprintf(stderr, _T("%08x: size differs(%ld, %ld)\n"), p, _dbgListe[i].size, pmi->size);
+			return;
+		}
+	}
+	_ftprintf(stderr, _T("%08x not found\n"), p);
+}
 
 static dword _cntTFalloc = 0;
 static size_t _allocatedBufferSize = 0;
@@ -774,6 +801,9 @@ _TFremoveonexita( ConstPointer data, Pointer context )
 	case MEMITEM_MODE_LARGEBLOCK:
 	case MEMITEM_MODE_ALLOCBLOCK:
 		_TFVectorAppend(context, pmi);
+#ifdef __DEBUG__
+		findDbgListe(pmi);
+#endif
 		break;
 	default:
 		break;
@@ -790,6 +820,9 @@ _TFremoveonexitf( ConstPointer data, Pointer context )
 	case MEMITEM_MODE_LARGEBLOCK:
 	case MEMITEM_MODE_ALLOCBLOCK:
 		_TFVectorAppend(context, pmi);
+#ifdef __DEBUG__
+		findDbgListe(pmi);
+#endif
 		break;
 	default:
 		break;
@@ -807,10 +840,8 @@ _TFscanonalloca( ConstPointer data, Pointer context )
 	switch ( pmi->mode )
 	{
 	case MEMITEM_MODE_LARGEBLOCK:
-		_allocatedBufferSize += pmi->size;
-		break;
 	case MEMITEM_MODE_ALLOCBLOCK:
-		_allocatedBufferSize += pmi->size * MAX_MEMITEMS;
+		_allocatedBufferSize += pmi->asize;
 		break;
 	default:
 		break;
@@ -827,10 +858,8 @@ _TFscanonallocf( ConstPointer data, Pointer context )
 	switch ( pmi->mode )
 	{
 	case MEMITEM_MODE_LARGEBLOCK:
-		_freeBufferSize += pmi->size;
-		break;
 	case MEMITEM_MODE_ALLOCBLOCK:
-		_freeBufferSize += pmi->size * MAX_MEMITEMS;
+		_freeBufferSize += pmi->asize;
 		break;
 	default:
 		break;
@@ -923,35 +952,60 @@ char* _TFHashTabSearch(const char* v)
 Pointer _TFHashTabAlloc(size_t sz)
 {
 	size_t bufSize = 0;
+	dword max_memitems;
 	LSearchResultType result;
 	PMEMITEM pmi;
 	PMEMITEM pmi1;
 	MEMITEM mi;
 	dword ix;
+	bool bLBDone = false;
 
 	if (sz == 0)
 		return NULL;
+	if (PtrCheck(_defaultpoola))
+		_TFinit();
+	if (PtrCheck(_defaultpoola) || PtrCheck(_defaultpoolf))
+		return NULL;
 	TFLOCK
 	if (sz < 256)
+	{
 		bufSize = ((sz + 15) / 16) * 16;
+		max_memitems = 64;
+	}
 	else if (sz < 1024)
+	{
 		bufSize = ((sz + 31) / 32) * 32;
+		max_memitems = 32;
+	}
 	else
 	{
 		bufSize = ((sz + 3) / 4) * 4;
 		s_memset(&mi, 0, szMEMITEM);
 		mi.size = bufSize;
 		result = _TFBTreeLowerBound(_defaultpoolf, &mi, _TFsortsizes);
+		while (!(LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi))))
+		{
+			pmi = CastAnyPtr(MEMITEM, _TFBTreeGetData(result));
+			if (pmi->mode == MEMITEM_MODE_LARGEBLOCK)
+				break;
+			result = _TFBTreeNext(result);
+		}
 		if (LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi)))
 		{
-			pmi = (PMEMITEM)malloc(bufSize + sizeof(MEMITEM));
-
+			pmi = (PMEMITEM)malloc(bufSize + szMEMITEM);
 			if (PtrCheck(pmi))
 			{
 				TFUNLOCK
-				return NULL;
+					return NULL;
 			}
-			s_memset(pmi, 0, bufSize + sizeof(MEMITEM));
+			if (_dbgListeNum < MAX_DBGLISTE) {
+				++_dbgListeNum;
+				_dbgListe[_dbgListeNum].size = bufSize + szMEMITEM;
+				_dbgListe[_dbgListeNum].p = pmi;
+			}
+			s_memset(pmi, 0, bufSize + szMEMITEM);
+			pmi->asize = bufSize + szMEMITEM;
+			pmi->bsize = bufSize;
 			pmi->mode = MEMITEM_MODE_LARGEBLOCK;
 		}
 		else
@@ -959,61 +1013,64 @@ Pointer _TFHashTabAlloc(size_t sz)
 			pmi = CastAnyPtr(MEMITEM, _TFBTreeGetData(result));
 			_TFBTreeRemove(result, _TFremovenull, NULL);
 		}
-		pmi->size = bufSize;
-		pmi->refCnt = 1;
-		pmi->file = NULL;
-		pmi->line = 0;
-		++pmi;
-		_TFBTreeInsertSorted(_defaultpoola, pmi, _TFsortpointers);
-		TFUNLOCK
-		return pmi;
+		bLBDone = true;
 	}
-	s_memset(&mi, 0, szMEMITEM);
-	mi.size = bufSize;
-	result = _TFBTreeLowerBound(_defaultpoolf, &mi, _TFsortsizes);
-	if (LPtrCheck(result) || (0 != _TFsortsizes(_TFBTreeGetData(result), &mi)))
+	if (!bLBDone)
 	{
-		mi.size = (bufSize + sizeof(MEMITEM)) * MAX_MEMITEMS;
+		s_memset(&mi, 0, szMEMITEM);
+		mi.size = bufSize;
 		result = _TFBTreeLowerBound(_defaultpoolf, &mi, _TFsortsizes);
-		while (!(LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi))))
+		if (LPtrCheck(result) || (0 != _TFsortsizes(_TFBTreeGetData(result), &mi)))
 		{
-			pmi = CastAnyPtr(MEMITEM, _TFBTreeGetData(result));
-			if (pmi->mode != MEMITEM_MODE_SMALLBLOCK)
+			mi.size = (bufSize + szMEMITEM) * max_memitems;
+			result = _TFBTreeLowerBound(_defaultpoolf, &mi, _TFsortsizes);
+			while (!(LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi))))
 			{
+				pmi = CastAnyPtr(MEMITEM, _TFBTreeGetData(result));
+				if (pmi->mode == MEMITEM_MODE_LARGEBLOCK)
+					break;
+				result = _TFBTreeNext(result);
+			}
+			if (LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi)))
+			{
+				pmi = (PMEMITEM)malloc((bufSize + szMEMITEM) * max_memitems);
+				if (PtrCheck(pmi))
+				{
+					TFUNLOCK
+						return NULL;
+				}
+				if (_dbgListeNum < MAX_DBGLISTE) {
+					++_dbgListeNum;
+					_dbgListe[_dbgListeNum].size = (bufSize + szMEMITEM) * max_memitems;
+					_dbgListe[_dbgListeNum].p = pmi;
+				}
+				s_memset(pmi, 0, (bufSize + szMEMITEM) * max_memitems);
+				pmi->asize = (bufSize + szMEMITEM) * max_memitems;
+			}
+			else
 				_TFBTreeRemove(result, _TFremovenull, NULL);
-				break;
-			}
-			result = _TFBTreeNext(result);
-		}
-		if (LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi)))
-		{
-			pmi = (PMEMITEM)malloc((bufSize + sizeof(MEMITEM)) * MAX_MEMITEMS);
-			if (PtrCheck(pmi))
-			{
-				TFUNLOCK
-				return NULL;
-			}
-			s_memset(pmi, 0, (bufSize + sizeof(MEMITEM)) * MAX_MEMITEMS);
 			pmi->mode = MEMITEM_MODE_ALLOCBLOCK;
-		}
-		pmi1 = pmi;
-		++pmi;
-		pmi = CastAnyPtr(MEMITEM, _l_ptradd(pmi, bufSize));
-		for (ix = 1; ix < MAX_MEMITEMS; ++ix)
-		{
-			pmi->mode = MEMITEM_MODE_SMALLBLOCK;
-			pmi->size = bufSize;
-			pmi->refCnt = 1;
-			_TFBTreeInsertSorted(_defaultpoolf, pmi, _TFsortsizes);
+			pmi->bsize = bufSize;
+			pmi1 = pmi;
 			++pmi;
 			pmi = CastAnyPtr(MEMITEM, _l_ptradd(pmi, bufSize));
+			for (ix = 1; ix < max_memitems; ++ix)
+			{
+				pmi->mode = MEMITEM_MODE_SMALLBLOCK;
+				pmi->size = bufSize;
+				pmi->bsize = bufSize;
+				pmi->refCnt = 1;
+				_TFBTreeInsertSorted(_defaultpoolf, pmi, _TFsortsizes);
+				++pmi;
+				pmi = CastAnyPtr(MEMITEM, _l_ptradd(pmi, bufSize));
+			}
+			pmi = pmi1;
 		}
-		pmi = pmi1;
-	}
-	else
-	{
-		pmi = CastAnyPtr(MEMITEM, _TFBTreeGetData(result));
-		_TFBTreeRemove(result, _TFremovenull, NULL);
+		else
+		{
+			pmi = CastAnyPtr(MEMITEM, _TFBTreeGetData(result));
+			_TFBTreeRemove(result, _TFremovenull, NULL);
+		}
 	}
 	pmi->size = bufSize;
 	pmi->refCnt = 1;
@@ -1098,11 +1155,13 @@ void* TFalloc(size_t sz)
 #endif
 {
 	size_t bufSize = 0;
+	dword max_memitems;
 	LSearchResultType result;
 	PMEMITEM pmi;
 	PMEMITEM pmi1;
 	MEMITEM mi;
 	dword ix;
+	bool bLBDone = false;
 
 	if (sz == 0)
 		return NULL;
@@ -1122,24 +1181,46 @@ void* TFalloc(size_t sz)
 	}
 #endif
 	if (sz < 256)
+	{
 		bufSize = ((sz + 15) / 16) * 16;
+		max_memitems = 64;
+	}
 	else if (sz < 1024)
+	{
 		bufSize = ((sz + 31) / 32) * 32;
+		max_memitems = 32;
+	}
 	else
 	{
 		bufSize = ((sz + 3) / 4) * 4;
 		s_memset(&mi, 0, szMEMITEM);
 		mi.size = bufSize;
 		result = _TFBTreeLowerBound(_defaultpoolf, &mi, _TFsortsizes);
+		while (!(LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi))))
+		{
+			pmi = CastAnyPtr(MEMITEM, _TFBTreeGetData(result));
+			if (pmi->mode == MEMITEM_MODE_LARGEBLOCK)
+				break;
+			result = _TFBTreeNext(result);
+		}
 		if (LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi)))
 		{
-			pmi = (PMEMITEM)malloc(bufSize + sizeof(MEMITEM));
+			pmi = (PMEMITEM)malloc(bufSize + szMEMITEM);
 			if (PtrCheck(pmi))
 			{
 				TFUNLOCK
 					return NULL;
 			}
-			s_memset(pmi, 0, bufSize + sizeof(MEMITEM));
+#ifdef __DEBUG__
+			if (_dbgListeNum < MAX_DBGLISTE) {
+				++_dbgListeNum;
+				_dbgListe[_dbgListeNum].size = bufSize + szMEMITEM;
+				_dbgListe[_dbgListeNum].p = pmi;
+			}
+#endif
+			s_memset(pmi, 0, bufSize + szMEMITEM);
+			pmi->asize = bufSize + szMEMITEM;
+			pmi->bsize = bufSize;
 			pmi->mode = MEMITEM_MODE_LARGEBLOCK;
 		}
 		else
@@ -1147,82 +1228,66 @@ void* TFalloc(size_t sz)
 			pmi = CastAnyPtr(MEMITEM, _TFBTreeGetData(result));
 			_TFBTreeRemove(result, _TFremovenull, NULL);
 		}
-		pmi->size = bufSize;
-		pmi->refCnt = 1;
-#ifdef __DEBUG__
-#ifdef OK_COMP_GNUC
-		if (PtrCheck(file))
-			pmi->file = NULL;
-		else
-		{
-			pmi->file = _TFHashTabSearch(file);
-			if (PtrCheck(pmi->file))
-			{
-				TFUNLOCK
-				pmi->file = _TFHashTabInsert(file);
-				TFLOCK
-			}
-		}
-#endif
-#ifdef OK_COMP_MSC
-		pmi->file = file;
-#endif
-		pmi->line = line;
-		if ( _dbgListeNum < MAX_DBGLISTE ) {
-			++_dbgListeNum;
-			_dbgListe[_dbgListeNum] = pmi;
-		}
-#endif
-		++pmi;
-		_TFBTreeInsertSorted(_defaultpoola, pmi, _TFsortpointers);
-		TFUNLOCK
-		return pmi;
+		bLBDone = true;
 	}
-	s_memset(&mi, 0, szMEMITEM);
-	mi.size = bufSize;
-	result = _TFBTreeLowerBound(_defaultpoolf, &mi, _TFsortsizes);
-	if ( LPtrCheck(result) || (0 != _TFsortsizes(_TFBTreeGetData(result), &mi)) )
+	if (!bLBDone)
 	{
-		mi.size = (bufSize + sizeof(MEMITEM)) * MAX_MEMITEMS;
+		s_memset(&mi, 0, szMEMITEM);
+		mi.size = bufSize;
 		result = _TFBTreeLowerBound(_defaultpoolf, &mi, _TFsortsizes);
-		while (!(LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi))))
+		if (LPtrCheck(result) || (0 != _TFsortsizes(_TFBTreeGetData(result), &mi)))
 		{
-			pmi = CastAnyPtr(MEMITEM, _TFBTreeGetData(result));
-			if (pmi->mode != MEMITEM_MODE_SMALLBLOCK)
-				break;
-			result = _TFBTreeNext(result);
-		}
-		if (LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi)))
-		{
-			pmi = (PMEMITEM)malloc((bufSize + sizeof(MEMITEM)) * MAX_MEMITEMS);
-			if (PtrCheck(pmi))
+			mi.size = (bufSize + szMEMITEM) * max_memitems;
+			result = _TFBTreeLowerBound(_defaultpoolf, &mi, _TFsortsizes);
+			while (!(LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi))))
 			{
-				TFUNLOCK
-				return NULL;
+				pmi = CastAnyPtr(MEMITEM, _TFBTreeGetData(result));
+				if (pmi->mode == MEMITEM_MODE_LARGEBLOCK)
+					break;
+				result = _TFBTreeNext(result);
 			}
-			s_memset(pmi, 0, (bufSize + sizeof(MEMITEM)) * MAX_MEMITEMS);
-		}
-		else
-			_TFBTreeRemove(result, _TFremovenull, NULL);
-		pmi->mode = MEMITEM_MODE_ALLOCBLOCK;
-        pmi1 = pmi;
-        ++pmi;
-		pmi = CastAnyPtr(MEMITEM, _l_ptradd(pmi, bufSize));
-		for ( ix = 1; ix < MAX_MEMITEMS; ++ix)
-		{
-			pmi->mode = MEMITEM_MODE_SMALLBLOCK;
-			pmi->size = bufSize;
-			pmi->refCnt = 1;
-			_TFBTreeInsertSorted(_defaultpoolf, pmi, _TFsortsizes);
+			if (LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi)))
+			{
+				pmi = (PMEMITEM)malloc((bufSize + szMEMITEM) * max_memitems);
+				if (PtrCheck(pmi))
+				{
+					TFUNLOCK
+						return NULL;
+				}
+#ifdef __DEBUG__
+				if (_dbgListeNum < MAX_DBGLISTE) {
+					++_dbgListeNum;
+					_dbgListe[_dbgListeNum].size = (bufSize + szMEMITEM) * max_memitems;
+					_dbgListe[_dbgListeNum].p = pmi;
+				}
+#endif
+				s_memset(pmi, 0, (bufSize + szMEMITEM) * max_memitems);
+				pmi->asize = (bufSize + szMEMITEM) * max_memitems;
+			}
+			else
+				_TFBTreeRemove(result, _TFremovenull, NULL);
+			pmi->mode = MEMITEM_MODE_ALLOCBLOCK;
+			pmi->bsize = bufSize;
+			pmi1 = pmi;
 			++pmi;
 			pmi = CastAnyPtr(MEMITEM, _l_ptradd(pmi, bufSize));
+			for (ix = 1; ix < max_memitems; ++ix)
+			{
+				pmi->mode = MEMITEM_MODE_SMALLBLOCK;
+				pmi->size = bufSize;
+				pmi->bsize = bufSize;
+				pmi->refCnt = 1;
+				_TFBTreeInsertSorted(_defaultpoolf, pmi, _TFsortsizes);
+				++pmi;
+				pmi = CastAnyPtr(MEMITEM, _l_ptradd(pmi, bufSize));
+			}
+			pmi = pmi1;
 		}
-		pmi = pmi1;
-	}
-	else
-	{
-		pmi = CastAnyPtr(MEMITEM, _TFBTreeGetData(result));
-		_TFBTreeRemove(result, _TFremovenull, NULL);
+		else
+		{
+			pmi = CastAnyPtr(MEMITEM, _TFBTreeGetData(result));
+			_TFBTreeRemove(result, _TFremovenull, NULL);
+		}
 	}
 	pmi->size = bufSize;
 	pmi->refCnt = 1;
@@ -1245,10 +1310,6 @@ void* TFalloc(size_t sz)
 	pmi->file = file;
 #endif
 	pmi->line = line;
-	if ( _dbgListeNum < MAX_DBGLISTE ) {
-		++_dbgListeNum;
-		_dbgListe[_dbgListeNum] = pmi;
-	}
 #endif
 	++pmi;
 	_TFBTreeInsertSorted(_defaultpoola, pmi, _TFsortpointers);
@@ -1339,12 +1400,13 @@ void TFfree(void* p)
 	_TFBTreeRemove(result, _TFremovenull, NULL);
 	pmi = CastAnyPtr(MEMITEM, p);
 	--pmi;
-	s_memset(p, 0, pmi->size);
-	pmi->refCnt = 1;
+	pmi->size = pmi->bsize;
 #ifdef __DEBUG__
 	pmi->file = NULL;
 	pmi->line = 0;
 #endif
+	pmi->refCnt = 1;
+	s_memset(p, 0, pmi->size);
 	_TFBTreeInsertSorted(_defaultpoolf, pmi, _TFsortsizes);
 	TFUNLOCK
 }

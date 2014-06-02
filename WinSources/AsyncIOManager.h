@@ -26,15 +26,6 @@
 #include "AsyncIOData.h"
 #include "Event.h"
 
-class WINSOURCES_API CAsyncIODataLessFunctor
-{
-public:
-	bool operator()(ConstPtr(CAsyncIOData) r1, ConstPtr(CAsyncIOData) r2) const
-	{
-		return (r1 < r2);
-	}
-};
-
 class WINSOURCES_API CAsyncIOManager : public CCppObject
 {
 public:
@@ -52,7 +43,7 @@ public:
 	void AddTask(Ptr(CAsyncIOData) pData);
 
 protected:
-	typedef CDataVectorT<CAsyncIOData, CAsyncIODataLessFunctor, CCppObjectNullFunctor<CAsyncIOData>> CAsyncIODataVector;
+	typedef CDataVectorT<CAsyncIOData, CCppObjectLessFunctor<CAsyncIOData>, CCppObjectNullFunctor<CAsyncIOData>> CAsyncIODataVector;
 
 	HANDLE m_iocp;
 	CAsyncIODataVector m_tasks;

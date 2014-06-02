@@ -254,7 +254,7 @@ public:
 	int set_ssl_version(const CSSL_METHOD *meth);
 
 	void set_client_CA_list(CStack<CX509_NAME>& list);
-	CStack<CX509_NAME> get_client_CA_list();
+	void get_client_CA_list(CStack<CX509_NAME>& list);
 	int add_client_CA(CX509 *x);
 
 	int get_quiet_shutdown();
@@ -487,7 +487,7 @@ public:
 	int has_matching_session_id(const unsigned char *id, unsigned int id_len);
 
 	CX509 *get_peer_certificate();
-	CStack<CX509> get_peer_cert_chain();
+	void get_peer_cert_chain(Ref(CStack<CX509>) ret);
 	int check_private_key();
 
 	int	set_session_id_context(const unsigned char *sid_ctx, unsigned int sid_ctx_len);
@@ -504,7 +504,7 @@ public:
 	int	get_error( int ret_code);
 	const char *get_version();
 
-	CStack<CSSL_CIPHER> get_ciphers();
+	void get_ciphers(Ref(CStack<CSSL_CIPHER>));
 
 	int do_handshake();
 	int renegotiate();
@@ -516,7 +516,7 @@ public:
 	int set_method(ConstPtr(CSSL_METHOD) method);
 
 	void set_client_CA_list(ConstRef(CStack<CX509_NAME>) name_list);
-	CStack<CX509_NAME> get_client_CA_list();
+	void get_client_CA_list(Ref(CStack<CX509_NAME>));
 	int add_client_CA(CX509 *x);
 
 	void set_connect_state();

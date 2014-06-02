@@ -28,188 +28,7 @@
 
 #include "CppSources.h"
 
-class CPPSOURCES_API CDataArray
-{
-public:
-	enum TSortMode {
-		HeapSortMode = LSORTMODE_HEAPSORT,
-		QuickSortMode = LSORTMODE_QUICKSORT
-	};
-
-	class Iterator
-	{
-	public:
-		Iterator(void): _result(_LNULL) {}
-		Iterator(LSearchResultType result): _result(result) {}
-
-		Iterator& operator++() { _result = ArrayNext(_result); return *this; }
-		Iterator& operator--() { _result = ArrayPrev(_result); return *this; }
-		Pointer operator*() { return ArrayGetData(_result); }
-
-		operator bool() { return !LPtrCheck(_result); }
-		operator LSearchResultType() { return _result; }
-
-		bool operator == (Iterator other) { return LCompareEqual(_result, other._result); }
-		bool operator != (Iterator other) { return LCompareNotEqual(_result, other._result); }
-
-	private:
-		LSearchResultType _result;
-	};
-
-	CDataArray(DECL_FILE_LINE TListCnt cnt, TDeleteFunc pDeleteFunc = NULL, Pointer pDeleteContext = NULL, TSearchAndSortFunc pSearchAndSortFunc = NULL)
-	{
-		Open(ARGS_FILE_LINE cnt);
-		_deleteFunc = pDeleteFunc;
-		_deleteContext = pDeleteContext;
-		_searchAndSortFunc = pSearchAndSortFunc;
-	}
-	CDataArray(ConstRef(CDataArray) copy)
-	{
-		_liste = copy._liste;
-		_deleteFunc = copy._deleteFunc;
-		_deleteContext = copy._deleteContext;
-		_searchAndSortFunc = copy._searchAndSortFunc;
-		AddRef();
-	}
-	~CDataArray(void)
-	{
-		if (_deleteFunc)
-		{
-			if (!Release())
-				ArrayClose(_liste, _deleteFunc, _deleteContext);
-		}
-	}
-
-	ConstRef(CDataArray) operator = (ConstRef(CDataArray) copy)
-	{
-		Copy(copy);
-		return *this;
-	}
-
-	TListCnt AddRef() { return TFincrefcnt(_liste); }
-	TListCnt RefCount() { return TFrefcnt(_liste); }
-	TListCnt Release() { return TFdecrefcnt(_liste); }
-	bool Open(DECL_FILE_LINE TListCnt cnt) { _liste = ArrayOpen(ARGS_FILE_LINE cnt); return _liste != NULL; }
-	TListCnt Count() const { return ArrayCount(_liste); }
-	void Copy(ConstRef(CDataArray) copy, TDeleteFunc freeFunc = NULL, Pointer context = NULL)
-	{
-		if (!Release())
-			Close(freeFunc, context);
-		_liste = copy._liste;
-		_deleteFunc = copy._deleteFunc;
-		_deleteContext = copy._deleteContext;
-		_searchAndSortFunc = copy._searchAndSortFunc;
-		AddRef();
-	}
-	void Close(TDeleteFunc freeFunc = NULL, Pointer context = NULL)
-	{
-		if (freeFunc)
-			ArrayClose(_liste, freeFunc, context);
-		else if (_deleteFunc)
-			ArrayClose(_liste, _deleteFunc, _deleteContext);
-		else
-			ArrayClose(_liste, NULL, NULL);
-		_liste = NULL;
-	}
-	Iterator Index(TListIndex index) const { Iterator it = ArrayIndex(_liste, index); return it; }
-	Iterator Begin() const { Iterator it = ArrayBegin(_liste); return it; }
-	Iterator Next(Iterator node) const { if ( node ) ++node; return node; }
-	Iterator Prev(Iterator node) const { if ( node ) --node; return node; }
-	Iterator Last() const { Iterator it = ArrayLast(_liste); return it; }
-	bool ForEach(TForEachFunc func, Pointer context = NULL) const { return ArrayForEach(_liste, func, context); }
-	Iterator Find(ConstPointer data, TSearchAndSortFunc findFunc) const { Iterator it = ArrayFind(_liste, data, findFunc); return it; }
-	Iterator FindSorted(ConstPointer data, TSearchAndSortFunc findFunc = NULL) const
-	{
-		Iterator it;
-
-		if (findFunc)
-			it = ArrayFindSorted(_liste, data, findFunc);
-		else if (_searchAndSortFunc)
-			it = ArrayFindSorted(_liste, data, _searchAndSortFunc);
-		return it;
-	}
-	Iterator UpperBound(ConstPointer data, TSearchAndSortFunc findFunc) const
-	{
-		Iterator it;
-
-		if (findFunc)
-			it = ArrayUpperBound(_liste, data, findFunc);
-		else if (_searchAndSortFunc)
-			it = ArrayUpperBound(_liste, data, _searchAndSortFunc);
-		return it;
-	}
-	Iterator LowerBound(ConstPointer data, TSearchAndSortFunc findFunc) const
-	{
-		Iterator it;
-
-		if (findFunc)
-			it = ArrayLowerBound(_liste, data, findFunc);
-		else if (_searchAndSortFunc)
-			it = ArrayLowerBound(_liste, data, _searchAndSortFunc);
-		return it;
-	}
-	void Sort(TSearchAndSortFunc sortFunc = NULL, TSortMode mode = HeapSortMode) const
-	{
-		if (sortFunc)
-			ArraySort(_liste, sortFunc, Castword(mode));
-		else if (_searchAndSortFunc)
-			ArraySort(_liste, _searchAndSortFunc, Castword(mode));
-	}
-	Iterator Append(ConstPointer data) const { Iterator it = ArrayAppend(_liste, data); return it; }
-	Iterator Prepend(ConstPointer data) const { Iterator it = ArrayPrepend(_liste, data); return it; }
-	Iterator InsertBefore(Iterator node, ConstPointer data) const { Iterator it = ArrayInsertBefore(node, data); return it; }
-	Iterator InsertAfter(Iterator node, ConstPointer data) const { Iterator it = ArrayInsertAfter(node, data); return it; }
-	void Remove(Iterator node, TDeleteFunc freeFunc = NULL, Pointer context = NULL) const
-	{
-		if (freeFunc)
-			ArrayRemove(node, freeFunc, context);
-		else if (_deleteFunc)
-			ArrayRemove(node, _deleteFunc, _deleteContext);
-		else
-			ArrayRemove(node, NULL, NULL);
-	}
-	Iterator InsertSorted(ConstPointer data, TSearchAndSortFunc findFunc = NULL) const
-	{
-		if (findFunc)
-			return ArrayInsertSorted(_liste, data, findFunc);
-		if (_searchAndSortFunc)
-			return ArrayInsertSorted(_liste, data, _searchAndSortFunc);
-		return _LNULL;
-	}
-	bool RemoveSorted(ConstPointer data, TSearchAndSortFunc findFunc = NULL, TDeleteFunc freeFunc = NULL, Pointer context = NULL) const
-	{
-		if (findFunc)
-		{
-			if (freeFunc)
-				return ArrayRemoveSorted(_liste, data, findFunc, freeFunc, context);
-			if (_deleteFunc)
-				return ArrayRemoveSorted(_liste, data, findFunc, _deleteFunc, _deleteContext);
-			return ArrayRemoveSorted(_liste, data, findFunc, NULL, NULL);
-		}
-		if (_searchAndSortFunc)
-		{
-			if (freeFunc)
-				return ArrayRemoveSorted(_liste, data, _searchAndSortFunc, freeFunc, context);
-			if (_deleteFunc)
-				return ArrayRemoveSorted(_liste, data, _searchAndSortFunc, _deleteFunc, _deleteContext);
-			return ArrayRemoveSorted(_liste, data, _searchAndSortFunc, NULL, NULL);
-		}
-		return true;
-	}
-	Pointer GetData(Iterator node) const { return ArrayGetData(node); }
-	void SetData(Iterator node, ConstPointer data) const { ArraySetData(node, data); }
-
-protected:
-	Pointer _liste;
-	TDeleteFunc _deleteFunc;
-	Pointer _deleteContext;
-	TSearchAndSortFunc _searchAndSortFunc;
-
-private:
-	CDataArray(void);
-};
-
-template <class Item>
+template <class Item, class Lesser = CCppObjectLessFunctor<Item>, class Deleter = CCppObjectReleaseFunctor<Item> >
 class CDataArrayT
 {
 public:
@@ -238,519 +57,288 @@ public:
 		LSearchResultType _result;
 	};
 
-	CDataArrayT(DECL_FILE_LINE TListCnt cnt, TDeleteFunc pDeleteFunc = NULL, Pointer pDeleteContext = NULL, TSearchAndSortFunc pSearchAndSortFunc = NULL)
+	CDataArrayT(DECL_FILE_LINE TListCnt cnt, RefRef(Lesser) rLesser = Lesser(), RefRef(Deleter) rDeleter = Deleter()) :
+		_liste(NULL), _deleter(rDeleter), _lesser(rLesser)
 	{
 		Open(ARGS_FILE_LINE cnt);
-		_deleteFunc = pDeleteFunc;
-		_deleteContext = pDeleteContext;
-		_searchAndSortFunc = pSearchAndSortFunc;
 	}
-	CDataArrayT(ConstRef(CDataArrayT) copy)
+	CDataArrayT(DECL_FILE_LINE TListCnt cnt, ConstRef(Lesser) rLesser, ConstRef(Deleter) rDeleter) :
+		_liste(NULL), _deleter(rDeleter), _lesser(rLesser)
 	{
-		_liste = copy._liste;
-		_deleteFunc = copy._deleteFunc;
-		_deleteContext = copy._deleteContext;
-		_searchAndSortFunc = copy._searchAndSortFunc;
-		AddRef();
+		Open(ARGS_FILE_LINE cnt);
 	}
-	~CDataArrayT(void)
+	CDataArrayT(ConstRef(CDataArrayT) copy) :
+		_liste(NULL), _deleter(copy._deleter), _lesser(copy._lesser)
 	{
-		if (_deleteFunc)
-		{
-			if (!Release())
-				ArrayClose(_liste, _deleteFunc, _deleteContext);
-		}
+		Copy(copy);
+	}
+	CDataArrayT(RefRef(CDataArrayT) _move) :
+		_liste(_move._liste), _deleter(_move._deleter), _lesser(_move._lesser)
+	{
+		_move._liste = NULL;
+	}
+	virtual ~CDataArrayT(void)
+	{
+		Close();
 	}
 
 	ConstRef(CDataArrayT) operator = (ConstRef(CDataArrayT) copy)
 	{
-		Copy(copy);
+		if (this != &copy)
+		{
+			Close();
+			Copy(copy);
+		}
+		return *this;
+	}
+	ConstRef(CDataArrayT) operator = (RefRef(CDataArrayT) _move)
+	{
+		if (this != &_move)
+		{
+			_liste = _move._liste;
+			_move._liste = NULL;
+		}
 		return *this;
 	}
 
-	TListCnt AddRef() { return TFincrefcnt(_liste); }
-	TListCnt RefCount() { return TFrefcnt(_liste); }
-	TListCnt Release() { return TFdecrefcnt(_liste); }
-	bool Open(DECL_FILE_LINE TListCnt cnt) { _liste = ArrayOpen(ARGS_FILE_LINE cnt); return _liste != NULL; }
-	TListCnt Count() const { return ArrayCount(_liste); }
-	void Copy(ConstRef(CDataArrayT) copy, TDeleteFunc freeFunc = NULL, Pointer context = NULL)
-	{
-		if (!Release())
-			Close(freeFunc, context);
-		_liste = copy._liste;
-		_deleteFunc = copy._deleteFunc;
-		_deleteContext = copy._deleteContext;
-		_searchAndSortFunc = copy._searchAndSortFunc;
-		AddRef();
+	bool Open(DECL_FILE_LINE TListCnt cnt) 
+	{ 
+		_liste = ArrayOpen(ARGS_FILE_LINE cnt); 
+		return _liste != NULL; 
 	}
-	void Close(TDeleteFunc freeFunc = NULL, Pointer context = NULL)
+	TListCnt Count() const 
+	{ 
+		return ArrayCount(_liste); 
+	}
+	void Copy(ConstRef(CDataArrayT) copy)
 	{
-		if (freeFunc)
-			ArrayClose(_liste, freeFunc, context);
-		else if (_deleteFunc)
-			ArrayClose(_liste, _deleteFunc, _deleteContext);
-		else
-			ArrayClose(_liste, NULL, NULL);
+		Iterator it = copy.Begin();
+		Open(__FILE__LINE__ copy.Count());
+
+		while (it)
+		{
+			Ptr(Item) p = *it;
+
+			p->addRef();
+			InsertSorted(p);
+			++it;
+		}
+	}
+	void Close()
+	{
+		if (!_liste)
+			return;
+		ArrayClose(_liste, &TCppObjectReleaseFunc<Item, Deleter>, &_deleter);
 		_liste = NULL;
 	}
-	Iterator Index(TListIndex index) const { Iterator it = ArrayIndex(_liste, index); return it; }
-	Iterator Begin() const { Iterator it = ArrayBegin(_liste); return it; }
-	Iterator Next(Iterator node) const { if ( node ) ++node; return node; }
-	Iterator Prev(Iterator node) const { if ( node ) --node; return node; }
-	Iterator Last() const { Iterator it = ArrayLast(_liste); return it; }
-	bool ForEach(TForEachFunc func, Pointer context = NULL) const { return ArrayForEach(_liste, func, context); }
-	Iterator Find(ConstPtr(Item) data, TSearchAndSortFunc findFunc) const { Iterator it = ArrayFind(_liste, data, findFunc); return it; }
-	Iterator FindSorted(ConstPtr(Item) data, TSearchAndSortFunc findFunc = NULL) const
+	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void Close(RefRef(D) rD = D())
 	{
-		Iterator it;
-
-		if (findFunc)
-			it = ArrayFindSorted(_liste, data, findFunc);
-		else if (_searchAndSortFunc)
-			it = ArrayFindSorted(_liste, data, _searchAndSortFunc);
+		if (!_liste)
+			return;
+		ArrayClose(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
+		_liste = NULL;
+	}
+	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void Close(Ref(D) rD)
+	{
+		if (!_liste)
+			return;
+		ArrayClose(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
+		_liste = NULL;
+	}
+	Iterator Index(TListIndex index) const
+	{ 
+		Iterator it = ArrayIndex(_liste, index); 
+		return it; 
+	}
+	Iterator Begin() const 
+	{ 
+		Iterator it = ArrayBegin(_liste); 
+		return it; 
+	}
+	Iterator Next(Iterator node) const 
+	{ 
+		if ( node ) 
+			++node; 
+		return node; 
+	}
+	Iterator Prev(Iterator node) const 
+	{ 
+		if ( node ) 
+			--node; 
+		return node; 
+	}
+	Iterator Last() const 
+	{ 
+		Iterator it = ArrayLast(_liste); 
+		return it; 
+	}
+	template <typename D> // CCppObjectForEachFunctor<Item>
+	bool ForEach(RefRef(D) rD = D()) const
+	{
+		return ArrayForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD);
+	}
+	template <typename D> // CCppObjectForEachFunctor<Item>
+	bool ForEach(Ref(D) rD) const
+	{
+		return ArrayForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD);
+	}
+	template <typename D> // CCppObjectEqualFunctor<Item>
+	Iterator Find(ConstPtr(Item) data, RefRef(D) rD = D()) const
+	{
+		Iterator it = ArrayFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD);
 		return it;
 	}
-	Iterator UpperBound(ConstPtr(Item) data, TSearchAndSortFunc findFunc) const
+	template <typename D> // CCppObjectEqualFunctor<Item>
+	Iterator Find(ConstPtr(Item) data, Ref(D) rD) const
 	{
-		Iterator it;
-
-		if (findFunc)
-			it = ArrayUpperBound(_liste, data, findFunc);
-		else if (_searchAndSortFunc)
-			it = ArrayUpperBound(_liste, data, _searchAndSortFunc);
+		Iterator it = ArrayFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD);
 		return it;
 	}
-	Iterator LowerBound(ConstPtr(Item) data, TSearchAndSortFunc findFunc) const
+	bool MatchSorted(Iterator it, ConstPtr(Item) data)
 	{
-		Iterator it;
-
-		if (findFunc)
-			it = ArrayLowerBound(_liste, data, findFunc);
-		else if (_searchAndSortFunc)
-			it = ArrayLowerBound(_liste, data, _searchAndSortFunc);
-		return it;
-	}
-	void Sort(TSearchAndSortFunc sortFunc = NULL, TSortMode mode = HeapSortMode) const
-	{
-		if (sortFunc)
-			ArraySort(_liste, sortFunc, Castword(mode));
-		else if (_searchAndSortFunc)
-			ArraySort(_liste, _searchAndSortFunc, Castword(mode));
-	}
-	Iterator Append(ConstPtr(Item) data) const { Iterator it = ArrayAppend(_liste, data); return it; }
-	Iterator Prepend(ConstPtr(Item) data) const { Iterator it = ArrayPrepend(_liste, data); return it; }
-	Iterator InsertBefore(Iterator node, ConstPtr(Item) data) const { Iterator it = ArrayInsertBefore(node, data); return it; }
-	Iterator InsertAfter(Iterator node, ConstPtr(Item) data) const { Iterator it = ArrayInsertAfter(node, data); return it; }
-	void Remove(Iterator node, TDeleteFunc freeFunc = NULL, Pointer context = NULL) const
-	{
-		if (freeFunc)
-			ArrayRemove(node, freeFunc, context);
-		else if (_deleteFunc)
-			ArrayRemove(node, _deleteFunc, _deleteContext);
-		else
-			ArrayRemove(node, NULL, NULL);
-	}
-	Iterator InsertSorted(ConstPtr(Item) data, TSearchAndSortFunc findFunc = NULL) const
-	{
-		if (findFunc)
-			return ArrayInsertSorted(_liste, data, findFunc);
-		if (_searchAndSortFunc)
-			return ArrayInsertSorted(_liste, data, _searchAndSortFunc);
-		return _LNULL;
-	}
-	bool RemoveSorted(ConstPtr(Item) data, TSearchAndSortFunc findFunc = NULL, TDeleteFunc freeFunc = NULL, Pointer context = NULL) const
-	{
-		if (findFunc)
-		{
-			if (freeFunc)
-				return ArrayRemoveSorted(_liste, data, findFunc, freeFunc, context);
-			if (_deleteFunc)
-				return ArrayRemoveSorted(_liste, data, findFunc, _deleteFunc, _deleteContext);
-			return ArrayRemoveSorted(_liste, data, findFunc, NULL, NULL);
-		}
-		if (_searchAndSortFunc)
-		{
-			if (freeFunc)
-				return ArrayRemoveSorted(_liste, data, _searchAndSortFunc, freeFunc, context);
-			if (_deleteFunc)
-				return ArrayRemoveSorted(_liste, data, _searchAndSortFunc, _deleteFunc, _deleteContext);
-			return ArrayRemoveSorted(_liste, data, _searchAndSortFunc, NULL, NULL);
-		}
+		if (!it)
+			return false;
+		if (PtrCheck(*it))
+			return false;
+		if (TCppObjectSearchAndSortUserFunc<Item, Lesser>(*it, data, &_lesser) != 0)
+			return false;
 		return true;
 	}
-	Ptr(Item) GetData(Iterator node) const { return CastAnyPtr(Item, ArrayGetData(node)); }
-	void SetData(Iterator node, ConstPtr(Item) data) const { ArraySetData(node, data); }
+	template <typename D> // CCppObjectLessFunctor<Item>
+	bool MatchSorted(Iterator it, ConstPtr(Item) data, Ref(D) rD)
+	{
+		if (!it)
+			return false;
+		if (PtrCheck(*it))
+			return false;
+		if (TCppObjectSearchAndSortUserFunc<Item, D>(*it, data, &rD) != 0)
+			return false;
+		return true;
+	}
+	Iterator FindSorted(ConstPtr(Item) data)
+	{
+		Iterator it;
+
+		it = ArrayFindSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser);
+		return it;
+	}
+	template <typename D> // CCppObjectLessFunctor<Item>
+	Iterator FindSorted(ConstPtr(Item) data, Ref(D) rD)
+	{
+		Iterator it;
+
+		it = ArrayFindSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
+		return it;
+	}
+	Iterator UpperBound(ConstPtr(Item) data) const
+	{
+		Iterator it;
+
+		it = ArrayUpperBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser);
+		return it;
+	}
+	template <typename D> // CCppObjectLessFunctor<Item>
+	Iterator UpperBound(ConstPtr(Item) data, Ref(D) rD) const
+	{
+		Iterator it;
+
+		it = ArrayUpperBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
+		return it;
+	}
+	Iterator LowerBound(ConstPtr(Item) data) const
+	{
+		Iterator it;
+
+		it = ArrayLowerBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser);
+		return it;
+	}
+	template <typename D> // CCppObjectLessFunctor<Item>
+	Iterator LowerBound(ConstPtr(Item) data, Ref(D) rD) const
+	{
+		Iterator it;
+
+		it = ArrayLowerBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
+		return it;
+	}
+	void Sort(TSortMode mode = HeapSortMode)
+	{
+		ArraySort(_liste, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser, Castword(mode));
+	}
+	template <typename D> // CCppObjectLessFunctor<Item>
+	void Sort(Ref(D) rD, TSortMode mode = HeapSortMode) const
+	{
+		ArraySort(_liste, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD, Castword(mode));
+	}
+	Iterator Append(ConstPtr(Item) data) const 
+	{ 
+		Iterator it = ArrayAppend(_liste, data); 
+		return it; 
+	}
+	Iterator Prepend(ConstPtr(Item) data) const 
+	{ 
+		Iterator it = ArrayPrepend(_liste, data); 
+		return it; 
+	}
+	Iterator InsertBefore(Iterator node, ConstPtr(Item) data) const 
+	{ 
+		Iterator it = ArrayInsertBefore(node, data); 
+		return it; 
+	}
+	Iterator InsertAfter(Iterator node, ConstPtr(Item) data) const 
+	{ 
+		Iterator it = ArrayInsertAfter(node, data); 
+		return it; 
+	}
+	void Remove(Iterator node)
+	{
+		ArrayRemove(node, &TCppObjectReleaseFunc<Item, Deleter>, &_deleter);
+	}
+	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void Remove(Iterator node, RefRef(D) rD = D())
+	{
+		ArrayRemove(node, &TCppObjectReleaseFunc<Item, D>, &rD);
+	}
+	Iterator InsertSorted(ConstPtr(Item) data)
+	{
+		return ArrayInsertSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser);
+	}
+	template <typename D> // CCppObjectLessFunctor<Item>
+	Iterator InsertSorted(ConstPtr(Item) data, RefRef(D) rD = D()) const
+	{
+		return ArrayInsertSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
+	}
+	bool RemoveSorted(ConstPtr(Item) data)
+	{
+		return ArrayRemoveSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser, &TCppObjectReleaseFunc<Item, Deleter>, &_deleter);
+	}
+	template <typename D, typename E> // CCppObjectLessFunctor<Item>, CCppObjectReleaseFunctor<Item>
+	bool RemoveSorted(ConstPtr(Item) data, RefRef(D) rD = D(), RefRef(E) rE = E()) const
+	{
+		return ArrayRemoveSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD, &TCppObjectReleaseFunc<Item, E>, &rE);
+	}
+	Ptr(Item) GetData(Iterator node) const 
+	{ 
+		return CastAnyPtr(Item, ArrayGetData(node)); 
+	}
+	void SetData(Iterator node, Ptr(Item) data)
+	{
+		ConstPtr(Item) p = GetData(node);
+
+		if (NotPtrCheck(p) && (p != data))
+		{
+			_deleter(CastMutablePtr(Item, p));
+			ArraySetData(node, data);
+		}
+	}
 
 protected:
 	Pointer _liste;
-	TDeleteFunc _deleteFunc;
-	Pointer _deleteContext;
-	TSearchAndSortFunc _searchAndSortFunc;
+	Deleter _deleter;
+	Lesser _lesser;
 
 private:
 	CDataArrayT(void);
-};
-
-#include "SLISTE.H"
-
-class CPPSOURCES_API CDataSArray
-{
-public:
-	enum TSortMode {
-		HeapSortMode = LSORTMODE_HEAPSORT,
-		QuickSortMode = LSORTMODE_QUICKSORT
-	};
-
-	class Iterator
-	{
-	public:
-		Iterator(void): _result(_LNULL) {}
-		Iterator(LSearchResultType result): _result(result) {}
-
-		Iterator& operator++() { _result = SArrayNext(_result); return *this; }
-		Iterator& operator--() { _result = SArrayPrev(_result); return *this; }
-		Pointer operator*() { return SArrayGetData(_result); }
-
-		operator bool() { return !LPtrCheck(_result); }
-		operator LSearchResultType() { return _result; }
-
-		bool operator == (Iterator other) { return LCompareEqual(_result, other._result); }
-		bool operator != (Iterator other) { return LCompareNotEqual(_result, other._result); }
-
-	private:
-		LSearchResultType _result;
-	};
-
-	CDataSArray(DECL_FILE_LINE TListCnt cnt, dword datasize, TDeleteFunc pDeleteFunc = NULL, Pointer pDeleteContext = NULL, TSearchAndSortFunc pSearchAndSortFunc = NULL)
-	{
-		Open(ARGS_FILE_LINE cnt, datasize);
-		_deleteFunc = pDeleteFunc;
-		_deleteContext = pDeleteContext;
-		_searchAndSortFunc = pSearchAndSortFunc;
-	}
-	CDataSArray(ConstRef(CDataSArray) copy)
-	{
-		_liste = copy._liste;
-		_deleteFunc = copy._deleteFunc;
-		_deleteContext = copy._deleteContext;
-		_searchAndSortFunc = copy._searchAndSortFunc;
-		AddRef();
-	}
-	~CDataSArray(void)
-	{
-		if (_deleteFunc)
-		{
-			if (!Release())
-				ArrayClose(_liste, _deleteFunc, _deleteContext);
-		}
-	}
-
-	ConstRef(CDataSArray) operator = (ConstRef(CDataSArray) copy)
-	{
-		Copy(copy);
-		return *this;
-	}
-
-	TListCnt AddRef() { return TFincrefcnt(_liste); }
-	TListCnt RefCount() { return TFrefcnt(_liste); }
-	TListCnt Release() { return TFdecrefcnt(_liste); }
-	bool Open(DECL_FILE_LINE TListCnt cnt, dword datasize) { _liste = SArrayOpen(ARGS_FILE_LINE cnt, datasize); return _liste != NULL; }
-	TListCnt Count() const { return SArrayCount(_liste); }
-	void Copy(ConstRef(CDataSArray) copy, TDeleteFunc freeFunc = NULL, Pointer context = NULL)
-	{
-		if (!Release())
-			Close(freeFunc, context);
-		_liste = copy._liste;
-		_deleteFunc = copy._deleteFunc;
-		_deleteContext = copy._deleteContext;
-		_searchAndSortFunc = copy._searchAndSortFunc;
-		AddRef();
-	}
-	void Close(TDeleteFunc freeFunc = NULL, Pointer context = NULL)
-	{
-		if (freeFunc)
-			SArrayClose(_liste, freeFunc, context);
-		else if (_deleteFunc)
-			SArrayClose(_liste, _deleteFunc, _deleteContext);
-		else
-			SArrayClose(_liste, NULL, NULL);
-		_liste = NULL;
-	}
-	Iterator Begin() const { Iterator it = SArrayBegin(_liste); return it; }
-	Iterator Next(Iterator node) const { if ( node ) ++node; return node; }
-	Iterator Prev(Iterator node) const { if ( node ) --node; return node; }
-	Iterator Last() const { Iterator it = SArrayLast(_liste); return it; }
-	bool ForEach(TForEachFunc func, Pointer context = NULL) const { return SArrayForEach(_liste, func, context); }
-	Iterator Find(Pointer data, TSearchAndSortFunc findFunc) const { Iterator it = SArrayFind(_liste, data, findFunc); return it; }
-	Iterator FindSorted(ConstPointer data, TSearchAndSortFunc findFunc = NULL) const
-	{
-		Iterator it;
-
-		if (findFunc)
-			it = SArrayFindSorted(_liste, data, findFunc);
-		else if (_searchAndSortFunc)
-			it = SArrayFindSorted(_liste, data, _searchAndSortFunc);
-		return it;
-	}
-	Iterator UpperBound(ConstPointer data, TSearchAndSortFunc findFunc) const
-	{
-		Iterator it;
-
-		if (findFunc)
-			it = SArrayUpperBound(_liste, data, findFunc);
-		else if (_searchAndSortFunc)
-			it = SArrayUpperBound(_liste, data, _searchAndSortFunc);
-		return it;
-	}
-	Iterator LowerBound(ConstPointer data, TSearchAndSortFunc findFunc) const
-	{
-		Iterator it;
-
-		if (findFunc)
-			it = SArrayLowerBound(_liste, data, findFunc);
-		else if (_searchAndSortFunc)
-			it = SArrayLowerBound(_liste, data, _searchAndSortFunc);
-		return it;
-	}
-	void Sort(TSearchAndSortFunc sortFunc = NULL, TSortMode mode = HeapSortMode) const
-	{
-		if (sortFunc)
-			SArraySort(_liste, sortFunc, Castword(mode));
-		else if (_searchAndSortFunc)
-			SArraySort(_liste, _searchAndSortFunc, Castword(mode));
-	}
-	Iterator Append(ConstPointer data) const { Iterator it = SArrayAppend(_liste, data); return it; }
-	Iterator Prepend(ConstPointer data) const { Iterator it = SArrayPrepend(_liste, data); return it; }
-	Iterator InsertBefore(Iterator node, ConstPointer data) const { Iterator it = SArrayInsertBefore(node, data); return it; }
-	Iterator InsertAfter(Iterator node, ConstPointer data) const { Iterator it = SArrayInsertAfter(node, data); return it; }
-	void Remove(Iterator node, TDeleteFunc freeFunc = NULL, Pointer context = NULL) const
-	{
-		if (freeFunc)
-			SArrayRemove(node, freeFunc, context);
-		else if (_deleteFunc)
-			SArrayRemove(node, _deleteFunc, _deleteContext);
-		else
-			SArrayRemove(node, NULL, NULL);
-	}
-	Iterator InsertSorted(ConstPointer data, TSearchAndSortFunc findFunc = NULL) const
-	{
-		if (findFunc)
-			return SArrayInsertSorted(_liste, data, findFunc);
-		if (_searchAndSortFunc)
-			return SArrayInsertSorted(_liste, data, _searchAndSortFunc);
-		return _LNULL;
-	}
-	bool RemoveSorted(ConstPointer data, TSearchAndSortFunc findFunc = NULL, TDeleteFunc freeFunc = NULL, Pointer context = NULL) const
-	{
-		if (findFunc)
-		{
-			if (freeFunc)
-				return SArrayRemoveSorted(_liste, data, findFunc, freeFunc, context);
-			if (_deleteFunc)
-				return SArrayRemoveSorted(_liste, data, findFunc, _deleteFunc, _deleteContext);
-			return SArrayRemoveSorted(_liste, data, findFunc, NULL, NULL);
-		}
-		if (_searchAndSortFunc)
-		{
-			if (freeFunc)
-				return SArrayRemoveSorted(_liste, data, _searchAndSortFunc, freeFunc, context);
-			if (_deleteFunc)
-				return SArrayRemoveSorted(_liste, data, _searchAndSortFunc, _deleteFunc, _deleteContext);
-			return SArrayRemoveSorted(_liste, data, _searchAndSortFunc, NULL, NULL);
-		}
-		return true;
-	}
-	Pointer GetData(Iterator node) const { return SArrayGetData(node); }
-	void SetData(Iterator node, ConstPointer data) const { SArraySetData(node, data); }
-
-protected:
-	Pointer _liste;
-	TDeleteFunc _deleteFunc;
-	Pointer _deleteContext;
-	TSearchAndSortFunc _searchAndSortFunc;
-
-private:
-	CDataSArray(void);
-};
-
-template <class Item>
-class CDataSArrayT
-{
-public:
-	enum TSortMode {
-		HeapSortMode = LSORTMODE_HEAPSORT,
-		QuickSortMode = LSORTMODE_QUICKSORT
-	};
-
-	class Iterator
-	{
-	public:
-		Iterator(void): _result(_LNULL) {}
-		Iterator(LSearchResultType result): _result(result) {}
-
-		Iterator& operator++() { _result = SArrayNext(_result); return *this; }
-		Iterator& operator--() { _result = SArrayPrev(_result); return *this; }
-		Ptr(Item) operator*() { return CastAnyPtr(Item, SArrayGetData(_result)); }
-
-		operator bool() { return !LPtrCheck(_result); }
-		operator LSearchResultType() { return _result; }
-
-		bool operator == (Iterator other) { return LCompareEqual(_result, other._result); }
-		bool operator != (Iterator other) { return LCompareNotEqual(_result, other._result); }
-
-	private:
-		LSearchResultType _result;
-	};
-
-	CDataSArrayT(DECL_FILE_LINE TListCnt cnt, TDeleteFunc pDeleteFunc = NULL, Pointer pDeleteContext = NULL, TSearchAndSortFunc pSearchAndSortFunc = NULL)
-	{
-		Open(ARGS_FILE_LINE cnt);
-		_deleteFunc = pDeleteFunc;
-		_deleteContext = pDeleteContext;
-		_searchAndSortFunc = pSearchAndSortFunc;
-	}
-	CDataSArrayT(ConstRef(CDataSArrayT) copy)
-	{
-		_liste = copy._liste;
-		_deleteFunc = copy._deleteFunc;
-		_deleteContext = copy._deleteContext;
-		_searchAndSortFunc = copy._searchAndSortFunc;
-		AddRef();
-	}
-	~CDataSArrayT(void)
-	{
-		if (_deleteFunc)
-		{
-			if (!Release())
-				ArrayClose(_liste, _deleteFunc, _deleteContext);
-		}
-	}
-
-	ConstRef(CDataSArrayT) operator = (ConstRef(CDataSArrayT) copy)
-	{
-		Copy(copy);
-		return *this;
-	}
-
-	TListCnt AddRef() { return TFincrefcnt(_liste); }
-	TListCnt RefCount() { return TFrefcnt(_liste); }
-	TListCnt Release() { return TFdecrefcnt(_liste); }
-	bool Open(DECL_FILE_LINE TListCnt cnt) { _liste = SArrayOpen(ARGS_FILE_LINE cnt, sizeof(Item)); return _liste != NULL; }
-	TListCnt Count() const { return SArrayCount(_liste); }
-	void Copy(ConstRef(CDataSArrayT) copy, TDeleteFunc freeFunc = NULL, Pointer context = NULL)
-	{
-		if (!Release())
-			Close(freeFunc, context);
-		_liste = copy._liste;
-		_deleteFunc = copy._deleteFunc;
-		_deleteContext = copy._deleteContext;
-		_searchAndSortFunc = copy._searchAndSortFunc;
-		AddRef();
-	}
-	void Close(TDeleteFunc freeFunc = NULL, Pointer context = NULL)
-	{
-		if (freeFunc)
-			SArrayClose(_liste, freeFunc, context);
-		else if (_deleteFunc)
-			SArrayClose(_liste, _deleteFunc, _deleteContext);
-		else
-			SArrayClose(_liste, NULL, NULL);
-		_liste = NULL;
-	}
-	Iterator Begin() const { Iterator it = SArrayBegin(_liste); return it; }
-	Iterator Next(Iterator node) const { if ( node ) ++node; return node; }
-	Iterator Prev(Iterator node) const { if ( node ) --node; return node; }
-	Iterator Last() const { Iterator it = SArrayLast(_liste); return it; }
-	bool ForEach(TForEachFunc func, Pointer context = NULL) const { return SArrayForEach(_liste, func, context); }
-	Iterator Find(ConstPtr(Item) data, TSearchAndSortFunc findFunc) const { Iterator it = SArrayFind(_liste, data, findFunc); return it; }
-	Iterator FindSorted(ConstPtr(Item) data, TSearchAndSortFunc findFunc = NULL) const
-	{
-		Iterator it;
-
-		if (findFunc)
-			it = SArrayFindSorted(_liste, data, findFunc);
-		else if (_searchAndSortFunc)
-			it = SArrayFindSorted(_liste, data, _searchAndSortFunc);
-		return it;
-	}
-	Iterator UpperBound(ConstPtr(Item) data, TSearchAndSortFunc findFunc) const
-	{
-		Iterator it;
-
-		if (findFunc)
-			it = SArrayUpperBound(_liste, data, findFunc);
-		else if (_searchAndSortFunc)
-			it = SArrayUpperBound(_liste, data, _searchAndSortFunc);
-		return it;
-	}
-	Iterator LowerBound(ConstPtr(Item) data, TSearchAndSortFunc findFunc) const
-	{
-		Iterator it;
-
-		if (findFunc)
-			it = SArrayLowerBound(_liste, data, findFunc);
-		else if (_searchAndSortFunc)
-			it = SArrayLowerBound(_liste, data, _searchAndSortFunc);
-		return it;
-	}
-	void Sort(TSearchAndSortFunc sortFunc = NULL, TSortMode mode = HeapSortMode) const
-	{
-		if (sortFunc)
-			SArraySort(_liste, sortFunc, Castword(mode));
-		else if (_searchAndSortFunc)
-			SArraySort(_liste, _searchAndSortFunc, Castword(mode));
-	}
-	Iterator Append(ConstPtr(Item) data) const { Iterator it = SArrayAppend(_liste, data); return it; }
-	Iterator Prepend(ConstPtr(Item) data) const { Iterator it = SArrayPrepend(_liste, data); return it; }
-	Iterator InsertBefore(Iterator node, ConstPtr(Item) data) const { Iterator it = SArrayInsertBefore(node, data); return it; }
-	Iterator InsertAfter(Iterator node, ConstPtr(Item) data) const { Iterator it = SArrayInsertAfter(node, data); return it; }
-	void Remove(Iterator node, TDeleteFunc freeFunc = NULL, Pointer context = NULL) const
-	{
-		if (freeFunc)
-			SArrayRemove(node, freeFunc, context);
-		else if (_deleteFunc)
-			SArrayRemove(node, _deleteFunc, _deleteContext);
-		else
-			SArrayRemove(node, NULL, NULL);
-	}
-	Iterator InsertSorted(ConstPtr(Item) data, TSearchAndSortFunc findFunc = NULL) const
-	{
-		if (findFunc)
-			return SArrayInsertSorted(_liste, data, findFunc);
-		if (_searchAndSortFunc)
-			return SArrayInsertSorted(_liste, data, _searchAndSortFunc);
-		return _LNULL;
-	}
-	bool RemoveSorted(ConstPtr(Item) data, TSearchAndSortFunc findFunc = NULL, TDeleteFunc freeFunc = NULL, Pointer context = NULL) const
-	{
-		if (findFunc)
-		{
-			if (freeFunc)
-				return SArrayRemoveSorted(_liste, data, findFunc, freeFunc, context);
-			if (_deleteFunc)
-				return SArrayRemoveSorted(_liste, data, findFunc, _deleteFunc, _deleteContext);
-			return SArrayRemoveSorted(_liste, data, findFunc, NULL, NULL);
-		}
-		if (_searchAndSortFunc)
-		{
-			if (freeFunc)
-				return SArrayRemoveSorted(_liste, data, _searchAndSortFunc, freeFunc, context);
-			if (_deleteFunc)
-				return SArrayRemoveSorted(_liste, data, _searchAndSortFunc, _deleteFunc, _deleteContext);
-			return SArrayRemoveSorted(_liste, data, _searchAndSortFunc, NULL, NULL);
-		}
-		return true;
-	}
-	Ptr(Item) GetData(Iterator node) const { return CastAnyPtr(Item, SArrayGetData(node)); }
-	void SetData(Iterator node, ConstPtr(Item) data) const { SArraySetData(node, data); }
-
-protected:
-	Pointer _liste;
-	TDeleteFunc _deleteFunc;
-	Pointer _deleteContext;
-	TSearchAndSortFunc _searchAndSortFunc;
-
-private:
-	CDataSArrayT(void);
 };
 

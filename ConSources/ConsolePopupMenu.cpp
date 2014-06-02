@@ -72,7 +72,7 @@ CConsolePopupMenu::CConsolePopupMenu(CConsoleMainMenu* mainMenu, CConstPointer n
 
 CConsolePopupMenu::~CConsolePopupMenu(void)
 {
-	m_MenuItemList.Close(MenuItemListDeleteFunc, NULL);
+	m_MenuItemList.Close();
 	if ( m_Callback )
 		m_Callback->release();
 }
@@ -101,7 +101,7 @@ void CConsolePopupMenu::DoMenuItem(CConsoleMenuItem* pMenuItem)
 
 void CConsolePopupMenu::ClearMenus()
 {
-	m_MenuItemList.Close(MenuItemListDeleteFunc, NULL);
+	m_MenuItemList.Close();
 	m_MenuItemList.Open(__FILE__LINE__0);
 }
 

@@ -555,7 +555,7 @@ static void __stdcall CServerResponsesDeleteFunc(ConstPointer data, Pointer cont
 class CServerResponses : public CDataDoubleLinkedListT<CServerResponse>
 {
 public:
-	CServerResponses(CConstPointer stmts = NULL) : CDataDoubleLinkedListT<CServerResponse>(__FILE__LINE__ CServerResponsesDeleteFunc)
+	CServerResponses(CConstPointer stmts = NULL) : CDataDoubleLinkedListT<CServerResponse>(__FILE__LINE__0)
 	{
 		if (stmts)
 			split_and_append(stmts);
@@ -584,6 +584,12 @@ public:
 	CSqLite3ServiceClient(Ptr(CAsyncIOManager) pManager = NULL, CConstPointer stmts = NULL) :
 		CAsyncTCPClient(pManager), _responses(stmts), _current_response(_responses.Begin()), _currentRowCnt(0), _currentRow(0), _bQuit(false)
 	{
+	}
+
+	CSqLite3ServiceClient(Ptr(CAsyncIOData) pData) :
+		CAsyncTCPClient(), _responses(), _current_response(_responses.Begin()), _currentRowCnt(0), _currentRow(0), _bQuit(false)
+	{
+		m_pData = pData;
 	}
 
 	virtual ~CSqLite3ServiceClient() {}
@@ -736,6 +742,15 @@ protected:
 	bool _bQuit;
 };
 
+class AsyncTCPClientListEqualFunctor
+{
+public:
+	bool operator()(ConstPtr(CAsyncTCPClient) r1, ConstPtr(CAsyncTCPClient) r2) const
+	{
+		return r1->GetData() == r2->GetData();
+	}
+};
+
 static sword __stdcall AsyncTCPClientListSearchAndSortFunc(ConstPointer item, ConstPointer data)
 {
 	Ptr(CSqLite3ServiceClient) pClient = CastAnyPtr(CSqLite3ServiceClient, CastMutable(Pointer, item));
@@ -760,8 +775,8 @@ class CSqLite3ServiceAsyncClass
 public:
 	CSqLite3ServiceAsyncClass() :
 		io_manager(),
-		clientlist(__FILE__LINE__ AsyncTCPClientListDeleteFunc),
-		svclientlist(__FILE__LINE__ AsyncTCPClientListDeleteFunc)
+		clientlist(__FILE__LINE__0),
+		svclientlist(__FILE__LINE__0)
 	{
 	}
 
@@ -774,7 +789,7 @@ public:
 		(*it)->Close();
 		(*it)->addRef();
 		svclientlist.Append(*it);
-		clientlist.Remove(it, AsyncTCPClientListDeleteFunc, NULL);
+		clientlist.Remove(it);
 		if (clientlist.Count() == 0)
 			io_manager.Stop();
 	}
@@ -782,7 +797,8 @@ public:
 	dword read_callback(Ptr(CAsyncIOData) pData)
 	{
 		CScopedLock lock;
-		CAsyncTCPClientList::Iterator it = clientlist.Find(CastAnyPtr(CSqLite3ServiceClient, pData), AsyncTCPClientListSearchAndSortFunc);
+		CSqLite3ServiceClient client(pData);
+		CAsyncTCPClientList::Iterator it = clientlist.Find<AsyncTCPClientListEqualFunctor>(&client);
 
 		if (it)
 		{
@@ -815,7 +831,8 @@ public:
 	dword write_callback(Ptr(CAsyncIOData) pData)
 	{
 		CScopedLock lock;
-		CAsyncTCPClientList::Iterator it = clientlist.Find(CastAnyPtr(CSqLite3ServiceClient, pData), AsyncTCPClientListSearchAndSortFunc);
+		CSqLite3ServiceClient client(pData);
+		CAsyncTCPClientList::Iterator it = clientlist.Find<AsyncTCPClientListEqualFunctor>(&client);
 
 		if (it)
 		{

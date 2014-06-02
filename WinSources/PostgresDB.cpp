@@ -159,7 +159,7 @@ CPostgresColumn* CPostgresStatement::get_ColumnInfo(word ix) const
 CPostgresColumn* CPostgresStatement::get_ColumnInfo(CConstPointer name)
 {
 	CPostgresColumn cmp(name);
-	CPostgresColumns::Iterator it = _columns.Find<CStringByNameLessFunctor<CPostgresColumn>>(&cmp);
+	CPostgresColumns::Iterator it = _columns.Find<CStringByNameEqualFunctor<CPostgresColumn>>(&cmp);
 
 	if (it)
 		return *it;

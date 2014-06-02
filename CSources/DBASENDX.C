@@ -60,6 +60,176 @@ static errno_t chsize( int handle, long size )
 }
 #endif
 
+static void __stdcall
+v_swapbytes(Pointer p1, Pointer p2, word size)
+{
+	word ix;
+	byte ch[256];
+	for (; size > 0; size -= ix)
+	{
+		ix = (size > 256) ? 256 : size;
+		s_memcpy(ch, p1, ix);
+		s_memcpy(p1, p2, ix);
+		s_memcpy(p2, ch, ix);
+		p1 = l_ptradd(p1, ix);
+		p2 = l_ptradd(p2, ix);
+	}
+}
+
+static sdword __stdcall
+_ls_ubsearch(Pointer table, dword size, ConstPointer ptr, dword max, TSearchAndSortUserFunc func, Pointer context, sword _mode)
+{
+	sdword ux = 1;
+	sdword ox = max;
+	sdword ix = -1;
+	sword erg;
+	Pointer pt;
+	if (PtrCheck(table) || PtrCheck(func) || (size == 0))
+		return -1;
+	while (ox >= ux)
+	{
+		ix = ((ox + ux) / 2) - 1;
+		erg = func(_fl_ptradd(table, size * ix), CastMutable(Pointer, ptr), context);
+		if (erg < 0)
+			ux = ix + 2;
+		else if (erg > 0)
+			ox = ix;
+		else if (_mode == UTLPTR_INSERTMODE)
+		{
+			max--;
+			if (Cast(dword, ix) < max)
+			{
+				pt = _fl_ptradd(table, size * (ix + 1));
+				for (; Cast(dword, ix) < max; ix++, pt = _fl_ptradd(pt, size))
+					if ((erg = func(pt, CastMutable(Pointer, ptr), context)) != 0)
+						return ix;
+			}
+			return max;
+		}
+		else
+		{
+			if (ix > 0)
+			{
+				pt = _fl_ptradd(table, size * (ix - 1));
+				for (; ix > 0; ix--, pt = _fl_ptradd(pt, -Cast(sdword, size)))
+					if ((erg = func(pt, CastMutable(Pointer, ptr), context)) != 0)
+						return ix;
+			}
+			return 0;
+		}
+	}
+	if (ix >= 0)
+	{
+		switch (_mode)
+		{
+		case UTLPTR_INSERTMODE:
+			if (func(_fl_ptradd(table, size * ix), CastMutable(Pointer, ptr), context) > 0)
+				ix--;
+			break;
+		case UTLPTR_SEARCHMODE:
+			if (func(_fl_ptradd(table, size * ix), CastMutable(Pointer, ptr), context) >= 0)
+				break;
+			if (Cast(dword, ix) < (max - 1))
+				ix++;
+			break;
+		default:
+			ix = -1;
+			break;
+		}							   /* endswitch */
+	}
+	return ix;
+}								   /* end of s_bsearch */
+
+static sword __stdcall
+s_ubsearch(Pointer table, dword size, ConstPointer ptr, word max, TSearchAndSortUserFunc func, Pointer context, sword _mode)
+{
+	sword ux = 1;
+	sword ox = max;
+	sword ix = -1;
+	sword erg;
+	if (PtrCheck(table) || PtrCheck(func) || (size == 0))
+		return -1;
+	while (ox >= ux)
+	{
+		ix = ((ox + ux) / 2) - 1;
+		erg = func(l_ptradd(table, ((long)size) * ((long)ix)), CastMutable(Pointer, ptr), context);
+		if (erg < 0)
+			ux = ix + 2;
+		else if (erg > 0)
+			ox = ix;
+		else if (_mode == UTLPTR_INSERTMODE)
+		{
+			max--;
+			for (; ix < max; ix++)
+				if ((erg = func(l_ptradd(table, ((long)size) * ((long)(ix + 1))), CastMutable(Pointer, ptr), context)) != 0)
+					return ix;
+			return max;
+		}
+		else
+		{
+			for (; ix > 0; ix--)
+				if ((erg = func(l_ptradd(table, ((long)size) * ((long)(ix - 1))), CastMutable(Pointer, ptr), context)) != 0)
+					return ix;
+			return 0;
+		}
+	}
+	if (ix >= 0)
+	{
+		switch (_mode)
+		{
+		case UTLPTR_INSERTMODE:
+			if (func(l_ptradd(table, ((long)size) * ((long)ix)), CastMutable(Pointer, ptr), context) > 0)
+				ix--;
+			break;
+		case UTLPTR_SEARCHMODE:
+			if (func(l_ptradd(table, ((long)size) * ((long)ix)), CastMutable(Pointer, ptr), context) >= 0)
+				break;
+			if (ix < (max - 1))
+				ix++;
+			break;
+		default:
+			ix = -1;
+			break;
+		}							   /* endswitch */
+	}
+	return ix;
+}								   /* end of s_bsearch */
+
+static sword __stdcall
+s_insert(Pointer table, dword size, sword ix, ConstPointer ptr, WPointer max)
+{
+	word len;
+	Pointer tabP;
+	if (PtrCheck(table) || PtrCheck(max) || (size == 0) || (ix < -1) || (ix >= DerefSWPointer(max)))
+		return -1;
+	tabP = l_ptradd(table, (++ix) * size);
+	if (0 < (len = DerefWPointer(max) - ix))
+		s_memmove_s(_fl_ptradd(tabP, size), len * size, tabP, len * size);
+	DerefWPointer(max)++;
+	if (PtrCheck(ptr))
+		s_memset(tabP, 0, size);
+	else
+		s_memmove_s(tabP, size, CastMutable(Pointer, ptr), size);
+	return ix;
+}
+
+static sword __stdcall
+s_delete(Pointer table, dword size, sword ix, WPointer max)
+{
+	word len;
+	Pointer tabP;
+	if (PtrCheck(table) || PtrCheck(max) || (size == 0) || (ix < 0) || (ix >= DerefSWPointer(max)))
+		return -1;
+	tabP = l_ptradd(table, ix * size);
+	DerefWPointer(max)--;
+	if (0 < (len = DerefWPointer(max) - ix))
+		s_memmove_s(tabP, len * size, _fl_ptradd(tabP, size), len * size);
+	s_memset(_fl_ptradd(tabP, len * size), 0, size);
+	if (ix >= DerefSWPointer(max))
+		return ix - 1;
+	return ix;
+}
+
 static errno_t __stdcall
 _FBTreeLoadRoot(_pFBTreeFileHead pHead)
 {

@@ -85,7 +85,16 @@ void TestAsyncFile()
 	test.Run();
 }
 
-static sword __stdcall AsyncTCPClientListSearchAndSortFunc( ConstPointer item, ConstPointer data )
+class AsyncTCPClientListEqualFunctor
+{
+public:
+	bool operator()(ConstPtr(CAsyncTCPClient) r1, ConstPtr(CAsyncTCPClient) r2) const
+	{
+		return r1->GetData() == r2->GetData();
+	}
+};
+
+static sword __stdcall AsyncTCPClientListSearchAndSortFunc(ConstPointer item, ConstPointer data)
 {
 	Ptr(CAsyncTCPClient) pClient = CastAnyPtr(CAsyncTCPClient, CastMutable(Pointer, item));
 	Ptr(CAsyncIOData) pData = CastAnyPtr(CAsyncIOData, CastMutable(Pointer, data));
@@ -115,13 +124,13 @@ public:
 
 	~CTestAsyncTCPClient()
 	{
-		clientlist.Close(AsyncTCPClientListDeleteFunc, NULL);
 	}
 
 	dword read_callback(Ptr(CAsyncIOData) pData)
 	{
 		CScopedLock lock;
-		CAsyncTCPClientList::Iterator it = clientlist.Find(CastAnyPtr(CAsyncTCPClient, pData), AsyncTCPClientListSearchAndSortFunc);
+		CAsyncTCPClient client(pData);
+		CAsyncTCPClientList::Iterator it = clientlist.Find<AsyncTCPClientListEqualFunctor>(&client);
 
 		if ( it )
 		{
@@ -130,7 +139,7 @@ public:
 			if ((pData->get_bytestransferred() == 0) || (pData->get_errorcode() != 0))
 			{
 				pClient->Close();
-				clientlist.Remove(it, AsyncTCPClientListDeleteFunc, NULL);
+				clientlist.Remove(it);
 				if ( clientlist.Count() == 0 )
 					io_manager.Stop();
 				return 1;
@@ -148,7 +157,8 @@ public:
 	dword write_callback(Ptr(CAsyncIOData) pData)
 	{
 		CScopedLock lock;
-		CAsyncTCPClientList::Iterator it = clientlist.Find(CastAnyPtr(CAsyncTCPClient, pData), AsyncTCPClientListSearchAndSortFunc);
+		CAsyncTCPClient client(pData);
+		CAsyncTCPClientList::Iterator it = clientlist.Find<AsyncTCPClientListEqualFunctor>(&client);
 
 		if ( it )
 		{
@@ -157,7 +167,7 @@ public:
 			if (pData->get_errorcode() != 0)
 			{
 				pClient->Close();
-				clientlist.Remove(it, AsyncTCPClientListDeleteFunc, NULL);
+				clientlist.Remove(it);
 				if ( clientlist.Count() == 0 )
 					io_manager.Stop();
 				return 1;
@@ -243,7 +253,6 @@ public:
 
 	~CTestAsyncTCPServer()
 	{
-		clientlist.Close(AsyncTCPClientListDeleteFunc, NULL);
 	}
 
 	dword accept_callback(Ptr(CAsyncIOData) pData)
@@ -275,7 +284,8 @@ public:
 	dword read_callback(Ptr(CAsyncIOData) pData)
 	{
 		CScopedLock lock;
-		CAsyncTCPClientList::Iterator it = clientlist.Find(CastAnyPtr(CAsyncTCPClient, pData), AsyncTCPClientListSearchAndSortFunc);
+		CAsyncTCPClient client(pData);
+		CAsyncTCPClientList::Iterator it = clientlist.Find<AsyncTCPClientListEqualFunctor>(&client);
 
 		if ( it )
 		{
@@ -284,7 +294,7 @@ public:
 			if ( (pData->get_bytestransferred() == 0) || (pData->get_errorcode() != 0) )
 			{
 				pClient->Close();
-				clientlist.Remove(it, AsyncTCPClientListDeleteFunc, NULL);
+				clientlist.Remove(it);
 				if ( clientlist.Count() == 0 )
 					io_manager.Stop();
 				return 1;
@@ -301,7 +311,7 @@ public:
 			catch ( CBaseException* )
 			{
 				pClient->Close();
-				clientlist.Remove(it, AsyncTCPClientListDeleteFunc, NULL);
+				clientlist.Remove(it);
 				if ( clientlist.Count() == 0 )
 					io_manager.Stop();
 				return 1;
@@ -313,7 +323,8 @@ public:
 	dword write_callback(Ptr(CAsyncIOData) pData)
 	{
 		CScopedLock lock;
-		CAsyncTCPClientList::Iterator it = clientlist.Find(CastAnyPtr(CAsyncTCPClient, pData), AsyncTCPClientListSearchAndSortFunc);
+		CAsyncTCPClient client(pData);
+		CAsyncTCPClientList::Iterator it = clientlist.Find<AsyncTCPClientListEqualFunctor>(&client);
 
 		if ( it )
 		{
@@ -322,7 +333,7 @@ public:
 			if ( pData->get_errorcode() != 0 )
 			{
 				pClient->Close();
-				clientlist.Remove(it, AsyncTCPClientListDeleteFunc, NULL);
+				clientlist.Remove(it);
 				if ( clientlist.Count() == 0 )
 					io_manager.Stop();
 				return 1;
@@ -337,7 +348,7 @@ public:
 			catch ( CBaseException* )
 			{
 				pClient->Close();
-				clientlist.Remove(it, AsyncTCPClientListDeleteFunc, NULL);
+				clientlist.Remove(it);
 				if ( clientlist.Count() == 0 )
 					io_manager.Stop();
 				return 1;

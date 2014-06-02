@@ -144,7 +144,7 @@ CConsoleUndoManager::CConsoleUndoManager(void):
 
 CConsoleUndoManager::~CConsoleUndoManager(void)
 {
-	m_GroupList.Close(UndoManagerDeleteFunc, NULL);
+	m_GroupList.Close();
 }
 
 void CConsoleUndoManager::addGroup(Ptr(CConsoleUndoGroup) group)

@@ -48,7 +48,7 @@ void CConsoleWindowMenu::WindowMenuCallback(CConsoleMenuItem* pMenu)
 	if ( !m_Console )
 		return;
 
-	CConsole::CConsoleWindowList::Iterator it;
+	CConsole::CConsoleWindowNullList::Iterator it;
 	CConsoleWindow* pWindow;
 
 	it = m_Console->GetConsoleWindowList().Begin();
@@ -57,7 +57,7 @@ void CConsoleWindowMenu::WindowMenuCallback(CConsoleMenuItem* pMenu)
 		pWindow = *it;
 		if ( pMenu->GetTitle().Compare(pWindow->GetTitle()) == 0 )
 		{
-			m_Console->BringToFront(it);
+			m_Console->BringToFront(pWindow);
 			break;
 		}
 		++it;
@@ -69,7 +69,7 @@ void CConsoleWindowMenu::Initialize()
 	if ( !m_Console )
 		return;
 
-	CConsole::CConsoleWindowList::Iterator it;
+	CConsole::CConsoleWindowNullList::Iterator it;
 	CConsoleWindow* pWindow;
 	CStringBuffer name;
 	sword cnt;

@@ -465,7 +465,6 @@ void CListView::set_Node(dword ix, CListViewNode* node)
 			m_currentNode = NULL;
 		if ( node1->is_Selected() )
 			node1->set_Selected(false);
-		delete node1;
 		m_nodes.SetData(m_nodes.Index(ix), node);
 	}
 	EndUpdate(TRUE);

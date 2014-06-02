@@ -35,8 +35,9 @@ void __stdcall VectorEmptyDeleteFunc(ConstPointer data, Pointer context)
 {
 }
 
-struct TCheckDataItem
+class TCheckDataItem: public CCppObject
 {
+public:
 	CFilePath Argument;
 	CStringBuffer Result;
 
@@ -60,14 +61,6 @@ struct TCheckDataItem
 	{
 	}
 };
-
-void __stdcall TCheckDataItemDeleteFunc(ConstPointer data, Pointer context)
-{
-	Ptr(TCheckDataItem) p = CastAnyPtr(TCheckDataItem, CastMutable(Pointer, data));
-
-	p->Argument.Clear();
-	p->Result.Clear();
-}
 
 class XCheckSumApplication : public CApplication
 {
@@ -273,8 +266,8 @@ public:
 			m_md5 = true;
 		}
 
-		CDataSVectorT<TCheckDataItem> list(__FILE__LINE__ 16, 16, TCheckDataItemDeleteFunc);
-		CDataSVectorT<TCheckDataItem>::Iterator it0;
+		CDataVectorT<TCheckDataItem> list(__FILE__LINE__ 16, 16);
+		CDataVectorT<TCheckDataItem>::Iterator it0;
 
 		if (m_argument)
 		{
@@ -282,9 +275,9 @@ public:
 
 			while (it)
 			{
-				TCheckDataItem item(CFilePath(__FILE__LINE__ *it), CStringBuffer(__FILE__LINE__ _T("")));
+				Ptr(TCheckDataItem) item = OK_NEW_OPERATOR TCheckDataItem(CFilePath(__FILE__LINE__ *it), CStringBuffer(__FILE__LINE__ _T("")));
 
-				list.Append(&item);
+				list.Append(item);
 				++it;
 			}
 		}
@@ -331,9 +324,9 @@ public:
 					it2.EatCharacter(vChar);
 					it2.EatWord(fname, fnsize);
 
-					TCheckDataItem item(CFilePath(__FILE__LINE__ fname, fnsize), CStringBuffer(__FILE__LINE__ fsum, fssize));
+					Ptr(TCheckDataItem) item = OK_NEW_OPERATOR TCheckDataItem(CFilePath(__FILE__LINE__ fname, fnsize), CStringBuffer(__FILE__LINE__ fsum, fssize));
 
-					list.Append(&item);
+					list.Append(item);
 					++it1;
 				}
 				++it;

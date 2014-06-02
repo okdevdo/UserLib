@@ -21,25 +21,11 @@
 #include "CPPS_PCH.H"
 #include "ByteLinkedBuffer.h"
 
-static void __stdcall CByteLinkedBufferDeleteFunc(ConstPointer data, Pointer context)
-{
-	CByteLinkedBuffer::TBufferItem* p = CastAnyPtr(CByteLinkedBuffer::TBufferItem, CastMutable(Pointer, data));
-
-	TFfree(p->_buffer);
-}
-
-CByteLinkedBuffer::Iterator::~Iterator()
-{
-	if ( !(_bufferItems.Release()) )
-		_bufferItems.Close(CByteLinkedBufferDeleteFunc, NULL);
-}
-
 ConstRef(CByteLinkedBuffer::Iterator) CByteLinkedBuffer::Iterator::operator=(ConstRef(CByteLinkedBuffer::Iterator) copy)
 {
-	_bufferItems.Copy(copy._bufferItems, CByteLinkedBufferDeleteFunc, NULL);
-	_index = copy._index;
-	_pos = copy._pos;
-	_totalLength = copy._totalLength;
+	Iterator cp(copy);
+
+	s_memcpy(this, &cp, sizeof(Iterator));
 	return *this;
 }
 
@@ -511,29 +497,14 @@ CByteLinkedBuffer::~CByteLinkedBuffer(void)
 
 ConstRef(CByteLinkedBuffer) CByteLinkedBuffer::operator = (ConstRef(CByteLinkedBuffer) copy)
 {
-	_bufferItems.Copy(copy._bufferItems, CByteLinkedBufferDeleteFunc, NULL);
+	_bufferItems = copy._bufferItems;
 	_totalLength = copy._totalLength;
 	return *this;
 }
 
-TListCnt CByteLinkedBuffer::AddRef()
-{
-	return _bufferItems.AddRef();
-}
-
-TListCnt CByteLinkedBuffer::Release()
-{
-	TListCnt cnt = _bufferItems.Release();
-
-	if ( !cnt )
-		_bufferItems.Close(CByteLinkedBufferDeleteFunc, NULL);
-	return cnt;
-}
-
 void CByteLinkedBuffer::Close()
 {
-	if ( !(_bufferItems.Release()) )
-		_bufferItems.Close(CByteLinkedBufferDeleteFunc, NULL);
+	_bufferItems.Close();
 	_totalLength = 0;
 }
 
@@ -590,14 +561,14 @@ BPointer CByteLinkedBuffer::AddBufferItem(dword size)
 	if (0 == size)
 		return NULL;
 
-	TBufferItem item;
+	Ptr(TBufferItem) item = OK_NEW_OPERATOR TBufferItem;
 
-	item._bufferSize = size;
-	item._buffer = CastAny(BPointer, TFalloc(size));
+	item->_bufferSize = size;
+	item->_buffer = CastAny(BPointer, TFalloc(size));
 
-	_bufferItems.Append(&item);
+	_bufferItems.Append(item);
 	_totalLength += size;
-	return item._buffer;
+	return item->_buffer;
 }
 
 void CByteLinkedBuffer::AddBufferItem(ConstRef(CByteBuffer) buf)
@@ -610,12 +581,12 @@ void CByteLinkedBuffer::AddBufferItem(BPointer buf, dword len)
 	if (PtrCheck(buf) || (0 == len))
 		return;
 
-	TBufferItem item;
+	Ptr(TBufferItem) item = OK_NEW_OPERATOR TBufferItem;
 
-	item._bufferSize = len;
-	item._buffer = CastAny(BPointer, TFalloc(len));
-	s_memmove(item._buffer, buf, len);
-	_bufferItems.Append(&item);
+	item->_bufferSize = len;
+	item->_buffer = CastAny(BPointer, TFalloc(len));
+	s_memmove(item->_buffer, buf, len);
+	_bufferItems.Append(item);
 	_totalLength += len;
 }
 
@@ -684,7 +655,7 @@ void CByteLinkedBuffer::RemoveBufferItem(dword ix)
 	TBufferItems::Iterator it = _bufferItems.Index(ix);
 
 	_totalLength -= (*it)->_bufferSize;
-	_bufferItems.Remove(it, CByteLinkedBufferDeleteFunc, NULL);
+	_bufferItems.Remove(it);
 }
 
 BPointer CByteLinkedBuffer::InsertBufferItem(dword ix, dword size)
@@ -693,14 +664,14 @@ BPointer CByteLinkedBuffer::InsertBufferItem(dword ix, dword size)
 		return NULL;
 
 	TBufferItems::Iterator it = _bufferItems.Index(ix);
-	TBufferItem item;
+	Ptr(TBufferItem) item = OK_NEW_OPERATOR TBufferItem;
 
-	item._bufferSize = size;
-	item._buffer = CastAny(BPointer, TFalloc(size));
+	item->_bufferSize = size;
+	item->_buffer = CastAny(BPointer, TFalloc(size));
 
-	_bufferItems.InsertAfter(it, &item);
+	_bufferItems.InsertAfter(it, item);
 	_totalLength += size;
-	return item._buffer;
+	return item->_buffer;
 }
 
 void CByteLinkedBuffer::InsertBufferItem(dword ix, ConstRef(CByteBuffer) buf)
@@ -714,13 +685,13 @@ void CByteLinkedBuffer::InsertBufferItem(dword ix, BPointer buf, dword len)
 		return;
 
 	TBufferItems::Iterator it = _bufferItems.Index(ix);
-	TBufferItem item;
+	Ptr(TBufferItem) item = OK_NEW_OPERATOR TBufferItem;
 
-	item._bufferSize = len;
-	item._buffer = CastAny(BPointer, TFalloc(len));
-	s_memmove(item._buffer, buf, len);
+	item->_bufferSize = len;
+	item->_buffer = CastAny(BPointer, TFalloc(len));
+	s_memmove(item->_buffer, buf, len);
 
-	_bufferItems.InsertAfter(it, &item);
+	_bufferItems.InsertAfter(it, item);
 	_totalLength += len;
 }
 

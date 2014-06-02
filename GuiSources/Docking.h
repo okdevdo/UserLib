@@ -35,18 +35,20 @@ public:
 		TDockingStyleBottom
 	};
 
-	typedef struct _tagNeighbour
+	class TNeighbour: public CCppObject
 	{
+	public:
 		TDockingStyle style;
 		CDockWindow* win;
 
-		_tagNeighbour(CDockWindow* _win):
+		TNeighbour(CDockWindow* _win) :
 		    style(TDockingStyleLeft), win(_win) {}
-		_tagNeighbour(TDockingStyle _style, CDockWindow* _win):
+		TNeighbour(TDockingStyle _style, CDockWindow* _win) :
 		    style(_style), win(_win) {}
-	} TNeighbour;
+		virtual ~TNeighbour() {}
+	};
 
-	typedef CDataSVectorT<TNeighbour> TNeighbourVector;
+	typedef CDataVectorT<TNeighbour> TNeighbourVector;
 
 public:
 	CDockWindow(LPCTSTR name = NULL);

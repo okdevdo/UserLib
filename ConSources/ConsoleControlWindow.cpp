@@ -24,13 +24,6 @@
 #include "ConsoleControl.h"
 #include "ConsoleLayout.h"
 
-static void __stdcall ControlListDeleteFunc( ConstPointer data, Pointer context )
-{
-	CConsoleControlWindow::ControlData* p = CastAnyPtr(CConsoleControlWindow::ControlData, CastMutable(Pointer, data));
-
-	p->control->release();
-}
-
 static sword __stdcall ControlListFindByName(ConstPointer item, ConstPointer data)
 {
 	CConsoleControlWindow::ControlData* pItem = CastAnyPtr(CConsoleControlWindow::ControlData, CastMutable(Pointer, item));
@@ -57,29 +50,31 @@ CConsoleControlWindow::CConsoleControlWindow(CConstPointer name, CConstPointer t
 
 CConsoleControlWindow::~CConsoleControlWindow(void)
 {
-	m_ControlList.Close(ControlListDeleteFunc, NULL);
 	if ( m_pLayout )
 		m_pLayout->release();
 }
 
 void CConsoleControlWindow::AddControl(CConsoleControl* pControl, COORD pos, COORD size)
 {
-	ControlData data;
+	Ptr(ControlData) data = OK_NEW_OPERATOR ControlData;
 
-	data.pos = pos;
-	data.size = size;
-	data.control = pControl;
+	data->pos = pos;
+	data->size = size;
+	data->control = pControl;
 
-	m_ControlList.Append(&data);
+	m_ControlList.InsertSorted(data);
 }
 
 CConsoleControl* CConsoleControlWindow::GetControl(CConstPointer name)
 {
-	ControlDataList::Iterator it = m_ControlList.Find(CastAnyPtr(ControlData, CastMutable(CPointer, name)), ControlListFindByName);
+	ControlData data;
 
-	if ( (!it) || (!(*it)) )
-		return NULL;
-	return (*it)->control;
+	data.control = OK_NEW_OPERATOR CConsoleControl(name, NULL);
+	ControlDataList::Iterator it = m_ControlList.FindSorted(&data);
+
+	if (m_ControlList.MatchSorted(it, &data))
+		return (*it)->control;
+	return NULL;
 }
 
 CConsoleControl* CConsoleControlWindow::GetNextTabOrder(bool bnext)

@@ -21,21 +21,6 @@
 #include "Program.h"
 #include "PackageInfo.h"
 
-void __stdcall PackageInstallInfoDeleteFunc( ConstPointer data, Pointer context )
-{
-	CPackageInstallInfo* pPackageInfo = CastAnyPtr(CPackageInstallInfo, CastMutable(Pointer, data));
-
-	pPackageInfo->release();
-}
-
-sword __stdcall PackageInstallInfoSearchAndSortFunc( ConstPointer pa, ConstPointer pb)
-{
-	CPackageInstallInfo* ppa = CastAnyPtr(CPackageInstallInfo, CastMutable(Pointer, pa));
-	CPackageInstallInfo* ppb = CastAnyPtr(CPackageInstallInfo, CastMutable(Pointer, pb));
-
-	return (ppa->GetVendorVersion().Compare(ppb->GetVendorVersion()));
-}
-
 CPackageInstallInfo::CPackageInstallInfo():
     _rootPath(),
 	_vendorVersion(),
@@ -112,10 +97,6 @@ void __stdcall PackageInfoDeleteFunc( ConstPointer data, Pointer context )
 	CPackageInfo* pPackageInfo = CastAnyPtr(CPackageInfo, CastMutable(Pointer, data));
 
 	pPackageInfo->release();
-}
-
-static void __stdcall EmptyDeleteFunc( ConstPointer data, Pointer context )
-{
 }
 
 sword __stdcall PackageInfoSearchAndSortFunc( ConstPointer pa, ConstPointer pb)

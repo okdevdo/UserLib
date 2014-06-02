@@ -62,6 +62,9 @@ public:
 
 protected:
 	CDataVectorT<c> _stack;
+
+private:
+	CStack(ConstRef(CStack));
 };
 
 template <typename c>

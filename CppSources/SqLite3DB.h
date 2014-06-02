@@ -113,7 +113,7 @@ public:
 		CSqLite3Columns _args;
 	};
 
-	typedef CDataDoubleLinkedListT<create_function_infoclass> create_function_infoclass_list;
+	typedef CDataDoubleLinkedListT<create_function_infoclass, CStringByNameLessFunctor<create_function_infoclass> > create_function_infoclass_list;
 
 	CSqLite3Connection(CSqLite3Environment* lpEnv = NULL, CSqLite3ConnectionImpl* lpImpl = NULL);
 	virtual ~CSqLite3Connection(void);

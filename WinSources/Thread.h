@@ -181,11 +181,21 @@ private:
 class WINSOURCES_API CPooledThread: public CThread
 {
 public:
-	typedef struct _tagCallback
+	class TCallback: public CCppObject
 	{
-		CAbstractThreadCallback* callback;
+	public:
+		CCppObjectPtr<CAbstractThreadCallback> callback;
 		dword result;
-	} TCallback;
+	};
+
+	class TCallbackEqualFunctor
+	{
+	public:
+		bool operator()(ConstPtr(TCallback) r1, ConstPtr(TCallback) r2) const
+		{
+			return r1->callback != r2->callback;
+		}
+	};
 
 	CPooledThread();
 	virtual ~CPooledThread();
@@ -197,8 +207,11 @@ public:
 protected:
 	virtual dword Run();
 
-	CDataDoubleLinkedListT<CAbstractThreadCallback> m_TaskQueue;
-	CDataSDoubleLinkedListT<TCallback> m_ResultQueue;
+	typedef CDataDoubleLinkedListT<CAbstractThreadCallback, CCppObjectLessFunctor<CAbstractThreadCallback>, CCppObjectNullFunctor<CAbstractThreadCallback> > TaskQueue_t;
+	typedef CDataDoubleLinkedListT<TCallback> ResultQueue_t;
+
+	TaskQueue_t m_TaskQueue;
+	ResultQueue_t m_ResultQueue;
 	CConditionVariable m_condition;
 
 private:

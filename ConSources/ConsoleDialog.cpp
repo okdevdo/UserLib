@@ -24,21 +24,6 @@
 #include "ConsoleControl.h"
 #include "ConsoleLayout.h"
 
-static void __stdcall ControlListDeleteFunc( ConstPointer data, Pointer context )
-{
-	CConsoleDialog::ControlData* p = CastAnyPtr(CConsoleDialog::ControlData, CastMutable(Pointer, data));
-
-	p->control->release();
-}
-
-static sword __stdcall ControlListFindByName(ConstPointer item, ConstPointer data)
-{
-	CConsoleDialog::ControlData* pItem = CastAnyPtr(CConsoleDialog::ControlData, CastMutable(Pointer, item));
-	CConsoleControl* pControl = pItem->control;
-	
-	return s_strcmp(pControl->GetName().GetString(), Cast(CConstPointer, data));
-}
-
 CConsoleDialog::CConsoleDialog(CConstPointer name, CConsole* pConsole):
     CConsoleWindow(name, pConsole),
 	m_ControlList(__FILE__LINE__0),
@@ -61,27 +46,29 @@ CConsoleDialog::CConsoleDialog(CConstPointer name, CConstPointer title, CConsole
 
 CConsoleDialog::~CConsoleDialog(void)
 {
-	m_ControlList.Close(ControlListDeleteFunc, NULL);
 	if ( m_pLayout )
 		m_pLayout->release();
 }
 
 void CConsoleDialog::AddControl(CConsoleControl* pControl, COORD pos, COORD size)
 {
-	ControlData data;
+	Ptr(ControlData) data = OK_NEW_OPERATOR ControlData;
 
-	data.pos = pos;
-	data.size = size;
-	data.control = pControl;
+	data->pos = pos;
+	data->size = size;
+	data->control = pControl;
 
-	m_ControlList.Append(&data);
+	m_ControlList.InsertSorted(data);
 }
 
 CConsoleControl* CConsoleDialog::GetControl(CConstPointer name)
 {
-	ControlDataList::Iterator it = m_ControlList.Find(CastAnyPtr(ControlData, CastMutable(CPointer, name)), ControlListFindByName);
+	ControlData data;
 
-	if ( it )
+	data.control = OK_NEW_OPERATOR CConsoleControl(name, NULL);
+	ControlDataList::Iterator it = m_ControlList.FindSorted(&data);
+
+	if (m_ControlList.MatchSorted(it, &data))
 		return (*it)->control;
 	return NULL;
 }

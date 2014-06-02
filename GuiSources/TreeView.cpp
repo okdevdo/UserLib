@@ -210,7 +210,6 @@ void CTreeViewNode::set_Node(dword ix, CTreeViewNode* node)
 			node1->set_Focused(false);
 			if ( node1->is_Selected() )
 				node1->set_Selected(false);
-			delete node1;
 			m_nodes.SetData(m_nodes.Index(ix), node);
 		}
 		m_treeView->EndUpdate(TRUE);

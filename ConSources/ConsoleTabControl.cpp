@@ -63,12 +63,12 @@ CConsoleTabControl::CConsoleTabControl(word taborder, CAbstractConsoleControlCal
 
 CConsoleTabControl::~CConsoleTabControl(void)
 {
-	m_Pages.Close(CConsoleTabPageControlDeleteFunc, NULL);
+	m_Pages.Close();
 }
 
 void CConsoleTabControl::Initialize(void)
 {
-	m_Pages.Close(CConsoleTabPageControlDeleteFunc, NULL);
+	m_Pages.Close();
 	m_Pages.Open(__FILE__LINE__0);
 	m_CurrentPage = NULL;
 	m_CurrentPageNo = -1;

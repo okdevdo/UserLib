@@ -114,12 +114,12 @@ static sword __stdcall QualityFactorItemSearchAndSortFunc2(ConstPointer ArrayIte
 	Ptr(QualityFactorItem) pArrayItem = CastAnyPtr(QualityFactorItem, CastMutable(Pointer, ArrayItem));
 	Ptr(QualityFactorItem) pDataItem = CastAnyPtr(QualityFactorItem, CastMutable(Pointer, DataItem));
 
-	if (pArrayItem->CompareQ2(pDataItem) == -1)
+	if (pArrayItem->CompareQ2(pDataItem))
 		return 0;
 	return 1;
 }
 
-class QualityFactorItemLessFunctor
+class QualityFactorItemEqualFunctor
 {
 public:
 	bool operator()(ConstPtr(QualityFactorItem) r1, ConstPtr(QualityFactorItem) r2) const
@@ -153,7 +153,7 @@ public:
 				sorted.Append(item);
 			else
 			{
-				Iterator it2 = sorted.Find<QualityFactorItemLessFunctor>(item);
+				Iterator it2 = sorted.Find<QualityFactorItemEqualFunctor>(item);
 
 				if (it2)
 					sorted.InsertBefore(it2, item);

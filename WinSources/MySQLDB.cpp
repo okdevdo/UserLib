@@ -185,7 +185,7 @@ CMySQLColumn* CMySQLStatement::get_ColumnInfo(word ix) const
 CMySQLColumn* CMySQLStatement::get_ColumnInfo(CConstPointer name)
 {
 	CMySQLColumn cmp(name);
-	CMySQLColumns::Iterator it = _columns.Find<CStringByNameLessFunctor<CMySQLColumn>>(&cmp);
+	CMySQLColumns::Iterator it = _columns.Find<CStringByNameEqualFunctor<CMySQLColumn>>(&cmp);
 
 	if (it)
 		return *it;

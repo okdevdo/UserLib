@@ -30,32 +30,40 @@
 class CPPSOURCES_API CByteLinkedBuffer
 {
 public:
-	typedef struct _tag_BufferItem
+	class TBufferItem: public CCppObject
 	{
+	public:
 		BPointer _buffer;
 		dword _bufferSize;
-	} TBufferItem;
 
-	typedef CDataSBTreeT<TBufferItem> TBufferItems;
+		virtual sdword release()
+		{
+			if (_buffer)
+				TFfree(_buffer);
+			return CCppObject::release();
+		}
+	};
+
+	typedef CDataBTreeT<TBufferItem> TBufferItems;
 
 	class CPPSOURCES_API Iterator
 	{
 	public:
 		Iterator(ConstRef(TBufferItems) bufferItems, dword ix = 0):
-		    _bufferItems(bufferItems), // AddRef
+		    _bufferItems(bufferItems),
 			_index(ix),
 			_pos(0),
 			_totalLength(0)
 			{
 			}
 		Iterator(ConstRef(Iterator) copy):
-		    _bufferItems(copy._bufferItems), // AddRef
+		    _bufferItems(copy._bufferItems),
 			_index(copy._index),
 			_pos(copy._pos),
 			_totalLength(copy._totalLength)
 			{
 			}
-		~Iterator();
+		~Iterator() {}
 		ConstRef(Iterator) operator=(ConstRef(Iterator) copy);
 		Iterator& operator++();
 		Iterator& operator--();
@@ -78,7 +86,7 @@ public:
 		void GetSubBuffer(Ref(CByteBuffer) buffer) const;
 
 	protected:
-		TBufferItems _bufferItems;
+		ConstRef(TBufferItems) _bufferItems;
 		dword _index;
 		dword _pos;
 		dword _totalLength;
@@ -96,8 +104,6 @@ public:
 
 	void Clear();
 	void Close();
-	TListCnt AddRef();
-	TListCnt Release();
 	Iterator Begin() const;
 	Iterator Index(dword ix) const;
 	void SetBegin(Iterator it);

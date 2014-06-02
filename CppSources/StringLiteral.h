@@ -301,3 +301,24 @@ public:
 		return r1->get_Name().LT(r2->get_Name(), 0, CStringLiteral::cIgnoreCase);
 	}
 };
+
+template <typename T>
+class CStringByNameEqualFunctor
+{
+public:
+	bool operator()(ConstPtr(T) r1, ConstPtr(T) r2) const
+	{
+		return r1->get_Name().EQ(r2->get_Name());
+	}
+};
+
+template <typename T>
+class CStringByNameIgnoreCaseEqualFunctor
+{
+public:
+	bool operator()(ConstPtr(T) r1, ConstPtr(T) r2) const
+	{
+		return r1->get_Name().EQ(r2->get_Name(), 0, CStringLiteral::cIgnoreCase);
+	}
+};
+

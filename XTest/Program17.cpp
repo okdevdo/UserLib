@@ -448,6 +448,7 @@ public:
 		CStringBuffer spath(__FILE__LINE__ _T("C:\\Users\\Oliver\\Documents\\Visual Studio 2013\\Projects\\EventQueryVista\\output\\"));
 		CFilePath fpath;
 		Ptr(CFile) f = OK_NEW_OPERATOR CStreamFile;
+		int i;
 
 		spath.AppendString(pInfo->get_name());
 		spath.AppendString(_T(".txt"));
@@ -462,66 +463,72 @@ public:
 		f->Write(_T("ParameterFile: %s\n"), pInfo->get_parameterFile().GetString());
 		f->Write(_T("ResourceFile: %s\n"), pInfo->get_resourceFile().GetString());
 
-		CDataDoubleLinkedListT<CEventLogProviderChannel> channelList = pInfo->get_channelList();
-		CDataDoubleLinkedListT<CEventLogProviderChannel>::Iterator channelListIt = channelList.Begin();
+		CEventLogProviderChannels::Iterator channelListIt = pInfo->get_channelList().Begin();
 
-		for (TListCnt i = 0; i < channelList.Count(); ++i)
+		i = 0;
+		while (channelListIt)
 		{
 			f->Write(_T("Channel%d: Id=%d, Path=%s, Index=%d, MessageID=%d, Message=%s, Imported=%s\n"), i, (*channelListIt)->get_id(),
 				(*channelListIt)->get_path().GetString(), (*channelListIt)->get_index(), (*channelListIt)->get_messageID(), (*channelListIt)->get_message().GetString(), (*channelListIt)->get_imported() ? _T("True") : _T("False"));
 			++channelListIt;
+			++i;
 		}
 
-		CDataDoubleLinkedListT<CEventLogProviderLevel> levelList = pInfo->get_levelList();
-		CDataDoubleLinkedListT<CEventLogProviderLevel>::Iterator levelListIt = levelList.Begin();
+		CEventLogProviderLevels::Iterator levelListIt = pInfo->get_levelList().Begin();
 
-		for (TListCnt i = 0; i < levelList.Count(); ++i)
+		i = 0;
+		while (levelListIt)
 		{
 			f->Write(_T("Level%d: Value=0x%08x, Name=%s, MessageID=%d, Message=%s\n"), i, (*levelListIt)->get_value(),
 				(*levelListIt)->get_name().GetString(), (*levelListIt)->get_messageID(), (*levelListIt)->get_message().GetString());
 			++levelListIt;
+			++i;
 		}
 
-		CDataDoubleLinkedListT<CEventLogProviderTask> taskList = pInfo->get_taskList();
-		CDataDoubleLinkedListT<CEventLogProviderTask>::Iterator taskListIt = taskList.Begin();
+		CEventLogProviderTasks::Iterator taskListIt = pInfo->get_taskList().Begin();
 
-		for (TListCnt i = 0; i < taskList.Count(); ++i)
+		i = 0;
+		while(taskListIt)
 		{
 			f->Write(_T("Task%d: Value=0x%08x, Name=%s, EventGuid=%s, MessageID=%d, Message=%s\n"), i, (*taskListIt)->get_value(),
 				(*taskListIt)->get_name().GetString(), (*taskListIt)->get_eventGuid().GetString(), (*taskListIt)->get_messageID(), (*taskListIt)->get_message().GetString());
 			++taskListIt;
+			++i;
 		}
 
-		CDataDoubleLinkedListT<CEventLogProviderOpCode> opCodeList = pInfo->get_opCodeList();
-		CDataDoubleLinkedListT<CEventLogProviderOpCode>::Iterator opCodeListIt = opCodeList.Begin();
+		CEventLogProviderOpCodes::Iterator opCodeListIt = pInfo->get_opCodeList().Begin();
 
-		for (TListCnt i = 0; i < opCodeList.Count(); ++i)
+		i = 0;
+		while (opCodeListIt)
 		{
 			f->Write(_T("OpCode%d: Value=0x%08x, Name=%s, MessageID=%d, Message=%s\n"), i, (*opCodeListIt)->get_value(),
 				(*opCodeListIt)->get_name().GetString(), (*opCodeListIt)->get_messageID(), (*opCodeListIt)->get_message().GetString());
 			++opCodeListIt;
+			++i;
 		}
 
-		CDataDoubleLinkedListT<CEventLogProviderKeyWord> keyWordsList = pInfo->get_keyWordList();
-		CDataDoubleLinkedListT<CEventLogProviderKeyWord>::Iterator keyWordsListIt = keyWordsList.Begin();
+		CEventLogProviderKeyWords::Iterator keyWordsListIt = pInfo->get_keyWordList().Begin();
 
-		for (TListCnt i = 0; i < keyWordsList.Count(); ++i)
+		i = 0;
+		while (keyWordsListIt)
 		{
 			f->Write(_T("KeyWords%d: Value=0x%016llx, Name=%s, MessageID=%d, Message=%s\n"), i, (*keyWordsListIt)->get_value(),
 				(*keyWordsListIt)->get_name().GetString(), (*keyWordsListIt)->get_messageID(), (*keyWordsListIt)->get_message().GetString());
 			++keyWordsListIt;
+			++i;
 		}
 
-		CDataDoubleLinkedListT<CEventLogProviderEvent> eventList = pInfo->get_eventList();
-		CDataDoubleLinkedListT<CEventLogProviderEvent>::Iterator eventListIt = eventList.Begin();
+		CEventLogProviderEvents::Iterator eventListIt = pInfo->get_eventList().Begin();
 
-		for (TListCnt i = 0; i < eventList.Count(); ++i)
+		i = 0;
+		while (eventListIt)
 		{
 			f->Write(_T("Event%d: Id=(%d, 0x%08x), Version=%d, Channel=%d, Level=0x%08x, OpCode=0x%08x, Task=0x%08x, KeyWord=0x%016llx\n"), i, (*eventListIt)->get_id(), (*eventListIt)->get_id(),
 				(*eventListIt)->get_version(), (*eventListIt)->get_channelValue(), (*eventListIt)->get_levelValue(), (*eventListIt)->get_opCodeValue(), (*eventListIt)->get_taskValue(), (*eventListIt)->get_keyWordValue());
 			f->Write(_T("        MessageId=%08x, Message=%s\n"), (*eventListIt)->get_messageID(), (*eventListIt)->get_message().GetString());
 			f->Write(_T("        Template=%s\n"), (*eventListIt)->get_template().GetString());
 			++eventListIt;
+			++i;
 		}
 		f->Close();
 

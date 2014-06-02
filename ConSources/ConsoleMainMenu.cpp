@@ -45,7 +45,6 @@ CConsoleMainMenu::CConsoleMainMenu(CConstPointer name, CConstPointer title, CCon
 
 CConsoleMainMenu::~CConsoleMainMenu(void)
 {
-	m_MenuItemList.Close(MenuItemListDeleteFunc, NULL);
 }
 
 void CConsoleMainMenu::MenuNavigation(CConsolePopupMenu* popupMenu, CAbstractConsoleMenuNavigationCallback::TNavigation command)

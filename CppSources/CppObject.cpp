@@ -72,7 +72,7 @@ sdword CCppObject::release()
 		
 	dword cnt = TFdecrefcnt(this);
 
-	if ( cnt == 0 )
+	if (cnt == 0)
 		delete this;
 	return cnt;
 }
