@@ -22,25 +22,10 @@
 #include "SqLite3DBImpl.h"
 #include "UTLPTR.H"
 
-static void __stdcall CSqLite3FuncListDeleteFunc(ConstPointer data, Pointer context)
-{
-	Ptr(CSqLite3Connection::create_function_infoclass) pInfoClass = CastAnyPtr(CSqLite3Connection::create_function_infoclass, CastMutable(Pointer, data));
-
-	pInfoClass->release();
-}
-
-static sword __stdcall CSqLite3FuncListSearchAndSortFunc(ConstPointer item, ConstPointer data)
-{
-	Ptr(CSqLite3Connection::create_function_infoclass) pItemInfoClass = CastAnyPtr(CSqLite3Connection::create_function_infoclass, CastMutable(Pointer, item));
-	Ptr(CSqLite3Connection::create_function_infoclass) pDataInfoClass = CastAnyPtr(CSqLite3Connection::create_function_infoclass, CastMutable(Pointer, data));
-
-	return pItemInfoClass->get_Name().Compare(pDataInfoClass->get_Name());
-}
-
 CSqLite3StatementImpl::CSqLite3StatementImpl(CSqLite3EnvironmentImpl* lpEnv, CSqLite3ConnectionImpl* lpConn) :
 _lpEnv(lpEnv),
 _lpConn(lpConn),
-_lpStmt(NULL),
+_lpStmt(nullptr),
 _siNumResultColumns(0),
 _siNumResultRows(0),
 _siNumParams(0)
@@ -67,12 +52,12 @@ void CSqLite3StatementImpl::Prepare(CConstPointer pCommand)
 
 #ifdef UNICODE
 	ConstPointer pzTail = CastAny(ConstPointer, pCommand);
-	ConstPointer pzTail1 = NULL;
+	ConstPointer pzTail1 = nullptr;
 
 	while (NotPtrCheck(pzTail) && DerefCPointer(CastMutable(Pointer, pzTail)))
 #else
 	CConstPointer pzTail = pCommand;
-	CConstPointer pzTail1 = NULL;
+	CConstPointer pzTail1 = nullptr;
 
 	while (NotPtrCheck(pzTail) && DerefCPointer(CastMutable(CPointer, pzTail)))
 #endif
@@ -83,10 +68,10 @@ void CSqLite3StatementImpl::Prepare(CConstPointer pCommand)
 
 			if (res != SQLITE_OK)
 				HandleError(__FILE__LINE__ res, _T("sqlite3_finalize"));
-			_lpStmt = NULL;
+			_lpStmt = nullptr;
 		}
 
-		pzTail1 = NULL;
+		pzTail1 = nullptr;
 #ifdef UNICODE
 		res = sqlite3_prepare16_v2(
 			_lpConn->get_Handle(),            /* Database handle */
@@ -212,10 +197,10 @@ void CSqLite3StatementImpl::Execute(CConstPointer pCommand)
 
 #ifdef UNICODE
 	ConstPointer pzTail = CastAny(ConstPointer, pCommand);
-	ConstPointer pzTail1 = NULL;
+	ConstPointer pzTail1 = nullptr;
 #else
 	CConstPointer pzTail = pCommand;
-	CConstPointer pzTail1 = NULL;
+	CConstPointer pzTail1 = nullptr;
 #endif
 	int res = SQLITE_OK;
 
@@ -251,10 +236,10 @@ void CSqLite3StatementImpl::Execute(CConstPointer pCommand)
 
 			if (res != SQLITE_OK)
 				HandleError(__FILE__LINE__ res, _T("sqlite3_finalize"));
-			_lpStmt = NULL;
+			_lpStmt = nullptr;
 		}
 
-		pzTail1 = NULL;
+		pzTail1 = nullptr;
 #ifdef UNICODE
 		res = sqlite3_prepare16_v2(
 			_lpConn->get_Handle(),            /* Database handle */
@@ -328,7 +313,7 @@ void CSqLite3StatementImpl::BindColumns(Ref(CSqLite3Statement::CSqLite3Columns) 
 		//	it.FirstOf(_T("("));
 		//	vTmp.SubString(0, it.GetDistance(), vTmp1);
 
-		//	CSqLite3Connection::create_function_infoclass vInfoClass(NULL, vTmp1, NULL, 0);
+		//	CSqLite3Connection::create_function_infoclass vInfoClass(nullptr, vTmp1, nullptr, 0);
 		//	CSqLite3Connection::create_function_infoclass_list::Iterator it1 = vFuncList.FindSorted(&vInfoClass);
 
 		//	if (it1 && (*it1) && ((*it1)->get_Name().Compare(vTmp1, 0, CStringLiteral::cIgnoreCase) == 0))
@@ -351,7 +336,7 @@ void CSqLite3StatementImpl::BindColumns(Ref(CSqLite3Statement::CSqLite3Columns) 
 			vDataTypeEnum = CSqLite3Column::eSQL_BLOB;
 
 		CSqLite3Statement::CSqLite3Columns::Iterator it = cols.Index(iCol);
-		Ptr(CSqLite3Column) pColumn = NULL;
+		Ptr(CSqLite3Column) pColumn = nullptr;
 
 		if (it)
 		{
@@ -465,7 +450,7 @@ void CSqLite3StatementImpl::Free()
 
 		if (res != SQLITE_OK)
 			HandleError(__FILE__LINE__ res, _T("sqlite3_finalize"));
-		_lpStmt = NULL;
+		_lpStmt = nullptr;
 	}
 	_siNumResultColumns = 0;
 	_siNumResultRows = 0;
@@ -484,7 +469,7 @@ void CSqLite3StatementImpl::HandleError(DECL_FILE_LINE int err, CConstPointer fu
 
 CSqLite3ConnectionImpl::CSqLite3ConnectionImpl(CSqLite3EnvironmentImpl* lpEnv):
 _lpEnv(lpEnv),
-_lpDBHandle(NULL),
+_lpDBHandle(nullptr),
 _bConnected(false),
 _numStmts(0),
 _cntStmts(0),
@@ -562,7 +547,7 @@ void CSqLite3ConnectionImpl::Close()
 
 	if (res != SQLITE_OK)
 		HandleError(__FILE__LINE__ res, _T("sqlite3_close"));
-	_lpDBHandle = NULL;
+	_lpDBHandle = nullptr;
 	_bConnected = FALSE;
 }
 
@@ -654,8 +639,8 @@ void CSqLite3ConnectionImpl::create_function(Ptr(CSqLite3Connection::create_func
 		SQLITE_UTF16,
 		pInfoClass,
 		xFunc_Implementation,
-		NULL,
-		NULL
+		nullptr,
+		nullptr
 		);
 	if (res != SQLITE_OK)
 		HandleError(__FILE__LINE__ res, _T("sqlite3_create_function16"));
@@ -667,8 +652,8 @@ void CSqLite3ConnectionImpl::create_function(Ptr(CSqLite3Connection::create_func
 		SQLITE_UTF8,
 		pInfoClass,
 		xFunc_Implementation,
-		NULL,
-		NULL
+		nullptr,
+		nullptr
 		);
 	if (res != SQLITE_OK)
 		HandleError(__FILE__LINE__ res, _T("sqlite3_create_function"));
@@ -688,7 +673,7 @@ void CSqLite3ConnectionImpl::HandleError(DECL_FILE_LINE int err, CConstPointer f
 }
 
 CSqLite3EnvironmentImpl::CSqLite3EnvironmentImpl(void) :
-_lastError(NULL)
+_lastError(nullptr)
 {
 }
 
@@ -698,7 +683,7 @@ CSqLite3EnvironmentImpl::~CSqLite3EnvironmentImpl(void)
 	Close();
 	if (_lastError)
 		delete _lastError;
-	_lastError = NULL;
+	_lastError = nullptr;
 }
 
 void CSqLite3EnvironmentImpl::set_LastError(CSqLite3Exception* pLastError)

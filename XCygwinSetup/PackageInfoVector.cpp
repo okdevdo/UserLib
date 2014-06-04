@@ -245,7 +245,7 @@ void CPackageInfoVector::Uninstall(CStringLiteral pInstallDir, WBool bPrintOnly,
 {
 	Iterator it;
 	CStringBuffer tmp;
-	Ptr(CPackageInfo) pInfo = NULL;
+	Ptr(CPackageInfo) pInfo = nullptr;
 	CBashScript bashscript(pInstallDir);
 	CCmdScript cmdscript(pInstallDir);
 	CFilePath fpath1(__FILE__LINE__ CYGWIN_SETUP_DIR, -1, CDirectoryIterator::UnixPathSeparatorString());
@@ -278,11 +278,11 @@ void CPackageInfoVector::Uninstall(CStringLiteral pInstallDir, WBool bPrintOnly,
 			tmp += _T(".lst");
 			fpath11.set_Filename(tmp);
 
-			CSecurityFile* pInputFile = NULL;
-			CSecurityFile* pOutputFile = NULL;
-			CFilterInput* pInput = NULL;
-			CFilterOutput* pOutput = NULL;
-			CFilter* pFilter = NULL;
+			CCppObjectPtr<CSecurityFile> pInputFile;
+			CCppObjectPtr<CSecurityFile> pOutputFile;
+			CCppObjectPtr<CFilterInput> pInput;
+			CCppObjectPtr<CFilterOutput> pOutput;
+			CCppObjectPtr<CFilter> pFilter;
 
 			try
 			{
@@ -300,12 +300,6 @@ void CPackageInfoVector::Uninstall(CStringLiteral pInstallDir, WBool bPrintOnly,
 				pFilter->do_filter();
 				pFilter->close();
 
-				pFilter->release(); pFilter = NULL;
-				pInput->release(); pInput = NULL;
-				pOutput->release(); pOutput = NULL;
-				pInputFile->release(); pInputFile = NULL;
-				pOutputFile->release(); pOutputFile = NULL;
-
 				pInputFile = OK_NEW_OPERATOR CSecurityFile();
 				pInputFile->Open(fpath11);
 				pInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
@@ -315,11 +309,6 @@ void CPackageInfoVector::Uninstall(CStringLiteral pInstallDir, WBool bPrintOnly,
 				pFilter->open();
 				pFilter->do_filter();
 				pFilter->close();
-
-				pFilter->release(); pFilter = NULL;
-				pInput->release(); pInput = NULL;
-				pOutput->release(); pOutput = NULL;
-				pInputFile->release(); pInputFile = NULL;
 			}
 			catch ( CBaseException* ex )
 			{
@@ -330,16 +319,6 @@ void CPackageInfoVector::Uninstall(CStringLiteral pInstallDir, WBool bPrintOnly,
 					COUT << ex->GetExceptionMessage() << endl;
 					COUT << _T("Uninstall: Doing list file: '") << fpath1.get_Path() << _T("' failed.") << endl;
 				}
-				if ( NotPtrCheck(pInputFile) )
-					pInputFile->release();
-				if ( NotPtrCheck(pInput) )
-					pInput->release();
-				if ( NotPtrCheck(pOutputFile) )
-					pOutputFile->release();
-				if ( NotPtrCheck(pOutput) )
-					pOutput->release();
-				if ( NotPtrCheck(pFilter) )
-					pFilter->release();
 			}
 		}
 		else
@@ -378,10 +357,10 @@ void CPackageInfoVector::Uninstall(CStringLiteral pInstallDir, WBool bPrintOnly,
 
 			COUT << _T("Uninstall: Do list file: '") << fpath1.get_Path() << _T("'") << endl;
 
-			CSecurityFile* pInputFile = NULL;
-			CFilterInput* pInput = NULL;
-			CFilterOutput* pOutput = NULL;
-			CFilter* pFilter = NULL;
+			CCppObjectPtr<CSecurityFile> pInputFile;
+			CCppObjectPtr<CFilterInput> pInput;
+			CCppObjectPtr<CFilterOutput> pOutput;
+			CCppObjectPtr<CFilter> pFilter;
 
 			try
 			{
@@ -394,11 +373,6 @@ void CPackageInfoVector::Uninstall(CStringLiteral pInstallDir, WBool bPrintOnly,
 				pFilter->open();
 				pFilter->do_filter();
 				pFilter->close();
-
-				pFilter->release(); pFilter = NULL;
-				pInput->release(); pInput = NULL;
-				pOutput->release(); pOutput = NULL;
-				pInputFile->release(); pInputFile = NULL;
 
 				CWinDirectoryIterator::UnlinkFile(fpath11);
 				if ( !bPrintOnly )
@@ -416,14 +390,6 @@ void CPackageInfoVector::Uninstall(CStringLiteral pInstallDir, WBool bPrintOnly,
 					COUT << ex->GetExceptionMessage() << endl;
 					COUT << _T("Uninstall: Doing list file: '") << fpath1.get_Path() << _T("' failed.") << endl;
 				}
-				if ( NotPtrCheck(pInputFile) )
-					pInputFile->release();
-				if ( NotPtrCheck(pInput) )
-					pInput->release();
-				if ( NotPtrCheck(pOutput) )
-					pOutput->release();
-				if ( NotPtrCheck(pFilter) )
-					pFilter->release();
 			}
 		}
 		++it;
@@ -435,13 +401,13 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 	Iterator it;
 	CInstallPackageInfoVector::Iterator itIP;
 	CInstallPackageInfo ipInfo;
-	Ptr(CInstallPackageInfo) pIPInfo = NULL;
-	Ptr(CPackageInfo) pInfo = NULL;
-	Ptr(CPackageInstallInfo) pPIInfo = NULL;
-	ConstPtr(CInstallPackageInfo) pCIPInfo = NULL;
-	Ptr(CSecurityFile) pFile = NULL;
-	Ptr(CSecurityFile) pFile1 = NULL;
-	Ptr(CSecurityFile) pFile2 = NULL;
+	Ptr(CInstallPackageInfo) pIPInfo = nullptr;
+	Ptr(CPackageInfo) pInfo = nullptr;
+	Ptr(CPackageInstallInfo) pPIInfo = nullptr;
+	ConstPtr(CInstallPackageInfo) pCIPInfo = nullptr;
+	CCppObjectPtr<CSecurityFile> pFile;
+	CCppObjectPtr<CSecurityFile> pFile1;
+	CCppObjectPtr<CSecurityFile> pFile2;
 	CFilePath fpath;
 	CFilePath fpath1;
 	CFilePath fpath2;
@@ -659,7 +625,7 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 					if ( pCIPInfo->GetFileSize() != pFile->GetSize() )
 					{
 						COUT << _T("Install: File Sizes differ: ") << pCIPInfo->GetFileSize() << _T(" and ") << pFile->GetSize() << _T(", will not install.") << endl;
-						pInfo->SetToBeInstalled(NULL);
+						pInfo->SetToBeInstalled(nullptr);
 					}
 					else
 					{
@@ -668,7 +634,7 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 						if ( md5Buffer != pCIPInfo->GetMD5Buffer() )
 						{
 							COUT << _T("Install: MD5 sum differ: ") << md5Buffer.GetDigest() << _T(" and ") << pCIPInfo->GetMD5Buffer().GetDigest() << _T(", will not install.") << endl;
-							pInfo->SetToBeInstalled(NULL);
+							pInfo->SetToBeInstalled(nullptr);
 						}
 					}
 					pFile->Close();
@@ -676,7 +642,7 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 				else
 				{
 					COUT << _T("Install: File '") << fpath.get_Path() << _T("' does not exist, will not install.") << endl;
-					pInfo->SetToBeInstalled(NULL);
+					pInfo->SetToBeInstalled(nullptr);
 				}
 			}
 			catch ( CBaseException* ex )
@@ -684,7 +650,7 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 				CERR << ex->GetExceptionMessage() << endl;
 				if (theConsoleApp->is_stdout_redirected())
 					COUT << ex->GetExceptionMessage() << endl;
-				pInfo->SetToBeInstalled(NULL);
+				pInfo->SetToBeInstalled(nullptr);
 				if ( NotPtrCheck(pFile) )
 					pFile->Close();
 			}
@@ -719,17 +685,17 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 			}
 			if ( bExist )
 			{
-				CFilterInput* pInput = NULL;
-				CFilterOutput* pOutput = NULL;
-				CFilter* pFilter = NULL;
+				CCppObjectPtr<CFilterInput> pInput;
+				CCppObjectPtr<CFilterOutput> pOutput;
+				CCppObjectPtr<CFilter> pFilter;
 				bool bCopied = false;
 				bool bContinue = true;
 
-				if ( PtrCheck(pFile) )
+				if ( !pFile )
 					pFile = OK_NEW_OPERATOR CSecurityFile();
-				if ( PtrCheck(pFile1) )
+				if ( !pFile1 )
 					pFile1 = OK_NEW_OPERATOR CSecurityFile();
-				if ( PtrCheck(pFile2) )
+				if ( !pFile2 )
 					pFile2 = OK_NEW_OPERATOR CSecurityFile();
 
 				fpath1.set_Path(__FILE__LINE__ CYGWIN_TMP_DIR, CDirectoryIterator::UnixPathSeparatorString());
@@ -744,49 +710,35 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 					{
 						pFile->Open(fpath);
 						pInput = OK_NEW_OPERATOR CFileFilterInput(pFile);
-
 						CWinDirectoryIterator::UnlinkFile(fpath1);
 						pFile1->Create(fpath1, false, CFile::BinaryFile_NoEncoding, 0644);
 						pOutput = OK_NEW_OPERATOR CFileFilterOutput(pFile1);
-
 						pFilter = OK_NEW_OPERATOR CBZip2DeCompressFilter(pInput, pOutput);
 					}
 					else if ( tmp.Compare(_T("gz"), 0, CStringLiteral::cIgnoreCase) == 0 )
 					{
 						pFile->Open(fpath);
 						pInput = OK_NEW_OPERATOR CFileFilterInput(pFile);
-
 						CWinDirectoryIterator::UnlinkFile(fpath1);
 						pFile1->Create(fpath1, false, CFile::BinaryFile_NoEncoding, 0644);
 						pOutput = OK_NEW_OPERATOR CFileFilterOutput(pFile1);
-
 						pFilter = OK_NEW_OPERATOR CGZipDeCompressFilter(pInput, pOutput);
 					}
 					else if ( tmp.Compare(_T("xz"), 0, CStringLiteral::cIgnoreCase) == 0 )
 					{
 						pFile->Open(fpath);
 						pInput = OK_NEW_OPERATOR CFileFilterInput(pFile);
-
 						CWinDirectoryIterator::UnlinkFile(fpath1);
 						pFile1->Create(fpath1, false, CFile::BinaryFile_NoEncoding, 0644);
 						pOutput = OK_NEW_OPERATOR CFileFilterOutput(pFile1);
-
 						pFilter = OK_NEW_OPERATOR CXZDeCompressFilter(pInput, pOutput);
 					}
 
-					if ( NotPtrCheck(pFilter) )
+					if (pFilter)
 					{
 						pFilter->open();
 						pFilter->do_filter();
 						pFilter->close();
-
-						pFilter->release(); pFilter = NULL;
-						pInput->release(); pInput = NULL;
-						pOutput->release(); pOutput = NULL;
-
-						pFile->Close();
-						pFile1->Close();
-
 						bCopied = true;
 					}
 					if ( tmp.Compare(_T("tar"), 0, CStringLiteral::cIgnoreCase) == 0 )
@@ -796,7 +748,7 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 					else
 					{
 						COUT << _T("Install: Unknown file format: '") << fpath.get_Path() << _T("'.") << endl;
-						pInfo->SetToBeInstalled(NULL);
+						pInfo->SetToBeInstalled(nullptr);
 						bContinue = false;
 					}
 				}
@@ -805,16 +757,7 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 					CERR << ex->GetExceptionMessage() << endl;
 					if (theConsoleApp->is_stdout_redirected())
 						COUT << ex->GetExceptionMessage() << endl;
-					pInfo->SetToBeInstalled(NULL);
-					if ( NotPtrCheck(pInput) )
-						pInput->release();
-					pInput = NULL;
-					if ( NotPtrCheck(pOutput) )
-						pOutput->release();
-					pOutput = NULL;
-					if ( NotPtrCheck(pFilter) )
-						pFilter->release();
-					pFilter = NULL;
+					pInfo->SetToBeInstalled(nullptr);
 					pFile->Close();
 					pFile1->Close();
 					bContinue = false;
@@ -825,7 +768,7 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 					{
 						CDataVectorT<CStringBuffer> archiveLstOutput(__FILE__LINE__ 16, 16);
 						CTarArchive tarArchive(pFile);
-						CArchiveIterator *tarIt = tarArchive.begin();
+						CCppObjectPtr<CArchiveIterator> tarIt = tarArchive.begin();
 
 						while ( tarIt->Next() )
 						{
@@ -834,7 +777,7 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 							case CArchiveIterator::ARCHIVE_FILE_REGULAR:
 								{
 									CStringConstIterator it;
-									CArchiveFile* afile = NULL;
+									CCppObjectPtr<CArchiveFile> afile;
 
 									tmp = tarIt->GetFileName();
 
@@ -895,11 +838,6 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 										pFilter->do_filter();
 										pFilter->close();
 
-										pFilter->release(); pFilter = NULL;
-										pInput->release(); pInput = NULL;
-										pOutput->release(); pOutput = NULL;
-										afile->release(); afile = NULL;
-
 										if ( !bPrintOnly )
 										{
 											pFile1->Close();
@@ -914,18 +852,6 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 										CERR << ex->GetExceptionMessage() << endl;
 										if (theConsoleApp->is_stdout_redirected())
 											COUT << ex->GetExceptionMessage() << endl;
-										if ( NotPtrCheck(pInput) )
-											pInput->release();
-										pInput = NULL;
-										if ( NotPtrCheck(pOutput) )
-											pOutput->release();
-										pOutput = NULL;
-										if ( NotPtrCheck(pFilter) )
-											pFilter->release();
-										pFilter = NULL;
-										if ( NotPtrCheck(afile) )
-											afile->release();
-										afile = NULL;
 										pFile1->Close();
 									}
 								}
@@ -1127,7 +1053,6 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 								break;
 							}
 						}
-						tarIt->release();
 						pFile->Close();
 						if ( bCopied )
 							CWinDirectoryIterator::UnlinkFile(pFile->GetPath());
@@ -1152,12 +1077,6 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 							pFilter->do_filter();
 							pFilter->close();
 
-							pInput->release(); pInput = NULL;
-							pOutput->release(); pOutput = NULL;
-							pFilter->release(); pFilter = NULL;
-
-							pFile2->Close();
-
 							fpath1.set_Path(__FILE__LINE__ CYGWIN_SETUP_DIR, CDirectoryIterator::UnixPathSeparatorString());
 							fpath1.Normalize(pInstallDir);
 							tmp = pInfo->GetPackageName();
@@ -1177,13 +1096,6 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 							pFilter->do_filter();
 							pFilter->close();
 
-							pInput->release(); pInput = NULL;
-							pOutput->release(); pOutput = NULL;
-							pFilter->release(); pFilter = NULL;
-
-							pFile1->Close();
-							pFile2->Close();
-
 							CWinDirectoryIterator::UnlinkFile(fpath);
 						}
 					}
@@ -1193,13 +1105,7 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 					CERR << ex->GetExceptionMessage() << endl;
 					if (theConsoleApp->is_stdout_redirected())
 						COUT << ex->GetExceptionMessage() << endl;
-					pInfo->SetToBeInstalled(NULL);
-					if ( NotPtrCheck(pInput) )
-						pInput->release();
-					if ( NotPtrCheck(pOutput) )
-						pOutput->release();
-					if ( NotPtrCheck(pFilter) )
-						pFilter->release();
+					pInfo->SetToBeInstalled(nullptr);
 					pFile->Close();
 					pFile1->Close();
 					pFile2->Close();
@@ -1208,7 +1114,7 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 			else
 			{
 				COUT << _T("Install: File '") << fpath.get_Path() << _T("' does not exist, will not install.") << endl;
-				pInfo->SetToBeInstalled(NULL);
+				pInfo->SetToBeInstalled(nullptr);
 			}
 		}
 		++it;
@@ -1279,10 +1185,4 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 		}
 		++it;
 	}
-	if ( NotPtrCheck(pFile) )
-		pFile->release();
-	if ( NotPtrCheck(pFile1) )
-		pFile1->release();
-	if ( NotPtrCheck(pFile2) )
-		pFile2->release();
 }

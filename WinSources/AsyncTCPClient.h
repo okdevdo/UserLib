@@ -28,8 +28,8 @@
 class WINSOURCES_API CAsyncTCPClient: public CAsyncIOBuffer
 {
 public:
-	CAsyncTCPClient(Ptr(CAsyncIOManager) pManager = NULL);
-	CAsyncTCPClient(Ptr(CAsyncIOData) pData);
+	CAsyncTCPClient(Ptr(CAsyncIOData) pData); // for searching
+	CAsyncTCPClient(Ptr(CAsyncIOManager) pManager);
 	virtual ~CAsyncTCPClient(void);
 
 	void Open(CConstPointer pServer, CConstPointer pProtocol);
@@ -43,5 +43,8 @@ public:
 protected:
 	CStringBuffer m_Server;
 	CStringBuffer m_Protocol;
+	bool m_bInit;
+private:
+	CAsyncTCPClient();
 };
 

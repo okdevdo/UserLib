@@ -61,7 +61,7 @@ public:
 
 	void CreateConsoleModalDialog(CConsoleDialog* pDialog, COORD size);
 	CConsoleDialog* GetCurrentConsoleModalDialog();
-	void CloseConsoleModalDialog(CConsoleWindow* pWindow = NULL);
+	void CloseConsoleModalDialog(CConsoleWindow* pWindow = nullptr);
 
 	void PostPaintEvent(CConsoleWindow* pWindow, bool repaintall = false);
 	void MaximizeWindow(CConsoleWindow* pWindow);
@@ -71,7 +71,7 @@ public:
 	void SetCursorPos(COORD pos);
 	void HideCursor();
 
-	__inline bool HasMainMenu() { return (m_MainMenu != NULL); }
+	__inline bool HasMainMenu() { return (m_MainMenu != nullptr); }
 
 	color_t GetDefaultColor();
 	color_t GetDefaultHighlightedColor();
@@ -103,7 +103,7 @@ protected:
 	COORD m_ScreenBufferSize;
 	PCHAR_INFO m_ScreenBuffer;
 	COORD m_LastWindowPos;
-	CConsoleMainMenu* m_MainMenu;
+	CCppObjectPtr<CConsoleMainMenu> m_MainMenu;
 	CConsoleWindowNullList m_WindowList;
 	CConsoleWindowNullList m_PopupMenus;
 	CConsoleWindowNullList m_ModalDialogs;

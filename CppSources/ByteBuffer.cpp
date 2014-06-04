@@ -22,12 +22,12 @@
 #include "ByteBuffer.h"
 
 CByteBuffer::CByteBuffer():
-	_buffer(NULL), _bufferSize(0)
+	_buffer(nullptr), _bufferSize(0)
 {
 }
 
 CByteBuffer::CByteBuffer(DECL_FILE_LINE dword initialSize):
-	_buffer(NULL), _bufferSize(0)
+	_buffer(nullptr), _bufferSize(0)
 {
 	if ( initialSize )
 	{
@@ -41,7 +41,7 @@ CByteBuffer::CByteBuffer(DECL_FILE_LINE dword initialSize):
 }
 
 CByteBuffer::CByteBuffer(DECL_FILE_LINE BConstPointer buffer, dword bufferSize) :
-	_buffer(NULL), _bufferSize(0)
+	_buffer(nullptr), _bufferSize(0)
 {
 	if ( bufferSize )
 	{
@@ -57,7 +57,7 @@ CByteBuffer::CByteBuffer(DECL_FILE_LINE BConstPointer buffer, dword bufferSize) 
 }
 
 CByteBuffer::CByteBuffer(const CByteBuffer& buffer):
-	_buffer(NULL), _bufferSize(0)
+	_buffer(nullptr), _bufferSize(0)
 {
 	if ( buffer.get_BufferSize() )
 	{
@@ -85,7 +85,7 @@ void CByteBuffer::set_BufferSize(DECL_FILE_LINE dword bufferSize)
 			if ( TFdecrefcnt(_buffer) == 0 )
 				TFfree(_buffer);
 		}
-		_buffer = NULL;
+		_buffer = nullptr;
 		_bufferSize = 0;
 		return;
 	}
@@ -125,7 +125,7 @@ void CByteBuffer::set_Buffer(DECL_FILE_LINE BConstPointer buffer, dword bufferSi
 			if ( TFdecrefcnt(_buffer) == 0 )
 				TFfree(_buffer);
 		}
-		_buffer = NULL;
+		_buffer = nullptr;
 		_bufferSize = 0;
 		return;
 	}
@@ -277,7 +277,7 @@ void CByteBuffer::operator=(const CByteBuffer& copy)
 		}
 		if ( PtrCheck(copy.get_Buffer()) )
 		{
-			_buffer = NULL;
+			_buffer = nullptr;
 			_bufferSize = 0;
 			return;
 		}

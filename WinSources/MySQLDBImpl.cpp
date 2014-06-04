@@ -25,11 +25,11 @@ CMySQLStatementImpl::CMySQLStatementImpl(CMySQLEnvironmentImpl* lpEnv, CMySQLCon
 {
 	_lpEnv = lpEnv;
 	_lpConn = lpConn;
-	_lpResultset = NULL;
-	_lpStmt = NULL;
-	_lpBindInputParam = NULL;
+	_lpResultset = nullptr;
+	_lpStmt = nullptr;
+	_lpBindInputParam = nullptr;
 	_lpBindInputParamBound = FALSE;
-	_lpBindOutputCol = NULL;
+	_lpBindOutputCol = nullptr;
 	_siNumResultColumns = 0;
 	_siNumResultRows = 0;
 	_siNumParams = 0;
@@ -216,7 +216,7 @@ bool CMySQLStatementImpl::NextResult()
 	if (_lpBindOutputCol)
 	{
 		TFfree(_lpBindOutputCol);
-		_lpBindOutputCol = NULL;
+		_lpBindOutputCol = nullptr;
 	}
 
 	return (_siNumResultColumns > 0);
@@ -234,7 +234,7 @@ void CMySQLStatementImpl::BindColumns(Ref(CMySQLStatement::CMySQLColumns) cols)
 	}
 
 	sword iCol;
-	MYSQL_RES* pResultset = NULL;
+	MYSQL_RES* pResultset = nullptr;
 
 	if (_lpStmt)
 	{
@@ -442,23 +442,23 @@ void CMySQLStatementImpl::Close()
 	{
 		if (mysql_stmt_close(_lpStmt))
 			_lpConn->HandleError(__FILE__LINE__ _T("mysql_stmt_close"));
-		_lpStmt = NULL;
+		_lpStmt = nullptr;
 	}
 	if (_lpBindOutputCol)
 	{
 		TFfree(_lpBindOutputCol);
-		_lpBindOutputCol = NULL;
+		_lpBindOutputCol = nullptr;
 	}
 	if (_lpBindInputParam)
 	{
 		TFfree(_lpBindInputParam);
-		_lpBindInputParam = NULL;
+		_lpBindInputParam = nullptr;
 		_lpBindInputParamBound = FALSE;
 	}
 	if (_lpResultset)
 	{
 		mysql_free_result(_lpResultset);
-		_lpResultset = NULL;
+		_lpResultset = nullptr;
 	}
 }
 
@@ -490,7 +490,7 @@ void CMySQLStatementImpl::HandleError(DECL_FILE_LINE CConstPointer funcN)
 CMySQLConnectionImpl::CMySQLConnectionImpl(CMySQLEnvironmentImpl* lpEnv)
 {
 	_lpEnv = lpEnv;
-	_lpDBHandle = NULL;
+	_lpDBHandle = nullptr;
 	_bAutoCommit = false;
 	_numStmts = 0;
 	_cntStmts = 0;
@@ -583,7 +583,7 @@ void CMySQLConnectionImpl::Open(CConstPointer _pszConnStr)
 	CByteBuffer vPasswd;
 	CByteBuffer vDb;
 
-	_lpDBHandle = mysql_init(NULL);
+	_lpDBHandle = mysql_init(nullptr);
 	if (!_lpDBHandle)
 	{
 		_lpEnv->set_LastError(OK_NEW_OPERATOR CMySQLException(__FILE__LINE__ _T("mysql_init failed")));
@@ -637,7 +637,7 @@ void CMySQLConnectionImpl::Open(CConstPointer _pszConnStr)
 		}
 	}
 
-	if (!mysql_real_connect(_lpDBHandle, CastAnyPtr(char, vHost.get_Buffer()), CastAnyPtr(char, vUser.get_Buffer()), CastAnyPtr(char, vPasswd.get_Buffer()), CastAnyPtr(char, vDb.get_Buffer()), 0, NULL, 0))
+	if (!mysql_real_connect(_lpDBHandle, CastAnyPtr(char, vHost.get_Buffer()), CastAnyPtr(char, vUser.get_Buffer()), CastAnyPtr(char, vPasswd.get_Buffer()), CastAnyPtr(char, vDb.get_Buffer()), 0, nullptr, 0))
 		HandleError(__FILE__LINE__ _T("mysql_real_connect"));
 }
 
@@ -688,7 +688,7 @@ void CMySQLConnectionImpl::Close()
 	if (_lpDBHandle)
 	{
 		mysql_close(_lpDBHandle);
-		_lpDBHandle = NULL;
+		_lpDBHandle = nullptr;
 	}
 }
 
@@ -714,7 +714,7 @@ void CMySQLConnectionImpl::HandleError(DECL_FILE_LINE CConstPointer funcN)
 
 CMySQLEnvironmentImpl::CMySQLEnvironmentImpl(void)
 {
-	_lastError = NULL;
+	_lastError = nullptr;
 }
 
 
@@ -723,7 +723,7 @@ CMySQLEnvironmentImpl::~CMySQLEnvironmentImpl(void)
 	Close();
 	if (_lastError)
 		delete _lastError;
-	_lastError = NULL;
+	_lastError = nullptr;
 }
 
 void CMySQLEnvironmentImpl::set_LastError(CMySQLException* pLastError)
@@ -740,7 +740,7 @@ CMySQLConnectionImpl* CMySQLEnvironmentImpl::create_Connection()
 
 void CMySQLEnvironmentImpl::Open()
 {
-	if (mysql_library_init(0, NULL, NULL)) 
+	if (mysql_library_init(0, nullptr, nullptr)) 
 	{
 		_lastError = OK_NEW_OPERATOR CMySQLException(__FILE__LINE__ _T("mysql_library_init failed"));
 		throw _lastError;

@@ -28,36 +28,36 @@
 CConsoleTextViewer::CConsoleTextViewer(CConstPointer name, CConsole* pConsole):
     CConsoleWindow(name, pConsole),
     m_TextLineCnt(0),
-    m_TextLines(NULL),
-	m_TextLineLen(NULL),
-	m_TextLineAlloc(NULL),
+    m_TextLines(nullptr),
+	m_TextLineLen(nullptr),
+	m_TextLineAlloc(nullptr),
     m_Path(),
 	m_SelectionMode(false),
-	m_UndoGroup(NULL)
+	m_UndoGroup()
 {
 }
 
 CConsoleTextViewer::CConsoleTextViewer(CConstPointer name, CConstPointer title, CConsole* pConsole):
     CConsoleWindow(name, title, pConsole),
     m_TextLineCnt(0),
-    m_TextLines(NULL),
-	m_TextLineLen(NULL),
-	m_TextLineAlloc(NULL),
+    m_TextLines(nullptr),
+	m_TextLineLen(nullptr),
+	m_TextLineAlloc(nullptr),
     m_Path(),
 	m_SelectionMode(false),
-	m_UndoGroup(NULL)
+	m_UndoGroup()
 {
 }
 
 CConsoleTextViewer::CConsoleTextViewer(ConstRef(CFilePath) path, CConstPointer name, CConstPointer title, CConsole* pConsole):
     CConsoleWindow(name, title, pConsole),
     m_TextLineCnt(0),
-    m_TextLines(NULL),
-	m_TextLineLen(NULL),
-	m_TextLineAlloc(NULL),
+    m_TextLines(nullptr),
+	m_TextLineLen(nullptr),
+	m_TextLineAlloc(nullptr),
     m_Path(path),
 	m_SelectionMode(false),
-	m_UndoGroup(NULL)
+	m_UndoGroup()
 {
 }
 
@@ -72,8 +72,6 @@ CConsoleTextViewer::~CConsoleTextViewer(void)
 		TFfree(m_TextLineLen);
 	if ( m_TextLineAlloc )
 		TFfree(m_TextLineAlloc);
-	if ( m_UndoGroup )
-		m_UndoGroup->release();
 }
 
 #ifdef __DBGPRINT__
@@ -101,9 +99,9 @@ void CConsoleTextViewer::Initialize(bool _emptyText)
 		TFfree(m_TextLineAlloc);
     m_TextLineCnt = 0;
 	m_TextLineLenMax = 0;
-    m_TextLines = NULL;
-	m_TextLineLen = NULL;
-	m_TextLineAlloc = NULL;
+    m_TextLines = nullptr;
+	m_TextLineLen = nullptr;
+	m_TextLineAlloc = nullptr;
 
 	if ( PtrCheck(m_UndoGroup) )
 	{

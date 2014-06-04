@@ -354,25 +354,17 @@ void CInstallPackageInfoVector::LoadInstalled(CConstPointer _rootPath)
 	fpath.Normalize(_rootPath);
 	fpath.set_Filename(_T("installed.db"));
 
-	CSecurityFile* pFile = OK_NEW_OPERATOR CSecurityFile();
+	CCppObjectPtr<CSecurityFile> pFile = OK_NEW_OPERATOR CSecurityFile();
 
 	pFile->Open(fpath);
 
-	CFilterInput* pInput = OK_NEW_OPERATOR CFileFilterInput(pFile);
-	CFilterOutput* pOutput = OK_NEW_OPERATOR CInstallPackageInfoFilterOutput(*this);
-
-	CFilter* pFilter = OK_NEW_OPERATOR CLineReadFilter(pInput, pOutput, CLineReadFilter::UnixLineEnd);
+	CCppObjectPtr<CFilterInput> pInput = OK_NEW_OPERATOR CFileFilterInput(pFile);
+	CCppObjectPtr<CFilterOutput> pOutput = OK_NEW_OPERATOR CInstallPackageInfoFilterOutput(*this);
+	CCppObjectPtr<CFilter> pFilter = OK_NEW_OPERATOR CLineReadFilter(pInput, pOutput, CLineReadFilter::UnixLineEnd);
 
 	pFilter->open();
 	pFilter->do_filter();
 	pFilter->close();
-
-	pFile->Close();
-	pFile->release();
-
-	pInput->release();
-	pOutput->release();
-	pFilter->release();
 }
 
 class CInstallPackageInfoFilterInput: public CFilterInput
@@ -453,26 +445,18 @@ void CInstallPackageInfoVector::SaveInstalled(CConstPointer _rootPath)
 	fpath.Normalize(_rootPath);
 	fpath.set_Filename(_T("installed.db"));
 
-	CSecurityFile* pFile = OK_NEW_OPERATOR CSecurityFile();
+	CCppObjectPtr<CSecurityFile> pFile = OK_NEW_OPERATOR CSecurityFile();
 
 	CWinDirectoryIterator::UnlinkFile(fpath);
 	pFile->Create(fpath, true, CFile::ISO_8859_1_Encoding, 0644);
 
-	CFilterInput* pInput = OK_NEW_OPERATOR CInstallPackageInfoFilterInput(*this);
-	CFilterOutput* pOutput = OK_NEW_OPERATOR CFileFilterOutput(pFile);
-
-	CFilter* pFilter = OK_NEW_OPERATOR CLineWriteFilter(pInput, pOutput, CLineWriteFilter::UnixLineEnd);
+	CCppObjectPtr<CFilterInput> pInput = OK_NEW_OPERATOR CInstallPackageInfoFilterInput(*this);
+	CCppObjectPtr<CFilterOutput> pOutput = OK_NEW_OPERATOR CFileFilterOutput(pFile);
+	CCppObjectPtr<CFilter> pFilter = OK_NEW_OPERATOR CLineWriteFilter(pInput, pOutput, CLineWriteFilter::UnixLineEnd);
 
 	pFilter->open();
 	pFilter->do_filter();
 	pFilter->close();
-
-	pFile->Close();
-	pFile->release();
-
-	pInput->release();
-	pOutput->release();
-	pFilter->release();
 
 	CFilePath fpath1(__FILE__LINE__ CYGWIN_SETUP_DIR, -1, CDirectoryIterator::UnixPathSeparatorString());
 

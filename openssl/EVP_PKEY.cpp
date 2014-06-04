@@ -41,7 +41,7 @@ Ptr(CRSA_METHOD) CRSA_METHOD::create_PKCS1_SSLeay()
 	ConstPtr(RSA_METHOD) pRSA_Method = RSA_PKCS1_SSLeay();
 
 	if (!pRSA_Method)
-		return NULL;
+		return nullptr;
 
 	Ptr(CRSA_METHOD) p = OK_NEW_OPERATOR CRSA_METHOD(pRSA_Method);
 
@@ -54,7 +54,7 @@ Ptr(CRSA_METHOD) CRSA_METHOD::create_null_method()
 	ConstPtr(RSA_METHOD) pRSA_Method = RSA_null_method();
 
 	if (!pRSA_Method)
-		return NULL;
+		return nullptr;
 
 	Ptr(CRSA_METHOD) p = OK_NEW_OPERATOR CRSA_METHOD(pRSA_Method);
 
@@ -86,7 +86,7 @@ Ptr(CRSA_KEY) CRSA_KEY::create()
 	Ptr(RSA) pRSA = RSA_new();
 
 	if (!pRSA)
-		return NULL;
+		return nullptr;
 
 	Ptr(CRSA_KEY) p = OK_NEW_OPERATOR CRSA_KEY(pRSA);
 
@@ -99,7 +99,7 @@ Ptr(CRSA_KEY) CRSA_KEY::create_method(Ptr(CENGINE) engine)
 	Ptr(RSA) pRSA = RSA_new_method(CastAnyPtr(ENGINE, CastMutable(Pointer, engine->get_impl())));
 
 	if (!pRSA)
-		return NULL;
+		return nullptr;
 
 	Ptr(CRSA_KEY) p = OK_NEW_OPERATOR CRSA_KEY(pRSA);
 
@@ -111,7 +111,7 @@ void CRSA_KEY::free()
 {
 	if (_raw)
 		RSA_free(CastAnyPtr(RSA, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 int CRSA_KEY::get_flags()
@@ -179,7 +179,7 @@ const CRSA_METHOD *CRSA_KEY::get_default_method(void)
 	ConstPtr(RSA_METHOD) pMeth = RSA_get_default_method();
 
 	if (!pMeth)
-		return NULL;
+		return nullptr;
 
 	Ptr(CRSA_METHOD) pObject = CastDynamicPtr(CRSA_METHOD, find_obj(pMeth));
 
@@ -197,7 +197,7 @@ const CRSA_METHOD *CRSA_KEY::get_method()
 	ConstPtr(RSA_METHOD) pMeth = RSA_get_method(CastAnyPtr(RSA, _raw));
 
 	if (!pMeth)
-		return NULL;
+		return nullptr;
 
 	Ptr(CRSA_METHOD) pObject = CastDynamicPtr(CRSA_METHOD, find_obj(pMeth));
 
@@ -217,10 +217,10 @@ int CRSA_KEY::set_method(const CRSA_METHOD *meth)
 
 CRSA_KEY* CRSA_KEY::d2i_PublicKey(const unsigned char **in, long len)
 {
-	Ptr(RSA) pRSA = NULL;
+	Ptr(RSA) pRSA = nullptr;
 
 	if (!(d2i_RSAPublicKey(&pRSA, in, len)))
-		return NULL;
+		return nullptr;
 
 	Ptr(CRSA_KEY) pObject = CastDynamicPtr(CRSA_KEY, find_obj(pRSA));
 
@@ -240,10 +240,10 @@ int CRSA_KEY::i2d_PublicKey(unsigned char **out)
 
 CRSA_KEY* CRSA_KEY::d2i_PrivateKey(const unsigned char **in, long len)
 {
-	Ptr(RSA) pRSA = NULL;
+	Ptr(RSA) pRSA = nullptr;
 
 	if (!(d2i_RSAPrivateKey(&pRSA, in, len)))
-		return NULL;
+		return nullptr;
 
 	Ptr(CRSA_KEY) pObject = CastDynamicPtr(CRSA_KEY, find_obj(pRSA));
 
@@ -291,10 +291,10 @@ int CRSA_KEY::i2d_NET(unsigned char **pp, TCallback1 cb, int sgckey)
 Ptr(CRSA_KEY) CRSA_KEY::d2i_NET(const unsigned char **pp, long length, TCallback1 cb, int sgckey)
 {
 #ifndef OPENSSL_NO_RC4
-	Ptr(RSA) pRSA = NULL;
+	Ptr(RSA) pRSA = nullptr;
 
 	if (!(d2i_RSA_NET(&pRSA, pp, length, cb, sgckey)))
-		return NULL;
+		return nullptr;
 
 	Ptr(CRSA_KEY) pObject = CastDynamicPtr(CRSA_KEY, find_obj(pRSA));
 
@@ -306,7 +306,7 @@ Ptr(CRSA_KEY) CRSA_KEY::d2i_NET(const unsigned char **pp, long length, TCallback
 	}
 	return pObject;
 #else
-	return NULL;
+	return nullptr;
 #endif
 }
 
@@ -322,10 +322,10 @@ int CRSA_KEY::i2d_Netscape(unsigned char **pp, TCallback1 cb)
 Ptr(CRSA_KEY) CRSA_KEY::d2i_Netscape(const unsigned char **pp, long length, TCallback1 cb)
 {
 #ifndef OPENSSL_NO_RC4
-	Ptr(RSA) pRSA = NULL;
+	Ptr(RSA) pRSA = nullptr;
 
 	if (!(d2i_Netscape_RSA(&pRSA, pp, length, cb)))
-		return NULL;
+		return nullptr;
 
 	Ptr(CRSA_KEY) pObject = CastDynamicPtr(CRSA_KEY, find_obj(pRSA));
 
@@ -337,7 +337,7 @@ Ptr(CRSA_KEY) CRSA_KEY::d2i_Netscape(const unsigned char **pp, long length, TCal
 	}
 	return pObject;
 #else
-	return NULL;
+	return nullptr;
 #endif
 }
 
@@ -376,7 +376,7 @@ CBN_BLINDING *CRSA_KEY::setup_blinding(CBN_CTX *ctx)
 	Ptr(BN_BLINDING) pBlinding = RSA_setup_blinding(CastAnyPtr(RSA, _raw), CastAnyPtr(BN_CTX, CastMutable(Pointer, ctx->get_bignumcontext())));
 
 	if (!pBlinding)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBN_BLINDING) pObject = CastDynamicPtr(CBN_BLINDING, find_obj(pBlinding));
 
@@ -494,7 +494,7 @@ Ptr(CRSA_KEY) CRSA_KEY::PublicKey_dup()
 	Ptr(RSA) pRSA = RSAPublicKey_dup(CastAnyPtr(RSA, _raw));
 
 	if (!pRSA)
-		return NULL;
+		return nullptr;
 
 	Ptr(CRSA_KEY) pObject = OK_NEW_OPERATOR CRSA_KEY(pRSA);
 
@@ -507,7 +507,7 @@ Ptr(CRSA_KEY) CRSA_KEY::PrivateKey_dup()
 	Ptr(RSA) pRSA = RSAPrivateKey_dup(CastAnyPtr(RSA, _raw));
 
 	if (!pRSA)
-		return NULL;
+		return nullptr;
 
 	Ptr(CRSA_KEY) pObject = OK_NEW_OPERATOR CRSA_KEY(pRSA);
 
@@ -529,7 +529,7 @@ Ptr(CDSA_KEY) CDSA_KEY::create()
 	Ptr(DSA) pDSA = DSA_new();
 
 	if (!pDSA)
-		return NULL;
+		return nullptr;
 
 	Ptr(CDSA_KEY) p = OK_NEW_OPERATOR CDSA_KEY(pDSA);
 
@@ -540,7 +540,7 @@ Ptr(CDSA_KEY) CDSA_KEY::create()
 void CDSA_KEY::free()
 {
 	DSA_free(CastAnyPtr(DSA, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 CDH_KEY::CDH_KEY(ConstPointer pkey) : COpenSSLClass(pkey)
@@ -557,7 +557,7 @@ Ptr(CDH_KEY) CDH_KEY::create()
 	Ptr(DH) pDH = DH_new();
 
 	if (!pDH)
-		return NULL;
+		return nullptr;
 
 	Ptr(CDH_KEY) p = OK_NEW_OPERATOR CDH_KEY(pDH);
 
@@ -568,7 +568,7 @@ Ptr(CDH_KEY) CDH_KEY::create()
 void CDH_KEY::free()
 {
 	DH_free(CastAnyPtr(DH, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 CEC_KEY::CEC_KEY(ConstPointer pkey) : COpenSSLClass(pkey)
@@ -584,7 +584,7 @@ Ptr(CEC_KEY) CEC_KEY::create()
 	Ptr(EC_KEY) pEC = EC_KEY_new();
 
 	if (!pEC)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEC_KEY) p = OK_NEW_OPERATOR CEC_KEY(pEC);
 
@@ -595,7 +595,7 @@ Ptr(CEC_KEY) CEC_KEY::create()
 void CEC_KEY::free()
 {
 	EC_KEY_free(CastAnyPtr(EC_KEY, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 CEVP_PKEY::CEVP_PKEY(ConstPointer pkey) : COpenSSLClass(pkey)
@@ -611,7 +611,7 @@ Ptr(CEVP_PKEY) CEVP_PKEY::create()
 	Ptr(EVP_PKEY) pPKEY = EVP_PKEY_new();
 
 	if (!pPKEY)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_PKEY) p = OK_NEW_OPERATOR CEVP_PKEY(pPKEY);
 
@@ -622,7 +622,7 @@ Ptr(CEVP_PKEY) CEVP_PKEY::create()
 void CEVP_PKEY::free()
 {
 	EVP_PKEY_free(CastAnyPtr(EVP_PKEY, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 int CEVP_PKEY::type()
@@ -645,7 +645,7 @@ Ptr(CRSA_KEY) CEVP_PKEY::get_RSA()
 	Ptr(RSA) pRSA = EVP_PKEY_get1_RSA(CastAnyPtr(EVP_PKEY, _raw));
 
 	if (!pRSA)
-		return NULL;
+		return nullptr;
 
 	Ptr(CRSA_KEY) p = CastDynamicPtr(CRSA_KEY, find_obj(pRSA));
 
@@ -667,7 +667,7 @@ Ptr(CDSA_KEY) CEVP_PKEY::get_DSA()
 	Ptr(DSA) pDSA = EVP_PKEY_get1_DSA(CastAnyPtr(EVP_PKEY, _raw));
 
 	if (!pDSA)
-		return NULL;
+		return nullptr;
 
 	Ptr(CDSA_KEY) p = CastDynamicPtr(CDSA_KEY, find_obj(pDSA));
 
@@ -689,7 +689,7 @@ Ptr(CDH_KEY) CEVP_PKEY::get_DH()
 	Ptr(DH) pDH = EVP_PKEY_get1_DH(CastAnyPtr(EVP_PKEY, _raw));
 
 	if (!pDH)
-		return NULL;
+		return nullptr;
 
 	Ptr(CDH_KEY) p = CastDynamicPtr(CDH_KEY, find_obj(pDH));
 
@@ -711,7 +711,7 @@ Ptr(CEC_KEY) CEVP_PKEY::get_EC_KEY()
 	Ptr(EC_KEY) pEC = EVP_PKEY_get1_EC_KEY(CastAnyPtr(EVP_PKEY, _raw));
 
 	if (!pEC)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEC_KEY) p = CastDynamicPtr(CEC_KEY, find_obj(pEC));
 
@@ -747,7 +747,7 @@ Ptr(CEVP_PKEY_CTX) CEVP_PKEY_CTX::create(Ptr(CEVP_PKEY) pkey, Ptr(CENGINE) e)
 	Ptr(EVP_PKEY_CTX) pPKEYCtx = EVP_PKEY_CTX_new(CastAnyPtr(EVP_PKEY, CastMutable(Pointer, pkey->get_key())), CastAnyPtr(ENGINE, CastMutable(Pointer, e->get_impl())));
 
 	if (!pPKEYCtx)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_PKEY_CTX) p = OK_NEW_OPERATOR CEVP_PKEY_CTX(pPKEYCtx);
 
@@ -760,7 +760,7 @@ Ptr(CEVP_PKEY_CTX) CEVP_PKEY_CTX::create(int id, Ptr(CENGINE) e)
 	Ptr(EVP_PKEY_CTX) pPKEYCtx = EVP_PKEY_CTX_new_id(id, CastAnyPtr(ENGINE, CastMutable(Pointer, e->get_impl())));
 
 	if (!pPKEYCtx)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_PKEY_CTX) p = OK_NEW_OPERATOR CEVP_PKEY_CTX(pPKEYCtx);
 
@@ -773,7 +773,7 @@ Ptr(CEVP_PKEY_CTX) CEVP_PKEY_CTX::dup()
 	Ptr(EVP_PKEY_CTX) pPKEYCtx = EVP_PKEY_CTX_dup(CastAnyPtr(EVP_PKEY_CTX, _raw));
 
 	if (!pPKEYCtx)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_PKEY_CTX) p = OK_NEW_OPERATOR CEVP_PKEY_CTX(pPKEYCtx);
 
@@ -784,7 +784,7 @@ Ptr(CEVP_PKEY_CTX) CEVP_PKEY_CTX::dup()
 void CEVP_PKEY_CTX::free()
 {
 	EVP_PKEY_CTX_free(CastAnyPtr(EVP_PKEY_CTX, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 int CEVP_PKEY_CTX::keygen_init()
@@ -847,7 +847,7 @@ void CEVP_PKEY_CTX::set_cb(TCallback cb)
 		TCallbackData* cbdata = OK_NEW_OPERATOR TCallbackData;
 
 		cbdata->cb = cb;
-		cbdata->arg = NULL;
+		cbdata->arg = nullptr;
 		EVP_PKEY_CTX_set_app_data(CastAnyPtr(EVP_PKEY_CTX, _raw), cbdata);
 		EVP_PKEY_CTX_set_cb(CastAnyPtr(EVP_PKEY_CTX, _raw), stdcallback);
 	}
@@ -856,8 +856,8 @@ void CEVP_PKEY_CTX::set_cb(TCallback cb)
 		TCallbackData* cbdata = CastAnyPtr(TCallbackData, EVP_PKEY_CTX_get_app_data(CastAnyPtr(EVP_PKEY_CTX, _raw)));
 
 		cbdata->release();
-		EVP_PKEY_CTX_set_app_data(CastAnyPtr(EVP_PKEY_CTX, _raw), NULL);
-		EVP_PKEY_CTX_set_cb(CastAnyPtr(EVP_PKEY_CTX, _raw), NULL);
+		EVP_PKEY_CTX_set_app_data(CastAnyPtr(EVP_PKEY_CTX, _raw), nullptr);
+		EVP_PKEY_CTX_set_cb(CastAnyPtr(EVP_PKEY_CTX, _raw), nullptr);
 	}
 }
 
@@ -867,7 +867,7 @@ CEVP_PKEY_CTX::TCallback CEVP_PKEY_CTX::get_cb()
 
 	if (cbdata)
 		return cbdata->cb;
-	return NULL;
+	return nullptr;
 }
 
 int CEVP_PKEY_CTX::get_keygen_info(int idx)
@@ -890,7 +890,7 @@ void *CEVP_PKEY_CTX::get_app_data()
 
 	if (cbdata)
 		return cbdata->arg;
-	return NULL;
+	return nullptr;
 }
 
 int CEVP_PKEY_CTX::decrypt_init()
@@ -980,7 +980,7 @@ int CEVP_PKEY_CTX::set_rsa_mgf1_md(Ptr(CEVP_MD) md)
 
 int CEVP_PKEY_CTX::get_rsa_mgf1_md(PtrPtr(CEVP_MD) pmd)
 {
-	Ptr(EVP_MD) pMD = NULL;
+	Ptr(EVP_MD) pMD = nullptr;
 	int ret = EVP_PKEY_CTX_get_rsa_mgf1_md(CastAnyPtr(EVP_PKEY_CTX, _raw), &pMD);
 
 	if (!pMD)

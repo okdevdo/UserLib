@@ -212,10 +212,10 @@ char *CSSL_CIPHER::description(char *buf, int size)
 class OPENSSL_LOCAL TSSLCTXCallbackData : public CCppObject
 {
 public:
-	TSSLCTXCallbackData() : cbMsg(NULL), cbNewSession(NULL), cbRemoveSession(NULL), cbGetSession(NULL), cbInfo(NULL), 
-		cbClientCert(NULL), cbGenerateCookie(NULL), cbVerifyCookie(NULL), cbNextProtosAdvertised(NULL), 
-		cbNextProtoSelect(NULL), cbPSKClient(NULL), cbPSKServer(NULL), cbGenerateSessionId(NULL), cbCertVerify(NULL),
-		certVerifyArg(NULL), cbSRPClientPwd(NULL), cbSRPVerifyParam(NULL), cbSRPUsername(NULL) {}
+	TSSLCTXCallbackData() : cbMsg(nullptr), cbNewSession(nullptr), cbRemoveSession(nullptr), cbGetSession(nullptr), cbInfo(nullptr), 
+		cbClientCert(nullptr), cbGenerateCookie(nullptr), cbVerifyCookie(nullptr), cbNextProtosAdvertised(nullptr), 
+		cbNextProtoSelect(nullptr), cbPSKClient(nullptr), cbPSKServer(nullptr), cbGenerateSessionId(nullptr), cbCertVerify(nullptr),
+		certVerifyArg(nullptr), cbSRPClientPwd(nullptr), cbSRPVerifyParam(nullptr), cbSRPUsername(nullptr) {}
 	virtual ~TSSLCTXCallbackData() {}
 
 	CSSL_CTX::TCallbackMsg cbMsg;
@@ -281,7 +281,7 @@ public:
 
 		if (super::MatchSorted(it, &assoc))
 			return (*it)->cdata;
-		return NULL;
+		return nullptr;
 	}
 
 	void Insert(ConstPointer raw, Ptr(TSSLCTXCallbackData) cdata)
@@ -323,7 +323,7 @@ Ptr(CSSL_CTX) CSSL_CTX::create(ConstPtr(CSSL_METHOD) meth)
 	Ptr(SSL_CTX) ret = SSL_CTX_new(CastAnyConstPtr(SSL_METHOD, meth->get_sslMethod()));
 
 	if (!ret)
-		return NULL;
+		return nullptr;
 
 	Ptr(CSSL_CTX) p = OK_NEW_OPERATOR CSSL_CTX(ret);
 
@@ -338,7 +338,7 @@ void CSSL_CTX::free()
 		_sslctxcallbackassoclist.Remove(_raw);
 
 		SSL_CTX_free(CastAnyPtr(SSL_CTX, _raw));
-		_raw = NULL;
+		_raw = nullptr;
 	}
 }
 
@@ -405,9 +405,9 @@ void CSSL_CTX::set_msg_callback(TCallbackMsg cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbMsg = NULL;
+		pCallbackData->cbMsg = nullptr;
 
-		SSL_CTX_set_msg_callback(CastAnyPtr(SSL_CTX, _raw), NULL);
+		SSL_CTX_set_msg_callback(CastAnyPtr(SSL_CTX, _raw), nullptr);
 	}
 }
 
@@ -533,9 +533,9 @@ void CSSL_CTX::sess_set_new_cb(TCallbackNewSession cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbNewSession = NULL;
+		pCallbackData->cbNewSession = nullptr;
 
-		SSL_CTX_sess_set_new_cb(CastAnyPtr(SSL_CTX, _raw), NULL);
+		SSL_CTX_sess_set_new_cb(CastAnyPtr(SSL_CTX, _raw), nullptr);
 	}
 }
 
@@ -545,7 +545,7 @@ CSSL_CTX::TCallbackNewSession CSSL_CTX::sess_get_new_cb()
 
 	if (pCallbackData)
 		return pCallbackData->cbNewSession;
-	return NULL;
+	return nullptr;
 }
 
 static void RemoveSessionCallback(SSL_CTX *ctx, SSL_SESSION *sess)
@@ -585,9 +585,9 @@ void CSSL_CTX::sess_set_remove_cb(TCallbackRemoveSession cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbRemoveSession = NULL;
+		pCallbackData->cbRemoveSession = nullptr;
 
-		SSL_CTX_sess_set_remove_cb(CastAnyPtr(SSL_CTX, _raw), NULL);
+		SSL_CTX_sess_set_remove_cb(CastAnyPtr(SSL_CTX, _raw), nullptr);
 	}
 }
 
@@ -597,7 +597,7 @@ CSSL_CTX::TCallbackRemoveSession CSSL_CTX::sess_get_remove_cb()
 
 	if (pCallbackData)
 		return pCallbackData->cbRemoveSession;
-	return NULL;
+	return nullptr;
 }
 
 SSL_SESSION *GetSessionCallback(SSL *ssl, unsigned char *data, int len, int *copy)
@@ -605,7 +605,7 @@ SSL_SESSION *GetSessionCallback(SSL *ssl, unsigned char *data, int len, int *cop
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
 	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	CSSL* pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
-	CSSL_SESSION* pSSL_SESSION = NULL;
+	CSSL_SESSION* pSSL_SESSION = nullptr;
 
 	if (!pSSL)
 	{
@@ -634,9 +634,9 @@ void CSSL_CTX::sess_set_get_cb(TCallbackGetSession cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbGetSession = NULL;
+		pCallbackData->cbGetSession = nullptr;
 
-		SSL_CTX_sess_set_get_cb(CastAnyPtr(SSL_CTX, _raw), NULL);
+		SSL_CTX_sess_set_get_cb(CastAnyPtr(SSL_CTX, _raw), nullptr);
 	}
 }
 
@@ -646,7 +646,7 @@ CSSL_CTX::TCallbackGetSession CSSL_CTX::sess_get_get_cb()
 
 	if (pCallbackData)
 		return pCallbackData->cbGetSession;
-	return NULL;
+	return nullptr;
 }
 
 static void InfoCallback(const SSL *ssl, int where, int ret)
@@ -681,9 +681,9 @@ void CSSL_CTX::set_info_callback(TCallbackInfo cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbInfo = NULL;
+		pCallbackData->cbInfo = nullptr;
 
-		SSL_CTX_set_info_callback(CastAnyPtr(SSL_CTX, _raw), NULL);
+		SSL_CTX_set_info_callback(CastAnyPtr(SSL_CTX, _raw), nullptr);
 	}
 }
 
@@ -693,7 +693,7 @@ CSSL_CTX::TCallbackInfo CSSL_CTX::get_info_callback()
 
 	if (pCallbackData)
 		return pCallbackData->cbInfo;
-	return NULL;
+	return nullptr;
 }
 
 static int ClientCertCallback(SSL *ssl, X509 **x509, EVP_PKEY **pkey)
@@ -701,8 +701,8 @@ static int ClientCertCallback(SSL *ssl, X509 **x509, EVP_PKEY **pkey)
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(ssl);
 	Ptr(TSSLCTXCallbackData) pCallbackData = _sslctxcallbackassoclist.FindSorted(pCtx);
 	CSSL* pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
-	CX509* pX509 = NULL;
-	CEVP_PKEY* ppKey = NULL;
+	CX509* pX509 = nullptr;
+	CEVP_PKEY* ppKey = nullptr;
 	int ret;
 
 	if (!pSSL)
@@ -734,9 +734,9 @@ void CSSL_CTX::set_client_cert_cb(TCallbackClientCert cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbClientCert = NULL;
+		pCallbackData->cbClientCert = nullptr;
 
-		SSL_CTX_set_client_cert_cb(CastAnyPtr(SSL_CTX, _raw), NULL);
+		SSL_CTX_set_client_cert_cb(CastAnyPtr(SSL_CTX, _raw), nullptr);
 	}
 }
 
@@ -746,7 +746,7 @@ CSSL_CTX::TCallbackClientCert CSSL_CTX::get_client_cert_cb()
 
 	if (pCallbackData)
 		return pCallbackData->cbClientCert;
-	return NULL;
+	return nullptr;
 }
 
 int CSSL_CTX::set_client_cert_engine(CENGINE *e)
@@ -788,9 +788,9 @@ void CSSL_CTX::set_cookie_generate_cb(TCallbackGenerateCookie cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbGenerateCookie = NULL;
+		pCallbackData->cbGenerateCookie = nullptr;
 
-		SSL_CTX_set_cookie_generate_cb(CastAnyPtr(SSL_CTX, _raw), NULL);
+		SSL_CTX_set_cookie_generate_cb(CastAnyPtr(SSL_CTX, _raw), nullptr);
 	}
 }
 
@@ -828,9 +828,9 @@ void CSSL_CTX::set_cookie_verify_cb(TCallbackVerifyCookie cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbVerifyCookie = NULL;
+		pCallbackData->cbVerifyCookie = nullptr;
 
-		SSL_CTX_set_cookie_verify_cb(CastAnyPtr(SSL_CTX, _raw), NULL);
+		SSL_CTX_set_cookie_verify_cb(CastAnyPtr(SSL_CTX, _raw), nullptr);
 	}
 }
 
@@ -868,9 +868,9 @@ void CSSL_CTX::set_next_protos_advertised_cb(TCallbackNextProtosAdvertised cb, v
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbNextProtosAdvertised = NULL;
+		pCallbackData->cbNextProtosAdvertised = nullptr;
 
-		SSL_CTX_set_next_protos_advertised_cb(CastAnyPtr(SSL_CTX, _raw), NULL, NULL);
+		SSL_CTX_set_next_protos_advertised_cb(CastAnyPtr(SSL_CTX, _raw), nullptr, nullptr);
 	}
 }
 
@@ -908,9 +908,9 @@ void CSSL_CTX::set_next_proto_select_cb(TCallbackNextProtoSelect cb, void *arg)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbNextProtoSelect = NULL;
+		pCallbackData->cbNextProtoSelect = nullptr;
 
-		SSL_CTX_set_next_proto_select_cb(CastAnyPtr(SSL_CTX, _raw), NULL, NULL);
+		SSL_CTX_set_next_proto_select_cb(CastAnyPtr(SSL_CTX, _raw), nullptr, nullptr);
 	}
 }
 
@@ -948,9 +948,9 @@ void CSSL_CTX::set_psk_client_callback(TCallbackPSKClient cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbPSKClient = NULL;
+		pCallbackData->cbPSKClient = nullptr;
 
-		SSL_CTX_set_psk_client_callback(CastAnyPtr(SSL_CTX, _raw), NULL);
+		SSL_CTX_set_psk_client_callback(CastAnyPtr(SSL_CTX, _raw), nullptr);
 	}
 }
 
@@ -988,9 +988,9 @@ void CSSL_CTX::set_psk_server_callback(TCallbackPSKServer cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbPSKServer = NULL;
+		pCallbackData->cbPSKServer = nullptr;
 
-		SSL_CTX_set_psk_server_callback(CastAnyPtr(SSL_CTX, _raw), NULL);
+		SSL_CTX_set_psk_server_callback(CastAnyPtr(SSL_CTX, _raw), nullptr);
 	}
 }
 
@@ -1036,7 +1036,7 @@ long CSSL_CTX::add_extra_chain_cert(CX509 *x509)
 
 long CSSL_CTX::get_extra_chain_certs(CX509 **px509)
 {
-	X509* pX509 = NULL;
+	X509* pX509 = nullptr;
 	long ret;
 
 	ret = SSL_CTX_get_extra_chain_certs(CastAnyPtr(SSL_CTX, _raw), &pX509);
@@ -1081,7 +1081,7 @@ CX509_STORE *CSSL_CTX::get_cert_store()
 	Ptr(X509_STORE) ret = SSL_CTX_get_cert_store(CastAnyPtr(SSL_CTX, _raw));
 
 	if (!ret)
-		return NULL;
+		return nullptr;
 
 	Ptr(CX509_STORE) p = CastDynamicPtr(CX509_STORE, find_obj(ret));
 
@@ -1162,9 +1162,9 @@ void CSSL_CTX::set_generate_session_id(TCallbackGenerateSessionId cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbGenerateSessionId = NULL;
+		pCallbackData->cbGenerateSessionId = nullptr;
 
-		SSL_CTX_set_generate_session_id(CastAnyPtr(SSL_CTX, _raw), NULL);
+		SSL_CTX_set_generate_session_id(CastAnyPtr(SSL_CTX, _raw), nullptr);
 	}
 }
 
@@ -1212,10 +1212,10 @@ void CSSL_CTX::set_cert_verify_callback(TCallbackCertVerify cb, void *arg)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbCertVerify = NULL;
-		pCallbackData->certVerifyArg = NULL;
+		pCallbackData->cbCertVerify = nullptr;
+		pCallbackData->certVerifyArg = nullptr;
 
-		SSL_CTX_set_cert_verify_callback(CastAnyPtr(SSL_CTX, _raw), NULL, NULL);
+		SSL_CTX_set_cert_verify_callback(CastAnyPtr(SSL_CTX, _raw), nullptr, nullptr);
 	}
 }
 
@@ -1321,8 +1321,8 @@ void CSSL_CTX::set_srp_client_pwd_callback(TCallbackSRPClientPwd cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbSRPClientPwd = NULL;
-		SSL_CTX_set_srp_client_pwd_callback(CastAnyPtr(SSL_CTX, _raw), NULL);
+		pCallbackData->cbSRPClientPwd = nullptr;
+		SSL_CTX_set_srp_client_pwd_callback(CastAnyPtr(SSL_CTX, _raw), nullptr);
 	}
 }
 
@@ -1358,8 +1358,8 @@ void CSSL_CTX::set_srp_verify_param_callback(TCallbackSRPVerifyParam cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbSRPVerifyParam = NULL;
-		SSL_CTX_set_srp_verify_param_callback(CastAnyPtr(SSL_CTX, _raw), NULL);
+		pCallbackData->cbSRPVerifyParam = nullptr;
+		SSL_CTX_set_srp_verify_param_callback(CastAnyPtr(SSL_CTX, _raw), nullptr);
 	}
 }
 
@@ -1395,8 +1395,8 @@ void CSSL_CTX::set_srp_username_callback(TCallbackSRPUsername cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbSRPUsername = NULL;
-		SSL_CTX_set_srp_username_callback(CastAnyPtr(SSL_CTX, _raw), NULL);
+		pCallbackData->cbSRPUsername = nullptr;
+		SSL_CTX_set_srp_username_callback(CastAnyPtr(SSL_CTX, _raw), nullptr);
 	}
 }
 
@@ -1415,7 +1415,7 @@ void CSSL_CTX::set_client_CA_list(CStack<CX509_NAME>& list)
 	_STACK *pStack = sk_new_null();
 	Ptr(CX509_NAME) pName;
 
-	while ((pName = list.Pop()) !=  NULL)
+	while ((pName = list.Pop()) !=  nullptr)
 	{
 		sk_push(pStack, CastMutable(Pointer, pName->get_X509Name()));
 	}
@@ -1427,7 +1427,7 @@ void CSSL_CTX::get_client_CA_list(Ref(CStack<CX509_NAME>) result)
 	Ptr(X509_NAME) value;
 	_STACK *ret = CastAnyPtr(_STACK, SSL_CTX_get_client_CA_list(CastAnyPtr(SSL_CTX, _raw)));
 
-	while ((value = CastAnyPtr(X509_NAME, sk_pop(ret))) != NULL)
+	while ((value = CastAnyPtr(X509_NAME, sk_pop(ret))) != nullptr)
 	{
 		CX509_NAME* item = OK_NEW_OPERATOR CX509_NAME(value);
 
@@ -1552,8 +1552,8 @@ void CSSL_CTX::set_tmp_rsa_callback(TCallbackTmpRSA cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbTmpRSA = NULL;
-		SSL_CTX_set_tmp_rsa_callback(CastAnyPtr(SSL_CTX, _raw), NULL);
+		pCallbackData->cbTmpRSA = nullptr;
+		SSL_CTX_set_tmp_rsa_callback(CastAnyPtr(SSL_CTX, _raw), nullptr);
 	}
 }
 
@@ -1589,8 +1589,8 @@ void CSSL_CTX::set_tmp_dh_callback(TCallbackTmpDH cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbTmpDH = NULL;
-		SSL_CTX_set_tmp_dh_callback(CastAnyPtr(SSL_CTX, _raw), NULL);
+		pCallbackData->cbTmpDH = nullptr;
+		SSL_CTX_set_tmp_dh_callback(CastAnyPtr(SSL_CTX, _raw), nullptr);
 	}
 }
 
@@ -1626,8 +1626,8 @@ void CSSL_CTX::set_tmp_ecdh_callback(TCallbackTmpECDH cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbTmpECDH = NULL;
-		SSL_CTX_set_tmp_ecdh_callback(CastAnyPtr(SSL_CTX, _raw), NULL);
+		pCallbackData->cbTmpECDH = nullptr;
+		SSL_CTX_set_tmp_ecdh_callback(CastAnyPtr(SSL_CTX, _raw), nullptr);
 	}
 }
 
@@ -1639,7 +1639,7 @@ Ptr(CSSL_SESSION) CSSL_SESSION::create()
 	Ptr(SSL_SESSION) pSession = SSL_SESSION_new();
 
 	if (!pSession)
-		return NULL;
+		return nullptr;
 
 	Ptr(CSSL_SESSION) p = OK_NEW_OPERATOR CSSL_SESSION(pSession);
 
@@ -1651,7 +1651,7 @@ void CSSL_SESSION::free()
 {
 	if (_raw)
 		SSL_SESSION_free(CastAnyPtr(SSL_SESSION, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 long CSSL_SESSION::get_time()
@@ -1679,7 +1679,7 @@ CX509 *CSSL_SESSION::get0_peer()
 	Ptr(X509) pX509 = SSL_SESSION_get0_peer(CastAnyPtr(SSL_SESSION, _raw));
 
 	if (!pX509)
-		return NULL;
+		return nullptr;
 
 	Ptr(CX509) p = CastDynamicPtr(CX509, find_obj(pX509));
 
@@ -1723,13 +1723,13 @@ int	CSSL_SESSION::i2d(unsigned char **pp)
 
 CSSL_SESSION *CSSL_SESSION::d2i(CSSL_SESSION **a, const unsigned char **pp, long length)
 {
-	Ptr(SSL_SESSION) pRet = NULL;
+	Ptr(SSL_SESSION) pRet = nullptr;
 	Ptr(SSL_SESSION) pSession = d2i_SSL_SESSION(&pRet, pp, length);
 
 	if (!pRet)
-		return NULL;
+		return nullptr;
 	if (!pSession)
-		return NULL;
+		return nullptr;
 
 	Ptr(CSSL_SESSION) p = CastDynamicPtr(CSSL_SESSION, find_obj(pRet));
 
@@ -1751,13 +1751,13 @@ CSSL_SESSION *CSSL_SESSION::d2i(CSSL_SESSION **a, const unsigned char **pp, long
 
 CSSL_SESSION *CSSL_SESSION::d2i_bio(CBIO* bp, CSSL_SESSION **s_id)
 {
-	Ptr(SSL_SESSION) pRet = NULL;
+	Ptr(SSL_SESSION) pRet = nullptr;
 	Ptr(SSL_SESSION) pSession = d2i_SSL_SESSION_bio(CastAnyPtr(BIO, CastMutable(Pointer, bp->get_bio())), &pRet);
 
 	if (!pRet)
-		return NULL;
+		return nullptr;
 	if (!pSession)
-		return NULL;
+		return nullptr;
 
 	Ptr(CSSL_SESSION) p = CastDynamicPtr(CSSL_SESSION, find_obj(pRet));
 
@@ -1784,13 +1784,13 @@ int CSSL_SESSION::i2d_bio(CBIO* bp)
 
 CSSL_SESSION *CSSL_SESSION::PEM_read_bio(CBIO *bp, CSSL_SESSION **x, TCallbackPEMPassword cb, void *u)
 {
-	Ptr(SSL_SESSION) pRet = NULL;
+	Ptr(SSL_SESSION) pRet = nullptr;
 	Ptr(SSL_SESSION) pSession = PEM_read_bio_SSL_SESSION(CastAnyPtr(BIO, CastMutable(Pointer, bp->get_bio())), &pRet, cb, u);
 
 	if (!pRet)
-		return NULL;
+		return nullptr;
 	if (!pSession)
-		return NULL;
+		return nullptr;
 
 	Ptr(CSSL_SESSION) p = CastDynamicPtr(CSSL_SESSION, find_obj(pRet));
 
@@ -1812,13 +1812,13 @@ CSSL_SESSION *CSSL_SESSION::PEM_read_bio(CBIO *bp, CSSL_SESSION **x, TCallbackPE
 
 CSSL_SESSION *CSSL_SESSION::PEM_read(FILE *fp, CSSL_SESSION **x, TCallbackPEMPassword cb, void *u)
 {
-	Ptr(SSL_SESSION) pRet = NULL;
+	Ptr(SSL_SESSION) pRet = nullptr;
 	Ptr(SSL_SESSION) pSession = PEM_read_SSL_SESSION(fp, &pRet, cb, u);
 
 	if (!pRet)
-		return NULL;
+		return nullptr;
 	if (!pSession)
-		return NULL;
+		return nullptr;
 
 	Ptr(CSSL_SESSION) p = CastDynamicPtr(CSSL_SESSION, find_obj(pRet));
 
@@ -1866,8 +1866,8 @@ int CSSL_SESSION::get_ex_new_index(long argl, void *argp, CRYPTO_EX_new *new_fun
 class OPENSSL_LOCAL TSSLCallbackData : public CCppObject
 {
 public:
-	TSSLCallbackData() : arg(NULL), cbMsg(NULL), cbPSKClient(NULL), cbPSKServer(NULL), cbVerify(NULL), cbGenSession(NULL), cbInfo(NULL),
-		cbTmpRSA(NULL), cbTmpDH(NULL), cbTmpECDH(NULL), cbTLSSessionTicketExt(NULL), cbTLSSessionSecret(NULL) {}
+	TSSLCallbackData() : arg(nullptr), cbMsg(nullptr), cbPSKClient(nullptr), cbPSKServer(nullptr), cbVerify(nullptr), cbGenSession(nullptr), cbInfo(nullptr),
+		cbTmpRSA(nullptr), cbTmpDH(nullptr), cbTmpECDH(nullptr), cbTLSSessionTicketExt(nullptr), cbTLSSessionSecret(nullptr) {}
 	virtual ~TSSLCallbackData() {}
 
 	void *arg;
@@ -1892,7 +1892,7 @@ Ptr(CSSL) CSSL::create(Ptr(CSSL_CTX) pCtx)
 	Ptr(SSL) pSSl = SSL_new(CastAnyPtr(SSL_CTX, CastMutable(Pointer, pCtx->get_sslContext())));
 
 	if (!pSSl)
-		return NULL;
+		return nullptr;
 
 	Ptr(CSSL) p = OK_NEW_OPERATOR CSSL(pSSl);
 
@@ -1905,7 +1905,7 @@ Ptr(CSSL) CSSL::dup()
 	Ptr(SSL) pSSl = SSL_dup(CastAnyPtr(SSL, _raw));
 
 	if (!pSSl)
-		return NULL;
+		return nullptr;
 
 	Ptr(CSSL) p = OK_NEW_OPERATOR CSSL(pSSl);
 
@@ -1922,7 +1922,7 @@ void CSSL::free()
 {
 	if (_raw)
 		SSL_free(CastAnyPtr(SSL, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 long CSSL::set_options(long op)
@@ -1999,8 +1999,8 @@ void CSSL::set_msg_callback(TCallbackMsg cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbMsg = NULL;
-		SSL_set_msg_callback(CastAnyPtr(SSL, _raw), NULL);
+		pCallbackData->cbMsg = nullptr;
+		SSL_set_msg_callback(CastAnyPtr(SSL, _raw), nullptr);
 	}
 }
 
@@ -2068,8 +2068,8 @@ void CSSL::set_psk_client_callback(TCallbackPSKClient cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbPSKClient = NULL;
-		SSL_set_psk_client_callback(CastAnyPtr(SSL, _raw), NULL);
+		pCallbackData->cbPSKClient = nullptr;
+		SSL_set_psk_client_callback(CastAnyPtr(SSL, _raw), nullptr);
 	}
 }
 
@@ -2102,8 +2102,8 @@ void CSSL::set_psk_server_callback(TCallbackPSKServer cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbPSKServer = NULL;
-		SSL_set_psk_server_callback(CastAnyPtr(SSL, _raw), NULL);
+		pCallbackData->cbPSKServer = nullptr;
+		SSL_set_psk_server_callback(CastAnyPtr(SSL, _raw), nullptr);
 	}
 }
 
@@ -2136,7 +2136,7 @@ void CSSL::set_app_data(void *arg)
 		pCallbackData->arg = arg;
 	}
 	else if (pCallbackData)
-		pCallbackData->arg = NULL;
+		pCallbackData->arg = nullptr;
 }
 
 void *CSSL::get_app_data()
@@ -2145,7 +2145,7 @@ void *CSSL::get_app_data()
 
 	if (pCallbackData)
 		return pCallbackData->arg;
-	return NULL;
+	return nullptr;
 }
 
 int CSSL::get_state()
@@ -2253,7 +2253,7 @@ ConstPtr(CSSL_CIPHER) CSSL::get_current_cipher()
 	ConstPtr(SSL_CIPHER) pCipher = SSL_get_current_cipher(CastAnyPtr(SSL, _raw));
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CSSL_CIPHER) p = CastDynamicPtr(CSSL_CIPHER, find_obj(pCipher));
 
@@ -2325,7 +2325,7 @@ CBIO * CSSL::get_rbio()
 	Ptr(BIO) pBio = SSL_get_rbio(CastAnyPtr(SSL, _raw));
 
 	if (!pBio)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBIO) p = CastDynamicPtr(CBIO, find_obj(pBio));
 
@@ -2342,7 +2342,7 @@ CBIO * CSSL::get_wbio()
 	Ptr(BIO) pBio = SSL_get_wbio(CastAnyPtr(SSL, _raw));
 
 	if (!pBio)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBIO) p = CastDynamicPtr(CBIO, find_obj(pBio));
 
@@ -2380,7 +2380,7 @@ CSSL::TCallbackVerify CSSL::get_verify_callback()
 
 	if (pCallbackData)
 		return pCallbackData->cbVerify;
-	return NULL;
+	return nullptr;
 }
 
 static int SSLVerifyCallback(int ok, X509_STORE_CTX *ctx)
@@ -2413,8 +2413,8 @@ void CSSL::set_verify(int mode, TCallbackVerify cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbVerify = NULL;
-		SSL_set_verify(CastAnyPtr(SSL, _raw), mode, NULL);
+		pCallbackData->cbVerify = nullptr;
+		SSL_set_verify(CastAnyPtr(SSL, _raw), mode, nullptr);
 	}
 }
 
@@ -2527,8 +2527,8 @@ void CSSL::set_generate_session_id(TCallbackGenSession cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbGenSession = NULL;
-		SSL_set_generate_session_id(CastAnyPtr(SSL, _raw), NULL);
+		pCallbackData->cbGenSession = nullptr;
+		SSL_set_generate_session_id(CastAnyPtr(SSL, _raw), nullptr);
 	}
 }
 
@@ -2542,7 +2542,7 @@ CX509 *CSSL::get_peer_certificate()
 	Ptr(X509) pX509 = SSL_get_peer_certificate(CastAnyPtr(SSL, _raw));
 
 	if (!pX509)
-		return NULL;
+		return nullptr;
 
 	Ptr(CX509) p = CastDynamicPtr(CX509, find_obj(pX509));
 
@@ -2680,7 +2680,7 @@ ConstPtr(CSSL_METHOD) CSSL::get_method()
 	ConstPtr(SSL_METHOD) pMethod = SSL_get_ssl_method(CastAnyPtr(SSL, _raw));
 
 	if (!pMethod)
-		return NULL;
+		return nullptr;
 
 	Ptr(CSSL_METHOD) p = CastDynamicPtr(CSSL_METHOD, find_obj(pMethod));
 
@@ -2778,7 +2778,7 @@ CSSL_SESSION *CSSL::get0_session() /* just peek at pointer */
 	Ptr(SSL_SESSION) pSession = SSL_get0_session(CastAnyPtr(SSL, _raw));
 
 	if (!pSession)
-		return NULL;
+		return nullptr;
 
 	Ptr(CSSL_SESSION) p = CastDynamicPtr(CSSL_SESSION, find_obj(pSession));
 
@@ -2795,7 +2795,7 @@ CSSL_SESSION *CSSL::get1_session() /* obtain a reference count */
 	Ptr(SSL_SESSION) pSession = SSL_get1_session(CastAnyPtr(SSL, _raw));
 
 	if (!pSession)
-		return NULL;
+		return nullptr;
 
 	Ptr(CSSL_SESSION) p = CastDynamicPtr(CSSL_SESSION, find_obj(pSession));
 
@@ -2812,7 +2812,7 @@ CSSL_CTX *CSSL::get_CTX()
 	Ptr(SSL_CTX) pCtx = SSL_get_SSL_CTX(CastAnyPtr(SSL, _raw));
 
 	if (!pCtx)
-		return NULL;
+		return nullptr;
 
 	Ptr(CSSL_CTX) p = CastDynamicPtr(CSSL_CTX, find_obj(pCtx));
 
@@ -2829,7 +2829,7 @@ CSSL_CTX *CSSL::set_CTX(CSSL_CTX* ctx)
 	Ptr(SSL_CTX) pCtx = SSL_set_SSL_CTX(CastAnyPtr(SSL, _raw), CastAnyPtr(SSL_CTX, CastMutable(Pointer, ctx->get_sslContext())));
 
 	if (!pCtx)
-		return NULL;
+		return nullptr;
 
 	Ptr(CSSL_CTX) p = CastDynamicPtr(CSSL_CTX, find_obj(pCtx));
 
@@ -2870,8 +2870,8 @@ void CSSL::set_info_callback(TCallbackInfo cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbInfo = NULL;
-		SSL_set_info_callback(CastAnyPtr(SSL, _raw), NULL);
+		pCallbackData->cbInfo = nullptr;
+		SSL_set_info_callback(CastAnyPtr(SSL, _raw), nullptr);
 	}
 }
 
@@ -2881,7 +2881,7 @@ CSSL::TCallbackInfo CSSL::get_info_callback()
 
 	if (pCallbackData)
 		return pCallbackData->cbInfo;
-	return NULL;
+	return nullptr;
 }
 
 int CSSL::state()
@@ -2943,7 +2943,7 @@ static RSA *SSLTmpRSACallback(SSL *ssl, int is_export, int keylength)
 {
 	Ptr(TSSLCallbackData) pCallbackData = CastAnyPtr(TSSLCallbackData, SSL_get_app_data(ssl));
 	Ptr(CSSL) pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
-	Ptr(CRSA_KEY) pKey = NULL;
+	Ptr(CRSA_KEY) pKey = nullptr;
 
 	if (!pSSL)
 	{
@@ -2971,8 +2971,8 @@ void CSSL::set_tmp_rsa_callback(TCallbackTmpRSA cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbTmpRSA = NULL;
-		SSL_set_tmp_rsa_callback(CastAnyPtr(SSL, _raw), NULL);
+		pCallbackData->cbTmpRSA = nullptr;
+		SSL_set_tmp_rsa_callback(CastAnyPtr(SSL, _raw), nullptr);
 	}
 }
 
@@ -2980,7 +2980,7 @@ static DH *SSLTmpDHCallback(SSL *ssl, int is_export, int keylength)
 {
 	Ptr(TSSLCallbackData) pCallbackData = CastAnyPtr(TSSLCallbackData, SSL_get_app_data(ssl));
 	Ptr(CSSL) pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
-	Ptr(CDH_KEY) pKey = NULL;
+	Ptr(CDH_KEY) pKey = nullptr;
 
 	if (!pSSL)
 	{
@@ -3008,8 +3008,8 @@ void CSSL::set_tmp_dh_callback(TCallbackTmpDH cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbTmpDH = NULL;
-		SSL_set_tmp_dh_callback(CastAnyPtr(SSL, _raw), NULL);
+		pCallbackData->cbTmpDH = nullptr;
+		SSL_set_tmp_dh_callback(CastAnyPtr(SSL, _raw), nullptr);
 	}
 }
 
@@ -3017,7 +3017,7 @@ static EC_KEY *SSLTmpECDHCallback(SSL *ssl, int is_export, int keylength)
 {
 	Ptr(TSSLCallbackData) pCallbackData = CastAnyPtr(TSSLCallbackData, SSL_get_app_data(ssl));
 	Ptr(CSSL) pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
-	Ptr(CEC_KEY) pKey = NULL;
+	Ptr(CEC_KEY) pKey = nullptr;
 
 	if (!pSSL)
 	{
@@ -3045,8 +3045,8 @@ void CSSL::set_tmp_ecdh_callback(TCallbackTmpECDH cb)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbTmpECDH = NULL;
-		SSL_set_tmp_ecdh_callback(CastAnyPtr(SSL, _raw), NULL);
+		pCallbackData->cbTmpECDH = nullptr;
+		SSL_set_tmp_ecdh_callback(CastAnyPtr(SSL, _raw), nullptr);
 	}
 }
 
@@ -3084,8 +3084,8 @@ void CSSL::set_session_ticket_ext_cb(TCallbackTLSSessionTicketExt cb, void *arg)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbTLSSessionTicketExt = NULL;
-		SSL_set_session_ticket_ext_cb(CastAnyPtr(SSL, _raw), NULL, NULL);
+		pCallbackData->cbTLSSessionTicketExt = nullptr;
+		SSL_set_session_ticket_ext_cb(CastAnyPtr(SSL, _raw), nullptr, nullptr);
 	}
 }
 
@@ -3094,7 +3094,7 @@ static int SSLTLSSessionSecretCallback(SSL *ssl, void *secret, int *secret_len, 
 	Ptr(TSSLCallbackData) pCallbackData = CastAnyPtr(TSSLCallbackData, SSL_get_app_data(ssl));
 	Ptr(CSSL) pSSL = CastDynamicPtr(CSSL, COpenSSLClass::find_obj(ssl));
 	CStack<CSSL_CIPHER> stack __FILE__LINE__0P;
-	Ptr(CSSL_CIPHER) pCipher = NULL;
+	Ptr(CSSL_CIPHER) pCipher = nullptr;
 	int ret;
 
 	if (!pSSL)
@@ -3135,8 +3135,8 @@ void CSSL::set_session_secret_cb(TCallbackTLSSessionSecret cb, void *arg)
 	}
 	else if (pCallbackData)
 	{
-		pCallbackData->cbTLSSessionSecret = NULL;
-		SSL_set_session_secret_cb(CastAnyPtr(SSL, _raw), NULL, NULL);
+		pCallbackData->cbTLSSessionSecret = nullptr;
+		SSL_set_session_secret_cb(CastAnyPtr(SSL, _raw), nullptr, nullptr);
 	}
 }
 

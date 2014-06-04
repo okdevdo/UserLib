@@ -23,10 +23,6 @@
 #include "DirectoryIterator.h"
 #include "Filter.h"
 
-void __stdcall VectorEmptyDeleteFunc( ConstPointer data, Pointer context )
-{
-}
-
 class XCygwinSetupApplication: public CConsoleApplication
 {
 public:
@@ -325,12 +321,12 @@ public:
 		if ( m_ImportFile && (m_sImportFile.Count() > 0) )
 		{
 			TMBCharList::Iterator it = m_sImportFile.Begin();
-			CSortedStringVectorFilterOutput* pOutput = OK_NEW_OPERATOR CSortedStringVectorFilterOutput(m_sPackages);
+			CCppObjectPtr<CSortedStringVectorFilterOutput> pOutput = OK_NEW_OPERATOR CSortedStringVectorFilterOutput(m_sPackages);
 
 			while ( it )
 			{
-				CFileFilterInput* pInput = NULL;
-				CLineReadFilter* pFilter = NULL;
+				CCppObjectPtr<CFileFilterInput> pInput;
+				CCppObjectPtr<CLineReadFilter> pFilter;
 
 				try
 				{
@@ -340,28 +336,19 @@ public:
 					pFilter->open();
 					pFilter->do_filter();
 					pFilter->close();
-
-					pInput->release();
-					pFilter->release();
 				}
 				catch ( CBaseException* ex )
 				{
 					CERR << ex->GetExceptionMessage() << endl;
 
 					if ( NotPtrCheck(pFilter) )
-					{
 						pFilter->close();
-						pFilter->release();
-					}
-					if ( NotPtrCheck(pInput) )
-						pInput->release();
 				}
 				++it;
 			}
-			pOutput->release();
 		}
 
-		CStreamFile* pOutFile = NULL;
+		CCppObjectPtr<CStreamFile> pOutFile;
 		CFilePath foutf;
 		CDateTime now(CDateTime::LocalTime);
 		CStringBuffer tmp;
@@ -437,17 +424,11 @@ public:
 		{
 			CERR << ex->GetExceptionMessage() << endl;
 			if (pOutFile)
-			{
 				pOutFile->Close();
-				pOutFile->release();
-			}
 			return -5;
 		}
 		if (pOutFile)
-		{
 			pOutFile->Close();
-			pOutFile->release();
-		}
 		return 0;
 	}
 private:

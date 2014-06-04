@@ -27,30 +27,17 @@
 
 #define SHIFTED 0x8000
 
-static void __stdcall TDeleteFunc_SelectedTreeViewNodes( ConstPointer data, Pointer context )
+CTreeViewNode::CTreeViewNode(LPCTSTR text):
+	m_nodes(__FILE__LINE__ 32, 64)
 {
-}
-
-static void __stdcall TDeleteFunc_TreeViewNodes( ConstPointer data, Pointer context )
-{
-	Ptr(CTreeViewNode) p = CastAnyPtr(CTreeViewNode, CastMutable(Pointer, data));
-
-	delete p;
-}
-
-static sword __stdcall TSearchAndSortFunc_FindNode( ConstPointer ArrayItem, ConstPointer DataItem )
-{
-	Ptr(CTreeViewNode) pNode = CastAnyPtr(CTreeViewNode, CastMutable(Pointer, ArrayItem));
-	LPCTSTR pParam = CastAny(LPCTSTR, DataItem);
-
-	return pNode->get_Text().Compare(CStringLiteral(pParam), 0, CStringLiteral::cIgnoreCase);
+	m_text.SetString(__FILE__LINE__ text);
 }
 
 CTreeViewNode::CTreeViewNode(CTreeView* pTreeView, LPCTSTR text, int lench, int ix, bool before):
 	m_nodes(__FILE__LINE__ 32, 64)
 {
 	m_treeView = pTreeView;
-	m_parent = NULL;
+	m_parent = nullptr;
 	m_text.SetString(__FILE__LINE__ text, lench);
 	_init(ix, before);
 }
@@ -59,7 +46,7 @@ CTreeViewNode::CTreeViewNode(CTreeView* pTreeView, ConstRef(CStringBuffer) text,
 	m_nodes(__FILE__LINE__ 32, 64)
 {
 	m_treeView = pTreeView;
-	m_parent = NULL;
+	m_parent = nullptr;
 	m_text.SetString(__FILE__LINE__ text);
 	_init(ix, before);
 }
@@ -70,7 +57,7 @@ CTreeViewNode::CTreeViewNode(CTreeViewNode* pParent, LPCTSTR text, int lench, in
 	if ( pParent )
 		m_treeView = pParent->get_TreeView();
 	else
-		m_treeView = NULL;
+		m_treeView = nullptr;
 	m_parent = pParent;
 	m_text.SetString(__FILE__LINE__ text, lench);
 	_init(ix, before);
@@ -82,7 +69,7 @@ CTreeViewNode::CTreeViewNode(CTreeViewNode* pParent, ConstRef(CStringBuffer) tex
 	if ( pParent )
 		m_treeView = pParent->get_TreeView();
 	else
-		m_treeView = NULL;
+		m_treeView = nullptr;
 	m_parent = pParent;
 	m_text.SetString(__FILE__LINE__ text);
 	_init(ix, before);
@@ -106,7 +93,7 @@ void CTreeViewNode::_init(int ix, bool before)
 {
 	m_pattern.SetString(__FILE__LINE__ _T("%s"));
 	m_displayText.FormatString(__FILE__LINE__ m_pattern.GetString(), m_text.GetString());
-	m_voidTag = NULL;
+	m_voidTag = nullptr;
 	m_expanded = false;
 	m_selected = false;
 	m_focused = false;
@@ -247,7 +234,7 @@ int CTreeViewNode::inx_Node(CTreeViewNode* node)
 
 CTreeViewNode* CTreeViewNode::get_Node(LPCTSTR nodeString)
 {
-	CTreeViewNode* result = NULL;
+	CTreeViewNode* result = nullptr;
 	CTreeViewNodeVector::Iterator it = m_nodes.Begin();
 
 	while ( it )
@@ -269,7 +256,7 @@ CTreeViewNode* CTreeViewNode::get_Node(LPCTSTR nodeString)
 
 CTreeViewNode* CTreeViewNode::get_NodeByStringTag(LPCTSTR tag)
 {
-	CTreeViewNode* result = NULL;
+	CTreeViewNode* result = nullptr;
 	CTreeViewNodeVector::Iterator it = m_nodes.Begin();
 
 	while ( it )
@@ -291,7 +278,7 @@ CTreeViewNode* CTreeViewNode::get_NodeByStringTag(LPCTSTR tag)
 
 CTreeViewNode* CTreeViewNode::get_NodeByVoidTag(LPVOID tag)
 {
-	CTreeViewNode* result = NULL;
+	CTreeViewNode* result = nullptr;
 	CTreeViewNodeVector::Iterator it = m_nodes.Begin();
 
 	while ( it )
@@ -321,9 +308,11 @@ void CTreeViewNode::find_Node(bool bSortDirs, LPCTSTR nodeString, bool bDir, int
 	}
 	if ( !bSortDirs )
 	{
-		CTreeViewNode::CTreeViewNodeVector::Iterator it = m_nodes.FindSorted(CastAnyPtr(CTreeViewNode, CastMutable(LPTSTR, nodeString)), TSearchAndSortFunc_FindNode);
+		CTreeViewNode node(nodeString);
+		CTreeViewNode::CTreeViewNodeVector::Iterator it = m_nodes.FindSorted(&node);
+		CTreeViewNodeLessFunctor f;
 
-		if ( (Cast(LSearchResultType, it).offset == (get_NodeCount() - 1)) && (TSearchAndSortFunc_FindNode(*it, nodeString) < 0) )
+		if ((Cast(LSearchResultType, it).offset == (get_NodeCount() - 1)) && (f(*it, &node)))
 		{
 			*pIndex = -1;
 			*pBefore = false;
@@ -377,7 +366,7 @@ CTreeViewNode* CTreeViewNode::get_NextSibling()
 		int ix = m_parent->inx_Node(this);
 
 		if ( (ix < 0) || (((dword)ix) >= (m_parent->get_NodeCount() - 1)) )
-			return NULL;
+			return nullptr;
 		++ix;
 		return m_parent->get_Node(ix);
 	}
@@ -386,11 +375,11 @@ CTreeViewNode* CTreeViewNode::get_NextSibling()
 		int ix = m_treeView->inx_Node(this);
 
 		if ( (ix < 0) || (((dword)ix) >= (m_treeView->get_NodeCount() - 1)) )
-			return NULL;
+			return nullptr;
 		++ix;
 		return m_treeView->get_Node(ix);
 	}
-	return NULL;
+	return nullptr;
 }
 
 void CTreeViewNode::set_Expanded(bool expanded)
@@ -468,7 +457,7 @@ CTreeViewNode* CTreeViewNode::get_CurrentNode()
 			return node1;
 		++it;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void CTreeViewNode::set_Selected(bool selected)
@@ -485,7 +474,7 @@ void CTreeViewNode::set_Selected(bool selected)
 				int ix = m_treeView->inx_SelNode(this);
 
 				if ( ix > -1 )
-					m_treeView->set_SelNode(ix, NULL);
+					m_treeView->set_SelNode(ix, nullptr);
 			}
 			m_treeView->Update(FALSE);
 		}
@@ -564,9 +553,9 @@ void CTreeViewNode::ExpandAll(bool expand)
 CTreeViewNode* CTreeViewNode::HitTest(POINT pt, LPUINT pType, INT xPos, INT yPos, INT cBottom)
 {
 	if ( !pType )
-		return NULL;
+		return nullptr;
 	if ( !m_treeView )
-		return NULL;
+		return nullptr;
 
 	RECT iconRect; CopyRect(&iconRect, &m_iconRect); OffsetRect(&iconRect, -xPos, -yPos);
 	RECT textRect; CopyRect(&textRect, &m_textRect); OffsetRect(&textRect, -xPos, -yPos);
@@ -574,9 +563,9 @@ CTreeViewNode* CTreeViewNode::HitTest(POINT pt, LPUINT pType, INT xPos, INT yPos
 	if ( iconRect.bottom >= 0 )
 	{
 		if ( iconRect.top >= cBottom )
-			return NULL;
+			return nullptr;
 		if ( (pt.y >= iconRect.top) && (pt.y < iconRect.bottom) && ((pt.x < iconRect.left) || (pt.x > textRect.right)) )
-			return NULL;
+			return nullptr;
 		if ( PtInRect(&iconRect, pt) )
 		{
 			*pType = HT_ICONRECT;
@@ -590,7 +579,7 @@ CTreeViewNode* CTreeViewNode::HitTest(POINT pt, LPUINT pType, INT xPos, INT yPos
 	}
 	if ( m_expanded )
 	{
-		CTreeViewNode* node = NULL;
+		CTreeViewNode* node = nullptr;
 		CTreeViewNodeVector::Iterator it = m_nodes.Begin();
 
 		while ( it )
@@ -604,7 +593,7 @@ CTreeViewNode* CTreeViewNode::HitTest(POINT pt, LPUINT pType, INT xPos, INT yPos
 		}
 		return node;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void CTreeViewNode::OnCalcRects(Gdiplus::Graphics* graphics, LPRECT pRect, LPINT maxWidth)
@@ -612,7 +601,7 @@ void CTreeViewNode::OnCalcRects(Gdiplus::Graphics* graphics, LPRECT pRect, LPINT
 	if ( !m_treeView )
 		return;
 
-	Gdiplus::Font* pFont = NULL;
+	Gdiplus::Font* pFont = nullptr;
 
 	if ( m_selected )
 		pFont = m_treeView->get_Font(_T(".Font.Selected"), _T("TreeView"));
@@ -634,7 +623,7 @@ void CTreeViewNode::OnCalcRects(Gdiplus::Graphics* graphics, LPRECT pRect, LPINT
 	Gdiplus::Image* imageMinus = m_treeView->get_Image(m_minusImageIndex);
 	UINT hImage = 0;
 
-	if ( (imagePlus != NULL) && (imagePlus->GetHeight() > 0) && (imageMinus != NULL) && (imageMinus->GetHeight() > 0) )
+	if ( (imagePlus != nullptr) && (imagePlus->GetHeight() > 0) && (imageMinus != nullptr) && (imageMinus->GetHeight() > 0) )
 		hImage = Max(imagePlus->GetHeight(), imageMinus->GetHeight());
 
 	UINT h = pRect->bottom - pRect->top + 4;
@@ -683,9 +672,9 @@ BOOL CTreeViewNode::OnPaint(Gdiplus::Graphics* graphics, INT xPos, INT yPos, INT
 		if ( iconRect.top >= cBottom )
 			return FALSE;
 
-		Gdiplus::Font* pFont = NULL;
-		Gdiplus::Brush* pBrushBackground = NULL;
-		Gdiplus::Brush* pBrushForeground = NULL;
+		Gdiplus::Font* pFont = nullptr;
+		Gdiplus::Brush* pBrushBackground = nullptr;
+		Gdiplus::Brush* pBrushForeground = nullptr;
 
 		if ( m_selected )
 		{
@@ -712,7 +701,7 @@ BOOL CTreeViewNode::OnPaint(Gdiplus::Graphics* graphics, INT xPos, INT yPos, INT
 		Gdiplus::Image* imageMinus = m_treeView->get_Image(m_minusImageIndex);
 		UINT hImage = 0;
 
-		if ( (imagePlus != NULL) && (imagePlus->GetHeight() > 0) && (imageMinus != NULL) && (imageMinus->GetHeight() > 0) )
+		if ( (imagePlus != nullptr) && (imagePlus->GetHeight() > 0) && (imageMinus != nullptr) && (imageMinus->GetHeight() > 0) )
 			hImage = Max(imagePlus->GetHeight(), imageMinus->GetHeight());
 
 		if ( m_nodes.Count() > 0 )
@@ -811,8 +800,8 @@ CTreeView::CTreeView(LPCTSTR name):
 	m_virtualLoad(false),
 	m_nodes(__FILE__LINE__ 32, 64),
 	m_selNodes(__FILE__LINE__ 32, 64),
-	m_currentNode(NULL),
-	m_editor(NULL)
+	m_currentNode(nullptr),
+	m_editor(nullptr)
 {
 }
 
@@ -823,8 +812,8 @@ CTreeView::CTreeView(ConstRef(CStringBuffer) name):
 	m_virtualLoad(false),
 	m_nodes(__FILE__LINE__ 32, 64),
 	m_selNodes(__FILE__LINE__ 32, 64),
-	m_currentNode(NULL),
-	m_editor(NULL)
+	m_currentNode(nullptr),
+	m_editor(nullptr)
 {
 }
 
@@ -1090,7 +1079,7 @@ void CTreeView::set_Node(dword ix, CTreeViewNode* node)
 
 		node1->set_Focused(false);
 		if ( m_currentNode == node1 )
-			m_currentNode = NULL;
+			m_currentNode = nullptr;
 		if ( node1->is_Selected() )
 			node1->set_Selected(false);
 		m_nodes.Remove(m_nodes.Index(ix));
@@ -1109,7 +1098,7 @@ void CTreeView::set_Node(dword ix, CTreeViewNode* node)
 
 		node1->set_Focused(false);
 		if ( m_currentNode == node1 )
-			m_currentNode = NULL;
+			m_currentNode = nullptr;
 		if ( node1->is_Selected() )
 			node1->set_Selected(false);
 		delete node1;
@@ -1123,7 +1112,7 @@ void CTreeView::ins_Node(dword ix, CTreeViewNode* node, bool before)
 	if ( ix >= m_nodes.Count() )
 		return;
 	node->set_TreeView(this);
-	node->set_Parent(NULL);
+	node->set_Parent(nullptr);
 	if ( before )
 		m_nodes.InsertBefore(m_nodes.Index(ix), node);
 	else
@@ -1148,7 +1137,7 @@ int CTreeView::inx_Node(CTreeViewNode* node)
 
 CTreeViewNode* CTreeView::get_Node(LPCTSTR nodeString)
 {
-	CTreeViewNode* result = NULL;
+	CTreeViewNode* result = nullptr;
 	CTreeViewNode::CTreeViewNodeVector::Iterator it = m_nodes.Begin();
 
 	while ( it )
@@ -1170,7 +1159,7 @@ CTreeViewNode* CTreeView::get_Node(LPCTSTR nodeString)
 
 CTreeViewNode* CTreeView::get_NodeByStringTag(LPCTSTR tag)
 {
-	CTreeViewNode* result = NULL;
+	CTreeViewNode* result = nullptr;
 	CTreeViewNode::CTreeViewNodeVector::Iterator it = m_nodes.Begin();
 
 	while ( it )
@@ -1192,7 +1181,7 @@ CTreeViewNode* CTreeView::get_NodeByStringTag(LPCTSTR tag)
 
 CTreeViewNode* CTreeView::get_NodeByVoidTag(LPVOID tag)
 {
-	CTreeViewNode* result = NULL;
+	CTreeViewNode* result = nullptr;
 	CTreeViewNode::CTreeViewNodeVector::Iterator it = m_nodes.Begin();
 
 	while ( it )
@@ -1222,9 +1211,11 @@ void CTreeView::find_Node(bool bSortDirs, LPCTSTR nodeString, bool bDir, int* pI
 	}
 	if ( !bSortDirs )
 	{
-		CTreeViewNode::CTreeViewNodeVector::Iterator it = m_nodes.FindSorted(CastAnyPtr(CTreeViewNode, CastMutable(LPTSTR, nodeString)), TSearchAndSortFunc_FindNode);
+		CTreeViewNode node(nodeString);
+		CTreeViewNode::CTreeViewNodeVector::Iterator it = m_nodes.FindSorted(&node);
+		CTreeViewNode::CTreeViewNodeLessFunctor f;
 
-		if ( (Cast(LSearchResultType, it).offset == (get_NodeCount() - 1)) && (TSearchAndSortFunc_FindNode(*it, nodeString) < 0) )
+		if ( (Cast(LSearchResultType, it).offset == (get_NodeCount() - 1)) && (f(*it, &node)) )
 		{
 			*pIndex = -1;
 			*pBefore = false;
@@ -1337,7 +1328,7 @@ void CTreeView::move_CurrentNode(CTreeViewNode* otherParent, int pos)
 			EndUpdate(FALSE);
 			return;
 		}
-		thisParent->set_Node(ix, NULL);
+		thisParent->set_Node(ix, nullptr);
 	}
 	else
 	{
@@ -1348,7 +1339,7 @@ void CTreeView::move_CurrentNode(CTreeViewNode* otherParent, int pos)
 			EndUpdate(FALSE);
 			return;
 		}
-		set_Node(ix, NULL);
+		set_Node(ix, nullptr);
 	}
 	node->set_Parent(otherParent);
 	if ( otherParent )
@@ -1506,7 +1497,7 @@ LRESULT CTreeView::OnContextMenu(WPARAM wParam, LPARAM lParam)
 
 	POINT pt; pt.x = x; pt.y = y;
 	UINT type = 0;
-	CTreeViewNode* node = NULL;
+	CTreeViewNode* node = nullptr;
 	int xPos = get_HScrollOffset();
 	int yPos = get_VScrollOffset();
 	RECT clientRect;
@@ -1543,7 +1534,7 @@ LRESULT CTreeView::OnLButtonDown(WPARAM wParam, LPARAM lParam)
 	{
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 		UINT type = 0;
-		CTreeViewNode* node = NULL;
+		CTreeViewNode* node = nullptr;
 		int xPos = get_HScrollOffset();
 		int yPos = get_VScrollOffset();
 		RECT clientRect;
@@ -1669,7 +1660,7 @@ LRESULT CTreeView::OnLButtonDblClk(WPARAM wParam, LPARAM lParam)
 	{
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 		UINT type = 0;
-		CTreeViewNode* node = NULL;
+		CTreeViewNode* node = nullptr;
 		int xPos = get_HScrollOffset();
 		int yPos = get_VScrollOffset();
 		RECT clientRect;
@@ -1832,7 +1823,7 @@ LRESULT CTreeView::OnKeyDown(WPARAM wParam, LPARAM lParam)
 			BeginUpdate();
 			if ( parent )
 			{
-				parent->set_Node(ix, NULL);
+				parent->set_Node(ix, nullptr);
 
 				if ( (((dword)ix) < parent->get_NodeCount()) || ((ix > 0) && (((dword)--ix) < parent->get_NodeCount())) )
 					m_currentNode = parent->get_Node(ix);
@@ -1842,7 +1833,7 @@ LRESULT CTreeView::OnKeyDown(WPARAM wParam, LPARAM lParam)
 			}
 			else
 			{
-				set_Node(ix, NULL);
+				set_Node(ix, nullptr);
 
 				if ( (((dword)ix) < m_nodes.Count()) || ((ix > 0) && (((dword)--ix) < m_nodes.Count())) )
 				{
@@ -1850,7 +1841,7 @@ LRESULT CTreeView::OnKeyDown(WPARAM wParam, LPARAM lParam)
 					m_currentNode->set_Focused(true);
 				}
 				else
-					m_currentNode = NULL;
+					m_currentNode = nullptr;
 			}
 			_EnsureVisible();
 			EndUpdate(TRUE);

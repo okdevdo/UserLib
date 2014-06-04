@@ -22,17 +22,10 @@
 #include "ConsoleTabControl.h"
 #include "ConsoleTabPageControl.h"
 
-static void __stdcall CConsoleTabPageControlDeleteFunc( ConstPointer data, Pointer context )
-{
-	CConsoleTabPageControl* p = CastAnyPtr(CConsoleTabPageControl, CastMutable(Pointer, data));
-
-	p->release();
-}
-
 CConsoleTabControl::CConsoleTabControl(CConstPointer name, CConsole* pConsole):
     CConsoleControl(name, pConsole),
 	m_Pages(__FILE__LINE__0),
-	m_CurrentPage(NULL),
+	m_CurrentPage(nullptr),
 	m_CurrentPageNo(-1)
 {
 }
@@ -40,7 +33,7 @@ CConsoleTabControl::CConsoleTabControl(CConstPointer name, CConsole* pConsole):
 CConsoleTabControl::CConsoleTabControl(CConstPointer name, CConstPointer title, CConsole* pConsole):
     CConsoleControl(name, title, pConsole),
 	m_Pages(__FILE__LINE__0),
-	m_CurrentPage(NULL),
+	m_CurrentPage(nullptr),
 	m_CurrentPageNo(-1)
 {
 }
@@ -48,7 +41,7 @@ CConsoleTabControl::CConsoleTabControl(CConstPointer name, CConstPointer title, 
 CConsoleTabControl::CConsoleTabControl(CAbstractConsoleControlCallback* callback, CConstPointer name, CConstPointer title, CConsole* pConsole):
     CConsoleControl(callback, name, title, pConsole),
 	m_Pages(__FILE__LINE__0),
-	m_CurrentPage(NULL),
+	m_CurrentPage(nullptr),
 	m_CurrentPageNo(-1)
 {
 }
@@ -56,7 +49,7 @@ CConsoleTabControl::CConsoleTabControl(CAbstractConsoleControlCallback* callback
 CConsoleTabControl::CConsoleTabControl(word taborder, CAbstractConsoleControlCallback* callback, CConstPointer name, CConstPointer title, CConsole* pConsole):
     CConsoleControl(taborder, callback, name, title, pConsole),
 	m_Pages(__FILE__LINE__0),
-	m_CurrentPage(NULL),
+	m_CurrentPage(nullptr),
 	m_CurrentPageNo(-1)
 {
 }
@@ -70,7 +63,7 @@ void CConsoleTabControl::Initialize(void)
 {
 	m_Pages.Close();
 	m_Pages.Open(__FILE__LINE__0);
-	m_CurrentPage = NULL;
+	m_CurrentPage = nullptr;
 	m_CurrentPageNo = -1;
 }
 
@@ -147,7 +140,7 @@ void CConsoleTabControl::Create(COORD pos, COORD size)
 	else
 	{
 		m_CurrentPageNo = -1;
-		m_CurrentPage = NULL;
+		m_CurrentPage = nullptr;
 	}
 	DrawTabControl();
 }

@@ -31,7 +31,7 @@
 class CComboPopup: public CPopup
 {
 public:
-    CComboPopup(LPCTSTR name = NULL);
+    CComboPopup(LPCTSTR name = nullptr);
     CComboPopup(ConstRef(CStringBuffer) name);
 	virtual ~CComboPopup();
 
@@ -42,14 +42,14 @@ public:
 	virtual BOOL PreCreate(CREATESTRUCT& cs);
 
 	__inline dword get_NodeCount() { if ( m_pListView ) return m_pListView->get_NodeCount(); return 0; }
-	__inline CListViewNode* get_Node(dword ix) { if ( !m_pListView ) return NULL; return m_pListView->get_Node(ix); }
-	__inline CListViewNode* get_Node(LPCTSTR key) { if ( !m_pListView ) return NULL; return m_pListView->get_Node(key); }
+	__inline CListViewNode* get_Node(dword ix) { if ( !m_pListView ) return nullptr; return m_pListView->get_Node(ix); }
+	__inline CListViewNode* get_Node(LPCTSTR key) { if ( !m_pListView ) return nullptr; return m_pListView->get_Node(key); }
 	__inline void set_Node(dword ix, CListViewNode* node) { if ( m_pListView ) m_pListView->set_Node(ix, node); }
 	__inline void ins_Node(dword ix, CListViewNode* node, bool before = true) { if ( m_pListView ) m_pListView->ins_Node(ix, node, before); }
 	__inline int inx_Node(CListViewNode* node) { if ( m_pListView ) return m_pListView->inx_Node(node); return -1; }
 	__inline void clear(void) { if ( m_pListView ) m_pListView->clear(); }
-	__inline CListViewNode* create_Node(LPCTSTR text) { if ( m_pListView ) return OK_NEW_OPERATOR CListViewNode(m_pListView, text); return NULL; }
-	__inline CListViewNode* create_Node(ConstRef(CStringBuffer) text) { if ( m_pListView ) return OK_NEW_OPERATOR CListViewNode(m_pListView, text); return NULL; }
+	__inline CListViewNode* create_Node(LPCTSTR text) { if ( m_pListView ) return OK_NEW_OPERATOR CListViewNode(m_pListView, text); return nullptr; }
+	__inline CListViewNode* create_Node(ConstRef(CStringBuffer) text) { if ( m_pListView ) return OK_NEW_OPERATOR CListViewNode(m_pListView, text); return nullptr; }
 
 	LRESULT OnCreateChildren(WPARAM wParam, LPARAM lParam);
 
@@ -91,19 +91,19 @@ END_MESSAGE_MAP()
 
 CComboPopup::CComboPopup(LPCTSTR name):
 	CPopup(name),
-	m_pListView(NULL),
-	m_pHScrollbar(NULL),
-	m_pVScrollbar(NULL),
-	m_pComboBox(NULL)
+	m_pListView(nullptr),
+	m_pHScrollbar(nullptr),
+	m_pVScrollbar(nullptr),
+	m_pComboBox(nullptr)
 {
 }
 
 CComboPopup::CComboPopup(ConstRef(CStringBuffer) name):
 	CPopup(name),
-	m_pListView(NULL),
-	m_pHScrollbar(NULL),
-	m_pVScrollbar(NULL),
-	m_pComboBox(NULL)
+	m_pListView(nullptr),
+	m_pHScrollbar(nullptr),
+	m_pVScrollbar(nullptr),
+	m_pComboBox(nullptr)
 {
 }
 
@@ -399,8 +399,8 @@ END_MESSAGE_MAP()
 CComboBox::CComboBox(LPCTSTR name):
 	CControl(name),
 	m_editable(false),
-	m_pTextEditor(NULL),
-	m_pPopup(NULL),
+	m_pTextEditor(nullptr),
+	m_pPopup(nullptr),
 	m_DropDown(MAKEINTRESOURCE(IDB_COMBOARROW), IMAGE_BITMAP)
 {
 }
@@ -408,8 +408,8 @@ CComboBox::CComboBox(LPCTSTR name):
 CComboBox::CComboBox(ConstRef(CStringBuffer) name):
 	CControl(name),
 	m_editable(false),
-	m_pTextEditor(NULL),
-	m_pPopup(NULL),
+	m_pTextEditor(nullptr),
+	m_pPopup(nullptr),
 	m_DropDown(MAKEINTRESOURCE(IDB_COMBOARROW), IMAGE_BITMAP)
 {
 }

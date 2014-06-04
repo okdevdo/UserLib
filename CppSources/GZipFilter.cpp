@@ -47,7 +47,7 @@ static void ThrowDefaultException(DECL_FILE_LINE CConstPointer format, const cha
 }
 
 CGZipCompressFilter::CGZipCompressFilter(Ptr(CAbstractFilterInput) input, Ptr(CAbstractFilterOutput) output) :
-CZLibCompressFilter(input, output), m_head(NULL)
+CZLibCompressFilter(input, output), m_head(nullptr)
 {
 }
 

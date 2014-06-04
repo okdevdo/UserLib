@@ -35,7 +35,7 @@ Ptr(CBUF_MEM) CBUF_MEM::create()
 	Ptr(BUF_MEM) pMem = BUF_MEM_new();
 
 	if (!pMem)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBUF_MEM) p = OK_NEW_OPERATOR CBUF_MEM(pMem);
 
@@ -47,7 +47,7 @@ void CBUF_MEM::free()
 {
 	if (_raw)
 		BUF_MEM_free(CastAnyPtr(BUF_MEM, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 int CBUF_MEM::grow(size_t len)
@@ -68,7 +68,7 @@ Ptr(CASN1_OBJECT) CASN1_OBJECT::create()
 	Ptr(ASN1_OBJECT) pObject = ASN1_OBJECT_new();
 
 	if (!pObject)
-		return NULL;
+		return nullptr;
 
 	Ptr(CASN1_OBJECT) p = OK_NEW_OPERATOR CASN1_OBJECT(pObject);
 
@@ -80,7 +80,7 @@ void CASN1_OBJECT::free()
 {
 	if (_raw)
 		ASN1_OBJECT_free(CastAnyPtr(ASN1_OBJECT, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 int	CASN1_OBJECT::i2d(unsigned char **pp)
@@ -90,20 +90,20 @@ int	CASN1_OBJECT::i2d(unsigned char **pp)
 
 CASN1_OBJECT *CASN1_OBJECT::c2i(CASN1_OBJECT **a, const unsigned char **pp, long length)
 {
-	Ptr(ASN1_OBJECT) pObject = c2i_ASN1_OBJECT(NULL, pp, length);
+	Ptr(ASN1_OBJECT) pObject = c2i_ASN1_OBJECT(nullptr, pp, length);
 
 	if (pObject)
 		return OK_NEW_OPERATOR CASN1_OBJECT(pObject);
-	return NULL;
+	return nullptr;
 }
 
 CASN1_OBJECT *CASN1_OBJECT::d2i(CASN1_OBJECT **a, const unsigned char **pp, long length)
 {
-	Ptr(ASN1_OBJECT) pObject = d2i_ASN1_OBJECT(NULL, pp, length);
+	Ptr(ASN1_OBJECT) pObject = d2i_ASN1_OBJECT(nullptr, pp, length);
 
 	if (pObject)
 		return OK_NEW_OPERATOR CASN1_OBJECT(pObject);
-	return NULL;
+	return nullptr;
 }
 
 CASN1_INTEGER::CASN1_INTEGER(ConstPointer pInteger) : COpenSSLClass(pInteger) {}
@@ -114,7 +114,7 @@ Ptr(CASN1_INTEGER) CASN1_INTEGER::create()
 	Ptr(ASN1_INTEGER) pObject = M_ASN1_INTEGER_new();
 
 	if (!pObject)
-		return NULL;
+		return nullptr;
 
 	Ptr(CASN1_INTEGER) p = OK_NEW_OPERATOR CASN1_INTEGER(pObject);
 
@@ -126,7 +126,7 @@ void CASN1_INTEGER::free()
 {
 	if (_raw)
 		M_ASN1_INTEGER_free(CastAnyPtr(ASN1_INTEGER, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 Ptr(CASN1_INTEGER) CASN1_INTEGER::dup()
@@ -134,7 +134,7 @@ Ptr(CASN1_INTEGER) CASN1_INTEGER::dup()
 	Ptr(ASN1_INTEGER) pObject = M_ASN1_INTEGER_dup(CastAnyPtr(ASN1_INTEGER, _raw));
 
 	if (!pObject)
-		return NULL;
+		return nullptr;
 
 	Ptr(CASN1_INTEGER) p = OK_NEW_OPERATOR CASN1_INTEGER(pObject);
 
@@ -149,11 +149,11 @@ int	CASN1_INTEGER::i2c(unsigned char **pp)
 
 CASN1_INTEGER *CASN1_INTEGER::c2i(CASN1_INTEGER **a, const unsigned char **pp, long length)
 {
-	Ptr(ASN1_INTEGER) pObject = c2i_ASN1_INTEGER(NULL, pp, length);
+	Ptr(ASN1_INTEGER) pObject = c2i_ASN1_INTEGER(nullptr, pp, length);
 
 	if (pObject)
 		return OK_NEW_OPERATOR CASN1_INTEGER(pObject);
-	return NULL;
+	return nullptr;
 }
 
 CASN1_TIME::CASN1_TIME(ConstPointer pTime) : COpenSSLClass(pTime) {}
@@ -164,7 +164,7 @@ Ptr(CASN1_TIME) CASN1_TIME::create()
 	Ptr(ASN1_TIME) pObject = M_ASN1_TIME_new();
 
 	if (!pObject)
-		return NULL;
+		return nullptr;
 
 	Ptr(CASN1_TIME) p = OK_NEW_OPERATOR CASN1_TIME(pObject);
 
@@ -176,7 +176,7 @@ void CASN1_TIME::free()
 {
 	if (_raw)
 		M_ASN1_TIME_free(CastAnyPtr(ASN1_TIME, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 CASN1_BIT_STRING::CASN1_BIT_STRING(ConstPointer pBitString) : COpenSSLClass(pBitString) {}
@@ -187,7 +187,7 @@ Ptr(CASN1_BIT_STRING) CASN1_BIT_STRING::create()
 	Ptr(ASN1_BIT_STRING) pObject = M_ASN1_BIT_STRING_new();
 
 	if (!pObject)
-		return NULL;
+		return nullptr;
 
 	Ptr(CASN1_BIT_STRING) p = OK_NEW_OPERATOR CASN1_BIT_STRING(pObject);
 
@@ -199,7 +199,7 @@ void CASN1_BIT_STRING::free()
 {
 	if (_raw)
 		M_ASN1_BIT_STRING_free(CastAnyPtr(ASN1_BIT_STRING, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 CBIGNUM::CBIGNUM(ConstPointer pBigNum) : COpenSSLClass(pBigNum) {}
@@ -210,7 +210,7 @@ Ptr(CBIGNUM) CBIGNUM::create()
 	Ptr(BIGNUM) pObject = BN_new();
 
 	if (!pObject)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBIGNUM) p = OK_NEW_OPERATOR CBIGNUM(pObject);
 
@@ -222,7 +222,7 @@ void CBIGNUM::free()
 {
 	if (_raw)
 		BN_clear_free(CastAnyPtr(BIGNUM, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 CBN_CTX::CBN_CTX(ConstPointer pBigNumContext) : COpenSSLClass(pBigNumContext) {}
@@ -233,7 +233,7 @@ Ptr(CBN_CTX) CBN_CTX::create()
 	Ptr(BN_CTX) pObject = BN_CTX_new();
 
 	if (!pObject)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBN_CTX) p = OK_NEW_OPERATOR CBN_CTX(pObject);
 
@@ -245,7 +245,7 @@ void CBN_CTX::free()
 {
 	if (_raw)
 		BN_CTX_free(CastAnyPtr(BN_CTX, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 CBN_BLINDING::CBN_BLINDING(ConstPointer pBigNumBlinding) : COpenSSLClass(pBigNumBlinding) {}
@@ -256,7 +256,7 @@ Ptr(CBN_BLINDING) CBN_BLINDING::create(ConstPtr(CBIGNUM) A, ConstPtr(CBIGNUM) Ai
 	Ptr(BN_BLINDING) pObject = BN_BLINDING_new(CastAnyConstPtr(BIGNUM, A->get_bignum()), CastAnyConstPtr(BIGNUM, Ai->get_bignum()), CastAnyPtr(BIGNUM, CastMutable(Pointer, mod->get_bignum())));
 
 	if (!pObject)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBN_BLINDING) p = OK_NEW_OPERATOR CBN_BLINDING(pObject);
 
@@ -268,13 +268,13 @@ void CBN_BLINDING::free()
 {
 	if (_raw)
 		BN_BLINDING_free(CastAnyPtr(BN_BLINDING, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 class OPENSSL_LOCAL TBN_GENCBCallbackData : public CCppObject
 {
 public:
-	TBN_GENCBCallbackData(): cb(NULL), arg(NULL) {}
+	TBN_GENCBCallbackData(): cb(nullptr), arg(nullptr) {}
 	virtual ~TBN_GENCBCallbackData() {}
 
 	CBN_GENCB* self;
@@ -290,7 +290,7 @@ Ptr(CBN_GENCB) CBN_GENCB::create()
 	Ptr(BN_GENCB) pObject = CastAnyPtr(BN_GENCB, TFalloc(sizeof(BN_GENCB)));
 
 	if (!pObject)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBN_GENCB) p = OK_NEW_OPERATOR CBN_GENCB(pObject);
 
@@ -303,7 +303,7 @@ Ptr(CBN_GENCB) CBN_GENCB::create_1(cb_1 cb, void* arg)
 	Ptr(BN_GENCB) pObject = CastAnyPtr(BN_GENCB, TFalloc(sizeof(BN_GENCB)));
 
 	if (!pObject)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBN_GENCB) p = OK_NEW_OPERATOR CBN_GENCB(pObject);
 
@@ -317,7 +317,7 @@ Ptr(CBN_GENCB) CBN_GENCB::create_2(cb_2 cb, void* arg)
 	Ptr(BN_GENCB) pObject = CastAnyPtr(BN_GENCB, TFalloc(sizeof(BN_GENCB)));
 
 	if (!pObject)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBN_GENCB) p = OK_NEW_OPERATOR CBN_GENCB(pObject);
 
@@ -340,7 +340,7 @@ void CBN_GENCB::free()
 		}
 		TFfree(_raw);
 	}
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 void CBN_GENCB::set_1(cb_1 cb, void* arg)
@@ -371,7 +371,7 @@ static int CBN_GENCB_cb_2(int a, int b, BN_GENCB *arg)
 void CBN_GENCB::set_2(cb_2 cb, void* arg)
 {
 	Ptr(BN_GENCB) pObject = CastAnyPtr(BN_GENCB, _raw);
-	Ptr(TBN_GENCBCallbackData) data = NULL;
+	Ptr(TBN_GENCBCallbackData) data = nullptr;
 
 	if (pObject->ver == 2)
 		data = CastAnyPtr(TBN_GENCBCallbackData, pObject->arg);
@@ -421,5 +421,5 @@ void *CBN_GENCB::get_app_data(void)
 	default:
 		break;
 	}
-	return NULL;
+	return nullptr;
 }

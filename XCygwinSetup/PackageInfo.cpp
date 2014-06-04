@@ -24,8 +24,8 @@
 CPackageInstallInfo::CPackageInstallInfo():
     _rootPath(),
 	_vendorVersion(),
-    _binaryPackage(NULL),
-    _sourcePackage(NULL),
+    _binaryPackage(),
+    _sourcePackage(),
 	_testVersion(false)
 {
 }
@@ -33,20 +33,14 @@ CPackageInstallInfo::CPackageInstallInfo():
 CPackageInstallInfo::CPackageInstallInfo(ConstRef(CFilePath) rootPath, ConstRef(CStringBuffer) vendorVersion):
     _rootPath(rootPath),
 	_vendorVersion(vendorVersion),
-    _binaryPackage(NULL),
-    _sourcePackage(NULL),
+    _binaryPackage(),
+    _sourcePackage(),
 	_testVersion(false)
 {
 }
 
 CPackageInstallInfo::~CPackageInstallInfo()
 {
-	if ( NotPtrCheck(_binaryPackage) )
-		_binaryPackage->release();
-	_binaryPackage = NULL;
-	if ( NotPtrCheck(_sourcePackage) )
-		_sourcePackage->release();
-	_sourcePackage = NULL;
 }
 
 void CPackageInstallInfo::Print(WInt iVerbose, dword indent) const
@@ -92,21 +86,6 @@ void CPackageInstallInfoVector::Print(WInt iVerbose, dword indent) const
 	}
 }
 
-void __stdcall PackageInfoDeleteFunc( ConstPointer data, Pointer context )
-{
-	CPackageInfo* pPackageInfo = CastAnyPtr(CPackageInfo, CastMutable(Pointer, data));
-
-	pPackageInfo->release();
-}
-
-sword __stdcall PackageInfoSearchAndSortFunc( ConstPointer pa, ConstPointer pb)
-{
-	CPackageInfo* ppa = CastAnyPtr(CPackageInfo, CastMutable(Pointer, pa));
-	CPackageInfo* ppb = CastAnyPtr(CPackageInfo, CastMutable(Pointer, pb));
-
-	return (ppa->GetPackageName().Compare(ppb->GetPackageName()));
-}
-
 sword __stdcall PackageInfoMatchFunc( ConstPointer pa, ConstPointer pb)
 {
 	CPackageInfo* ppa = CastAnyPtr(CPackageInfo, CastMutable(Pointer, pa));
@@ -119,10 +98,10 @@ CPackageInfo::CPackageInfo():
 	_categories(__FILE__LINE__ 16, 16),
 	_requiredPackages(__FILE__LINE__ 16, 16),
 	_installPackages(__FILE__LINE__ 16, 16),
-	_tobeInstalled(NULL),
+	_tobeInstalled(nullptr),
 	_visited(false),
 	_finished(false),
-	_installInfo(NULL),
+	_installInfo(nullptr),
 	_requiredBy(__FILE__LINE__ 16, 16)
 {
 }
@@ -132,10 +111,10 @@ CPackageInfo::CPackageInfo(ConstRef(CStringBuffer) packageName):
 	_categories(__FILE__LINE__ 16, 16),
 	_requiredPackages(__FILE__LINE__ 16, 16),
 	_installPackages(__FILE__LINE__ 16, 16),
-	_tobeInstalled(NULL),
+	_tobeInstalled(nullptr),
 	_visited(false),
 	_finished(false),
-	_installInfo(NULL),
+	_installInfo(nullptr),
 	_requiredBy(__FILE__LINE__ 16, 16)
 {
 }
@@ -147,9 +126,9 @@ CPackageInfo::~CPackageInfo()
 Ptr(CPackageInstallInfo) CPackageInfo::FindToBeInstalled()
 {
 	CPackageInstallInfoVector::Iterator itPII = _installPackages.Last();
-	Ptr(CPackageInstallInfo) pPIInfoTest = NULL;
-	Ptr(CPackageInstallInfo) pPIInfoLast = NULL;
-	Ptr(CPackageInstallInfo) pPIInfo = NULL;
+	Ptr(CPackageInstallInfo) pPIInfoTest = nullptr;
+	Ptr(CPackageInstallInfo) pPIInfoLast = nullptr;
+	Ptr(CPackageInstallInfo) pPIInfo = nullptr;
 	
 	while ( itPII )
 	{
@@ -167,7 +146,7 @@ Ptr(CPackageInstallInfo) CPackageInfo::FindToBeInstalled()
 		return pPIInfoLast;
 	if ( NotPtrCheck(pPIInfoTest) )
 		return pPIInfoTest;
-	return NULL;
+	return nullptr;
 }
 
 void CPackageInfo::AddRequiredBy(CPackageInfo* pInfo) 

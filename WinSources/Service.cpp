@@ -43,7 +43,7 @@ _HandlerFunction(handlerfunction)
 {
 	TCHAR szPath[MAX_PATH];
 
-	if (!GetModuleFileName(NULL, szPath, MAX_PATH))
+	if (!GetModuleFileName(nullptr, szPath, MAX_PATH))
 		throw OK_NEW_OPERATOR CServiceException(__FILE__LINE__ _T("[GetModuleFileName] failed in %s"), _T("CServiceInfo::CServiceInfo"), CWinException::WinExtError);
 	_BinaryPathName.SetString(__FILE__LINE__ szPath);
 
@@ -74,8 +74,8 @@ CServiceInfo::CServiceInfo(CConstPointer pServiceName, CConstPointer pDisplayNam
 	_Dependencies(__FILE__LINE__ 16, 16),
 	_LoginAccount(__FILE__LINE__ pLoginAccount),
 	_Password(),
-	_MainFunction(NULL),
-	_HandlerFunction(NULL)
+	_MainFunction(nullptr),
+	_HandlerFunction(nullptr)
 {
 }
 
@@ -230,10 +230,10 @@ void CServiceInfo::Print()
 
 CService::CService(Ptr(CServiceManager) man) :
 _pSCManager(man),
-_pService(NULL),
+_pService(nullptr),
 _ServiceName(),
-_pInfo(NULL),
-_ServiceStatusHandle(NULL),
+_pInfo(nullptr),
+_ServiceStatusHandle(nullptr),
 _ServiceStatus(),
 _checkPoint(1),
 _StopSignal()
@@ -242,10 +242,10 @@ _StopSignal()
 
 CService::CService(ConstRef(CStringBuffer) name, Ptr(CServiceInfo) pInfo, Ptr(CServiceManager) man) :
 _pSCManager(man),
-_pService(NULL),
+_pService(nullptr),
 _ServiceName(name),
 _pInfo(pInfo),
-_ServiceStatusHandle(NULL),
+_ServiceStatusHandle(nullptr),
 _ServiceStatus(),
 _checkPoint(1),
 _StopSignal()
@@ -275,7 +275,7 @@ void CService::Create(CConstPointer name, ConstPtr(CServiceInfo) info)
 		info->get_ErrorControl(),			// error control type 
 		info->get_BinaryPathName(),			// path to service's binary 
 		info->get_LoadOrderGroup(),			// load ordering group 
-		NULL,								// no tag identifier 
+		nullptr,								// no tag identifier 
 		CastAny(LPCTSTR, info->get_DependenciesAsDataString().get_Buffer()),	// dependencies 
 		info->get_LoginAccount(),			// account 
 		info->get_Password());				// password 
@@ -356,7 +356,7 @@ void CService::Update(ConstPtr(CServiceInfo) info)
 		vErrorControl,		// error control
 		vBinaryPathName,    // binary path
 		vLoadOrderGroup,    // load order group
-		NULL,				// tag ID: no change 
+		nullptr,				// tag ID: no change 
 		CastAny(LPTSTR, vDependencies2.get_Buffer()),	// dependencies
 		vLoginAccount,      // account name
 		vPassword,          // password
@@ -408,18 +408,18 @@ void CService::Query()
 	if (_pInfo)
 	{
 		_pInfo->release();
-		_pInfo = NULL;
+		_pInfo = nullptr;
 	}
 
-	LPQUERY_SERVICE_CONFIG lpsc = NULL;
-	LPSERVICE_DESCRIPTION lpsd = NULL;
+	LPQUERY_SERVICE_CONFIG lpsc = nullptr;
+	LPSERVICE_DESCRIPTION lpsd = nullptr;
 	DWORD dwBytesNeeded = 0;
 	DWORD cbBufSize = 0;
 	DWORD dwError = 0;
 
 	if (!QueryServiceConfig(
 		_pService,
-		NULL,
+		nullptr,
 		0,
 		&dwBytesNeeded))
 	{
@@ -445,7 +445,7 @@ void CService::Query()
 	if (!QueryServiceConfig2(
 		_pService,
 		SERVICE_CONFIG_DESCRIPTION,
-		NULL,
+		nullptr,
 		0,
 		&dwBytesNeeded))
 	{
@@ -573,7 +573,7 @@ void CService::Close()
 	if (NotPtrCheck(_pService))
 	{
 		CloseServiceHandle(_pService);
-		_pService = NULL;
+		_pService = nullptr;
 	}
 }
 
@@ -585,21 +585,6 @@ void CService::Print()
 		_pInfo->Print();
 }
 
-void __stdcall CServicesDeleteFunc(ConstPointer data, Pointer context)
-{
-	Ptr(CService) pService = CastAnyPtr(CService, CastMutable(Pointer, data));
-
-	pService->release();
-}
-
-static sword __stdcall CServicesSearchAndSortFunc(ConstPointer item, ConstPointer data)
-{
-	CService* pService1 = CastAnyPtr(CService, CastMutable(Pointer, item));
-	CService* pService2 = CastAnyPtr(CService, CastMutable(Pointer, data));
-
-	return pService1->get_ServiceName().Compare(pService2->get_ServiceName(), 0, CStringLiteral::cIgnoreCase);
-}
-
 CServices::CServices(DECL_FILE_LINE0) : super(ARGS_FILE_LINE 16, 16)
 {
 }
@@ -608,14 +593,14 @@ CServices::~CServices()
 {
 }
 
-CServiceManager::CServiceManager() : _pSCManager(NULL), _Services(__FILE__LINE__0) {}
+CServiceManager::CServiceManager() : _pSCManager(nullptr), _Services(__FILE__LINE__0) {}
 CServiceManager::~CServiceManager() {}
 
 void CServiceManager::StartUp() 
 {
 	_pSCManager = OpenSCManager(
-		NULL,                    // local computer
-		NULL,                    // ServicesActive database 
+		nullptr,                    // local computer
+		nullptr,                    // ServicesActive database 
 		SC_MANAGER_ALL_ACCESS);  // full access rights 
 
 	if (PtrCheck(_pSCManager))
@@ -629,7 +614,7 @@ void CServiceManager::Install(Ptr(CServiceInfoTable) sTable)
 
 	while (NotPtrCheck(sTable->_service) && NotPtrCheck(sTable->_info))
 	{
-		Ptr(CService) pService = NULL;
+		Ptr(CService) pService = nullptr;
 
 		Create(sTable->_service, sTable->_info, &pService);
 		++sTable;
@@ -643,7 +628,7 @@ void CServiceManager::Load(Ptr(CServiceInfoTable) sTable)
 
 	while (NotPtrCheck(sTable->_service) && NotPtrCheck(sTable->_info))
 	{
-		Ptr(CService) pService = OK_NEW_OPERATOR CService(CStringBuffer(__FILE__LINE__ sTable->_service), NULL, this);
+		Ptr(CService) pService = OK_NEW_OPERATOR CService(CStringBuffer(__FILE__LINE__ sTable->_service), nullptr, this);
 
 		pService->Open();
 		pService->Query();
@@ -664,7 +649,7 @@ void CServiceManager::EnumAll()
 
 	do
 	{
-		BPointer buf = NULL;
+		BPointer buf = nullptr;
 		DWORD bufSize = 0;
 		DWORD svcCnt = 0;
 
@@ -678,7 +663,7 @@ void CServiceManager::EnumAll()
 			&bufSize,
 			&svcCnt,
 			&resumeC,
-			NULL
+			nullptr
 			))
 		{
 			if (ERROR_MORE_DATA != GetLastError())
@@ -696,7 +681,7 @@ void CServiceManager::EnumAll()
 				&bufSize,
 				&svcCnt,
 				&resumeC,
-				NULL
+				nullptr
 				);
 		}
 
@@ -704,7 +689,7 @@ void CServiceManager::EnumAll()
 
 		for (DWORD i = 0; i < svcCnt; ++i)
 		{
-			Ptr(CService) pService = OK_NEW_OPERATOR CService(CStringBuffer(__FILE__LINE__ pSvcStatus->lpServiceName), NULL, this);
+			Ptr(CService) pService = OK_NEW_OPERATOR CService(CStringBuffer(__FILE__LINE__ pSvcStatus->lpServiceName), nullptr, this);
 
 			try
 			{
@@ -735,7 +720,7 @@ void CServiceManager::Run(ConstRef(TMBCharList) services)
 
 	while (it)
 	{
-		Ptr(CService) pService = NULL;
+		Ptr(CService) pService = nullptr;
 
 		Open(*it, &pService);
 		if (!pService)
@@ -755,7 +740,7 @@ void CServiceManager::Start(CConstPointer name)
 	if (PtrCheck(_pSCManager) || PtrCheck(name))
 		throw OK_NEW_OPERATOR CServiceException(__FILE__LINE__ _T("[CServiceManager::Start] Invalid arguments or programming sequence error"));
 
-	SC_HANDLE pService = NULL;
+	SC_HANDLE pService = nullptr;
 	SERVICE_STATUS_PROCESS ssStatus;
 	DWORD dwOldCheckPoint;
 	DWORD dwStartTickCount;
@@ -767,7 +752,7 @@ void CServiceManager::Start(CConstPointer name)
 		name,					// name of service 
 		SERVICE_QUERY_STATUS | SERVICE_START);	// access 
 
-	if (pService == NULL)
+	if (pService == nullptr)
 		throw OK_NEW_OPERATOR CServiceException(__FILE__LINE__ _T("[OpenService] failed in %s"), _T("CServiceManager::Start"), CWinException::WinExtError);
 
 	if (!QueryServiceStatusEx(
@@ -821,7 +806,7 @@ void CServiceManager::Start(CConstPointer name)
 	if (!StartService(
 		pService,  // handle to service 
 		0,           // number of arguments 
-		NULL))      // no arguments 
+		nullptr))      // no arguments 
 		throw OK_NEW_OPERATOR CServiceException(__FILE__LINE__ _T("[StartService] failed in %s"), _T("CServiceManager::Start"), CWinException::WinExtError);
 
 	if (!QueryServiceStatusEx(
@@ -871,7 +856,7 @@ void CServiceManager::Stop(CConstPointer name)
 	if (PtrCheck(_pSCManager) || PtrCheck(name))
 		throw OK_NEW_OPERATOR CServiceException(__FILE__LINE__ _T("[CServiceManager::Stop] Invalid arguments or programming sequence error"));
 
-	SC_HANDLE pService = NULL;
+	SC_HANDLE pService = nullptr;
 	SERVICE_STATUS_PROCESS ssStatus;
 	DWORD dwStartTime = GetTickCount();
 	DWORD dwBytesNeeded;
@@ -967,7 +952,7 @@ BOOL CServiceManager::StopDependentServices(SC_HANDLE pService)
 	DWORD dwBytesNeeded;
 	DWORD dwCount;
 
-	LPENUM_SERVICE_STATUS   lpDependencies = NULL;
+	LPENUM_SERVICE_STATUS   lpDependencies = nullptr;
 	ENUM_SERVICE_STATUS     ess;
 	SC_HANDLE               hDepService;
 	SERVICE_STATUS_PROCESS  ssp;
@@ -1062,14 +1047,14 @@ void CServiceManager::Disable(CConstPointer name)
 	if (PtrCheck(_pSCManager) || PtrCheck(name))
 		throw OK_NEW_OPERATOR CServiceException(__FILE__LINE__ _T("[CServiceManager::Disable] Invalid arguments or programming sequence error"));
 
-	SC_HANDLE pService = NULL;
+	SC_HANDLE pService = nullptr;
 
 	pService = OpenService(
 		_pSCManager,			// SCM database 
 		name,					// name of service 
 		SERVICE_CHANGE_CONFIG);	// need delete access 
 
-	if (pService == NULL)
+	if (pService == nullptr)
 		throw OK_NEW_OPERATOR CServiceException(__FILE__LINE__ _T("[OpenService] failed in %s"), _T("CServiceManager::Disable"), CWinException::WinExtError);
 
 	if (!ChangeServiceConfig(
@@ -1077,13 +1062,13 @@ void CServiceManager::Disable(CConstPointer name)
 		SERVICE_NO_CHANGE, // service type: no change 
 		SERVICE_DISABLED,  // service start type 
 		SERVICE_NO_CHANGE, // error control: no change 
-		NULL,              // binary path: no change 
-		NULL,              // load order group: no change 
-		NULL,              // tag ID: no change 
-		NULL,              // dependencies: no change 
-		NULL,              // account name: no change 
-		NULL,              // password: no change 
-		NULL))             // display name: no change
+		nullptr,              // binary path: no change 
+		nullptr,              // load order group: no change 
+		nullptr,              // tag ID: no change 
+		nullptr,              // dependencies: no change 
+		nullptr,              // account name: no change 
+		nullptr,              // password: no change 
+		nullptr))             // display name: no change
 		throw OK_NEW_OPERATOR CServiceException(__FILE__LINE__ _T("[ChangeServiceConfig] failed in %s"), _T("CServiceManager::Disable"), CWinException::WinExtError);
 
 	CloseServiceHandle(pService);
@@ -1094,14 +1079,14 @@ void CServiceManager::Enable(CConstPointer name)
 	if (PtrCheck(_pSCManager) || PtrCheck(name))
 		throw OK_NEW_OPERATOR CServiceException(__FILE__LINE__ _T("[CServiceManager::Enable] Invalid arguments or programming sequence error"));
 
-	SC_HANDLE pService = NULL;
+	SC_HANDLE pService = nullptr;
 
 	pService = OpenService(
 		_pSCManager,			// SCM database 
 		name,					// name of service 
 		SERVICE_CHANGE_CONFIG);	// need delete access 
 
-	if (pService == NULL)
+	if (pService == nullptr)
 		throw OK_NEW_OPERATOR CServiceException(__FILE__LINE__ _T("[OpenService] failed in %s"), _T("CServiceManager::Enable"), CWinException::WinExtError);
 
 	if (!ChangeServiceConfig(
@@ -1109,13 +1094,13 @@ void CServiceManager::Enable(CConstPointer name)
 		SERVICE_NO_CHANGE,     // service type: no change 
 		SERVICE_DEMAND_START,  // service start type 
 		SERVICE_NO_CHANGE,     // error control: no change 
-		NULL,                  // binary path: no change 
-		NULL,                  // load order group: no change 
-		NULL,                  // tag ID: no change 
-		NULL,                  // dependencies: no change 
-		NULL,                  // account name: no change 
-		NULL,                  // password: no change 
-		NULL))                 // display name: no change
+		nullptr,                  // binary path: no change 
+		nullptr,                  // load order group: no change 
+		nullptr,                  // tag ID: no change 
+		nullptr,                  // dependencies: no change 
+		nullptr,                  // account name: no change 
+		nullptr,                  // password: no change 
+		nullptr))                 // display name: no change
 		throw OK_NEW_OPERATOR CServiceException(__FILE__LINE__ _T("[ChangeServiceConfig] failed in %s"), _T("CServiceManager::Enable"), CWinException::WinExtError);
 
 
@@ -1127,14 +1112,14 @@ void CServiceManager::Delete(CConstPointer name)
 	if (PtrCheck(_pSCManager) || PtrCheck(name))
 		throw OK_NEW_OPERATOR CServiceException(__FILE__LINE__ _T("[CServiceManager::Delete] Invalid arguments or programming sequence error"));
 
-	SC_HANDLE pService = NULL;
+	SC_HANDLE pService = nullptr;
 
 	pService = OpenService(
 		_pSCManager,			// SCM database 
 		name,					// name of service 
 		DELETE);	// need delete access 
 
-	if (pService == NULL)
+	if (pService == nullptr)
 		throw OK_NEW_OPERATOR CServiceException(__FILE__LINE__ _T("[OpenService] failed in %s"), _T("CServiceManager::Delete"), CWinException::WinExtError);
 
 	if (!DeleteService(pService))
@@ -1173,12 +1158,12 @@ void CServiceManager::Open(CConstPointer name, CService** pItem)
 	if (PtrCheck(_pSCManager) || PtrCheck(name) || PtrCheck(pItem))
 		throw OK_NEW_OPERATOR CServiceException(__FILE__LINE__ _T("[CServiceManager::Open] Invalid arguments or programming sequence error"));
 
-	*pItem = NULL;
+	*pItem = nullptr;
 
 	Ptr(CService) pSearchData = OK_NEW_OPERATOR CService(CStringBuffer(__FILE__LINE__ name));
 	CServices::Iterator it = _Services.FindSorted(pSearchData);
 
-	if (it && (*it) && (CServicesSearchAndSortFunc(*it, pSearchData) == 0))
+	if (_Services.MatchSorted(it, pSearchData))
 	{
 		*pItem = *it;
 		(*pItem)->Open();

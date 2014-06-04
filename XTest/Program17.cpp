@@ -28,30 +28,27 @@
 #include "File.h"
 #include "DirectoryIterator.h"
 #include "SAXParser.h"
+#include "Debug.h"
 
 #include <winevt.h>
 #include <objbase.h>
 #include <Sddl.h>
+
+#define FN_EVENTLOGRECORDS _T("eventlogrecords.xml")
+#define DIR_EVENTLOGCHANNELS _T("evlog\\")
 
 class TestEventLogRecordForEachFunctor
 {
 public:
 	bool operator()(Ptr(CEventLogRecord) pRecord)
 	{
+		COUT << _T("CEventLogRecord, No.: ") << pRecord->get_recordno() << endl;
 		pRecord->Print(CEventLogRecord::XMLOutput, xmlfile);
 		return true;
 	}
 
 	Ptr(CFile) xmlfile;
 };
-
-static bool __stdcall TestEventLogRecordForEachFunc(ConstPointer data, Pointer context)
-{
-	Ptr(CEventLogRecord) pRecord = CastAnyPtr(CEventLogRecord, CastMutable(Pointer, data));
-
-	pRecord->Print(CEventLogRecord::XMLOutput, CastAnyPtr(CFile, context));
-	return true;
-}
 
 static void TestEventLogRecord()
 {
@@ -60,16 +57,24 @@ static void TestEventLogRecord()
 	CDiskFile xmlFile;
 	CStringBuffer sBuf;
 	CByteBuffer bBuf;
+	time_t t1;
+	time_t t2;
 
+	time(&t1);
 	try
 	{
 		records.Load();
-		xmlFile.Create(CFilePath(__FILE__LINE__ _T("C:\\Users\\Oliver\\Documents\\eventlogrecords.xml")), false, CFile::UTF_16LE_Encoding);
+		time(&t2);
+		CDebug() << _T("TestEventLogRecord::records.Load(): t = ") << t2 - t1 << eodbg;
+		t1 = t2;
+		xmlFile.Create(CFilePath(__FILE__LINE__ FN_EVENTLOGRECORDS), false, CFile::UTF_16LE_Encoding);
 		sBuf.convertToUTF16(bBuf);
 		xmlFile.Write(bBuf);
 		CEventLogRecord::PrintXMLHeader(_T("EventRecords"), &xmlFile);
 		arg.xmlfile = &xmlFile;
 		records.ForEach<TestEventLogRecordForEachFunctor>(arg);
+		time(&t2);
+		CDebug() << _T("TestEventLogRecord::records.ForEach<TestEventLogRecordForEachFunctor>(arg): t = ") << t2 - t1 << eodbg;
 		CEventLogRecord::PrintXMLFooter(_T("EventRecords"), &xmlFile);
 		xmlFile.Close();
 	}
@@ -136,7 +141,7 @@ static void PrintUserData(Ptr(CFile) fileOut, DWORD dwPropCount, PEVT_VARIANT pP
 		case EvtVarTypeBinary:
 			break;
 		case EvtVarTypeGuid:
-			if (NULL != pProp[i].GuidVal)
+			if (nullptr != pProp[i].GuidVal)
 			{
 				TCHAR wsGuid[50];
 
@@ -167,7 +172,7 @@ static void PrintUserData(Ptr(CFile) fileOut, DWORD dwPropCount, PEVT_VARIANT pP
 			break;
 		case EvtVarTypeSid:
 		{
-							  LPTSTR pwsSid = NULL;
+							  LPTSTR pwsSid = nullptr;
 
 							  if (ConvertSidToStringSid(pProp[i].SidVal, &pwsSid))
 							  {
@@ -212,7 +217,7 @@ bool __stdcall CEventLogEventForEachFunc(ConstPointer data, Pointer context)
 class CMyCSAXParserHandlers : public CSAXParserContentHandler
 {
 public:
-	CMyCSAXParserHandlers() : _info(NULL), _event(NULL), _state(0), _eventRecordID(0LL), _originmessage(), _fileOut(NULL) {}
+	CMyCSAXParserHandlers() : _info(nullptr), _event(nullptr), _state(0), _eventRecordID(0LL), _originmessage(), _fileOut(nullptr) {}
 	virtual ~CMyCSAXParserHandlers() {}
 
 	double Compare(Ref(CStringConstIterator) ita, Ref(CStringConstIterator) itb)
@@ -337,13 +342,15 @@ public:
 		CStringBuffer name(pInfo->get_name());
 		CFilePath fname;
 		CSAXParser parser;
-		Ptr(CMyCSAXParserHandlers) handlers = OK_NEW_OPERATOR CMyCSAXParserHandlers;
+		CCppObjectPtr<CMyCSAXParserHandlers> handlers = OK_NEW_OPERATOR CMyCSAXParserHandlers;
 		CStringBuffer name1(pInfo->get_name());
 		CFilePath fname1;
-		Ptr(CFile) f = NULL;
+		CCppObjectPtr<CFile> f;
+
+		COUT << _T("Channel: ") << name << endl;
 
 		name.ReplaceString(_T("/"), _T("_"));
-		name.PrependString(_T("C:\\Users\\Oliver\\Documents\\Visual Studio 2013\\Projects\\EventQueryVista\\wevtutil\\"));
+		name.PrependString(DIR_EVENTLOGCHANNELS);
 		name.AppendString(_T(".xml"));
 		fname.set_Path(name);
 
@@ -354,7 +361,7 @@ public:
 			if (CDirectoryIterator::FileExists(fname))
 			{
 				name1.ReplaceString(_T("/"), _T("_"));
-				name1.PrependString(_T("C:\\Users\\Oliver\\Documents\\Visual Studio 2013\\Projects\\EventQueryVista\\output\\"));
+				name1.PrependString(DIR_EVENTLOGCHANNELS);
 				name1.AppendString(_T(".log"));
 				fname1.set_Path(name1);
 
@@ -375,79 +382,21 @@ public:
 			CERR << ex->GetExceptionMessage() << endl;
 		}
 		if (f)
-		{
 			f->Close();
-			f->release();
-		}
-		delete handlers;
-
 		return true;
 	}
 
 	Ptr(CEventLogProviders) providers;
 };
 
-bool __stdcall CEventLogChannelForEachFunc(ConstPointer data, Pointer context)
-{
-	CEventLogChannel* pInfo = CastAnyPtr(CEventLogChannel, CastMutable(Pointer, data));
-	CStringBuffer name(pInfo->get_name());
-	CFilePath fname;
-	CSAXParser parser;
-	Ptr(CMyCSAXParserHandlers) handlers = OK_NEW_OPERATOR CMyCSAXParserHandlers;
-	CStringBuffer name1(pInfo->get_name());
-	CFilePath fname1;
-	Ptr(CFile) f = NULL;
-
-	name.ReplaceString(_T("/"), _T("_"));
-	name.PrependString(_T("C:\\Users\\Oliver\\Documents\\Visual Studio 2013\\Projects\\EventQueryVista\\wevtutil\\"));
-	name.AppendString(_T(".xml"));
-	fname.set_Path(name);
-
-	parser.Create(handlers, _T("utf-16"));
-	handlers->_info = pInfo;
-	try
-	{
-		if (CDirectoryIterator::FileExists(fname))
-		{
-			name1.ReplaceString(_T("/"), _T("_"));
-			name1.PrependString(_T("C:\\Users\\Oliver\\Documents\\Visual Studio 2013\\Projects\\EventQueryVista\\output\\"));
-			name1.AppendString(_T(".log"));
-			fname1.set_Path(name1);
-
-			f = OK_NEW_OPERATOR CStreamFile;
-			f->Create(fname1, true, CFile::UTF_8_Encoding);
-			f->Write(_T("** Channel Name: %s **********\n"), pInfo->get_name().GetString());
-			handlers->_fileOut = f;
-
-			pInfo->LoadEvents(CastAnyPtr(CEventLogProviders, context));
-			parser.Parse(fname);
-		}
-	}
-	catch (CFileException*)
-	{
-	}
-	catch (CBaseException* ex)
-	{
-		CERR << ex->GetExceptionMessage() << endl;
-	}
-	if (f)
-	{
-		f->Close();
-		f->release();
-	}
-	delete handlers;
-
-	return true;
-}
-
 class CEventLogProviderForEachFunctor
 {
 public:
 	bool operator()(Ptr(CEventLogProvider) pInfo)
 	{
-		CStringBuffer spath(__FILE__LINE__ _T("C:\\Users\\Oliver\\Documents\\Visual Studio 2013\\Projects\\EventQueryVista\\output\\"));
+		CStringBuffer spath(__FILE__LINE__ DIR_EVENTLOGCHANNELS);
 		CFilePath fpath;
-		Ptr(CFile) f = OK_NEW_OPERATOR CStreamFile;
+		CCppObjectPtr<CFile> f = OK_NEW_OPERATOR CStreamFile;
 		int i;
 
 		spath.AppendString(pInfo->get_name());
@@ -455,6 +404,8 @@ public:
 		spath.ReplaceString(_T("/"), _T("_"));
 		fpath.set_Path(spath);
 		f->Create(fpath, true, CFile::UTF_8_Encoding);
+
+		COUT << _T("Provider: ") << pInfo->get_name() << endl;
 
 		f->Write(_T("** Provider Name: %s **********\n"), pInfo->get_name().GetString());
 		f->Write(_T("Provider Guid: %s\n"), pInfo->get_guid().GetString());
@@ -536,92 +487,6 @@ public:
 	}
 };
 
-bool __stdcall CEventLogProviderForEachFunc(ConstPointer data, Pointer context)
-{
-	CEventLogProvider* pInfo = CastAnyPtr(CEventLogProvider, CastMutable(Pointer, data));
-	CStringBuffer spath(__FILE__LINE__ _T("C:\\Users\\Oliver\\Documents\\Visual Studio 2013\\Projects\\EventQueryVista\\output\\"));
-	CFilePath fpath;
-	Ptr(CFile) f = OK_NEW_OPERATOR CStreamFile;
-
-	spath.AppendString(pInfo->get_name());
-	spath.AppendString(_T(".txt"));
-	spath.ReplaceString(_T("/"), _T("_"));
-	fpath.set_Path(spath);
-	f->Create(fpath, true, CFile::UTF_8_Encoding);
-
-	f->Write(_T("** Provider Name: %s **********\n"), pInfo->get_name().GetString());
-	f->Write(_T("Provider Guid: %s\n"), pInfo->get_guid().GetString());
-	f->Write(_T("Help link: %s\n"), pInfo->get_helpLink().GetString());
-	f->Write(_T("MessageFile: %s\n"), pInfo->get_messageFile().GetString());
-	f->Write(_T("ParameterFile: %s\n"), pInfo->get_parameterFile().GetString());
-	f->Write(_T("ResourceFile: %s\n"), pInfo->get_resourceFile().GetString());
-
-	CDataDoubleLinkedListT<CEventLogProviderChannel> channelList = pInfo->get_channelList();
-	CDataDoubleLinkedListT<CEventLogProviderChannel>::Iterator channelListIt = channelList.Begin();
-
-	for (TListCnt i = 0; i < channelList.Count(); ++i)
-	{
-		f->Write(_T("Channel%d: Id=%d, Path=%s, Index=%d, MessageID=%d, Message=%s, Imported=%s\n"), i, (*channelListIt)->get_id(),
-			(*channelListIt)->get_path().GetString(), (*channelListIt)->get_index(), (*channelListIt)->get_messageID(), (*channelListIt)->get_message().GetString(), (*channelListIt)->get_imported() ? _T("True") : _T("False"));
-		++channelListIt;
-	}
-
-	CDataDoubleLinkedListT<CEventLogProviderLevel> levelList = pInfo->get_levelList();
-	CDataDoubleLinkedListT<CEventLogProviderLevel>::Iterator levelListIt = levelList.Begin();
-
-	for (TListCnt i = 0; i < levelList.Count(); ++i)
-	{
-		f->Write(_T("Level%d: Value=0x%08x, Name=%s, MessageID=%d, Message=%s\n"), i, (*levelListIt)->get_value(),
-			(*levelListIt)->get_name().GetString(), (*levelListIt)->get_messageID(), (*levelListIt)->get_message().GetString());
-		++levelListIt;
-	}
-
-	CDataDoubleLinkedListT<CEventLogProviderTask> taskList = pInfo->get_taskList();
-	CDataDoubleLinkedListT<CEventLogProviderTask>::Iterator taskListIt = taskList.Begin();
-
-	for (TListCnt i = 0; i < taskList.Count(); ++i)
-	{
-		f->Write(_T("Task%d: Value=0x%08x, Name=%s, EventGuid=%s, MessageID=%d, Message=%s\n"), i, (*taskListIt)->get_value(),
-			(*taskListIt)->get_name().GetString(), (*taskListIt)->get_eventGuid().GetString(), (*taskListIt)->get_messageID(), (*taskListIt)->get_message().GetString());
-		++taskListIt;
-	}
-
-	CDataDoubleLinkedListT<CEventLogProviderOpCode> opCodeList = pInfo->get_opCodeList();
-	CDataDoubleLinkedListT<CEventLogProviderOpCode>::Iterator opCodeListIt = opCodeList.Begin();
-
-	for (TListCnt i = 0; i < opCodeList.Count(); ++i)
-	{
-		f->Write(_T("OpCode%d: Value=0x%08x, Name=%s, MessageID=%d, Message=%s\n"), i, (*opCodeListIt)->get_value(),
-			(*opCodeListIt)->get_name().GetString(), (*opCodeListIt)->get_messageID(), (*opCodeListIt)->get_message().GetString());
-		++opCodeListIt;
-	}
-
-	CDataDoubleLinkedListT<CEventLogProviderKeyWord> keyWordsList = pInfo->get_keyWordList();
-	CDataDoubleLinkedListT<CEventLogProviderKeyWord>::Iterator keyWordsListIt = keyWordsList.Begin();
-
-	for (TListCnt i = 0; i < keyWordsList.Count(); ++i)
-	{
-		f->Write(_T("KeyWords%d: Value=0x%016llx, Name=%s, MessageID=%d, Message=%s\n"), i, (*keyWordsListIt)->get_value(),
-			(*keyWordsListIt)->get_name().GetString(), (*keyWordsListIt)->get_messageID(), (*keyWordsListIt)->get_message().GetString());
-		++keyWordsListIt;
-	}
-
-	CDataDoubleLinkedListT<CEventLogProviderEvent> eventList = pInfo->get_eventList();
-	CDataDoubleLinkedListT<CEventLogProviderEvent>::Iterator eventListIt = eventList.Begin();
-
-	for (TListCnt i = 0; i < eventList.Count(); ++i)
-	{
-		f->Write(_T("Event%d: Id=(%d, 0x%08x), Version=%d, Channel=%d, Level=0x%08x, OpCode=0x%08x, Task=0x%08x, KeyWord=0x%016llx\n"), i, (*eventListIt)->get_id(), (*eventListIt)->get_id(),
-			(*eventListIt)->get_version(), (*eventListIt)->get_channelValue(), (*eventListIt)->get_levelValue(), (*eventListIt)->get_opCodeValue(), (*eventListIt)->get_taskValue(), (*eventListIt)->get_keyWordValue());
-		f->Write(_T("        MessageId=%08x, Message=%s\n"), (*eventListIt)->get_messageID(), (*eventListIt)->get_message().GetString());
-		f->Write(_T("        Template=%s\n"), (*eventListIt)->get_template().GetString());
-		++eventListIt;
-	}
-	f->Close();
-
-	return true;
-}
-
 DWORD g_totalevents = 0;
 DWORD g_localenotfound = 0;
 DWORD g_messagefileempty = 0;
@@ -629,11 +494,20 @@ DWORD g_messagefileempty = 0;
 static void TestEventLogProviderChannel(void)
 {
 	CEventLogProviders providers __FILE__LINE__0P;
+	time_t t1;
+	time_t t2;
 
+	time(&t1);
 	try
 	{
 		providers.Load();
+		time(&t2);
+		CDebug() << _T("providers.Load(): t = ") << t2 - t1 << eodbg;
+		t1 = t2;
 		providers.ForEach<CEventLogProviderForEachFunctor>();
+		time(&t2);
+		CDebug() << _T("providers.ForEach<CEventLogProviderForEachFunctor>(): t = ") << t2 - t1 << eodbg;
+		t1 = t2;
 	}
 	catch (CBaseException* ex)
 	{
@@ -646,8 +520,13 @@ static void TestEventLogProviderChannel(void)
 	try
 	{
 		channels.Load();
+		time(&t2);
+		CDebug() << _T("channels.Load(): t = ") << t2 - t1 << eodbg;
+		t1 = t2;
 		arg.providers = &providers;
 		channels.ForEach<CEventLogChannelForEachFunctor>(arg);
+		time(&t2);
+		CDebug() << _T("channels.ForEach<CEventLogChannelForEachFunctor>(arg): t = ") << t2 - t1 << eodbg;
 	}
 	catch (CBaseException* ex)
 	{
@@ -657,6 +536,9 @@ static void TestEventLogProviderChannel(void)
 
 void TestEventLog()
 {
+	CFilePath fdir(__FILE__LINE__ DIR_EVENTLOGCHANNELS);
+
+	CDirectoryIterator::MakeDirectory(fdir);
 	TestEventLogRecord();
 	TestEventLogProviderChannel();
 }

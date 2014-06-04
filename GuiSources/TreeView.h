@@ -28,7 +28,8 @@ class CTreeView;
 class CTreeViewNode: public CCppObject
 {
 public:
-	CTreeViewNode(CTreeView* pTreeView = NULL, LPCTSTR text = NULL, int lench = -1, int ix = -1, bool before = true);
+	CTreeViewNode(LPCTSTR text = NULL); // for searching purposes
+	CTreeViewNode(CTreeView* pTreeView, LPCTSTR text = NULL, int lench = -1, int ix = -1, bool before = true);
 	CTreeViewNode(CTreeView* pTreeView, ConstRef(CStringBuffer) text, int ix = -1, bool before = true);
 	CTreeViewNode(CTreeViewNode* pParent, LPCTSTR text = NULL, int lench = -1, int ix = -1, bool before = true);
 	CTreeViewNode(CTreeViewNode* pParent, ConstRef(CStringBuffer) text, int ix = -1, bool before = true);
@@ -104,9 +105,9 @@ public:
 	class CTreeViewNodeLessFunctor
 	{
 	public:
-		bool operator()(ConstRef(CTreeViewNode) r1, ConstRef(CTreeViewNode) r2) const
+		bool operator()(ConstPtr(CTreeViewNode) r1, ConstPtr(CTreeViewNode) r2) const
 		{
-			return r1.get_Text().LT(r2.get_Text(), 0, CStringLiteral::cIgnoreCase);
+			return r1->get_Text().LT(r2->get_Text(), 0, CStringLiteral::cIgnoreCase);
 		}
 	};
 

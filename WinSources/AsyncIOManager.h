@@ -40,13 +40,10 @@ public:
 	dword RunTask(void);
 
 	void Register(Ptr(CAsyncIOData) pData);
-	void AddTask(Ptr(CAsyncIOData) pData);
 
 protected:
-	typedef CDataVectorT<CAsyncIOData, CCppObjectLessFunctor<CAsyncIOData>, CCppObjectNullFunctor<CAsyncIOData>> CAsyncIODataVector;
 
 	HANDLE m_iocp;
-	CAsyncIODataVector m_tasks;
 	CThreadPool m_tiocppool;
 	CThreadPool m_tworkerpool;
 	CEvent m_stopevent;

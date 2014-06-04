@@ -59,7 +59,7 @@ public:
 	virtual bool RightMouseDownMove(COORD mousePos, DWORD controlKeyState);
 
 protected:
-	CConsoleComboPopupListControl* m_DropDownList;
+	CCppObjectPtr<CConsoleComboPopupListControl> m_DropDownList;
 
 	void OpenDropDownList();
 

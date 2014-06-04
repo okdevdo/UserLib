@@ -98,16 +98,6 @@ public:
 	}
 };
 
-static sword __stdcall ResultQueueSearchAndSortFunc( ConstPointer item, ConstPointer data )
-{
-	CPooledThread::TCallback* pCallback1 = CastAnyPtr(CPooledThread::TCallback, CastMutable(Pointer, item));
-	CPooledThread::TCallback* pCallback2 = CastAnyPtr(CPooledThread::TCallback, CastMutable(Pointer, data));
-
-	if ( pCallback1->callback == pCallback2->callback )
-		return 0;
-	return 1;
-}
-
 typedef CDataDoubleLinkedListT<CThread, CCppObjectLessFunctor<CThread>, CCppObjectNullFunctor<CThread> > gThreadList_t;
 static CMutex gMutex;
 static gThreadList_t gThreadList(__FILE__LINE__0);
@@ -135,7 +125,7 @@ CThread::CThread(void):
 	m_bResultCode(false),
 	m_bStop(false),
 #ifdef OK_SYS_WINDOWS
-	m_ThreadHandle(NULL),
+	m_ThreadHandle(nullptr),
 	m_ThreadID(0)
 #endif
 #ifdef OK_SYS_UNIX
@@ -174,7 +164,7 @@ void CThread::Start()
 	if ( _checkForStop() )
 		return;
 #ifdef OK_SYS_WINDOWS
-	m_ThreadHandle = (HANDLE)_beginthreadex(NULL, 0, &CThreadMain, this, 0, &m_ThreadID);
+	m_ThreadHandle = (HANDLE)_beginthreadex(nullptr, 0, &CThreadMain, this, 0, &m_ThreadID);
 	if (!m_ThreadHandle)
 		throw OK_NEW_OPERATOR CThreadException(__FILE__LINE__ _T("in %s CThreadException"),
 		_T("CThread::Start"), CWinException::CRunTimeError);
@@ -215,7 +205,7 @@ dword CThread::Join()
 	{
 	case WAIT_OBJECT_0:
 		CloseHandle(m_ThreadHandle);
-		m_ThreadHandle = NULL;
+		m_ThreadHandle = nullptr;
 		break;
 	default:
 		throw OK_NEW_OPERATOR CThreadException(__FILE__LINE__ _T("in %s CThreadException"), 
@@ -227,7 +217,7 @@ dword CThread::Join()
 	if ( !m_bStarted )
 		return m_ResultCode;
 	
-	Pointer data = NULL;
+	Pointer data = nullptr;
 	
 	if ( int errCode = pthread_join(m_ThreadHandle, &data) )
 		throw OK_NEW_OPERATOR CThreadException(__FILE__LINE__ _T("in %s CThreadException"), 
@@ -251,7 +241,7 @@ dword CThread::Join(long milliseconds)
 		break;
 	case WAIT_OBJECT_0:
 		CloseHandle(m_ThreadHandle);
-		m_ThreadHandle = NULL;
+		m_ThreadHandle = nullptr;
 		break;
 	default:
 		throw OK_NEW_OPERATOR CThreadException(__FILE__LINE__ _T("in %s CThreadException"), 
@@ -279,7 +269,7 @@ dword CThread::Join(long milliseconds)
 
 		tv.tv_sec = milliseconds / 1000;
 		tv.tv_usec = (milliseconds % 1000) * 1000;
-		select(0, NULL, NULL, NULL, &tv);
+		select(0, nullptr, nullptr, nullptr, &tv);
 		_lock.lock();
 		if ( m_bResultCode )
 			bJoin = true;
@@ -287,7 +277,7 @@ dword CThread::Join(long milliseconds)
 	}
 	if ( bJoin )
 	{
-		Pointer data = NULL;
+		Pointer data = nullptr;
 	
 		if ( int errCode = pthread_join(m_ThreadHandle, &data) )
 			throw OK_NEW_OPERATOR CThreadException(__FILE__LINE__ _T("in %s CThreadException"), 
@@ -431,8 +421,13 @@ CPooledThread::~CPooledThread()
 
 void CPooledThread::AddTask(CAbstractThreadCallback* pCallback)
 {
+	if (PtrCheck(pCallback))
+		DebugBreak();
+	assert(NotPtrCheck(pCallback));
 	m_condition.lock();
 	m_TaskQueue.Append(pCallback);
+	assert(m_TaskQueue.Count() > 0);
+	assert(*(m_TaskQueue.Last()) == pCallback);
 	m_condition.unlock();
 	m_condition.wake();
 }
@@ -468,7 +463,7 @@ dword CPooledThread::GetTaskResultAndRemove(CAbstractThreadCallback* pCallback)
 
 dword CPooledThread::Run()
 {
-	CAbstractThreadCallback* pCallback = NULL;
+	CAbstractThreadCallback* pCallback = nullptr;
 	TaskQueue_t::Iterator it;
 
 	while ( !_checkForStop() )
@@ -478,6 +473,7 @@ dword CPooledThread::Run()
 		{
 			it = m_TaskQueue.Begin();
 			pCallback = *it;
+			assert(NotPtrCheck(pCallback));
 			m_condition.unlock();
 
 			Ptr(TCallback) result = OK_NEW_OPERATOR TCallback;
@@ -500,7 +496,7 @@ dword CPooledThread::Run()
 			m_TaskQueue.Remove(m_TaskQueue.Begin());
 			m_ResultQueue.Append(result);
 		}
-		m_condition.sleep(100);
+		m_condition.sleep(1000);
 		m_condition.unlock();
 	}
 	return 0;
@@ -676,7 +672,7 @@ void CThreadPool::WaitForComplete()
 
 				tv.tv_sec = 0;
 				tv.tv_usec = 100000;
-				select(0, NULL, NULL, NULL, &tv);
+				select(0, nullptr, nullptr, nullptr, &tv);
 			}
 #endif
 	}

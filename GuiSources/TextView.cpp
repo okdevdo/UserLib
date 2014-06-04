@@ -208,8 +208,8 @@ public:
 		cursize -= _cursize;
 	}
 
-	__inline WULong GetSize() const { return (NULL == _current) ? 0 : (s_strlen( _current, INT_MAX ) + 1); }
-	__inline WULong GetLength() const { return (NULL == _current) ? 0 : s_strlen( _current, INT_MAX ); }
+	__inline WULong GetSize() const { return (nullptr == _current) ? 0 : (s_strlen( _current, INT_MAX ) + 1); }
+	__inline WULong GetLength() const { return (nullptr == _current) ? 0 : s_strlen( _current, INT_MAX ); }
 	__inline WULong GetTabbedLength() const
 	{
 		CPointer text = _current;
@@ -217,7 +217,7 @@ public:
 		WLong cnt = _cursize;
 		WLong tcnt = 0;
 
-		if ( NULL == _current )
+		if ( nullptr == _current )
 			return 0;
 		while ( *text != 0 )
 		{
@@ -255,9 +255,9 @@ public:
 
 	__inline CConstPointer GetCurrent() const { return _current; }
 	__inline CConstPointer GetOrigin() const { return _origin; }
-    __inline WBool IsTab() const { return ((NULL == _current) || (*_current == 0)) ? false : (*_current == _T('\t')); }
-    __inline WBool IsEnd() const { return (NULL == _current) ? true : (*_current == 0); }
-	__inline const WChar operator[] (dword ix) const { return (NULL == _current) ? 0 : *(_current + ix); }
+    __inline WBool IsTab() const { return ((nullptr == _current) || (*_current == 0)) ? false : (*_current == _T('\t')); }
+    __inline WBool IsEnd() const { return (nullptr == _current) ? true : (*_current == 0); }
+	__inline const WChar operator[] (dword ix) const { return (nullptr == _current) ? 0 : *(_current + ix); }
 
     __inline CStringTabbedConstIterator& operator++()
 	{
@@ -1298,8 +1298,8 @@ CTextView::CTextView(LPCTSTR name):
 	m_timerDirection(TTimerDirectionNone),
 	m_insidePaint(FALSE),
 	m_hasselection(FALSE),
-	m_chars(NULL),
-	m_undostack(NULL)
+	m_chars(nullptr),
+	m_undostack(nullptr)
 {
 	m_chars = OK_NEW_OPERATOR CTextViewChars();
 	m_undostack = OK_NEW_OPERATOR CTextViewUndoStack();
@@ -1321,8 +1321,8 @@ CTextView::CTextView(ConstRef(CStringBuffer) name):
 	m_timerDirection(TTimerDirectionNone),
 	m_insidePaint(FALSE),
 	m_hasselection(FALSE),
-	m_chars(NULL),
-	m_undostack(NULL)
+	m_chars(nullptr),
+	m_undostack(nullptr)
 {
 	m_chars = OK_NEW_OPERATOR CTextViewChars();
 	m_undostack = OK_NEW_OPERATOR CTextViewUndoStack();
@@ -1624,7 +1624,7 @@ LRESULT CTextView::OnPaint(WPARAM wParam, LPARAM lParam)
 			{
 				if ( !m_caretCreated )
 				{
-					::CreateCaret(m_hwnd, (HBITMAP) NULL, 1, sz.cy);
+					::CreateCaret(m_hwnd, (HBITMAP) nullptr, 1, sz.cy);
 					m_caretCreated = TRUE;
 				}
 				::ShowCaret(m_hwnd);

@@ -108,7 +108,7 @@ void CListViewNode::set_Selected(bool selected)
 				int ix = m_listView->inx_SelNode(this);
 
 				if ( ix > -1 )
-					m_listView->set_SelNode(ix, NULL);
+					m_listView->set_SelNode(ix, nullptr);
 			}
 			m_listView->Update(FALSE);
 		}
@@ -191,7 +191,7 @@ void CListViewNode::OnCalcRects(Gdiplus::Graphics* graphics, LPRECT pRect, LPINT
 	if ( !m_listView )
 		return;
 
-	Gdiplus::Font* pFont = NULL;
+	Gdiplus::Font* pFont = nullptr;
 
 	if ( m_selected )
 		pFont = m_listView->get_Font(_T(".Font.Selected"), _T("ListView"));
@@ -210,7 +210,7 @@ void CListViewNode::OnCalcRects(Gdiplus::Graphics* graphics, LPRECT pRect, LPINT
 
 	Convert2Rect(pRect, &textRect);
 
-	Gdiplus::Bitmap* image = NULL;
+	Gdiplus::Bitmap* image = nullptr;
 	LONG hImage = 0;
 
 	if ( (m_imageIndex >= 0) && (((dword)m_imageIndex) < m_listView->get_ImageCount()) )
@@ -249,9 +249,9 @@ void CListViewNode::OnPaint(Gdiplus::Graphics* graphics, INT xPos, INT yPos, INT
 	if ( iconRect.top >= cBottom )
 		return;
 
-	Gdiplus::Font* pFont = NULL;
-	Gdiplus::Brush* pBrushBackground = NULL;
-	Gdiplus::Brush* pBrushForeground = NULL;
+	Gdiplus::Font* pFont = nullptr;
+	Gdiplus::Brush* pBrushBackground = nullptr;
+	Gdiplus::Brush* pBrushForeground = nullptr;
 
 	if ( m_selected )
 	{
@@ -273,7 +273,7 @@ void CListViewNode::OnPaint(Gdiplus::Graphics* graphics, INT xPos, INT yPos, INT
 
 	graphics->FillRectangle(pBrushBackground, borderRectF);
 
-	Gdiplus::Bitmap* image = NULL;
+	Gdiplus::Bitmap* image = nullptr;
 	UINT hImage = 0;
 
 	if ( (m_imageIndex >= 0) && (((dword)m_imageIndex) < m_listView->get_ImageCount()) )
@@ -329,17 +329,6 @@ BEGIN_MESSAGE_MAP(CControl, CListView)
 	ON_WM_NOTIFY(NM_EDITORCURSORDOWN,OnEditorCursorDown)
 END_MESSAGE_MAP()
 
-static void __stdcall TDeleteFunc_SelectedListViewNodes( ConstPointer data, Pointer context )
-{
-}
-
-static void __stdcall TDeleteFunc_ListViewNodes( ConstPointer data, Pointer context )
-{
-	Ptr(CListViewNode) p = CastAnyPtr(CListViewNode, CastMutable(Pointer, data));
-
-	delete p;
-}
-
 CListView::CListView(LPCTSTR name):
 	CControl(name),
 	m_SelectMode(TSelectModeDisabled),
@@ -348,8 +337,8 @@ CListView::CListView(LPCTSTR name):
 	m_nodes(__FILE__LINE__ 64, 128),
 	m_selNodes(__FILE__LINE__ 64, 128),
 	m_images(),
-	m_currentNode(NULL),
-	m_editor(NULL)
+	m_currentNode(nullptr),
+	m_editor(nullptr)
 {
 }
 
@@ -361,8 +350,8 @@ CListView::CListView(ConstRef(CStringBuffer) name):
 	m_nodes(__FILE__LINE__ 64, 128),
 	m_selNodes(__FILE__LINE__ 64, 128),
 	m_images(),
-	m_currentNode(NULL),
-	m_editor(NULL)
+	m_currentNode(nullptr),
+	m_editor(nullptr)
 {
 }
 
@@ -413,7 +402,7 @@ void CListView::clear(void)
 
 CListViewNode* CListView::get_Node(LPCTSTR key)
 {
-	CListViewNode* result = NULL;
+	CListViewNode* result = nullptr;
 	CListViewNodeVector::Iterator it = m_nodes.Begin();
 
 	while ( it )
@@ -444,7 +433,7 @@ void CListView::set_Node(dword ix, CListViewNode* node)
 		CListViewNode* node1 = *(m_nodes.Index(ix));
 
 		if ( node1 == m_currentNode )
-			m_currentNode = NULL;
+			m_currentNode = nullptr;
 		if ( node1->is_Selected() )
 			node1->set_Selected(false);
 		m_nodes.Remove(m_nodes.Index(ix));
@@ -462,7 +451,7 @@ void CListView::set_Node(dword ix, CListViewNode* node)
 		CListViewNode* node1 = *(m_nodes.Index(ix));
 
 		if ( node1 == m_currentNode )
-			m_currentNode = NULL;
+			m_currentNode = nullptr;
 		if ( node1->is_Selected() )
 			node1->set_Selected(false);
 		m_nodes.SetData(m_nodes.Index(ix), node);
@@ -692,7 +681,7 @@ LRESULT CListView::OnContextMenu(WPARAM wParam, LPARAM lParam)
 
 	POINT pt; pt.x = x; pt.y = y;
 	UINT type = 0;
-	CListViewNode* node = NULL;
+	CListViewNode* node = nullptr;
 	int xPos = get_HScrollOffset();
 	int yPos = get_VScrollOffset();
 	RECT clientRect;
@@ -732,7 +721,7 @@ LRESULT CListView::OnLButtonDown(WPARAM wParam, LPARAM lParam)
 	{
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 		UINT type = 0;
-		CListViewNode* node = NULL;
+		CListViewNode* node = nullptr;
 		int xPos = get_HScrollOffset();
 		int yPos = get_VScrollOffset();
 		RECT clientRect;
@@ -829,7 +818,7 @@ LRESULT CListView::OnLButtonDblClk(WPARAM wParam, LPARAM lParam)
 	{
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 		UINT type = 0;
-		CListViewNode* node = NULL;
+		CListViewNode* node = nullptr;
 		int xPos = (get_HScrollVisible())?(get_HScrollOffset()):0;
 		int yPos = (get_VScrollVisible())?(get_VScrollOffset()):0;
 		RECT clientRect;
@@ -904,7 +893,7 @@ LRESULT CListView::OnKeyDown(WPARAM wParam, LPARAM lParam)
 
 			if ( m_currentNode )
 				m_currentNode->set_Focused(false);
-			m_currentNode = OK_NEW_OPERATOR CListViewNode(this, NULL, -1, ix, !bShift);
+			m_currentNode = OK_NEW_OPERATOR CListViewNode(this, nullptr, -1, ix, !bShift);
 			m_currentNode->set_Focused(true);
 			EndUpdate(TRUE);
 		}
@@ -922,7 +911,7 @@ LRESULT CListView::OnKeyDown(WPARAM wParam, LPARAM lParam)
 				break;
 
 			BeginUpdate();
-			set_Node(ix, NULL);
+			set_Node(ix, nullptr);
 
 			if ( (((dword)ix) < m_nodes.Count()) || ((ix > 0) && (((dword)--ix) < m_nodes.Count())) )
 			{
@@ -930,7 +919,7 @@ LRESULT CListView::OnKeyDown(WPARAM wParam, LPARAM lParam)
 				m_currentNode->set_Focused(true);
 			}
 			else
-				m_currentNode = NULL;
+				m_currentNode = nullptr;
 			EndUpdate(TRUE);
 		}
 		break;

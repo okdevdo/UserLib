@@ -39,28 +39,28 @@
 void TestSQL20()
 {
 	CStringBuffer tmp;
-	CODBCEnvironment* env = NULL;
-	CODBCConnection* connection = NULL;
-	CODBCStatement* stmt = NULL;
+	CODBCEnvironment* env = nullptr;
+	CODBCConnection* connection = nullptr;
+	CODBCStatement* stmt = nullptr;
 	CConstPointer stmt1 = _T("USE [master];")
 		_T("SET ANSI_NULLS ON;")
 		_T("SET QUOTED_IDENTIFIER ON;")
 		_T("DROP TABLE [okTest];")
 		_T("CREATE TABLE [okTest](")
-		_T("[EmployeeID] INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,")
-		_T("[EmployeeName] VARCHAR(100) NOT NULL,")
-		_T("[EmployeeSalary] DOUBLE PRECISION NOT NULL,")
-		_T("[Comment] VARCHAR (500) NULL")
+		_T("[EmployeeID] INT IDENTITY(1, 1) NOT nullptr PRIMARY KEY,")
+		_T("[EmployeeName] VARCHAR(100) NOT nullptr,")
+		_T("[EmployeeSalary] DOUBLE PRECISION NOT nullptr,")
+		_T("[Comment] VARCHAR (500) nullptr")
 		_T(");");
 	CConstPointer stmt2 = _T("INSERT INTO [okTest] (EmployeeName, EmployeeSalary, Comment) VALUES (?, ?, ?);");
 	CConstPointer stmt3 = _T("SELECT * FROM [okTest]");
-	CConstPointer stmt41 = _T("IF OBJECT_ID ( 'uspProcTest', 'P' ) IS NOT NULL DROP PROCEDURE uspProcTest;");
+	CConstPointer stmt41 = _T("IF OBJECT_ID ( 'uspProcTest', 'P' ) IS NOT nullptr DROP PROCEDURE uspProcTest;");
 	CConstPointer stmt42 = _T("CREATE PROCEDURE uspProcTest @EmplID INT, @EmpSal DOUBLE PRECISION OUTPUT")
 		_T(" AS BEGIN; SET NOCOUNT ON; SET @EmpSal = (SELECT T.EmployeeSalary FROM [okTest] AS T WHERE T.EmployeeID = @EmplID); END;");
 	CConstPointer stmt43 = _T("EXECUTE uspProcTest @EmplID = ?, @EmpSal = ? OUTPUT;");
 	CConstPointer data1[] = { _T("okreis"), _T("okreis1"), _T("okreis2"), _T("okreis3") };
 	double data2[] = { 100.0, 200.0, 300.0, 400.0 };
-	CConstPointer data3[] = { NULL, NULL, _T("TestComment"), NULL };
+	CConstPointer data3[] = { nullptr, nullptr, _T("TestComment"), nullptr };
 
 #if OK_CPU_64BIT
 	mbchar data4[4][100] = { _T("okreis"), _T("okreis1"), _T("okreis2"), _T("okreis3") };
@@ -169,7 +169,7 @@ void TestSQL20()
 
 				if (pColumn->get_Ind() == CODBCColumn::NullValue)
 				{
-					_tprintf(_T("NULL | "));
+					_tprintf(_T("nullptr | "));
 					continue;
 				}
 				switch (ix)
@@ -215,9 +215,9 @@ void TestSQL20()
 		//COUT << _T("Output value = ") << pb_double << endl;
 
 		connection->free_Statement(stmt);
-		stmt = NULL;
+		stmt = nullptr;
 		connection->release();
-		connection = NULL;
+		connection = nullptr;
 		env->Close();
 		env->release();
 	}
@@ -239,16 +239,16 @@ void TestSQL20()
 void TestSQL21()
 {
 	CStringBuffer tmp;
-	CODBCEnvironment* env = NULL;
-	CODBCConnection* connection = NULL;
-	CODBCStatement* stmt = NULL;
+	CODBCEnvironment* env = nullptr;
+	CODBCConnection* connection = nullptr;
+	CODBCStatement* stmt = nullptr;
 	CConstPointer stmt1[] = {
 		_T("DROP TABLE IF EXISTS test.okTest;"),
 		_T("CREATE TABLE test.okTest(") 
-			_T("employeeID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ") 
-			_T("employeeName VARCHAR(100) NOT NULL,")
-			_T("employeeSalary DOUBLE NOT NULL,")
-			_T("Comment VARCHAR(500) NULL);")
+			_T("employeeID INT NOT nullptr AUTO_INCREMENT PRIMARY KEY, ") 
+			_T("employeeName VARCHAR(100) NOT nullptr,")
+			_T("employeeSalary DOUBLE NOT nullptr,")
+			_T("Comment VARCHAR(500) nullptr);")
 	};
 	CConstPointer stmt2 = _T("INSERT INTO test.okTest (employeeName, employeeSalary, comment) VALUES (?, ?, ?);");
 	CConstPointer stmt3 = _T("SELECT * FROM test.okTest");
@@ -258,7 +258,7 @@ void TestSQL21()
 	CConstPointer stmt43 = _T("CALL uspProcTest(?, ?);");
 	CConstPointer data1[] = { _T("okreis"), _T("okreis1"), _T("okreis2"), _T("okreis3") };
 	double data2[] = { 100.0, 200.0, 300.0, 400.0 };
-	CConstPointer data3[] = { NULL, NULL, _T("TestComment"), NULL };
+	CConstPointer data3[] = { nullptr, nullptr, _T("TestComment"), nullptr };
 #if OK_CPU_64BIT
 	mbchar data4[4][100] = { _T("okreis"), _T("okreis1"), _T("okreis2"), _T("okreis3") };
 	sqword data4len[4] = { CODBCStatement::NullTerminatedParameterString, CODBCStatement::NullTerminatedParameterString, CODBCStatement::NullTerminatedParameterString, CODBCStatement::NullTerminatedParameterString };
@@ -371,7 +371,7 @@ void TestSQL21()
 
 				if (pColumn->get_Ind() == CODBCColumn::NullValue)
 				{
-					_tprintf(_T("NULL | "));
+					_tprintf(_T("nullptr | "));
 					continue;
 				}
 				switch (ix)
@@ -403,7 +403,7 @@ void TestSQL21()
 		connection->close_Transact();
 		stmt->Prepare(stmt43);
 		stmt->BindParameter(1, &pb_dword);
-		stmt->BindParameter(2, &pb_double, NULL, CODBCStatement::eParamOutput);
+		stmt->BindParameter(2, &pb_double, nullptr, CODBCStatement::eParamOutput);
 		pb_dword = 1;
 		pb_double = 0.0;
 		stmt->Execute();
@@ -411,9 +411,9 @@ void TestSQL21()
 		_tprintf(_T("Output value = %f\n"), pb_double);
 
 		connection->free_Statement(stmt);
-		stmt = NULL;
+		stmt = nullptr;
 		connection->release();
-		connection = NULL;
+		connection = nullptr;
 		env->Close();
 		env->release();
 	}
@@ -435,16 +435,16 @@ void TestSQL21()
 void TestSQL22()
 {
 	CStringBuffer tmp;
-	CODBCEnvironment* env = NULL;
-	CODBCConnection* connection = NULL;
-	CODBCStatement* stmt = NULL;
+	CODBCEnvironment* env = nullptr;
+	CODBCConnection* connection = nullptr;
+	CODBCStatement* stmt = nullptr;
 	CConstPointer stmt1[] = {
 		_T("DROP TABLE IF EXISTS okTest;"),
 		_T("CREATE TABLE okTest(")
-			_T("employeeID SERIAL NOT NULL PRIMARY KEY, ") 
-			_T("employeeName VARCHAR(100) NOT NULL,")
-			_T("employeeSalary DOUBLE PRECISION NOT NULL,")
-			_T("Comment VARCHAR(500) NULL);")
+			_T("employeeID SERIAL NOT nullptr PRIMARY KEY, ") 
+			_T("employeeName VARCHAR(100) NOT nullptr,")
+			_T("employeeSalary DOUBLE PRECISION NOT nullptr,")
+			_T("Comment VARCHAR(500) nullptr);")
 	};
 	CConstPointer stmt2 = _T("INSERT INTO okTest (employeeName, employeeSalary, Comment) VALUES (?, ?, ?);");
 	CConstPointer stmt3 = _T("SELECT * FROM okTest;");
@@ -453,7 +453,7 @@ void TestSQL22()
 	CConstPointer stmt43 = _T("select uspProcTest(?);");
 	CConstPointer data1[] = { _T("okreis"), _T("okreis1"), _T("okreis2"), _T("okreis3") };
 	double data2[] = { 100.0, 200.0, 300.0, 400.0 };
-	CConstPointer data3[] = { NULL, NULL, _T("TestComment"), NULL };
+	CConstPointer data3[] = { nullptr, nullptr, _T("TestComment"), nullptr };
 #if OK_CPU_64BIT
 	mbchar data4[4][100] = { _T("okreis"), _T("okreis1"), _T("okreis2"), _T("okreis3") };
 	sqword data4len[4] = { CODBCStatement::NullTerminatedParameterString, CODBCStatement::NullTerminatedParameterString, CODBCStatement::NullTerminatedParameterString, CODBCStatement::NullTerminatedParameterString };
@@ -566,7 +566,7 @@ void TestSQL22()
 
 				if (pColumn->get_Ind() == CODBCColumn::NullValue)
 				{
-					_tprintf(_T("NULL | "));
+					_tprintf(_T("nullptr | "));
 					continue;
 				}
 				switch (ix)
@@ -607,9 +607,9 @@ void TestSQL22()
 		_tprintf(_T("Output value = %f\n"), pb_double);
 
 		connection->free_Statement(stmt);
-		stmt = NULL;
+		stmt = nullptr;
 		connection->release();
-		connection = NULL;
+		connection = nullptr;
 		env->Close();
 		env->release();
 	}
@@ -631,21 +631,21 @@ void TestSQL22()
 void TestSQL23()
 {
 	CStringBuffer tmp;
-	CODBCEnvironment* env = NULL;
-	CODBCConnection* connection = NULL;
-	CODBCStatement* stmt = NULL;
+	CODBCEnvironment* env = nullptr;
+	CODBCConnection* connection = nullptr;
+	CODBCStatement* stmt = nullptr;
 	CConstPointer stmt1 = _T("DROP TABLE IF EXISTS okTest;")
 		_T("CREATE TABLE okTest(")
 		_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-		_T("EmployeeName TEXT(100) NOT NULL,")
-		_T("EmployeeSalary FLOAT NOT NULL,")
-		_T("Comment TEXT(500) NULL")
+		_T("EmployeeName TEXT(100) NOT nullptr,")
+		_T("EmployeeSalary FLOAT NOT nullptr,")
+		_T("Comment TEXT(500) nullptr")
 		_T(");");
 	CConstPointer stmt2 = _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES (?, ?, ?);");
 	CConstPointer stmt3 = _T("SELECT * FROM okTest");
 	CConstPointer data1[] = { _T("okreis"), _T("okreis1"), _T("okreis2"), _T("okreis3") };
 	double data2[] = { 100.0, 200.0, 300.0, 400.0 };
-	CConstPointer data3[] = { NULL, NULL, _T("TestComment"), NULL };
+	CConstPointer data3[] = { nullptr, nullptr, _T("TestComment"), nullptr };
 #if OK_CPU_64BIT
 	mbchar data5[4][100] = { _T("okreis"), _T("okreis1"), _T("okreis2"), _T("okreis3") };
 	sqword data5len[4] = { CODBCStatement::NullTerminatedParameterString, CODBCStatement::NullTerminatedParameterString, CODBCStatement::NullTerminatedParameterString, CODBCStatement::NullTerminatedParameterString };
@@ -749,7 +749,7 @@ void TestSQL23()
 
 				if (pColumn->get_Ind() == CODBCColumn::NullValue)
 				{
-					_tprintf(_T("NULL | "));
+					_tprintf(_T("nullptr | "));
 					continue;
 				}
 				switch (ix)
@@ -776,9 +776,9 @@ void TestSQL23()
 
 		connection->close_Transact();
 		connection->free_Statement(stmt);
-		stmt = NULL;
+		stmt = nullptr;
 		connection->release();
-		connection = NULL;
+		connection = nullptr;
 		env->Close();
 		env->release();
 	}
@@ -802,16 +802,16 @@ void TestSQL23()
 void TestSQL3()
 {
 	CStringBuffer tmp;
-	CMySQLEnvironment* env = NULL;
-	CMySQLConnection* connection = NULL;
-	CMySQLStatement* stmt = NULL;
+	CMySQLEnvironment* env = nullptr;
+	CMySQLConnection* connection = nullptr;
+	CMySQLStatement* stmt = nullptr;
 	CConstPointer stmt1[] = {
 		_T("DROP TABLE IF EXISTS test.okTest;"),
 		_T("CREATE TABLE test.okTest(")
-			_T("employeeID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ")
-			_T("employeeName VARCHAR(100) NOT NULL,")
-			_T("employeeSalary DOUBLE NOT NULL,")
-			_T("Comment VARCHAR(500) NULL);")
+			_T("employeeID INT NOT nullptr AUTO_INCREMENT PRIMARY KEY, ")
+			_T("employeeName VARCHAR(100) NOT nullptr,")
+			_T("employeeSalary DOUBLE NOT nullptr,")
+			_T("Comment VARCHAR(500) nullptr);")
 	};
 	CConstPointer stmt2 = _T("INSERT INTO test.okTest (employeeName, employeeSalary, comment) VALUES (?, ?, ?);");
 	CConstPointer stmt3 = _T("SELECT * FROM test.okTest");
@@ -821,7 +821,7 @@ void TestSQL3()
 	CConstPointer stmt43 = _T("CALL uspProcTest(?, ?);");
 	const char* data1[] = { "okreis", "okreis1", "okreis2", "okreis3" };
 	double data2[] = { 100.0, 200.0, 300.0, 400.0 };
-	const char* data3[] = { NULL, NULL, "TestComment", NULL };
+	const char* data3[] = { nullptr, nullptr, "TestComment", nullptr };
 
 	sdword pb_dword;
 	byte pb_string[100];
@@ -957,10 +957,10 @@ void TestSQL3()
 		} while (stmt->NextResult());
 
 		connection->free_Statement(stmt);
-		stmt = NULL;
+		stmt = nullptr;
 		connection->close_Transact();
 		connection->release();
-		connection = NULL;
+		connection = nullptr;
 		env->Close();
 		env->release();
 	}
@@ -1001,15 +1001,15 @@ static void TestFunc(Ptr(CSqLite3Connection) pConn, ConstRef(CSqLite3Connection:
 void TestSQL4()
 {
 	CStringBuffer tmp;
-	CSqLite3Environment* env = NULL;
-	CSqLite3Connection* connection = NULL;
-	CSqLite3Statement* stmt = NULL;
+	CSqLite3Environment* env = nullptr;
+	CSqLite3Connection* connection = nullptr;
+	CSqLite3Statement* stmt = nullptr;
 	CConstPointer stmt1 = _T("DROP TABLE IF EXISTS okTest;")
 		_T("CREATE TABLE okTest(")
 		_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-		_T("EmployeeName TEXT(100) NOT NULL,")
-		_T("EmployeeSalary FLOAT NOT NULL,")
-		_T("Comment TEXT(500) NULL")
+		_T("EmployeeName TEXT(100) NOT nullptr,")
+		_T("EmployeeSalary FLOAT NOT nullptr,")
+		_T("Comment TEXT(500) nullptr")
 		_T(");");
 	CConstPointer stmt2 = _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES (?, ?, ?);");
 	CConstPointer stmt3 = _T("SELECT * FROM okTest;");
@@ -1017,7 +1017,7 @@ void TestSQL4()
 	CConstPointer stmt5 = _T("SELECT MIN(EmployeeSalary) + MAX(EmployeeSalary) AS SUMME FROM okTest;");
 	CConstPointer data1[] = { _T("okreis"), _T("okreis1"), _T("okreis2"), _T("okreis3") };
 	double data2[] = { 100.0, 200.0, 300.0, 400.0 };
-	CConstPointer data3[] = { NULL, NULL, _T("TestComment"), NULL };
+	CConstPointer data3[] = { nullptr, nullptr, _T("TestComment"), nullptr };
 	try
 	{
 #ifdef OK_SYS_WINDOWS
@@ -1047,7 +1047,7 @@ void TestSQL4()
 			if (data3[ix])
 				stmt->BindParameter(3, data3[ix], s_strlen(data3[ix], 500) * szchar);
 			else
-				stmt->BindParameter(3, NULL, 0);
+				stmt->BindParameter(3, nullptr, 0);
 			stmt->Execute();
 			stmt->Close();
 			_tprintf(_T("%s, NumColumns=%d, NumRows=%lld\n"), stmt2, Cast(int, stmt->get_ColumnCount()), stmt->get_RowCount());
@@ -1073,7 +1073,7 @@ void TestSQL4()
 
 				if (buf.get_BufferSize() == 0)
 				{
-					_tprintf(_T("NULL | "));
+					_tprintf(_T("nullptr | "));
 					continue;
 				}
 				switch (ix)
@@ -1118,7 +1118,7 @@ void TestSQL4()
 
 				if (buf.get_BufferSize() == 0)
 				{
-					_tprintf(_T("NULL | "));
+					_tprintf(_T("nullptr | "));
 					continue;
 				}
 				switch (ix)
@@ -1151,7 +1151,7 @@ void TestSQL4()
 
 				if (buf.get_BufferSize() == 0)
 				{
-					_tprintf(_T("NULL | "));
+					_tprintf(_T("nullptr | "));
 					continue;
 				}
 				switch (ix)
@@ -1165,9 +1165,9 @@ void TestSQL4()
 		}
 
 		connection->free_Statement(stmt);
-		stmt = NULL;
+		stmt = nullptr;
 		connection->release();
-		connection = NULL;
+		connection = nullptr;
 		env->Close();
 		env->release();
 	}
@@ -1190,16 +1190,16 @@ void TestSQL4()
 void TestSQL5()
 {
 	CStringBuffer tmp;
-	CPostgresEnvironment* env = NULL;
-	CPostgresConnection* connection = NULL;
-	CPostgresStatement* stmt = NULL;
+	CPostgresEnvironment* env = nullptr;
+	CPostgresConnection* connection = nullptr;
+	CPostgresStatement* stmt = nullptr;
 	CConstPointer stmt1[] = {
 		_T("DROP TABLE IF EXISTS okTest;"),
 		_T("CREATE TABLE okTest(")
-			_T("employeeID SERIAL NOT NULL PRIMARY KEY, ") 
-			_T("employeeName VARCHAR(100) NOT NULL,")
-			_T("employeeSalary DOUBLE PRECISION NOT NULL,")
-			_T("Comment VARCHAR(500) NULL);")
+			_T("employeeID SERIAL NOT nullptr PRIMARY KEY, ") 
+			_T("employeeName VARCHAR(100) NOT nullptr,")
+			_T("employeeSalary DOUBLE PRECISION NOT nullptr,")
+			_T("Comment VARCHAR(500) nullptr);")
 	};
 	CConstPointer stmt2 = _T("INSERT INTO okTest (employeeName, employeeSalary, Comment) VALUES ($1, $2, $3);");
 	CConstPointer stmt3 = _T("SELECT * FROM okTest");
@@ -1208,7 +1208,7 @@ void TestSQL5()
 	CConstPointer stmt43 = _T("select uspProcTest($1);");
 	const char* data2[] = { "okreis", "okreis1", "okreis2", "okreis3" };
 	const char* data3[] = { "100.0", "200.0", "300.0", "400.0" };
-	const char* data4[] = { NULL, NULL, "TestComment", NULL };
+	const char* data4[] = { nullptr, nullptr, "TestComment", nullptr };
 	try
 	{
 #if OK_CPU_32BIT
@@ -1259,7 +1259,7 @@ void TestSQL5()
 
 				if (pColumn->get_isnull())
 				{
-					_tprintf(_T("NULL | "));
+					_tprintf(_T("nullptr | "));
 					continue;
 				}
 				printf("%.*s | ", Cast(int, buf.get_BufferSize()), buf.get_Buffer());
@@ -1294,9 +1294,9 @@ void TestSQL5()
 		}
 
 		connection->free_Statement(stmt);
-		stmt = NULL;
+		stmt = nullptr;
 		connection->release();
-		connection = NULL;
+		connection = nullptr;
 		env->Close();
 		env->release();
 	}

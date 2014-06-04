@@ -46,13 +46,6 @@ CConsoleUndoItem::~CConsoleUndoItem(void)
 {
 }
 
-static void __stdcall UndoGroupDeleteFunc( ConstPointer data, Pointer context )
-{
-	CConsoleUndoItem* p = CastAnyPtr(CConsoleUndoItem, CastMutable(Pointer, data));
-
-	p->release();
-}
-
 CConsoleUndoGroup::CConsoleUndoGroup(void):
 	m_ItemVector(__FILE__LINE__ 16, 16),
 	m_Current(0)
@@ -89,7 +82,7 @@ void CConsoleUndoGroup::clear(void)
 Ptr(CConsoleUndoItem) CConsoleUndoGroup::undo()
 {
 	if ( IsUndoEmpty() )
-		return NULL;
+		return nullptr;
 
 	CConsoleUndoItemVector::Iterator it = m_ItemVector.Begin();
 	TListCnt cnt = GetUndoCount() - 1;
@@ -104,13 +97,13 @@ Ptr(CConsoleUndoItem) CConsoleUndoGroup::undo()
 		--m_Current;
 		return *it;
 	}
-	return NULL;
+	return nullptr;
 }
 
 Ptr(CConsoleUndoItem) CConsoleUndoGroup::redo()
 {
 	if ( IsRedoEmpty() )
-		return NULL;
+		return nullptr;
 
 	CConsoleUndoItemVector::Iterator it = m_ItemVector.Last();
 	TListCnt cnt = GetRedoCount() - 1;
@@ -125,17 +118,10 @@ Ptr(CConsoleUndoItem) CConsoleUndoGroup::redo()
 		++m_Current;
 		return *it;
 	}
-	return NULL;
+	return nullptr;
 }
 
-static void __stdcall UndoManagerDeleteFunc( ConstPointer data, Pointer context )
-{
-	CConsoleUndoGroup* p = CastAnyPtr(CConsoleUndoGroup, CastMutable(Pointer, data));
-
-	p->release();
-}
-
-Ptr(CConsoleUndoManager) CConsoleUndoManager::_instance = NULL;
+Ptr(CConsoleUndoManager) CConsoleUndoManager::_instance = nullptr;
 
 CConsoleUndoManager::CConsoleUndoManager(void):
 	m_GroupList(__FILE__LINE__0)

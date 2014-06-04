@@ -98,7 +98,7 @@ void CSecurityFile::Open(ConstRef(CFilePath) _path, WBool _readOnly, WBool _text
 	if ( !_readOnly )
 		dwDesiredAccess |= GENERIC_WRITE;
 	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
-	sa.lpSecurityDescriptor = NULL;
+	sa.lpSecurityDescriptor = nullptr;
 	sa.bInheritHandle = TRUE;
 
 #ifdef _UNICODE
@@ -122,7 +122,7 @@ void CSecurityFile::Open(ConstRef(CFilePath) _path, WBool _readOnly, WBool _text
 		&sa, // LPSECURITY_ATTRIBUTES lpSecurityAttributes,
 		OPEN_EXISTING, // DWORD dwCreationDisposition,
 		FILE_ATTRIBUTE_NORMAL, // DWORD dwFlagsAndAttributes,
-		NULL // HANDLE hTemplateFile
+		nullptr // HANDLE hTemplateFile
 	);
 	if ( m_fileHandle == INVALID_HANDLE_VALUE )
 		throw OK_NEW_OPERATOR CSecurityFileException(__FILE__LINE__ _T("%s Exception, Path = '%s'"), 
@@ -170,7 +170,7 @@ void CSecurityFile::Create(ConstRef(CFilePath) _path, WBool _textMode, TEncoding
 		&sa, // LPSECURITY_ATTRIBUTES lpSecurityAttributes,
 		CREATE_NEW, // DWORD dwCreationDisposition,
 		FILE_ATTRIBUTE_NORMAL, // DWORD dwFlagsAndAttributes,
-		NULL // HANDLE hTemplateFile
+		nullptr // HANDLE hTemplateFile
 	);
 	CSecurityContext::instance()->FreeSecurity(sa);
 	if ( m_fileHandle == INVALID_HANDLE_VALUE )
@@ -272,7 +272,7 @@ void CSecurityFile::SetSize(TFileSize newsize)
 			DWORD sz = (delta > 4096) ? 4096 : Cast(DWORD, delta);
 			DWORD NumberOfBytesWritten;
 
-			if ( !WriteFile(m_fileHandle, bp, sz, &NumberOfBytesWritten, NULL) )
+			if ( !WriteFile(m_fileHandle, bp, sz, &NumberOfBytesWritten, nullptr) )
 				throw OK_NEW_OPERATOR CSecurityFileException(__FILE__LINE__ _T("%s Exception"), 
 				    _T("CSecurityFile::SetSize"), CWinException::WinExtError);
 			delta -= sz;
@@ -382,7 +382,7 @@ void CSecurityFile::Read(Ref(CByteBuffer) _buffer)
 
 	if ( !LockFile(m_fileHandle, fileOffset.LowPart, fileOffset.HighPart, bytesToLock.LowPart, bytesToLock.HighPart) )
 		throw OK_NEW_OPERATOR CSecurityFileException(__FILE__LINE__ _T("%s Exception"), _T("CSecurityFile::Read"), CWinException::WinExtError);
-    if ( !ReadFile(m_fileHandle, _buffer.get_Buffer(), _buffer.get_BufferSize(), &NumberOfBytesRead, NULL) )
+    if ( !ReadFile(m_fileHandle, _buffer.get_Buffer(), _buffer.get_BufferSize(), &NumberOfBytesRead, nullptr) )
 		throw OK_NEW_OPERATOR CSecurityFileException(__FILE__LINE__ _T("%s Exception"), _T("CSecurityFile::Read"), CWinException::WinExtError);
 	if ( !UnlockFile(m_fileHandle, fileOffset.LowPart, fileOffset.HighPart, bytesToLock.LowPart, bytesToLock.HighPart) )
 		throw OK_NEW_OPERATOR CSecurityFileException(__FILE__LINE__ _T("%s Exception"), _T("CSecurityFile::Read"), CWinException::WinExtError);
@@ -418,7 +418,7 @@ void CSecurityFile::Read(Ref(CByteLinkedBuffer) _buffer)
 			dword sz;
 			BPointer p = _buffer.GetBufferItem(ix, &sz);
 
-			if ( !ReadFile(m_fileHandle, p, sz, &NumberOfBytesRead, NULL) )
+			if ( !ReadFile(m_fileHandle, p, sz, &NumberOfBytesRead, nullptr) )
 				throw OK_NEW_OPERATOR CSecurityFileException(__FILE__LINE__ _T("%s Exception"), _T("CSecurityFile::Read"), CWinException::WinExtError);
 			if ( NumberOfBytesRead == 0 )
 				break;
@@ -469,7 +469,7 @@ void CSecurityFile::Write(ConstRef(CByteBuffer) _buffer)
 
 	if ( !LockFile(m_fileHandle, fileOffset.LowPart, fileOffset.HighPart, bytesToLock.LowPart, bytesToLock.HighPart) )
 		throw OK_NEW_OPERATOR CSecurityFileException(__FILE__LINE__ _T("%s Exception"), _T("CSecurityFile::Write"), CWinException::WinExtError);
-	if ( !WriteFile(m_fileHandle, _buffer.get_Buffer(), _buffer.get_BufferSize(), &NumberOfBytesWritten, NULL) )
+	if ( !WriteFile(m_fileHandle, _buffer.get_Buffer(), _buffer.get_BufferSize(), &NumberOfBytesWritten, nullptr) )
 		throw OK_NEW_OPERATOR CSecurityFileException(__FILE__LINE__ _T("%s Exception"), _T("CSecurityFile::Write"), CWinException::WinExtError);
 	if ( !UnlockFile(m_fileHandle, fileOffset.LowPart, fileOffset.HighPart, bytesToLock.LowPart, bytesToLock.HighPart) )
 		throw OK_NEW_OPERATOR CSecurityFileException(__FILE__LINE__ _T("%s Exception"), _T("CSecurityFile::Write"), CWinException::WinExtError);
@@ -499,7 +499,7 @@ void CSecurityFile::Write(ConstRef(CByteLinkedBuffer) _buffer)
 		dword sz;
 		BPointer p = _buffer.GetBufferItem(ix, &sz);
 
-		if ( !WriteFile(m_fileHandle, p, sz, &NumberOfBytesWritten, NULL) )
+		if ( !WriteFile(m_fileHandle, p, sz, &NumberOfBytesWritten, nullptr) )
 			throw OK_NEW_OPERATOR CSecurityFileException(__FILE__LINE__ _T("%s Exception"), _T("CSecurityFile::Write"), CWinException::WinExtError);
 	}
 	if ( !UnlockFile(m_fileHandle, fileOffset.LowPart, fileOffset.HighPart, bytesToLock.LowPart, bytesToLock.HighPart) )

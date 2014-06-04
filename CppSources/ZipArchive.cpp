@@ -1440,7 +1440,7 @@ void CZipArchiveIterator::Skip()
 CZipArchive::CZipArchive(Ptr(CFile) _file) : CArchive(_file), _impl(OK_NEW_OPERATOR CZipArchiveImpl(_file)) {}
 CZipArchive::~CZipArchive(void) { if (_impl) _impl->release(); }
 
-Ptr(CArchiveIterator) CZipArchive::begin() { if (_impl) return _impl->begin(); return NULL; }
+Ptr(CArchiveIterator) CZipArchive::begin() { if (_impl) return _impl->begin(); return nullptr; }
 
 void CZipArchive::AddOpen() { if (_impl) _impl->AddOpen(); }
 void CZipArchive::AddFile(ConstRef(CFilePath) fname, ConstRef(CArchiveProperties) props)  { if (_impl) _impl->AddFile(fname, props); }
@@ -1525,7 +1525,7 @@ protected:
 	Ptr(CZipArchiveImpl::TFileCacheItem) m_item;
 };
 
-CZipArchiveFilterOutput::CZipArchiveFilterOutput(CZipArchiveImpl* archive): m_archive(archive), m_item(NULL) {}
+CZipArchiveFilterOutput::CZipArchiveFilterOutput(CZipArchiveImpl* archive): m_archive(archive), m_item(nullptr) {}
 CZipArchiveFilterOutput::~CZipArchiveFilterOutput() {}
 
 void CZipArchiveFilterOutput::open() {}

@@ -31,9 +31,9 @@ CMutex::CMutex(void)
 {
 #ifdef OK_SYS_WINDOWS
 	m_Mutex = CreateMutex( 
-        NULL,              // default security attributes
+        nullptr,              // default security attributes
         FALSE,             // initially not owned
-        NULL);             // unnamed mutex
+        nullptr);             // unnamed mutex
 	if ( !m_Mutex )
 		throw OK_NEW_OPERATOR CMutexException(__FILE__LINE__ _T("in %s CMutexException"), 
 		    _T("CMutex::CMutex"), CWinException::WinExtError);

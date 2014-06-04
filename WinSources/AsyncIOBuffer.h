@@ -26,7 +26,8 @@
 class WINSOURCES_API CAsyncIOBuffer: public CCppObject
 {
 public:
-	CAsyncIOBuffer(Ptr(CAsyncIOManager) pManager = NULL);
+	CAsyncIOBuffer(Ptr(CAsyncIOData) pData); // for searching
+	CAsyncIOBuffer(Ptr(CAsyncIOManager) pManager);
 	virtual ~CAsyncIOBuffer(void);
 
 	__inline Ptr(CAsyncIOData) GetData() const { return m_pData; }
@@ -36,6 +37,9 @@ public:
 
 protected:
 	Ptr(CAsyncIOManager) m_pManager;
-	Ptr(CAsyncIOData) m_pData;
+	CCppObjectPtr<CAsyncIOData> m_pData;
+	bool m_bDetach;
+private:
+	CAsyncIOBuffer();
 };
 

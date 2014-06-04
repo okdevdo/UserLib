@@ -60,13 +60,13 @@ public:
 			CStringBuffer tmp;
 
 			usage(tmp);
-			MessageBox(NULL, tmp.GetString(), _T("Usage"), MB_OK | MB_ICONINFORMATION);
+			MessageBox(nullptr, tmp.GetString(), _T("Usage"), MB_OK | MB_ICONINFORMATION);
 			return result;
 		}
 
 		if ( !m_bAnyOption )
 		{
-			HWND hwnd = ::FindWindow(_T("XGUIZIP"), NULL);
+			HWND hwnd = ::FindWindow(_T("XGUIZIP"), nullptr);
 
 			if ( hwnd )
 			{

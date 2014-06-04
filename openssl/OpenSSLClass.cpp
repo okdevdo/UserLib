@@ -21,36 +21,6 @@
 #include "OS_PCH.H"
 #include "OpenSSLClass.h"
 
-static void __stdcall COpenSSLClassVectorDeleteFunc(ConstPointer data, Pointer context)
-{
-	COpenSSLClass* pInfo = CastAnyPtr(COpenSSLClass, CastMutable(Pointer, data));
-
-	pInfo->release();
-}
-
-static sword __stdcall COpenSSLClassVectorSearchAndSortFunc(ConstPointer pa, ConstPointer pb)
-{
-	COpenSSLClass* ppa = CastAnyPtr(COpenSSLClass, CastMutable(Pointer, pa));
-	COpenSSLClass* ppb = CastAnyPtr(COpenSSLClass, CastMutable(Pointer, pb));
-
-	if (ppa->get_raw() < ppb->get_raw())
-		return -1;
-	if (ppa->get_raw() == ppb->get_raw())
-		return 0;
-	return 1;
-}
-
-static sword __stdcall COpenSSLClassVectorSearchAndSortFunc1(ConstPointer pa, ConstPointer pb)
-{
-	COpenSSLClass* ppa = CastAnyPtr(COpenSSLClass, CastMutable(Pointer, pa));
-
-	if (ppa->get_raw() < pb)
-		return -1;
-	if (ppa->get_raw() == pb)
-		return 0;
-	return 1;
-}
-
 COpenSSLClass::COpenSSLClasses COpenSSLClass::_objs(__FILE__LINE__ 16, 16);
 
 COpenSSLClass::COpenSSLClass(ConstPointer raw) : _raw(CastMutable(Pointer, raw))
@@ -68,7 +38,7 @@ Ptr(COpenSSLClass) COpenSSLClass::find_obj(ConstPointer raw)
 
 	if (_objs.MatchSorted(it, &cmp))
 		return *it;
-	return NULL;
+	return nullptr;
 }
 
 void COpenSSLClass::insert_obj()

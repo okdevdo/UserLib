@@ -672,8 +672,8 @@ CTextControl::CTextControl(LPCTSTR name):
 	m_timerDirection(TTimerDirectionNone),
 	m_insidePaint(FALSE),
 	m_hasselection(FALSE),
-	m_chars(NULL),
-	m_undostack(NULL)
+	m_chars(nullptr),
+	m_undostack(nullptr)
 {
 	m_chars = OK_NEW_OPERATOR CTextControlChars();
 	m_undostack = OK_NEW_OPERATOR CTextControlUndoStack();
@@ -692,8 +692,8 @@ CTextControl::CTextControl(ConstRef(CStringBuffer) name):
 	m_timerDirection(TTimerDirectionNone),
 	m_insidePaint(FALSE),
 	m_hasselection(FALSE),
-	m_chars(NULL),
-	m_undostack(NULL)
+	m_chars(nullptr),
+	m_undostack(nullptr)
 {
 	m_chars = OK_NEW_OPERATOR CTextControlChars();
 	m_undostack = OK_NEW_OPERATOR CTextControlUndoStack();
@@ -1077,7 +1077,7 @@ LRESULT CTextControl::OnPaint(WPARAM wParam, LPARAM lParam)
 					Gdiplus::REAL fontHeight = 12;
 
 					fontHeight = pFont->GetHeight(&graphics);
-					::CreateCaret(m_hwnd, (HBITMAP) NULL, 1, (int)(floor(fontHeight + 0.5))); 
+					::CreateCaret(m_hwnd, (HBITMAP) nullptr, 1, (int)(floor(fontHeight + 0.5))); 
 					m_caretCreated = TRUE;
 				}
 				::ShowCaret(m_hwnd);

@@ -62,10 +62,10 @@ CStringBuffer CConsoleClipboard::GetClipboardText()
 		return tmp;
  
     HGLOBAL hglb = GetClipboardData(_CLIPBOARDTEXTFORMAT); 
-    if (hglb != NULL) 
+    if (hglb != nullptr) 
     { 
         LPTSTR  lptstr = (LPTSTR)GlobalLock(hglb); 
-        if (lptstr != NULL) 
+        if (lptstr != nullptr) 
         {
 			dword tlen = s_strlen(lptstr, INT_MAX);
 			tmp.SetSize(__FILE__LINE__ tlen + 1);

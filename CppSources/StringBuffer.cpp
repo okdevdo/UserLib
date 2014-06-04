@@ -43,9 +43,9 @@ static const char *_whitespace = "\x09\x0A\x0B\x0C\x0D\x20";
 static bool IsWhitespace(mbchar pChar)
 {
 #ifdef _UNICODE
-	return (s_strchr(CastMutablePtr(wchar_t,_whitespace), pChar) != NULL);
+	return (s_strchr(CastMutablePtr(wchar_t,_whitespace), pChar) != nullptr);
 #else
-	return (s_strchr(CastMutablePtr(char,_whitespace), pChar) != NULL);
+	return (s_strchr(CastMutablePtr(char,_whitespace), pChar) != nullptr);
 #endif
 }
 
@@ -54,7 +54,7 @@ static int scan_convertBase64(mbchar ch)
 	char cc = (char)ch;
 	const char* p = strchr(_convertBase64, cc);
 
-	if ( p == NULL )
+	if ( p == nullptr )
 		return -1;
 	return Castsdword(p - _convertBase64);
 }
@@ -97,14 +97,14 @@ void CStringBuffer::_free_Buffer()
 
 		if ( !refCnt )
 			TFfree(_string);
-		_string = NULL;
+		_string = nullptr;
 	}
 }
 
 CStringBuffer::CStringBuffer() :
 CStringLiteral()
 #ifdef __DEBUG__
-, _file(NULL), _line(0)
+, _file(nullptr), _line(0)
 #endif
 {
 }
@@ -158,7 +158,7 @@ CStringBuffer::CStringBuffer(DECL_FILE_LINE CStringLiteral _str):
 CStringBuffer::CStringBuffer( ConstRef(QString) _str):
     CStringLiteral()
 #ifdef __DEBUG__
-, _file(NULL), _line(0)
+, _file(nullptr), _line(0)
 #endif
 {
     SetString(_str);
@@ -945,7 +945,7 @@ sdword CStringBuffer::ScanString(CConstPointer format, va_list argList) const
 void CStringBuffer::ReplaceString(CConstPointer str, CConstPointer pText, int lench)
 {
 	if ( lench < 0 )
-		lench = (pText == NULL)?0:(s_strlen(CastMutable(CPointer, pText), INT_MAX));
+		lench = (pText == nullptr)?0:(s_strlen(CastMutable(CPointer, pText), INT_MAX));
 
 	dword lenStr = s_strlen(CastMutable(CPointer, str), INT_MAX);
 	CPointer string1 = _string;
@@ -1120,7 +1120,7 @@ void CStringBuffer::SplitQuoted(CConstPointer quote, CConstPointer delimiter, CA
 
 void CStringBuffer::SplitQuoted(CConstPointer recorddelimiter, CConstPointer fieldquote, CConstPointer fielddelimiter, TSplitFunc output, Pointer outputcontext)
 {
-	if (ConstStrEmpty(recorddelimiter) || ConstStrEmpty(fieldquote) || ConstStrEmpty(fielddelimiter) || (NULL == output) || StrEmpty(_string))
+	if (ConstStrEmpty(recorddelimiter) || ConstStrEmpty(fieldquote) || ConstStrEmpty(fielddelimiter) || (nullptr == output) || StrEmpty(_string))
         return;
     if ( TFrefcnt(_string) > 1 )
     {
@@ -1386,7 +1386,7 @@ void CStringBuffer::convertFromUTF8(ConstRef(CByteBuffer) buffer, bool detectBOM
 		*mapping = CastAny(BPointer, TFalloc(bufferSize2));
 
 	CPointer textbuffer = (CPointer)_string;
-	BPointer mapP = mapping ? (*mapping) : NULL;
+	BPointer mapP = mapping ? (*mapping) : nullptr;
 
 	byteBuffer = buffer.get_Buffer();
 	if ( hasBOM )

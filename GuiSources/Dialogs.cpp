@@ -37,15 +37,15 @@ END_MESSAGE_MAP()
 
 CConfigDialog::CConfigDialog(LPCTSTR name, LPCTSTR resID, CWin* pParent):
 	CDialog(name, resID, pParent),
-	m_pSheetFarben(NULL),
-	m_pSheetSchriftarten(NULL)
+	m_pSheetFarben(nullptr),
+	m_pSheetSchriftarten(nullptr)
 {
 }
 
 CConfigDialog::CConfigDialog(ConstRef(CStringBuffer) name, LPCTSTR resID, CWin* pParent):
 	CDialog(name, resID, pParent),
-	m_pSheetFarben(NULL),
-	m_pSheetSchriftarten(NULL)
+	m_pSheetFarben(nullptr),
+	m_pSheetSchriftarten(nullptr)
 {
 }
 
@@ -103,7 +103,7 @@ void CConfigDialog::FillFarben()
 	pEditor->Create(m_pSheetFarben->get_handle(), 1000);
 
 	CDataVectorT<CStringBuffer> colorN(__FILE__LINE__ 256, 256);
-	CStringBuffer vNullItem(__FILE__LINE__ _T("<NULL>"));
+	CStringBuffer vNullItem(__FILE__LINE__ _T("<nullptr>"));
 
 	theGuiApp->get_BrushManager()->enumerate_Colors(colorN);
 	pEditor->add_Text(vNullItem);
@@ -130,7 +130,7 @@ void CConfigDialog::SaveFarben()
 			{
 				CStringBuffer vValue(pNode1->get_ValueString());
 
-				if ( vValue.Compare(_T("<NULL>")) == 0 )
+				if ( vValue.Compare(_T("<nullptr>")) == 0 )
 					vValue.Clear();
 				theGuiApp->get_BrushManager()->set_Brush(pNode1->get_KeyString(), vValue);
 			}

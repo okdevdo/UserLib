@@ -41,30 +41,16 @@
 #define OSTREAM std::ostream
 #endif
 
-static void __stdcall TOptionsDeleteFunc( ConstPointer data, Pointer context )
-{
-	COption* p = CastAnyPtr(COption, CastMutable(Pointer, data));
-
-	p->release();
-}
-
-static sword __stdcall TOptionsSortFunc( ConstPointer pa, ConstPointer pb )
-{
-	COption* p1 = CastAnyPtr(COption, CastMutable(Pointer, pa));
-	COption* p2 = CastAnyPtr(COption, CastMutable(Pointer, pb));
-
-	return p1->fullname().Compare(p2->fullname(), 0, CStringLiteral::cIgnoreCase);
-}
-
-CApplication* CApplication::m_instance = NULL;
+CApplication* CApplication::m_instance = nullptr;
 
 CApplication::CApplication():
 	m_defaultAppName(),
 	m_definedOptions(__FILE__LINE__ 16, 16),
 	m_Options(__FILE__LINE__ 16, 16),
 	m_continueOptionProcessing(true),
-	m_config(NULL)
+	m_config()
 {
+	m_instance = this;
 }
 
 CApplication::CApplication(ConstRef(CStringBuffer) _defaultAppName) :
@@ -72,16 +58,14 @@ CApplication::CApplication(ConstRef(CStringBuffer) _defaultAppName) :
 	m_definedOptions(__FILE__LINE__ 16, 16),
 	m_Options(__FILE__LINE__ 16, 16),
 	m_continueOptionProcessing(true),
-	m_config(NULL)
+	m_config()
 {
 	m_instance = this;
 }
 
 CApplication::~CApplication()
 {
-	if ( m_config )
-		m_config->release();
-	m_instance = NULL;
+	m_instance = nullptr;
 }
 
 void CApplication::addOption(COption& option)
@@ -93,7 +77,7 @@ void CApplication::addOption(COption& option)
 
 WBool CApplication::processOptions(int argc, CArray argv)
 {
-	COption* pOption = NULL;
+	COption* pOption = nullptr;
 	WBool bPositioningEnabled = true;
 	WInt i = 1;
 
@@ -140,7 +124,7 @@ WBool CApplication::processOptions(int argc, CArray argv)
 					if (pOption->argumentRequired())
 						throw OK_NEW_OPERATOR COptionMissingArgumentException(__FILE__LINE__ _T("Missing Argument Exception (Option: %s)"), pOption->fullname().GetString());
 
-					_processOption(pOption, NULL, 0);
+					_processOption(pOption, nullptr, 0);
 				}
 				if (NotPtrCheck(pOption1))
 				{
@@ -177,7 +161,7 @@ WBool CApplication::processOptions(int argc, CArray argv)
 			if (pOption->argumentRequired())
 				throw OK_NEW_OPERATOR COptionMissingArgumentException(__FILE__LINE__ _T("Missing Argument Exception (Option: %s)"), pOption->fullname().GetString());
 
-			_processOption(pOption, NULL, 0);
+			_processOption(pOption, nullptr, 0);
 		}
 
 		COptionVector::Iterator it = m_definedOptions.Begin();
@@ -230,8 +214,8 @@ WInt CApplication::isOption(Ref(CStringConstIterator) it, int i)
 COption* CApplication::findDefinedOption(Ref(CStringConstIterator) it, int opt)
 {
 	COptionVector::Iterator it1 = m_definedOptions.Begin();
-	COption* pOption = NULL;
-	COption* pResult = NULL;
+	COption* pOption = nullptr;
+	COption* pResult = nullptr;
 
 	switch (opt)
 	{
@@ -270,7 +254,7 @@ COption* CApplication::findDefinedOption(Ref(CStringConstIterator) it, int opt)
 COption* CApplication::findPositionedOption(int pos)
 {
 	COptionVector::Iterator it = m_definedOptions.Begin();
-	COption* pOption = NULL;
+	COption* pOption = nullptr;
 
 	while ( it )
 	{
@@ -287,7 +271,7 @@ COption* CApplication::findPositionedOption(int pos)
 			return pOption;
 		++it;
 	}
-	return NULL;
+	return nullptr;
 }
 
 COption* CApplication::findOption(COption* pOption)
@@ -296,7 +280,7 @@ COption* CApplication::findOption(COption* pOption)
 
 	if (m_Options.MatchSorted(it, pOption))
 		return *it;
-	return NULL;
+	return nullptr;
 }
 
 void CApplication::processOption(COption* pOption, CArray args, int argc)
@@ -339,9 +323,9 @@ void CApplication::_processOption(COption* pOption, CArray args, int argc)
 	if ( argc == 0 )
 	{
 		if ( pOption->callBack() )
-			pOption->callBack()->invoke(pOption->fullname(), NULL);
+			pOption->callBack()->invoke(pOption->fullname(), nullptr);
 		else
-			handleOption(pOption->fullname(), NULL);
+			handleOption(pOption->fullname(), nullptr);
 	}
 	else
 	{
@@ -537,7 +521,7 @@ CAbstractConfiguration* CApplication::loadProperties(ConstRef(CFilePath) _path)
 	{
 		throw;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void CApplication::loadConfiguration(CConstPointer _programPath)

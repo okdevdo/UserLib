@@ -67,9 +67,9 @@ public:
 
 	public:
 		DataColumn(TListIndex col = -1): 
-		    m_col(col), m_datatype(DataTypeFixedString), m_alignment(CConsoleWindow::AlignmentLeft), m_decimals(0), m_width(0), m_maxwidth(0), m_control(NULL) {}
+		    m_col(col), m_datatype(DataTypeFixedString), m_alignment(CConsoleWindow::AlignmentLeft), m_decimals(0), m_width(0), m_maxwidth(0), m_control() {}
 		DataColumn(TListIndex col, ConstRef(CStringBuffer) title): 
-		    m_col(col), m_datatype(DataTypeFixedString), m_alignment(CConsoleWindow::AlignmentLeft), m_decimals(0), m_width(0), m_maxwidth(0), m_title(title), m_control(NULL) {}
+		    m_col(col), m_datatype(DataTypeFixedString), m_alignment(CConsoleWindow::AlignmentLeft), m_decimals(0), m_width(0), m_maxwidth(0), m_title(title), m_control() {}
 		virtual ~DataColumn();
 
 		__inline TListIndex get_col() const { return m_col; }
@@ -97,7 +97,7 @@ public:
 		TListCnt m_width;
 		TListCnt m_maxwidth;
 		CStringBuffer m_title;
-		Ptr(CConsoleControl) m_control;
+		CCppObjectPtr<CConsoleControl> m_control;
 	};
 
 	class DataColumnVector: public CDataVectorT<DataColumn>

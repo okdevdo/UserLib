@@ -31,8 +31,8 @@
 
 void XGuiZipViewFiles(CConstPointer zipfile, CTreeView* pTreeView)
 {
-	CSecurityFile* pArchiveFile = NULL;
-	CArchiveIterator *zipIt = NULL;
+	CCppObjectPtr<CSecurityFile> pArchiveFile;
+	CCppObjectPtr<CArchiveIterator> zipIt;
 
 	pTreeView->BeginUpdate();
 	try
@@ -54,7 +54,7 @@ void XGuiZipViewFiles(CConstPointer zipfile, CTreeView* pTreeView)
 					CStringBuffer tmp = zipIt->GetFileName();
 					CFilePath fpath(tmp, CDirectoryIterator::UnixPathSeparatorString());
 					CStringBuffer dir = fpath.get_Directory();
-					CTreeViewNode* pNode = NULL;
+					CTreeViewNode* pNode = nullptr;
 					int jx;
 					bool before;
 
@@ -126,19 +126,14 @@ void XGuiZipViewFiles(CConstPointer zipfile, CTreeView* pTreeView)
 				break;
 			}
 		}
-		zipIt->release();
 		pArchiveFile->Close();
-		pArchiveFile->release();
 	}
 	catch ( CBaseException* ex )
 	{
 		if ( zipIt )
 			zipIt->release();
 		if ( pArchiveFile )
-		{
 			pArchiveFile->Close();
-			pArchiveFile->release();
-		}
 		::MessageBox(theGuiApp->get_MainWnd()->get_handle(), ex->GetExceptionMessage().GetString(), _T("Anzeigefehler"), MB_OK);
 	}
 	pTreeView->EndUpdate(TRUE);
@@ -238,7 +233,7 @@ void _XZipAddFiles(Ref(CZipArchive) zipArchive, WBool recursefolders, ConstRef(T
 void XZipAddFiles(CStringLiteral zipfile, WBool recursefolders, ConstRef(TMBCharList) filespecs)
 {
 	CFilePath fzipfile(__FILE__LINE__ zipfile);
-	Ptr(CSecurityFile) pFile = NULL;
+	Ptr(CSecurityFile) pFile = nullptr;
 	bool bExist = false;
 
 	try
@@ -319,10 +314,10 @@ void XGuiZipExtractFiles(CStringLiteral zipfile, WBool usefolders, ConstRef(TMBC
 		return;
 	}
 
-	CSecurityFile* pArchiveFile = OK_NEW_OPERATOR CSecurityFile(fzipfile);
+	CCppObjectPtr<CSecurityFile> pArchiveFile = OK_NEW_OPERATOR CSecurityFile(fzipfile);
 
 	CZipArchive zipArchive(pArchiveFile);
-	CArchiveIterator *zipIt = zipArchive.begin();
+	CCppObjectPtr<CArchiveIterator> zipIt = zipArchive.begin();
 
 	while ( zipIt->Next() )
 	{
@@ -366,10 +361,10 @@ void XGuiZipExtractFiles(CStringLiteral zipfile, WBool usefolders, ConstRef(TMBC
 
 					CDateTime plastmodfiletime(Cast(time_t, lastmodfiletime));
 
-					CArchiveFile* afile = zipIt->GetFile();
-					CFileFilterInput* pInput = OK_NEW_OPERATOR CFileFilterInput(afile);
-					CFileFilterOutput* pOutput = OK_NEW_OPERATOR CFileFilterOutput(fpath);
-					CZipDeCompressFilter* pFilter = OK_NEW_OPERATOR CZipDeCompressFilter(pInput, pOutput);
+					CCppObjectPtr<CArchiveFile> afile = zipIt->GetFile();
+					CCppObjectPtr<CFileFilterInput> pInput = OK_NEW_OPERATOR CFileFilterInput(afile);
+					CCppObjectPtr<CFileFilterOutput> pOutput = OK_NEW_OPERATOR CFileFilterOutput(fpath);
+					CCppObjectPtr<CZipDeCompressFilter> pFilter = OK_NEW_OPERATOR CZipDeCompressFilter(pInput, pOutput);
 
 					pFilter->open();
 					pFilter->do_filter();
@@ -391,11 +386,6 @@ void XGuiZipExtractFiles(CStringLiteral zipfile, WBool usefolders, ConstRef(TMBC
 					}
 
 					CWinDirectoryIterator::WriteFileTimes(fpath, plastmodfiletime, plastmodfiletime, plastmodfiletime);
-
-					pFilter->release();
-					pInput->release();
-					pOutput->release();
-					afile->release();
 				}
 				else
 					zipIt->Skip();
@@ -405,8 +395,6 @@ void XGuiZipExtractFiles(CStringLiteral zipfile, WBool usefolders, ConstRef(TMBC
 			break;
 		}
 	}
-	zipIt->release();
 	pArchiveFile->Close();
-	pArchiveFile->release();
 	CSecurityContext_FreeInstance
 }

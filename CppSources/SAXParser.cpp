@@ -36,21 +36,6 @@ CSAXParserAttribute::~CSAXParserAttribute()
 {
 }
 
-static void __stdcall SAXParserAttributeDeleteFunc(ConstPointer data, Pointer context)
-{
-	Ptr(CSAXParserAttribute) pAttribute = CastAnyPtr(CSAXParserAttribute, CastMutable(Pointer, data));
-
-	pAttribute->release();
-}
-
-static sword __stdcall SAXParserAttributeSearchAndSortFunc(ConstPointer ArrayItem, ConstPointer DataItem)
-{
-	Ptr(CSAXParserAttribute) pArrayItem = CastAnyPtr(CSAXParserAttribute, CastMutable(Pointer, ArrayItem));
-	Ptr(CSAXParserAttribute) pDataItem = CastAnyPtr(CSAXParserAttribute, CastMutable(Pointer, DataItem));
-
-	return pArrayItem->get_Name().Compare(pDataItem->get_Name());
-}
-
 CSAXParserAttributes::CSAXParserAttributes(DECL_FILE_LINE0) :
 	super(ARGS_FILE_LINE 16, 16)
 {
@@ -72,13 +57,6 @@ void CSAXParserContentHandler::CommentHandler(ConstRef(CStringBuffer) text) {}
 void CSAXParserContentHandler::StartCdataSectionHandler() {}
 void CSAXParserContentHandler::EndCdataSectionHandler() {}
 void CSAXParserContentHandler::DefaultHandler(ConstRef(CStringBuffer) text) {}
-
-static void __stdcall SAXParseElementDefinitionDeleteFunc(ConstPointer data, Pointer context)
-{
-	Ptr(CSAXParserElementDefinition) pDefinition = CastAnyPtr(CSAXParserElementDefinition, CastMutable(Pointer, data));
-
-	pDefinition->release();
-}
 
 CSAXParserElementDefinition::CSAXParserElementDefinition(XML_Content_Type contentType, XML_Content_Quant contentQuant, CConstPointer name) :
 _contentType(contentType), _contentQuant(contentQuant), _name(__FILE__LINE__ name), _children(__FILE__LINE__ 16, 32)
@@ -115,7 +93,7 @@ void CSAXParserDTDHandler::StartNamespaceDeclHandler(ConstRef(CStringBuffer) pre
 void CSAXParserDTDHandler::EndNamespaceDeclHandler(ConstRef(CStringBuffer) prefix){}
 
 CSAXParser::CSAXParser() :
-_impl(NULL)
+_impl(nullptr)
 {
 }
 
@@ -136,7 +114,7 @@ Ptr(CSAXParserContentHandler) CSAXParser::get_contenthandler() const
 {
 	if (_impl)
 		return _impl->get_contenthandler();
-	return NULL;
+	return nullptr;
 }
 
 void CSAXParser::set_contenthandler(Ptr(CSAXParserContentHandler) h)
@@ -149,7 +127,7 @@ Ptr(CSAXParserDTDHandler) CSAXParser::get_dtdhandler() const
 {
 	if (_impl)
 		return _impl->get_dtdhandler();
-	return NULL;
+	return nullptr;
 }
 
 void CSAXParser::set_dtdhandler(Ptr(CSAXParserDTDHandler) h)
@@ -176,7 +154,7 @@ void CSAXParser::Parse(ConstRef(CFilePath) xmlfilepath)
 	if (PtrCheck(_impl))
 		return;
 
-	Ptr(CDiskFile) f = OK_NEW_OPERATOR CDiskFile(xmlfilepath);
+	CCppObjectPtr<CDiskFile> f = OK_NEW_OPERATOR CDiskFile(xmlfilepath);
 	CByteBuffer b(__FILE__LINE__ 1024);
 
 	f->Read(b);
@@ -186,9 +164,8 @@ void CSAXParser::Parse(ConstRef(CFilePath) xmlfilepath)
 		b.set_BufferSize(__FILE__LINE__ 1024);
 		f->Read(b);
 	}
-	_impl->Parse(b, true);
 	f->Close();
-	f->release();
+	_impl->Parse(b, true);
 }
 
 void CSAXParser::Parse(ConstRef(CByteBuffer) xmldata, bool isFinal)

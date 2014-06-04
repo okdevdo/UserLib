@@ -355,8 +355,8 @@ void CFile::Read(CConstPointer _format, ...)
 
 	CByteBuffer bBuf;
 	bool bLittleEndian;
-	BPointer mapP = NULL;
-	BPointer mapP1 = NULL;
+	BPointer mapP = nullptr;
+	BPointer mapP1 = nullptr;
 
 	bBuf.set_BufferSize(__FILE__LINE__ 2048);
 	Read(bBuf);
@@ -736,18 +736,18 @@ void CDiskFile::Write(ConstRef(CByteLinkedBuffer) _buffer)
 
 //***************** CStreamFile ****************************************************
 CStreamFile::CStreamFile(void) :
-CFile(), m_file(NULL)
+CFile(), m_file(nullptr)
 {
 }
 
 CStreamFile::CStreamFile(ConstRef(CFilePath) _path, WBool _readOnly, WBool _textMode, TEncoding _encoding) :
-CFile(_path, _readOnly, _textMode, _encoding), m_file(NULL)
+CFile(_path, _readOnly, _textMode, _encoding), m_file(nullptr)
 {
 	Open(_path, _readOnly, _textMode, _encoding);
 }
 
 CStreamFile::CStreamFile(ConstRef(CStreamFile) diskfile) :
-CFile(diskfile), m_file(NULL)
+CFile(diskfile), m_file(nullptr)
 {
 }
 
@@ -880,7 +880,7 @@ void CStreamFile::Close()
 	if (PtrCheck(m_file))
 		return;
 	fclose(CastAnyPtr(FILE,m_file));
-	m_file = NULL;
+	m_file = nullptr;
 }
 
 CFile::TFileSize CStreamFile::GetSize()

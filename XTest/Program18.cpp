@@ -28,9 +28,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -43,9 +43,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -58,9 +58,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -73,9 +73,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -88,9 +88,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -103,9 +103,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -118,9 +118,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -133,9 +133,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -148,9 +148,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -163,9 +163,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -178,9 +178,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -193,9 +193,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -208,9 +208,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -223,9 +223,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -238,9 +238,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -253,9 +253,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -268,9 +268,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -283,9 +283,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -298,9 +298,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -313,9 +313,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -328,9 +328,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -343,9 +343,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -358,9 +358,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -373,9 +373,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -388,9 +388,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -403,9 +403,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -418,9 +418,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -433,9 +433,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -448,9 +448,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -463,9 +463,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -478,9 +478,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -493,9 +493,9 @@ static CConstPointer pSQLite3Statement[] = {
 	_T("STATEMENT: ") _T("DROP TABLE IF EXISTS okTest;")
 	_T("CREATE TABLE okTest(")
 	_T("EmployeeID INTEGER PRIMARY KEY AUTOINCREMENT,")
-	_T("EmployeeName TEXT(100) NOT NULL,")
-	_T("EmployeeSalary FLOAT NOT NULL,")
-	_T("Comment TEXT(500) NULL")
+	_T("EmployeeName TEXT(100) NOT nullptr,")
+	_T("EmployeeSalary FLOAT NOT nullptr,")
+	_T("Comment TEXT(500) nullptr")
 	_T(");\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis', 100.0, 'TestComment');\n")
 	_T("STATEMENT: ") _T("INSERT INTO okTest (EmployeeName, EmployeeSalary, Comment) VALUES ('okreis1', 200.0, 'TestComment1');\n")
@@ -508,7 +508,7 @@ static CConstPointer pSQLite3Statement[] = {
 class CServerResponse : public CCppObject
 {
 public:
-	CServerResponse(CConstPointer crequest = NULL): _crequest(__FILE__LINE__ crequest) 
+	CServerResponse(CConstPointer crequest = nullptr): _crequest(__FILE__LINE__ crequest) 
 	{
 		append_slash();
 	}
@@ -545,17 +545,10 @@ protected:
 	CStringBuffer _sresponse;
 };
 
-static void __stdcall CServerResponsesDeleteFunc(ConstPointer data, Pointer context)
-{
-	Ptr(CServerResponse) pResponse = CastAnyPtr(CServerResponse, CastMutable(Pointer, data));
-
-	pResponse->release();
-}
-
 class CServerResponses : public CDataDoubleLinkedListT<CServerResponse>
 {
 public:
-	CServerResponses(CConstPointer stmts = NULL) : CDataDoubleLinkedListT<CServerResponse>(__FILE__LINE__0)
+	CServerResponses(CConstPointer stmts = nullptr) : CDataDoubleLinkedListT<CServerResponse>(__FILE__LINE__0)
 	{
 		if (stmts)
 			split_and_append(stmts);
@@ -581,15 +574,14 @@ class CSqLite3ServiceClient : public CAsyncTCPClient
 {
 public:
 
-	CSqLite3ServiceClient(Ptr(CAsyncIOManager) pManager = NULL, CConstPointer stmts = NULL) :
-		CAsyncTCPClient(pManager), _responses(stmts), _current_response(_responses.Begin()), _currentRowCnt(0), _currentRow(0), _bQuit(false)
+	CSqLite3ServiceClient(Ptr(CAsyncIOData) pData) :
+		CAsyncTCPClient(pData), _responses(), _current_response(_responses.Begin()), _currentRowCnt(0), _currentRow(0), _bQuit(false)
 	{
 	}
 
-	CSqLite3ServiceClient(Ptr(CAsyncIOData) pData) :
-		CAsyncTCPClient(), _responses(), _current_response(_responses.Begin()), _currentRowCnt(0), _currentRow(0), _bQuit(false)
+	CSqLite3ServiceClient(Ptr(CAsyncIOManager) pManager = nullptr, CConstPointer stmts = nullptr) :
+		CAsyncTCPClient(pManager), _responses(stmts), _current_response(_responses.Begin()), _currentRowCnt(0), _currentRow(0), _bQuit(false)
 	{
-		m_pData = pData;
 	}
 
 	virtual ~CSqLite3ServiceClient() {}
@@ -615,7 +607,7 @@ public:
 	void process_server_response()
 	{
 		CStringBuffer tmp;
-		CPointer output[64] = { NULL };
+		CPointer output[64] = { nullptr };
 		dword outputsize = 0;
 
 		tmp.convertFromUTF8(GetData()->get_buffer(), false);
@@ -626,7 +618,7 @@ public:
 			if (s_strnicmp(output[i], _T("CONNECT:"), 8) == 0)
 			{
 				CStringBuffer tmp1(__FILE__LINE__ output[i] + 8);
-				CPointer output1[16] = { NULL };
+				CPointer output1[16] = { nullptr };
 				dword output1size = 0;
 				CStringBuffer errCode;
 				CStringBuffer errMsg;
@@ -658,7 +650,7 @@ public:
 			else if (s_strnicmp(output[i], _T("RESULT:"), 7) == 0)
 			{
 				CStringBuffer tmp1(__FILE__LINE__ output[i] + 7);
-				CPointer output1[16] = { NULL };
+				CPointer output1[16] = { nullptr };
 				dword output1size = 0;
 				CStringBuffer sColumns;
 				word vColumns = 0;
@@ -686,11 +678,11 @@ public:
 					}
 				}
 				sColumns.Split(_T("="), output1, 16, &output1size);
-				vColumns = Castword(s_strtoul(output1[1], NULL, 10));
+				vColumns = Castword(s_strtoul(output1[1], nullptr, 10));
 				if (vColumns > 0)
 				{
 					sRows.Split(_T("="), output1, 16, &output1size);
-					_currentRowCnt = s_strtoll(output1[1], NULL, 10);
+					_currentRowCnt = s_strtoll(output1[1], nullptr, 10);
 					_currentRow = 0;
 					_responses.InsertAfter(_current_response, OK_NEW_OPERATOR CServerResponse(_T("FETCHROWS: ROW=0\n")));
 					++_currentRow;
@@ -750,23 +742,6 @@ public:
 		return r1->GetData() == r2->GetData();
 	}
 };
-
-static sword __stdcall AsyncTCPClientListSearchAndSortFunc(ConstPointer item, ConstPointer data)
-{
-	Ptr(CSqLite3ServiceClient) pClient = CastAnyPtr(CSqLite3ServiceClient, CastMutable(Pointer, item));
-	Ptr(CAsyncIOData) pData = CastAnyPtr(CAsyncIOData, CastMutable(Pointer, data));
-
-	if (pClient->GetData() == pData)
-		return 0;
-	return 1;
-}
-
-static void __stdcall AsyncTCPClientListDeleteFunc(ConstPointer data, Pointer context)
-{
-	Ptr(CSqLite3ServiceClient) pClient = CastAnyPtr(CSqLite3ServiceClient, CastMutable(Pointer, data));
-
-	pClient->release();
-}
 
 typedef CDataDoubleLinkedListT<CSqLite3ServiceClient> CAsyncTCPClientList;
 

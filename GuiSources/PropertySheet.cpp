@@ -40,7 +40,7 @@ CPropertySheetAbstractNode::~CPropertySheetAbstractNode(void)
 
 CPropertySheetAbstractNode* CPropertySheetAbstractNode::HitTest(POINT pt, THitTest* pType, INT xPos, INT yPos, INT cBottom)
 {
-	return NULL;
+	return nullptr;
 }
 
 void CPropertySheetAbstractNode::OnCalcRects(Gdiplus::Graphics* graphics, LPRECT pRect, LPINT maxKeyWidth, LPINT maxValueWidth)
@@ -141,7 +141,7 @@ void CPropertySheetNode::set_Selected(bool selected)
 				int ix = m_propertySheet->inx_SelNode(this);
 
 				if ( ix > -1 )
-					m_propertySheet->set_SelNode(ix, NULL);
+					m_propertySheet->set_SelNode(ix, nullptr);
 			}
 			m_propertySheet->Update(FALSE);
 		}
@@ -167,20 +167,20 @@ void CPropertySheetNode::get_EditorRect(LPRECT rect)
 CPropertySheetAbstractNode* CPropertySheetNode::HitTest(POINT pt, THitTest* pType, INT xPos, INT yPos, INT cBottom)
 {
 	if ( !pType )
-		return NULL;
+		return nullptr;
 	if ( !m_propertySheet )
-		return NULL;
+		return nullptr;
 
 	RECT keyRect; ::CopyRect(&keyRect, &m_keyRect); ::OffsetRect(&keyRect, -xPos, -yPos);
 	RECT valueRect; ::CopyRect(&valueRect, &m_valueRect); ::OffsetRect(&valueRect, -xPos, -yPos);
 	RECT borderRect; ::CopyRect(&borderRect, &m_borderRect); ::OffsetRect(&borderRect, -xPos, -yPos);
 
 	if ( borderRect.bottom < 0 )
-		return NULL;
+		return nullptr;
 	if ( borderRect.top >= cBottom )
-		return NULL;
+		return nullptr;
 	if ( (pt.y >= borderRect.top) && (pt.y < borderRect.bottom) && ((pt.x < keyRect.left) || (pt.x > valueRect.right)) )
-		return NULL;
+		return nullptr;
 	if ( PtInRect(&keyRect, pt) )
 	{
 		*pType = THitTestKey;
@@ -191,7 +191,7 @@ CPropertySheetAbstractNode* CPropertySheetNode::HitTest(POINT pt, THitTest* pTyp
 		*pType = THitTestValue;
 		return this;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void CPropertySheetNode::OnCalcRects(Gdiplus::Graphics* graphics, LPRECT pRect, LPINT maxKeyWidth, LPINT maxValueWidth)
@@ -470,25 +470,14 @@ BEGIN_MESSAGE_MAP(CControl, CPropertySheet)
 	ON_WM_NOTIFY(NM_EDITORCURSORDOWN,OnEditorCursorDown)
 END_MESSAGE_MAP()
 
-static void __stdcall TDeleteFunc_SelectedPropertySheetNodes( ConstPointer data, Pointer context )
-{
-}
-
-static void __stdcall TDeleteFunc_PropertySheetNodes( ConstPointer data, Pointer context )
-{
-	Ptr(CPropertySheetAbstractNode) p = CastAnyPtr(CPropertySheetAbstractNode, CastMutable(Pointer, data));
-
-	delete p;
-}
-
 CPropertySheet::CPropertySheet(LPCTSTR name):
     CControl(name),
 	m_nodes(__FILE__LINE__ 64, 64),
 	m_selNodes(__FILE__LINE__ 64, 64),
-	m_currentNode(NULL),
+	m_currentNode(nullptr),
 	m_multiSelect(false),
 	m_editable(false),
-	m_editor(NULL)
+	m_editor(nullptr)
 {
 }
 
@@ -496,10 +485,10 @@ CPropertySheet::CPropertySheet(ConstRef(CStringBuffer) name):
     CControl(name),
 	m_nodes(__FILE__LINE__ 64, 64),
 	m_selNodes(__FILE__LINE__ 64, 64),
-	m_currentNode(NULL),
+	m_currentNode(nullptr),
 	m_multiSelect(false),
 	m_editable(false),
-	m_editor(NULL)
+	m_editor(nullptr)
 {
 }
 
@@ -511,9 +500,9 @@ CPropertySheet::~CPropertySheet(void)
 CPropertySheetAbstractNode* CPropertySheet::get_Node(LPCTSTR key)
 {
 	CPropertySheetNodeVector::Iterator it = m_nodes.Begin();
-	CPropertySheetAbstractNode* result = NULL;
-	CPropertySheetAbstractNode* node = NULL;
-	CPropertySheetNode* node1 = NULL;
+	CPropertySheetAbstractNode* result = nullptr;
+	CPropertySheetAbstractNode* node = nullptr;
+	CPropertySheetNode* node1 = nullptr;
 
 	while ( it )
 	{
@@ -548,7 +537,7 @@ void CPropertySheet::set_Node(dword ix, CPropertySheetAbstractNode* node)
 			CPropertySheetNode* node2 = CastDynamicPtr(CPropertySheetNode, node1);
 
 			if ( m_currentNode == node2 )
-				m_currentNode = NULL;
+				m_currentNode = nullptr;
 			if ( node2->is_Selected() )
 				node2->set_Selected(false);
 		}
@@ -572,7 +561,7 @@ void CPropertySheet::set_Node(dword ix, CPropertySheetAbstractNode* node)
 			CPropertySheetNode* node2 = CastDynamicPtr(CPropertySheetNode, node1);
 
 			if ( m_currentNode == node2 )
-				m_currentNode = NULL;
+				m_currentNode = nullptr;
 			if ( node2->is_Selected() )
 				node2->set_Selected(false);
 		}
@@ -600,7 +589,7 @@ CStringBuffer CPropertySheet::get_NodeValueString(LPCTSTR key)
 {
 	CStringBuffer result;
 	CPropertySheetAbstractNode* node = get_Node(key);
-	CPropertySheetNode* node1 = NULL;
+	CPropertySheetNode* node1 = nullptr;
 
 	if ( node && (node->get_Discriminator() == CPropertySheetAbstractNode::TDiscriminatorNode ) )
 		node1 = CastDynamicPtr(CPropertySheetNode, node);
@@ -612,7 +601,7 @@ CStringBuffer CPropertySheet::get_NodeValueString(LPCTSTR key)
 void CPropertySheet::set_NodeValueString(LPCTSTR key, LPCTSTR data, int lenCh)
 {
 	CPropertySheetAbstractNode* node = get_Node(key);
-	CPropertySheetNode* node1 = NULL;
+	CPropertySheetNode* node1 = nullptr;
 
 	if ( node && (node->get_Discriminator() == CPropertySheetAbstractNode::TDiscriminatorNode ) )
 		node1 = CastDynamicPtr(CPropertySheetNode, node);
@@ -623,7 +612,7 @@ void CPropertySheet::set_NodeValueString(LPCTSTR key, LPCTSTR data, int lenCh)
 void CPropertySheet::set_NodeValueString(LPCTSTR key, ConstRef(CStringBuffer) data)
 {
 	CPropertySheetAbstractNode* node = get_Node(key);
-	CPropertySheetNode* node1 = NULL;
+	CPropertySheetNode* node1 = nullptr;
 
 	if ( node && (node->get_Discriminator() == CPropertySheetAbstractNode::TDiscriminatorNode ) )
 		node1 = CastDynamicPtr(CPropertySheetNode, node);
@@ -1096,8 +1085,8 @@ LRESULT CPropertySheet::OnLButtonDown(WPARAM wParam, LPARAM lParam)
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 	CPropertySheetAbstractNode::THitTest type;
 	CPropertySheetNodeVector::Iterator it;
-	CPropertySheetAbstractNode* node = NULL;
-	CPropertySheetNode* node1 = NULL;
+	CPropertySheetAbstractNode* node = nullptr;
+	CPropertySheetNode* node1 = nullptr;
 	int xPos = get_HScrollOffset();
 	int yPos = get_VScrollOffset();
 	RECT clientRect;
@@ -1201,8 +1190,8 @@ LRESULT CPropertySheet::OnLButtonDblClk(WPARAM wParam, LPARAM lParam)
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 		CPropertySheetAbstractNode::THitTest type;
 		CPropertySheetNodeVector::Iterator it;
-		CPropertySheetAbstractNode* node = NULL;
-		CPropertySheetNode* node1 = NULL;
+		CPropertySheetAbstractNode* node = nullptr;
+		CPropertySheetNode* node1 = nullptr;
 		int xPos = get_HScrollOffset();
 		int yPos = get_VScrollOffset();
 		RECT clientRect;

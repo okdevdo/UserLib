@@ -90,7 +90,7 @@ protected:
 	CConsoleControl* m_FocusControl;
 	PosIn m_FocusControlBorderIn;
 	COORD m_FocusControlLastMousePosition;
-	Ptr(CConsoleLayout) m_pLayout;
+	CCppObjectPtr<CConsoleLayout> m_pLayout;
 
 private:
 	CConsoleTabPageControl(void);

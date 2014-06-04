@@ -31,7 +31,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_enc_null(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_enc_null();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -44,7 +44,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_des_cbc(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_des_cbc();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -57,7 +57,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_des_ecb(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_des_ecb();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -70,7 +70,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_des_cfb(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_des_cfb();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -83,7 +83,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_des_ofb(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_des_ofb();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -96,7 +96,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_des_ede_cbc(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_des_ede_cbc();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -109,7 +109,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_des_ede(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_des_ede();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -122,7 +122,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_des_ede_ofb(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_des_ede_ofb();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -135,7 +135,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_des_ede_cfb(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_des_ede_cfb();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -148,7 +148,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_des_ede3_cbc(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_des_ede3_cbc();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -161,7 +161,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_des_ede3(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_des_ede3();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -174,7 +174,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_des_ede3_ofb(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_des_ede3_ofb();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -187,7 +187,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_des_ede3_cfb(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_des_ede3_cfb();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -200,7 +200,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_desx_cbc(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_desx_cbc();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -213,7 +213,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_rc4(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_rc4();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -226,7 +226,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_rc4_40(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_rc4_40();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -240,14 +240,14 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_idea_cbc(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_idea_cbc();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
 	p->insert_obj();
 	return p;
 #else
-	return NULL;
+	return nullptr;
 #endif
 }
 
@@ -257,14 +257,14 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_idea_ecb(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_idea_ecb();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
 	p->insert_obj();
 	return p;
 #else
-	return NULL;
+	return nullptr;
 #endif
 }
 
@@ -274,14 +274,14 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_idea_cfb(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_idea_cfb();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
 	p->insert_obj();
 	return p;
 #else
-	return NULL;
+	return nullptr;
 #endif
 }
 
@@ -291,14 +291,14 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_idea_ofb(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_idea_ofb();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
 	p->insert_obj();
 	return p;
 #else
-	return NULL;
+	return nullptr;
 #endif
 }
 
@@ -307,7 +307,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_rc2_cbc(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_rc2_cbc();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -320,7 +320,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_rc2_ecb(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_rc2_ecb();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -333,7 +333,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_rc2_cfb(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_rc2_cfb();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -346,7 +346,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_rc2_ofb(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_rc2_ofb();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -359,7 +359,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_rc2_40_cbc(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_rc2_40_cbc();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -372,7 +372,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_rc2_64_cbc(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_rc2_64_cbc();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -385,7 +385,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_bf_cbc(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_bf_cbc();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -398,7 +398,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_bf_ecb(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_bf_ecb();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -411,7 +411,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_bf_cfb(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_bf_cfb();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -424,7 +424,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_bf_ofb(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_bf_ofb();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -437,7 +437,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_cast5_cbc(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_cast5_cbc();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -450,7 +450,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_cast5_ecb(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_cast5_ecb();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -463,7 +463,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_cast5_cfb(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_cast5_cfb();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -476,7 +476,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_cast5_ofb(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_cast5_ofb();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -489,7 +489,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_aes_128_gcm(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_aes_128_gcm();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -502,7 +502,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_aes_192_gcm(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_aes_192_gcm();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -515,7 +515,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_aes_256_gcm(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_aes_256_gcm();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -528,7 +528,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_aes_128_ccm(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_aes_128_ccm();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -541,7 +541,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_aes_192_ccm(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_aes_192_ccm();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -554,7 +554,7 @@ Ptr(CEVP_CIPHER) CEVP_CIPHER::create_aes_256_ccm(void)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_aes_256_ccm();
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -567,7 +567,7 @@ ConstPtr(CEVP_CIPHER) CEVP_CIPHER::get_cipherbyname(const char *name)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_get_cipherbyname(name);
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -580,7 +580,7 @@ ConstPtr(CEVP_CIPHER) CEVP_CIPHER::get_cipherbynid(int nid)
 	ConstPtr(EVP_CIPHER) pCipher = EVP_get_cipherbynid(nid);
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = OK_NEW_OPERATOR CEVP_CIPHER(pCipher);
 
@@ -631,7 +631,7 @@ Ptr(CEVP_CIPHER_CTX) CEVP_CIPHER_CTX::create()
 	Ptr(EVP_CIPHER_CTX) pCipherCtx = EVP_CIPHER_CTX_new();
 
 	if (!pCipherCtx)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER_CTX) p = OK_NEW_OPERATOR CEVP_CIPHER_CTX(pCipherCtx);
 
@@ -643,7 +643,7 @@ void CEVP_CIPHER_CTX::free()
 {
 	if (_raw)
 		EVP_CIPHER_CTX_free(CastAnyPtr(EVP_CIPHER_CTX, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 void CEVP_CIPHER_CTX::init()
@@ -794,7 +794,7 @@ ConstPtr(CEVP_CIPHER) CEVP_CIPHER_CTX::cipher()
 	ConstPtr(EVP_CIPHER) pCipher = EVP_CIPHER_CTX_cipher(CastAnyPtr(EVP_CIPHER_CTX, _raw));
 
 	if (!pCipher)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_CIPHER) p = CastDynamicPtr(CEVP_CIPHER, find_obj(pCipher));
 

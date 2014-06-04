@@ -35,7 +35,7 @@ CAbstractConsoleControlCallback::~CAbstractConsoleControlCallback()
 
 CConsoleControl::CConsoleControl(CConstPointer name, CConsole* pConsole):
     CConsoleWindow(name, pConsole),
-    m_Callback(NULL),
+    m_Callback(nullptr),
 	m_TabStop(false),
 	m_TabOrder(0)
 {
@@ -43,7 +43,7 @@ CConsoleControl::CConsoleControl(CConstPointer name, CConsole* pConsole):
 
 CConsoleControl::CConsoleControl(CConstPointer name, CConstPointer title, CConsole* pConsole):
     CConsoleWindow(name, title, pConsole),
-    m_Callback(NULL),
+    m_Callback(nullptr),
 	m_TabStop(false),
 	m_TabOrder(0)
 {

@@ -29,10 +29,6 @@
 #endif
 #endif
 
-void __stdcall VectorEmptyDeleteFunc(ConstPointer data, Pointer context)
-{
-}
-
 class XServiceCtrlAppApplication : public CApplication
 {
 public:

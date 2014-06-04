@@ -169,7 +169,7 @@ void CConsoleFileDialog::Initialize(COORD _size)
 
 	m_DefaultButton = OK_NEW_OPERATOR CConsoleButtonControl(
 		4,
-		NULL,
+		nullptr,
 		_T("OKButton"),
 		_T("OK"),
 		m_Console);
@@ -182,7 +182,7 @@ void CConsoleFileDialog::Initialize(COORD _size)
 
 	m_CancelButton = OK_NEW_OPERATOR CConsoleButtonControl(
 		5,
-		NULL,
+		nullptr,
 		_T("CancelButton"),
 		_T("Abbrechen"),
 		m_Console);
@@ -423,7 +423,7 @@ void CConsoleFileDialog::Initialize2(COORD _size)
 
 	m_DefaultButton = OK_NEW_OPERATOR CConsoleButtonControl(
 		4,
-		NULL,
+		nullptr,
 		_T("OKButton"),
 		_T("OK"),
 		m_Console);
@@ -448,7 +448,7 @@ void CConsoleFileDialog::Initialize2(COORD _size)
 
 	m_CancelButton = OK_NEW_OPERATOR CConsoleButtonControl(
 		5,
-		NULL,
+		nullptr,
 		_T("CancelButton"),
 		_T("Abbrechen"),
 		m_Console);
@@ -673,7 +673,7 @@ void CConsoleFileDialog::LoadConfiguration()
 	CConsoleComboControl* pControl = CastDynamic(CConsoleComboControl*, 
     	GetControl(_T("WildCardText")));
 
-	if ( (pControl != NULL) && (!(pControl->GetCurrentComboItem().IsEmpty())) )
+	if ( (pControl != nullptr) && (!(pControl->GetCurrentComboItem().IsEmpty())) )
 		path.AppendString(pControl->GetCurrentComboItem());
 	else
 		path.AppendString(_T("*"));

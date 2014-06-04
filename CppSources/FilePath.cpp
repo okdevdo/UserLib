@@ -728,13 +728,13 @@ void CFilePath::set_Directory(CStringLiteral directory, int level)
 	{
 		if ( level >= Cast(int, cnt) )
 			return;
-		tmpSplitArray[level] = (tmp1.IsEmpty())?NULL:CastMutable(CPointer, tmp1.GetString());
+		tmpSplitArray[level] = (tmp1.IsEmpty())?nullptr:CastMutable(CPointer, tmp1.GetString());
 	}
 	else
 	{
 		if ( (Cast(int, cnt) + level) < 0 )
 			return;
-		tmpSplitArray[cnt + level] = (tmp1.IsEmpty())?NULL:CastMutable(CPointer, tmp1.GetString());
+		tmpSplitArray[cnt + level] = (tmp1.IsEmpty())?nullptr:CastMutable(CPointer, tmp1.GetString());
 	}
 	for ( dword ix = 0; ix < cnt; ++ix )
 		if ( NotPtrCheck(tmpSplitArray[ix]) )

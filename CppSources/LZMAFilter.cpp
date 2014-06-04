@@ -35,7 +35,7 @@ static void LZMA_API_CALL gFreeFunc(void *opaque, void *ptr)
 		TFfree(ptr);
 }
 
-static lzma_allocator gAlloc = { gAllocFunc, gFreeFunc, NULL };
+static lzma_allocator gAlloc = { gAllocFunc, gFreeFunc, nullptr };
 
 CLZMACompressFilter::CLZMACompressFilter(Ptr(CAbstractFilterInput) input, Ptr(CAbstractFilterOutput) output) :
     CLZMALibCompressFilter(input, output)

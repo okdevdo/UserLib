@@ -274,7 +274,7 @@ void ScanSetupIni(CStringLiteral pInstallDir, CStringLiteral psSetupIniScanDir, 
 		CStringConstIterator itS;
 		CPackageInfoBTree::Iterator itP;
 		CPackageInfo packInfo;
-		Ptr(CPackageInfo) pInfo = NULL;
+		Ptr(CPackageInfo) pInfo = nullptr;
 
 		while ( it )
 		{
@@ -308,7 +308,7 @@ void ScanSetupIni(CStringLiteral pInstallDir, CStringLiteral psSetupIniScanDir, 
 	{
 		CPackageInfoBTree::Iterator itP = packAll.Begin();
 		TMBCharList::Iterator itK;
-		Ptr(CPackageInfo) pInfo = NULL;
+		Ptr(CPackageInfo) pInfo = nullptr;
 
 		while ( itP )
 		{
@@ -355,8 +355,8 @@ void ScanSetupIni(CStringLiteral pInstallDir, CStringLiteral psSetupIniScanDir, 
 		CPackageInfoVector::Iterator itP2;
 		CInstallPackageInfoVector::Iterator itIP;
 		CInstallPackageInfo ipInfo;
-		Ptr(CPackageInfo) pInfo = NULL;
-		Ptr(CPackageInfo) pInfo2 = NULL;
+		Ptr(CPackageInfo) pInfo = nullptr;
+		Ptr(CPackageInfo) pInfo2 = nullptr;
 		bool bAppend = false;
 
 		while ( itP )
@@ -415,7 +415,7 @@ void ScanSetupIni(CStringLiteral pInstallDir, CStringLiteral psSetupIniScanDir, 
 	if ( ((flags & FLAG_InstallPackages) == 0) && ((flags & FLAG_UninstallPackages) == 0) ) 
 	{
 		CPackageInfoVector::Iterator itPI = packages.Begin();
-		Ptr(CPackageInfo) pInfo = NULL;
+		Ptr(CPackageInfo) pInfo = nullptr;
 
 		while ( itPI )
 		{
@@ -434,7 +434,7 @@ void ScanSetupIni(CStringLiteral pInstallDir, CStringLiteral psSetupIniScanDir, 
 		{
 			CPackageInfoVector packUnInst(__FILE__LINE__ packages.Count(), 16);
 			CPackageInfoVector::Iterator itPI;
-			Ptr(CPackageInfo) pInfo = NULL;
+			Ptr(CPackageInfo) pInfo = nullptr;
 
 			itPI = packages.Begin();
 			while ( itPI )
@@ -466,7 +466,7 @@ void ScanSetupIni(CStringLiteral pInstallDir, CStringLiteral psSetupIniScanDir, 
 		{
 			CPackageInfoVector packInst(__FILE__LINE__ packages.Count(), 16);
 			CPackageInfoVector::Iterator itPI;
-			Ptr(CPackageInfo) pInfo = NULL;
+			Ptr(CPackageInfo) pInfo = nullptr;
 
 			COUT << _T("Install: Determine required packages.") << endl;
 			itPI = packages.Begin();

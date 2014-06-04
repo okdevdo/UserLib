@@ -28,9 +28,9 @@
 void XLZipCompressFile(CStringLiteral compressfile, CStringLiteral archivefile)
 {
 	CFilePath finputfile(__FILE__LINE__ compressfile);
-	CSecurityFile* pinputfile = NULL;
+	CCppObjectPtr<CSecurityFile> pinputfile;
 	CFilePath farchivefile;
-	CSecurityFile* parchivefile = NULL;
+	CCppObjectPtr<CSecurityFile> parchivefile;
 
 	if ( archivefile.IsEmpty() )
 	{
@@ -60,32 +60,20 @@ void XLZipCompressFile(CStringLiteral compressfile, CStringLiteral archivefile)
 
 		parchivefile->Create(farchivefile);
 		
-		CFileFilterInput* pInput = OK_NEW_OPERATOR CFileFilterInput(pinputfile);
-		CFileFilterOutput* pOutput = OK_NEW_OPERATOR CFileFilterOutput(parchivefile);
-		CLZMACompressFilter* pFilter = OK_NEW_OPERATOR CLZMACompressFilter(pInput, pOutput);
+		CCppObjectPtr<CFileFilterInput> pInput = OK_NEW_OPERATOR CFileFilterInput(pinputfile);
+		CCppObjectPtr<CFileFilterOutput> pOutput = OK_NEW_OPERATOR CFileFilterOutput(parchivefile);
+		CCppObjectPtr<CFilter> pFilter = OK_NEW_OPERATOR CLZMACompressFilter(pInput, pOutput);
 
 		pFilter->open();
 		pFilter->do_filter();
 		pFilter->close();
-
-		pFilter->release();
-		pOutput->release();
-		pInput->release();
-		parchivefile->release();
-		pinputfile->release();
 	}
 	catch ( CBaseException* ex )
 	{
 		if ( pinputfile )
-		{
 			pinputfile->Close();
-			pinputfile->release();
-		}
 		if ( parchivefile )
-		{
 			parchivefile->Close();
-			parchivefile->release();
-		}
 		CERR << ex->GetExceptionMessage() << endl;
 	}
 	CSecurityContext_FreeInstance

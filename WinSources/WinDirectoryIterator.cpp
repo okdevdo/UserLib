@@ -43,8 +43,8 @@ CWinDirectoryIterator::CWinDirectoryIterator():
 	_hFileFind(INVALID_HANDLE_VALUE)
 #endif
 #ifdef OK_SYS_UNIX
-	_hFileFind(NULL),
-	_tFileFind(NULL),
+	_hFileFind(nullptr),
+	_tFileFind(nullptr),
 	_bStatus(false),
 	_bAccess(false)
 #endif
@@ -57,8 +57,8 @@ CWinDirectoryIterator::CWinDirectoryIterator(ConstRef(CFilePath) path):
 	_hFileFind(INVALID_HANDLE_VALUE)
 #endif
 #ifdef OK_SYS_UNIX
-	_hFileFind(NULL),
-	_tFileFind(NULL),
+	_hFileFind(nullptr),
+	_tFileFind(nullptr),
 	_bStatus(false),
 	_bAccess(false)
 #endif
@@ -78,7 +78,7 @@ void CWinDirectoryIterator::GetCurrentDirectory(Ref(CFilePath) _path)
 	DWORD nBufferLength;
 
 #ifdef _UNICODE
-	nBufferLength = GetCurrentDirectoryW(0, NULL);
+	nBufferLength = GetCurrentDirectoryW(0, nullptr);
 	if (0 == nBufferLength)
 		throw OK_NEW_OPERATOR CWinDirectoryIteratorException(__FILE__LINE__ _T("%s Exception"),
 		_T("CWinDirectoryIterator::GetCurrentDirectory"), CWinException::WinExtError);
@@ -88,7 +88,7 @@ void CWinDirectoryIterator::GetCurrentDirectory(Ref(CFilePath) _path)
 		throw OK_NEW_OPERATOR CWinDirectoryIteratorException(__FILE__LINE__ _T("%s Exception"),
 		_T("CWinDirectoryIterator::GetCurrentDirectory"), CWinException::WinExtError);
 #else
-	nBufferLength = GetCurrentDirectoryA(0, NULL);
+	nBufferLength = GetCurrentDirectoryA(0, nullptr);
 	if (0 == nBufferLength)
 		throw OK_NEW_OPERATOR CWinDirectoryIteratorException(__FILE__LINE__ _T("%s Exception"),
 		_T("CWinDirectoryIterator::GetCurrentDirectory"), CWinException::WinExtError);
@@ -104,7 +104,7 @@ void CWinDirectoryIterator::GetCurrentDirectory(Ref(CFilePath) _path)
 #ifdef OK_SYS_UNIX
 	CPointer buffer;
 
-	if (NULL == (buffer = getcwd(NULL, 0)))
+	if (nullptr == (buffer = getcwd(nullptr, 0)))
 		throw OK_NEW_OPERATOR CWinDirectoryIteratorException(__FILE__LINE__ _T("%s Exception"),
 		_T("CWinDirectoryIterator::GetCurrentDirectory"), CWinException::CRunTimeError);
 	_path.set_Path(__FILE__LINE__ buffer);
@@ -492,7 +492,7 @@ void CWinDirectoryIterator::RemoveFile(ConstRef(CFilePath) path)
 	SECURITY_ATTRIBUTES sa;
 
 	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
-	sa.lpSecurityDescriptor = NULL;
+	sa.lpSecurityDescriptor = nullptr;
 	sa.bInheritHandle = FALSE;
 
 	// note: FILE_FLAG_OPEN_REPARSE_POINT is not specified, that deletes the target
@@ -503,7 +503,7 @@ void CWinDirectoryIterator::RemoveFile(ConstRef(CFilePath) path)
 		&sa,
 		dwCreationDisposition,
 		dwFlagsAndAttributes,
-		NULL
+		nullptr
 		);
 	if (fHandle == INVALID_HANDLE_VALUE)
 	{
@@ -524,7 +524,7 @@ void CWinDirectoryIterator::RemoveFile(ConstRef(CFilePath) path)
 void CWinDirectoryIterator::LinkFile(ConstRef(CFilePath) _from, ConstRef(CFilePath) _to)
 {
 #ifdef OK_SYS_WINDOWS
-	if (!CreateHardLink(_to.GetString(), _from.GetString(), NULL))
+	if (!CreateHardLink(_to.GetString(), _from.GetString(), nullptr))
 		throw OK_NEW_OPERATOR CWinDirectoryIteratorException(__FILE__LINE__ _T("%s Exception, From = '%s', To = '%s'"),
 		_T("CWinDirectoryIterator::LinkFile"), _from.GetString(), _to.GetString(), CWinException::WinExtError);
 #endif
@@ -903,7 +903,7 @@ void CWinDirectoryIterator::_ReadFileTimes(ConstRef(CFilePath) _path, Ptr(FILETI
 	SECURITY_ATTRIBUTES sa;
 
 	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
-	sa.lpSecurityDescriptor = NULL;
+	sa.lpSecurityDescriptor = nullptr;
 	sa.bInheritHandle = TRUE;
 
 	if (_path.is_File() && FileExists(_path))
@@ -915,7 +915,7 @@ void CWinDirectoryIterator::_ReadFileTimes(ConstRef(CFilePath) _path, Ptr(FILETI
 			&sa, // LPSECURITY_ATTRIBUTES lpSecurityAttributes,
 			OPEN_EXISTING, // DWORD dwCreationDisposition,
 			FILE_ATTRIBUTE_NORMAL, // DWORD dwFlagsAndAttributes,
-			NULL // HANDLE hTemplateFile
+			nullptr // HANDLE hTemplateFile
 			);
 	}
 	else if (_path.is_Directory() && (DirectoryExists(_path) >= 0))
@@ -927,7 +927,7 @@ void CWinDirectoryIterator::_ReadFileTimes(ConstRef(CFilePath) _path, Ptr(FILETI
 			&sa, // LPSECURITY_ATTRIBUTES lpSecurityAttributes,
 			OPEN_EXISTING, // DWORD dwCreationDisposition,
 			FILE_FLAG_BACKUP_SEMANTICS, // DWORD dwFlagsAndAttributes,
-			NULL // HANDLE hTemplateFile
+			nullptr // HANDLE hTemplateFile
 			);
 	}
 	else
@@ -1013,21 +1013,21 @@ void CWinDirectoryIterator::ReadFileTimes(ConstRef(CFilePath) _path, Ref(CSystem
 	if (!FileTimeToSystemTime(&vCreationTime, &t))
 		throw OK_NEW_OPERATOR CWinDirectoryIteratorException(__FILE__LINE__ _T("%s Exception, Path = '%s'"),
 		_T("CWinDirectoryIterator::ReadFileTimes"), _path.GetString(), CWinException::WinExtError);
-	if (!SystemTimeToTzSpecificLocalTime(NULL, &t, &l))
+	if (!SystemTimeToTzSpecificLocalTime(nullptr, &t, &l))
 		throw OK_NEW_OPERATOR CWinDirectoryIteratorException(__FILE__LINE__ _T("%s Exception, Path = '%s'"),
 		_T("CWinDirectoryIterator::ReadFileTimes"), _path.GetString(), CWinException::WinExtError);
 	CreationTime = l;
 	if (!FileTimeToSystemTime(&vLastAccessTime, &t))
 		throw OK_NEW_OPERATOR CWinDirectoryIteratorException(__FILE__LINE__ _T("%s Exception, Path = '%s'"),
 		_T("CWinDirectoryIterator::ReadFileTimes"), _path.GetString(), CWinException::WinExtError);
-	if (!SystemTimeToTzSpecificLocalTime(NULL, &t, &l))
+	if (!SystemTimeToTzSpecificLocalTime(nullptr, &t, &l))
 		throw OK_NEW_OPERATOR CWinDirectoryIteratorException(__FILE__LINE__ _T("%s Exception, Path = '%s'"),
 		_T("CWinDirectoryIterator::ReadFileTimes"), _path.GetString(), CWinException::WinExtError);
 	LastAccessTime = l;
 	if (!FileTimeToSystemTime(&vLastWriteTime, &t))
 		throw OK_NEW_OPERATOR CWinDirectoryIteratorException(__FILE__LINE__ _T("%s Exception, Path = '%s'"),
 		_T("CWinDirectoryIterator::ReadFileTimes"), _path.GetString(), CWinException::WinExtError);
-	if (!SystemTimeToTzSpecificLocalTime(NULL, &t, &l))
+	if (!SystemTimeToTzSpecificLocalTime(nullptr, &t, &l))
 		throw OK_NEW_OPERATOR CWinDirectoryIteratorException(__FILE__LINE__ _T("%s Exception, Path = '%s'"),
 		_T("CWinDirectoryIterator::ReadFileTimes"), _path.GetString(), CWinException::WinExtError);
 	LastWriteTime = l;
@@ -1068,7 +1068,7 @@ void CWinDirectoryIterator::_WriteFileTimes(ConstRef(CFilePath) _path, Ptr(FILET
 	SECURITY_ATTRIBUTES sa;
 
 	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
-	sa.lpSecurityDescriptor = NULL;
+	sa.lpSecurityDescriptor = nullptr;
 	sa.bInheritHandle = TRUE;
 
 	if (_path.is_File() && FileExists(_path))
@@ -1080,7 +1080,7 @@ void CWinDirectoryIterator::_WriteFileTimes(ConstRef(CFilePath) _path, Ptr(FILET
 			&sa, // LPSECURITY_ATTRIBUTES lpSecurityAttributes,
 			OPEN_EXISTING, // DWORD dwCreationDisposition,
 			FILE_ATTRIBUTE_NORMAL, // DWORD dwFlagsAndAttributes,
-			NULL // HANDLE hTemplateFile
+			nullptr // HANDLE hTemplateFile
 			);
 	}
 	else if (_path.is_Directory() && (DirectoryExists(_path) >= 0))
@@ -1092,7 +1092,7 @@ void CWinDirectoryIterator::_WriteFileTimes(ConstRef(CFilePath) _path, Ptr(FILET
 			&sa, // LPSECURITY_ATTRIBUTES lpSecurityAttributes,
 			OPEN_EXISTING, // DWORD dwCreationDisposition,
 			FILE_FLAG_BACKUP_SEMANTICS, // DWORD dwFlagsAndAttributes,
-			NULL // HANDLE hTemplateFile
+			nullptr // HANDLE hTemplateFile
 			);
 	}
 	else
@@ -1159,7 +1159,7 @@ bool CWinDirectoryIterator::FileSystemIsNTFS(ConstRef(CFilePath) path)
 	CStringBuffer tmp(path2.get_Root());
 	TCHAR lpFileSystemNameBuffer[MAX_PATH + 1];
 
-	if (!GetVolumeInformation(tmp.GetString(), NULL, 0, NULL, NULL, NULL, lpFileSystemNameBuffer, MAX_PATH + 1))
+	if (!GetVolumeInformation(tmp.GetString(), nullptr, 0, nullptr, nullptr, nullptr, lpFileSystemNameBuffer, MAX_PATH + 1))
 		return false;
 	if (s_stricmp(lpFileSystemNameBuffer, _T("NTFS")) != 0)
 		return false;
@@ -1362,7 +1362,7 @@ void CWinDirectoryIterator::Close()
 #endif
 #ifdef OK_SYS_UNIX
 	closedir(_hFileFind);
-	_hFileFind = NULL;
+	_hFileFind = nullptr;
 	_bStatus = false;
 	_bAccess = false;
 #endif

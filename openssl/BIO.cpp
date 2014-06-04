@@ -52,7 +52,7 @@ Ptr(CBIO) CBIO::create(Ptr(CBIO_METHOD) type)
 	Ptr(BIO) pBio = BIO_new(CastAnyPtr(BIO_METHOD, CastMutable(Pointer, type->get_method())));
 
 	if (!pBio)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBIO) p = OK_NEW_OPERATOR CBIO(pBio);
 
@@ -74,7 +74,7 @@ void CBIO::free()
 		if (pCallBack)
 		{
 			pCallBack->release();
-			BIO_set_callback_arg(CastAnyPtr(BIO, _raw), NULL);
+			BIO_set_callback_arg(CastAnyPtr(BIO, _raw), nullptr);
 		}
 
 		Ptr(BIO) pBio = BIO_pop(CastAnyPtr(BIO, _raw));
@@ -89,7 +89,7 @@ void CBIO::free()
 			pBio = BIO_pop(CastAnyPtr(BIO, _raw));
 		}
 		BIO_free(CastAnyPtr(BIO, _raw));
-		_raw = NULL;
+		_raw = nullptr;
 	}
 }
 
@@ -109,7 +109,7 @@ CBIO* CBIO::find_type(int bio_type)
 		p->insert_obj();
 		return p;
 	}
-	return NULL;
+	return nullptr;
 }
 
 CBIO* CBIO::next()
@@ -128,7 +128,7 @@ CBIO* CBIO::next()
 		p->insert_obj();
 		return p;
 	}
-	return NULL;
+	return nullptr;
 }
 
 int CBIO::method_type()
@@ -261,7 +261,7 @@ CBIO* CBIO::pop()
 		p->insert_obj();
 		return p;
 	}
-	return NULL;
+	return nullptr;
 }
 
 static long stdcallback(BIO *b, int oper, const char *argp, int argi, long argl, long retvalue)
@@ -288,7 +288,7 @@ void CBIO::set_callback(TCallback cb)
 		TCallbackData* cbdata = OK_NEW_OPERATOR TCallbackData;
 
 		cbdata->cb = cb;
-		cbdata->arg = NULL;
+		cbdata->arg = nullptr;
 		BIO_set_callback_arg(CastAnyPtr(BIO, _raw), CastAnyPtr(char, cbdata));
 		BIO_set_callback(CastAnyPtr(BIO, _raw), stdcallback);
 	}
@@ -297,8 +297,8 @@ void CBIO::set_callback(TCallback cb)
 		TCallbackData* cbdata = CastAnyPtr(TCallbackData, BIO_get_callback_arg(CastAnyPtr(BIO, _raw)));
 
 		cbdata->release();
-		BIO_set_callback_arg(CastAnyPtr(BIO, _raw), NULL);
-		BIO_set_callback(CastAnyPtr(BIO, _raw), NULL);
+		BIO_set_callback_arg(CastAnyPtr(BIO, _raw), nullptr);
+		BIO_set_callback(CastAnyPtr(BIO, _raw), nullptr);
 	}
 }
 
@@ -308,7 +308,7 @@ CBIO::TCallback CBIO::get_callback()
 
 	if (cbdata)
 		return cbdata->cb;
-	return NULL;
+	return nullptr;
 }
 
 void CBIO::set_callback_arg(void *arg)
@@ -325,7 +325,7 @@ void* CBIO::get_callback_arg()
 
 	if (cbdata)
 		return cbdata->arg;
-	return NULL;
+	return nullptr;
 }
 
 long CBIO::debug_callback(CBIO *bio, int cmd, const char *argp, int argi, long argl, long ret)
@@ -363,7 +363,7 @@ CBIO* CBIO::get_retry_BIO(int *reason)
 	BIO* ret = BIO_get_retry_BIO(CastAnyPtr(BIO, _raw), reason);
 
 	if (!ret)
-		return NULL;
+		return nullptr;
 
 	Ptr(COpenSSLClass) pClass = find_obj(ret);
 
@@ -519,7 +519,7 @@ Ptr(CBIO) CBIO::create_ssl(Ptr(CSSL_CTX) ctx, int client)
 	Ptr(BIO) pBio = BIO_new_ssl(CastAnyPtr(SSL_CTX, CastMutable(Pointer, ctx->get_sslContext())), client);
 
 	if (!pBio)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBIO) p = CastDynamicPtr(CBIO, find_obj(pBio));
 
@@ -536,7 +536,7 @@ Ptr(CBIO) CBIO::create_ssl_connect(Ptr(CSSL_CTX) ctx)
 	Ptr(BIO) pBio = BIO_new_ssl_connect(CastAnyPtr(SSL_CTX, CastMutable(Pointer, ctx->get_sslContext())));
 
 	if (!pBio)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBIO) p = CastDynamicPtr(CBIO, find_obj(pBio));
 
@@ -553,7 +553,7 @@ Ptr(CBIO) CBIO::create_buffer_ssl_connect(Ptr(CSSL_CTX) ctx)
 	Ptr(BIO) pBio = BIO_new_buffer_ssl_connect(CastAnyPtr(SSL_CTX, CastMutable(Pointer, ctx->get_sslContext())));
 
 	if (!pBio)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBIO) p = CastDynamicPtr(CBIO, find_obj(pBio));
 
@@ -673,7 +673,7 @@ CBIO *CBIO::create_accept(char *host_port)
 	BIO* pBio = BIO_new_accept(host_port);
 
 	if (!pBio)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBIO) p = CastDynamicPtr(CBIO, find_obj(pBio));
 
@@ -716,7 +716,7 @@ CBIO *CBIO::create_connect(char *name)
 	BIO* pBio = BIO_new_connect(name);
 
 	if (!pBio)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBIO) p = CastDynamicPtr(CBIO, find_obj(pBio));
 
@@ -794,7 +794,7 @@ CBIO *CBIO::create_fd(int fd, int close_flag)
 	BIO* pBio = BIO_new_fd(fd, close_flag);
 
 	if (!pBio)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBIO) p = CastDynamicPtr(CBIO, find_obj(pBio));
 
@@ -812,7 +812,7 @@ CBIO *CBIO::create_file(const char *filename, const char *mode)
 	BIO* pBio = BIO_new_file(filename, mode);
 
 	if (!pBio)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBIO) p = CastDynamicPtr(CBIO, find_obj(pBio));
 
@@ -830,7 +830,7 @@ CBIO *CBIO::create_fp(FILE *stream, int flags)
 	BIO* pBio = BIO_new_fp(stream, flags);
 
 	if (!pBio)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBIO) p = CastDynamicPtr(CBIO, find_obj(pBio));
 
@@ -912,7 +912,7 @@ CBIO *CBIO::create_mem_buf(void *buf, int len)
 	BIO* pBio = BIO_new_mem_buf(buf, len);
 
 	if (!pBio)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBIO) p = CastDynamicPtr(CBIO, find_obj(pBio));
 
@@ -930,7 +930,7 @@ CBIO *CBIO::create_socket(int sock, int close_flag)
 	BIO* pBio = BIO_new_socket(sock, close_flag);
 
 	if (!pBio)
-		return NULL;
+		return nullptr;
 
 	Ptr(CBIO) p = CastDynamicPtr(CBIO, find_obj(pBio));
 

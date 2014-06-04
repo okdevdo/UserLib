@@ -25,7 +25,7 @@
 IMPL_WINEXCEPTION(CPostgresException, CWinException)
 
 CPostgresEnvironment::CPostgresEnvironment(void) :
-_lpImpl(NULL)
+_lpImpl(nullptr)
 {
 	_lpImpl = OK_NEW_OPERATOR CPostgresEnvironmentImpl();
 }
@@ -40,7 +40,7 @@ CPostgresException* CPostgresEnvironment::get_LastError() const
 {
 	if (_lpImpl)
 		return _lpImpl->get_LastError();
-	return NULL;
+	return nullptr;
 }
 
 void CPostgresEnvironment::set_LastError(CPostgresException* pLastError)
@@ -53,7 +53,7 @@ CPostgresConnection* CPostgresEnvironment::create_Connection()
 {
 	if (_lpImpl)
 		return OK_NEW_OPERATOR CPostgresConnection(this, _lpImpl->create_Connection());
-	return NULL;
+	return nullptr;
 }
 
 void CPostgresEnvironment::Open()
@@ -87,7 +87,7 @@ CPostgresStatement* CPostgresConnection::create_Statement()
 {
 	if (_lpImpl)
 		return OK_NEW_OPERATOR CPostgresStatement(_lpEnv, _lpImpl->create_Statement());
-	return NULL;
+	return nullptr;
 }
 
 void CPostgresConnection::free_Statement(CPostgresStatement* pStmt)
@@ -108,21 +108,6 @@ void CPostgresConnection::Close()
 {
 	if (_lpImpl)
 		_lpImpl->Close();
-}
-
-static void __stdcall CPostgresColumnsDeleteFunc(ConstPointer data, Pointer context)
-{
-	Ptr(CPostgresColumn) column = CastAnyPtr(CPostgresColumn, CastMutable(Pointer, data));
-
-	column->release();
-}
-
-static sword __stdcall CPostgresColumnsSearchAndSortFunc(ConstPointer item, ConstPointer data)
-{
-	Ptr(CPostgresColumn) pColumn = CastAnyPtr(CPostgresColumn, CastMutable(Pointer, item));
-	CStringLiteral pName(CastAny(CPointer, CastMutable(Pointer, data)));
-
-	return pName.Compare(pColumn->get_Name());
 }
 
 CPostgresStatement::CPostgresStatement(CPostgresEnvironment* lpEnv, CPostgresStatementImpl* lpStmtImpl) :
@@ -153,7 +138,7 @@ CPostgresColumn* CPostgresStatement::get_ColumnInfo(word ix) const
 
 	if (it)
 		return *it;
-	return NULL;
+	return nullptr;
 }
 
 CPostgresColumn* CPostgresStatement::get_ColumnInfo(CConstPointer name)
@@ -163,7 +148,7 @@ CPostgresColumn* CPostgresStatement::get_ColumnInfo(CConstPointer name)
 
 	if (it)
 		return *it;
-	return NULL;
+	return nullptr;
 }
 
 sqword CPostgresStatement::get_RowCount() const

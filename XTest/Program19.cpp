@@ -154,8 +154,8 @@ static void TestClient()
 		if (len <= 0) break;
 		out->write(tmpbuf, len);
 	}
-	sbio->set_callback(NULL);
-	sbio->set_callback_arg(NULL);
+	sbio->set_callback(nullptr);
+	sbio->set_callback_arg(nullptr);
 	sbio->free();
 	out->free();
 }
@@ -179,7 +179,7 @@ static int TestServerCertVerify(CX509_STORE_CTX *ctx, void *arg)
 
 CRSA_KEY *TestServerTmpRSA(CSSL *ssl, int is_export, int keylength)
 {
-	return NULL;
+	return nullptr;
 }
 
 static int TestServer()
@@ -208,7 +208,7 @@ static int TestServer()
 	/* Might do other things here like setting verify locations and
 	* DH and/or RSA temporary key callbacks
 	*/
-	ctx->set_cert_verify_callback(TestServerCertVerify, NULL);
+	ctx->set_cert_verify_callback(TestServerCertVerify, nullptr);
 	ctx->set_tmp_rsa_callback(TestServerTmpRSA);
 
 	/* New SSL BIO setup as server */

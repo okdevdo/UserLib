@@ -24,13 +24,6 @@
 #include "ConsoleMenuItem.h"
 #include "Console.h"
 
-static void __stdcall MenuItemListDeleteFunc( ConstPointer data, Pointer context )
-{
-	CConsoleMenuItem* p = CastAnyPtr(CConsoleMenuItem, CastMutable(Pointer, data));
-
-	p->release();
-}
-
 CConsoleMainMenu::CConsoleMainMenu(CConstPointer name, CConsole* pConsole):
     CConsoleWindow(name, pConsole),
 	m_MenuItemList(__FILE__LINE__0)
@@ -83,7 +76,7 @@ void CConsoleMainMenu::MenuNavigation(CConsolePopupMenu* popupMenu, CAbstractCon
 		{
 			CConsoleMenuItemList::Iterator it(m_MenuItemList.Begin());
 			CConsoleMenuItem* pMenuItem;
-			CConsoleMenuItem* pBeforeMenu = NULL;
+			CConsoleMenuItem* pBeforeMenu = nullptr;
 			bool bFound = false;
 
 			while ( it )

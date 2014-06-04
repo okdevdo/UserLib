@@ -124,8 +124,8 @@ static bool _TestExcludeSpecs(ConstRef(CStringBuffer) afile, ConstRef(TMBCharLis
 
 void XZipViewFiles(ConstRef(CFilePath) fzipfile, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs, CStringLiteral mode)
 {
-	CSecurityFile* pArchiveFile = NULL;
-	CArchiveIterator *zipIt = NULL;
+	CCppObjectPtr<CSecurityFile> pArchiveFile;
+	CCppObjectPtr<CArchiveIterator> zipIt;
 	CFilePath fcurDir;
 	WBool modeVerbose = false;
 	WBool modeFull = true;
@@ -302,22 +302,14 @@ void XZipViewFiles(ConstRef(CFilePath) fzipfile, ConstRef(TMBCharList) filespecs
 				break;
 			}
 		}
-		zipIt->release();
-		zipIt = NULL;
-		pArchiveFile->Close();
-		pArchiveFile->release();
-		pArchiveFile = NULL;
+		if (pArchiveFile)
+			pArchiveFile->Close();
 	}
 	catch ( CBaseException* ex )
 	{
-		CERR << ex->GetExceptionMessage() << endl;
-		if (zipIt)
-			zipIt->release();
 		if (pArchiveFile)
-		{
 			pArchiveFile->Close();
-			pArchiveFile->release();
-		}
+		CERR << ex->GetExceptionMessage() << endl;
 	}
 }
 
@@ -454,7 +446,7 @@ void _XZipAddFiles(Ref(CZipArchive) zipArchive, WBool recursefolders, ConstRef(T
 
 void XZipAddFiles(ConstRef(CFilePath) fzipfile, WBool recursefolders, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs)
 {
-	Ptr(CSecurityFile) pFile = NULL;
+	CCppObjectPtr<CSecurityFile> pFile;
 	bool bExist = false;
 
 	try
@@ -466,7 +458,7 @@ void XZipAddFiles(ConstRef(CFilePath) fzipfile, WBool recursefolders, ConstRef(T
 		}
 		else
 		{
-			pFile = OK_NEW_OPERATOR CSecurityFile();
+			pFile = OK_NEW_OPERATOR CSecurityFile;
 			pFile->Create(fzipfile, false, CFile::BinaryFile_NoEncoding);
 		}
 
@@ -478,16 +470,12 @@ void XZipAddFiles(ConstRef(CFilePath) fzipfile, WBool recursefolders, ConstRef(T
 		zipArchive.AddClose();
 
 		pFile->Close();
-		pFile->release();
 	}
 	catch ( CBaseException* ex )
 	{
 		CERR << ex->GetExceptionMessage() << endl;
 		if ( pFile )
-		{
 			pFile->Close();
-			pFile->release();
-		}
 	}
 }
 
@@ -539,7 +527,7 @@ public:
 
 typedef CDataVectorT<TGetFileItem, TGetFileItemLessFunctor> TGetFileItems;
 
-static void _XZipGetFileList(Ptr(CArchiveIterator) zipIt, ConstRef(TMBCharList) filespecs, Ref(TGetFileItems) list)
+static void _XZipGetFileList(CCppObjectPtr<CArchiveIterator> zipIt, ConstRef(TMBCharList) filespecs, Ref(TGetFileItems) list)
 {
 	while ( zipIt->Next() )
 	{
@@ -555,22 +543,24 @@ static void _XZipGetFileList(Ptr(CArchiveIterator) zipIt, ConstRef(TMBCharList) 
 
 					sqword lastmodfiletime;
 					bool isNull;
-					TGetFileItem gfl;
+					Ptr(TGetFileItem) gfl = OK_NEW_OPERATOR TGetFileItem;
 
 					zipIt->GetProperty(_T("NTFSMTIME"), lastmodfiletime, isNull);
 					if (!isNull)
 					{
-						gfl.SetSTime(tmp, lastmodfiletime);
-						list.Append(&gfl);
+						gfl->SetSTime(tmp, lastmodfiletime);
+						list.Append(gfl);
 					}
 					else
 					{
 						zipIt->GetProperty(_T("DOSFILETIME"), lastmodfiletime, isNull);
 						if (!isNull)
 						{
-							gfl.SetFTime(tmp, lastmodfiletime);
-							list.Append(&gfl);
+							gfl->SetFTime(tmp, lastmodfiletime);
+							list.Append(gfl);
 						}
+						else
+							gfl->release();
 					}
 				}
 				zipIt->Skip();
@@ -580,12 +570,11 @@ static void _XZipGetFileList(Ptr(CArchiveIterator) zipIt, ConstRef(TMBCharList) 
 			break;
 		}
 	}
-	zipIt->release();
 }
 
 void XZipFreshenFiles(ConstRef(CFilePath) fzipfile, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs)
 {
-	Ptr(CSecurityFile) pFile = NULL;
+	CCppObjectPtr<CSecurityFile> pFile;
 
 	try
 	{
@@ -700,17 +689,14 @@ void XZipFreshenFiles(ConstRef(CFilePath) fzipfile, ConstRef(TMBCharList) filesp
 			++itFileList;
 		}
 		zipArchive.AddClose();
-		pFile->Close();
-		pFile->release();
+		if (pFile)
+			pFile->Close();
 	}
 	catch ( CBaseException* ex )
 	{
 		CERR << ex->GetExceptionMessage() << endl;
 		if ( pFile )
-		{
 			pFile->Close();
-			pFile->release();
-		}
 	}
 }
 
@@ -859,7 +845,7 @@ void _XZipUpdateAddFiles(Ref(CZipArchive) zipArchive, WBool recursefolders, Cons
 
 void XZipUpdateFiles(ConstRef(CFilePath) fzipfile, WBool recursefolders, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs)
 {
-	Ptr(CSecurityFile) pFile = NULL;
+	CCppObjectPtr<CSecurityFile> pFile;
 
 	try
 	{
@@ -884,7 +870,7 @@ void XZipUpdateFiles(ConstRef(CFilePath) fzipfile, WBool recursefolders, ConstRe
 		zipArchive.AddOpen();
 		_XZipGetFileList(zipArchive.begin(), filespecs, fileList);
 		itFileList = fileList.Begin();
-		while ( itFileList )
+		while (itFileList)
 		{
 			Ptr(TGetFileItem) pGfl = *itFileList;
 
@@ -982,24 +968,18 @@ void XZipUpdateFiles(ConstRef(CFilePath) fzipfile, WBool recursefolders, ConstRe
 			}
 			++itFileList;
 		}
-
 		fileList.Sort();
 		_XZipUpdateAddFiles(zipArchive, recursefolders, filespecs, excludespecs, fileList);
-
 		fileList.Close();
-
 		zipArchive.AddClose();
-
-		pFile->Close();
-		pFile->release();
+		if (pFile)
+			pFile->Close();
 	}
-	catch ( CBaseException* ex )
+	catch (CBaseException* ex)
 	{
 		CERR << ex->GetExceptionMessage() << endl;
-		if ( pFile )
-		{
+		if (pFile)
 			pFile->Close();
-			pFile->release();
-		}
 	}
 }
+

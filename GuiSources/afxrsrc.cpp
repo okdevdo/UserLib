@@ -47,25 +47,25 @@ protected:
 
 CBitmapData::CBitmapData(HICON hIcon)
 {
-	m_hResource = NULL;
+	m_hResource = nullptr;
 	m_fResourceType = UINT_MAX;
-	m_pData = NULL;
+	m_pData = nullptr;
 	m_ownBitmap = TRUE;
 	m_pBitmap = Gdiplus::Bitmap::FromHICON(hIcon);
 }
 
 CBitmapData::CBitmapData(HBITMAP hBitmap)
 {
-	m_hResource = NULL;
+	m_hResource = nullptr;
 	m_fResourceType = UINT_MAX;
-	m_pData = NULL;
+	m_pData = nullptr;
 	m_ownBitmap = TRUE;
-	m_pBitmap = Gdiplus::Bitmap::FromHBITMAP(hBitmap, NULL);
+	m_pBitmap = Gdiplus::Bitmap::FromHBITMAP(hBitmap, nullptr);
 }
 
 CBitmapData::CBitmapData(BITMAPINFO* pBitmap, LPVOID pData)
 {
-	m_hResource = NULL;
+	m_hResource = nullptr;
 	m_fResourceType = UINT_MAX;
 	m_pData = pData;
 	m_ownBitmap = TRUE;
@@ -76,12 +76,12 @@ CBitmapData::CBitmapData(LPCTSTR pResourceID, UINT fflag)
 {
 	m_hResource = ::LoadImage(theGuiApp->get_GuiInstance(), pResourceID, fflag, 0, 0, LR_DEFAULTCOLOR);
 	m_fResourceType = fflag;
-	m_pData = NULL;
+	m_pData = nullptr;
 	switch ( m_fResourceType )
 	{
 	case IMAGE_BITMAP:
 		m_ownBitmap = TRUE;
-		m_pBitmap = Gdiplus::Bitmap::FromHBITMAP((HBITMAP)m_hResource, NULL);
+		m_pBitmap = Gdiplus::Bitmap::FromHBITMAP((HBITMAP)m_hResource, nullptr);
 		break;
 	case IMAGE_ICON:
 		m_ownBitmap = TRUE;
@@ -89,15 +89,15 @@ CBitmapData::CBitmapData(LPCTSTR pResourceID, UINT fflag)
 		break;
 	default:
 		m_ownBitmap = FALSE;
-		m_pBitmap = NULL;
+		m_pBitmap = nullptr;
 	}
 }
 
 CBitmapData::CBitmapData(Gdiplus::Bitmap* pBitmap)
 {
-	m_hResource = NULL;
+	m_hResource = nullptr;
 	m_fResourceType = UINT_MAX;
-	m_pData = NULL;
+	m_pData = nullptr;
 	m_ownBitmap = FALSE;
 	m_pBitmap = pBitmap;
 }
@@ -106,7 +106,7 @@ CBitmapData::~CBitmapData()
 {
 	if ( m_pBitmap && m_ownBitmap )
 		delete m_pBitmap;
-	m_pBitmap = NULL;
+	m_pBitmap = nullptr;
 	if ( m_hResource )
 	{
 		switch ( m_fResourceType )
@@ -120,7 +120,7 @@ CBitmapData::~CBitmapData()
 		default:
 			break;
 		}
-		m_hResource = NULL;
+		m_hResource = nullptr;
 		m_fResourceType = UINT_MAX;
 	}
 	if ( m_pData )
@@ -129,7 +129,7 @@ CBitmapData::~CBitmapData()
 			TFfree(m_pData);
 		else
 			free(m_pData);
-		m_pData = NULL;
+		m_pData = nullptr;
 	}
 }
 
@@ -138,7 +138,7 @@ CBitmapData::~CBitmapData()
 //***********************************************************
 CBitmap::CBitmap()
 {
-	m_data = NULL;
+	m_data = nullptr;
 }
 
 CBitmap::CBitmap(HICON hIcon)
@@ -179,7 +179,7 @@ CBitmap::~CBitmap()
 	{
 		if ( !(TFdecrefcnt(m_data)) )
 			delete m_data;
-		m_data = NULL;
+		m_data = nullptr;
 	}
 }
 
@@ -189,7 +189,7 @@ const CBitmap& CBitmap::operator=(const CBitmap& copy)
 	{
 		if ( !(TFdecrefcnt(m_data)) )
 			delete m_data;
-		m_data = NULL;
+		m_data = nullptr;
 	}
 	m_data = copy.m_data;
 	if ( m_data )
@@ -203,7 +203,7 @@ const CBitmap& CBitmap::operator=(HICON hIcon)
 	{
 		if ( !(TFdecrefcnt(m_data)) )
 			delete m_data;
-		m_data = NULL;
+		m_data = nullptr;
 	}
 	m_data = OK_NEW_OPERATOR CBitmapData(hIcon);
 	return *this;
@@ -215,7 +215,7 @@ const CBitmap& CBitmap::operator=(HBITMAP hBitmap)
 	{
 		if ( !(TFdecrefcnt(m_data)) )
 			delete m_data;
-		m_data = NULL;
+		m_data = nullptr;
 	}
 	m_data = OK_NEW_OPERATOR CBitmapData(hBitmap);
 	return *this;
@@ -227,7 +227,7 @@ const CBitmap& CBitmap::operator=(Gdiplus::Bitmap* pBitmap)
 	{
 		if ( !(TFdecrefcnt(m_data)) )
 			delete m_data;
-		m_data = NULL;
+		m_data = nullptr;
 	}
 	m_data = OK_NEW_OPERATOR CBitmapData(pBitmap);
 	return *this;
@@ -236,14 +236,14 @@ const CBitmap& CBitmap::operator=(Gdiplus::Bitmap* pBitmap)
 Gdiplus::Bitmap* CBitmap::get_bitmap()
 {
 	if ( !m_data )
-		return NULL;
+		return nullptr;
 	return m_data->get_bitmap();
 }
 
 HGLOBAL CBitmap::get_clipboarddata()
 {
 	if ( !m_data )
-		return NULL;
+		return nullptr;
 
 	BITMAPINFOHEADER   bi;
 	Gdiplus::Bitmap* pBitmap = m_data->get_bitmap();
@@ -280,7 +280,7 @@ HGLOBAL CBitmap::get_clipboarddata()
 		GlobalUnlock(hglbCopy);
 		return hglbCopy;
 	}
-	return NULL;
+	return nullptr;
 }
 
 //***********************************************************
@@ -321,12 +321,12 @@ public:
 	{ 
 		_createliste(); 
 		if ( (m_list.Count() == 0) || (ix >= m_list.Count()) )
-			return NULL;
+			return nullptr;
 
 		ImageInfoList::Iterator it = m_list.Index(ix);
 
 		if ( !it )
-			return NULL;
+			return nullptr;
 		return (*it)->bitmap;
 	}
 
@@ -339,7 +339,7 @@ private:
 
 void CImageListData::_createliste()
 {
-	if ( (m_pBitmap == NULL) || (m_list.Count() > 0) )
+	if ( (m_pBitmap == nullptr) || (m_list.Count() > 0) )
 		return;
 	
 	dword nHeight = m_pBitmap->GetHeight();
@@ -414,7 +414,7 @@ CImageListData::~CImageListData()
 //***********************************************************
 CImageList::CImageList()
 {
-	m_data = NULL;
+	m_data = nullptr;
 }
 
 CImageList::CImageList(HBITMAP hBitmap)
@@ -445,7 +445,7 @@ CImageList::~CImageList()
 	{
 		if ( !(TFdecrefcnt(m_data)) )
 			delete m_data;
-		m_data = NULL;
+		m_data = nullptr;
 	}
 }
 
@@ -455,7 +455,7 @@ const CImageList& CImageList::operator=(const CImageList& copy)
 	{
 		if ( !(TFdecrefcnt(m_data)) )
 			delete m_data;
-		m_data = NULL;
+		m_data = nullptr;
 	}
 	m_data = copy.m_data;
 	if ( m_data )
@@ -469,7 +469,7 @@ const CImageList& CImageList::operator=(HBITMAP hBitmap)
 	{
 		if ( !(TFdecrefcnt(m_data)) )
 			delete m_data;
-		m_data = NULL;
+		m_data = nullptr;
 	}
 	m_data = OK_NEW_OPERATOR CImageListData(hBitmap);
 	return *this;
@@ -485,7 +485,7 @@ dword CImageList::get_bitmapcnt()
 Gdiplus::Bitmap* CImageList::get_bitmap(dword ix)
 {
 	if ( !m_data )
-		return NULL;
+		return nullptr;
 	return m_data->get_bitmap(ix);
 }
 

@@ -39,7 +39,7 @@ static bool IsWow64()
 	fnIsWow64Process = (LPFN_ISWOW64PROCESS)
 		GetProcAddress(module, funcName);
 
-	if (NULL != fnIsWow64Process)
+	if (nullptr != fnIsWow64Process)
 	{
 		if (!fnIsWow64Process(GetCurrentProcess(), &bIsWow64))
 			throw OK_NEW_OPERATOR CWinException(__FILE__LINE__ _T("Exception In %s"), _T("IsWow64"), CWinException::WinExtError);
@@ -66,7 +66,7 @@ static WBool GetRawValue(ConstRef(CStringLiteral) _name, Ref(CStringBuffer) _val
 #elif _MSC_VER
 		size_t res;
 
-		if (_tgetenv_s(&res, NULL, 0, name))
+		if (_tgetenv_s(&res, nullptr, 0, name))
 			return false;
 		if (res == 0)
 			return false;
@@ -242,7 +242,7 @@ public:
 	virtual int main()
 	{
 		CFilePath curdir;
-		CStreamFile* pOutFile = NULL;
+		CStreamFile* pOutFile = nullptr;
 
 		if (m_help || (!m_AnyOption))
 		{

@@ -114,7 +114,7 @@ void CStringVectorFilterInput::close()
 }
 
 CFileFilterInput::CFileFilterInput(ConstRef(CFilePath) fname):
-    CFilterInput(), m_inputFile(NULL), m_canReOpen(true), m_fileName(fname)
+    CFilterInput(), m_inputFile(nullptr), m_canReOpen(true), m_fileName(fname)
 {
 }
 
@@ -262,7 +262,7 @@ void CSortedStringVectorFilterOutput::close()
 }
 
 CFileFilterOutput::CFileFilterOutput(ConstRef(CFilePath) fname):
-    CFilterOutput(), m_outputFile(NULL), m_canReOpen(true), m_fileName(fname)
+    CFilterOutput(), m_outputFile(nullptr), m_canReOpen(true), m_fileName(fname)
 {
 }
 

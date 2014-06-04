@@ -1080,7 +1080,7 @@ WBool CSystemConfiguration::GetRawValue(ConstRef(CStringLiteral) _name, Ref(CStr
 #elif _MSC_VER
 		size_t res;
         
-		if ( _tgetenv_s(&res, NULL, 0, name) )
+		if ( _tgetenv_s(&res, nullptr, 0, name) )
 			return false;
 		if ( res == 0 )
 			return false;
@@ -1214,13 +1214,6 @@ WBool CApplicationConfiguration::Enumerate(ConstRef(CStringLiteral) _prefix, Ref
 }
 
 /* CConfigurationList */
-static void __stdcall CConfigurationListDeleteFunc(ConstPointer ptr, Pointer context)
-{
-	CAbstractConfiguration* pConfig = CastAnyPtr(CAbstractConfiguration, CastMutable(Pointer, ptr));
-
-	pConfig->release();
-}
-
 CConfigurationList::CConfigurationList(DECL_FILE_LINE0):
     CAbstractConfiguration(),
 	m_configList(ARGS_FILE_LINE0)

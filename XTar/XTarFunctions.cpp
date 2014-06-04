@@ -37,8 +37,8 @@ static void XTarDoFiles(CStringLiteral tarfile, CStringLiteral outputdir, CStrin
 	CFilePath fexfile;
 	CFilePath fcurDir(__FILE__LINE__ outputdir);
 	CFilePath foutf(__FILE__LINE__ outputfile);
-	CSecurityFile* pArchiveFile = NULL;
-	CStreamFile* pOutFile = NULL;
+	CCppObjectPtr<CSecurityFile> pArchiveFile;
+	CCppObjectPtr<CStreamFile> pOutFile;
 	dword nFiles = 0;
 	dword nDirs = 0;
 	dword nLinks = 0;
@@ -52,11 +52,11 @@ static void XTarDoFiles(CStringLiteral tarfile, CStringLiteral outputdir, CStrin
 	}
 	if (ftarfile.get_Extension().Compare(CStringLiteral(_T("bz2")), 0, CStringLiteral::cIgnoreCase) == 0)
 	{
-		CSecurityFile* parchivefile = NULL;
-		CSecurityFile* pExFile = NULL;
+		CCppObjectPtr<CSecurityFile> parchivefile;
+		CCppObjectPtr<CSecurityFile> pExFile;
 
 		fexfile = ftarfile;
-		fexfile.set_Extension(NULL);
+		fexfile.set_Extension(_T(""));
 
 		try
 		{
@@ -68,32 +68,20 @@ static void XTarDoFiles(CStringLiteral tarfile, CStringLiteral outputdir, CStrin
 
 			pExFile->Create(fexfile);
 
-			CFilterInput* pInput = OK_NEW_OPERATOR CFileFilterInput(parchivefile);
-			CFilterOutput* pOutput = OK_NEW_OPERATOR CFileFilterOutput(pExFile);
-			CFilter* pFilter = OK_NEW_OPERATOR CBZip2DeCompressFilter(pInput, pOutput);
+			CCppObjectPtr<CFilterInput> pInput = OK_NEW_OPERATOR CFileFilterInput(parchivefile);
+			CCppObjectPtr<CFilterOutput> pOutput = OK_NEW_OPERATOR CFileFilterOutput(pExFile);
+			CCppObjectPtr<CFilter> pFilter = OK_NEW_OPERATOR CBZip2DeCompressFilter(pInput, pOutput);
 
 			pFilter->open();
 			pFilter->do_filter();
 			pFilter->close();
-
-			pFilter->release();
-			pOutput->release();
-			pInput->release();
-			parchivefile->release();
-			pExFile->release();
 		}
 		catch (CBaseException* ex)
 		{
 			if (parchivefile)
-			{
 				parchivefile->Close();
-				parchivefile->release();
-			}
 			if (pExFile)
-			{
 				pExFile->Close();
-				pExFile->release();
-			}
 			CERR << ex->GetExceptionMessage() << endl;
 			return;
 		}
@@ -101,11 +89,11 @@ static void XTarDoFiles(CStringLiteral tarfile, CStringLiteral outputdir, CStrin
 	}
 	else if (ftarfile.get_Extension().Compare(CStringLiteral(_T("gz")), 0, CStringLiteral::cIgnoreCase) == 0)
 	{
-		CSecurityFile* parchivefile = NULL;
-		CSecurityFile* pExFile = NULL;
+		CCppObjectPtr<CSecurityFile> parchivefile;
+		CCppObjectPtr<CSecurityFile> pExFile;
 
 		fexfile = ftarfile;
-		fexfile.set_Extension(NULL);
+		fexfile.set_Extension(_T(""));
 
 		try
 		{
@@ -117,32 +105,20 @@ static void XTarDoFiles(CStringLiteral tarfile, CStringLiteral outputdir, CStrin
 
 			pExFile->Create(fexfile);
 
-			CFileFilterInput* pInput = OK_NEW_OPERATOR CFileFilterInput(parchivefile);
-			CFileFilterOutput* pOutput = OK_NEW_OPERATOR CFileFilterOutput(pExFile);
-			CGZipDeCompressFilter* pFilter = OK_NEW_OPERATOR CGZipDeCompressFilter(pInput, pOutput);
+			CCppObjectPtr<CFileFilterInput> pInput = OK_NEW_OPERATOR CFileFilterInput(parchivefile);
+			CCppObjectPtr<CFileFilterOutput> pOutput = OK_NEW_OPERATOR CFileFilterOutput(pExFile);
+			CCppObjectPtr<CFilter> pFilter = OK_NEW_OPERATOR CGZipDeCompressFilter(pInput, pOutput);
 
 			pFilter->open();
 			pFilter->do_filter();
 			pFilter->close();
-
-			pFilter->release();
-			pOutput->release();
-			pInput->release();
-			parchivefile->release();
-			pExFile->release();
 		}
 		catch (CBaseException* ex)
 		{
 			if (parchivefile)
-			{
 				parchivefile->Close();
-				parchivefile->release();
-			}
 			if (pExFile)
-			{
 				pExFile->Close();
-				pExFile->release();
-			}
 			CERR << ex->GetExceptionMessage() << endl;
 			return;
 		}
@@ -150,11 +126,11 @@ static void XTarDoFiles(CStringLiteral tarfile, CStringLiteral outputdir, CStrin
 	}
 	else if (ftarfile.get_Extension().Compare(CStringLiteral(_T("lzma")), 0, CStringLiteral::cIgnoreCase) == 0)
 	{
-		CSecurityFile* parchivefile = NULL;
-		CSecurityFile* poutputfile = NULL;
+		CCppObjectPtr<CSecurityFile> parchivefile;
+		CCppObjectPtr<CSecurityFile> poutputfile;
 
 		fexfile = ftarfile;
-		fexfile.set_Extension(NULL);
+		fexfile.set_Extension(_T(""));
 
 		try
 		{
@@ -166,32 +142,20 @@ static void XTarDoFiles(CStringLiteral tarfile, CStringLiteral outputdir, CStrin
 
 			poutputfile->Create(fexfile);
 
-			CFileFilterInput* pInput = OK_NEW_OPERATOR CFileFilterInput(parchivefile);
-			CFileFilterOutput* pOutput = OK_NEW_OPERATOR CFileFilterOutput(poutputfile);
-			CLZMADeCompressFilter* pFilter = OK_NEW_OPERATOR CLZMADeCompressFilter(pInput, pOutput);
+			CCppObjectPtr<CFileFilterInput> pInput = OK_NEW_OPERATOR CFileFilterInput(parchivefile);
+			CCppObjectPtr<CFileFilterOutput> pOutput = OK_NEW_OPERATOR CFileFilterOutput(poutputfile);
+			CCppObjectPtr<CFilter> pFilter = OK_NEW_OPERATOR CLZMADeCompressFilter(pInput, pOutput);
 
 			pFilter->open();
 			pFilter->do_filter();
 			pFilter->close();
-
-			pFilter->release();
-			pOutput->release();
-			pInput->release();
-			parchivefile->release();
-			poutputfile->release();
 		}
 		catch (CBaseException* ex)
 		{
 			if (parchivefile)
-			{
 				parchivefile->Close();
-				parchivefile->release();
-			}
 			if (poutputfile)
-			{
 				poutputfile->Close();
-				poutputfile->release();
-			}
 			COUT << ex->GetExceptionMessage() << endl;
 			return;
 		}
@@ -199,11 +163,11 @@ static void XTarDoFiles(CStringLiteral tarfile, CStringLiteral outputdir, CStrin
 	}
 	else if (ftarfile.get_Extension().Compare(CStringLiteral(_T("xz")), 0, CStringLiteral::cIgnoreCase) == 0)
 	{
-		CSecurityFile* parchivefile = NULL;
-		CSecurityFile* poutputfile = NULL;
+		CCppObjectPtr<CSecurityFile> parchivefile;
+		CCppObjectPtr<CSecurityFile> poutputfile;
 
 		fexfile = ftarfile;
-		fexfile.set_Extension(NULL);
+		fexfile.set_Extension(nullptr);
 
 		try
 		{
@@ -215,32 +179,20 @@ static void XTarDoFiles(CStringLiteral tarfile, CStringLiteral outputdir, CStrin
 
 			poutputfile->Create(fexfile);
 
-			CFileFilterInput* pInput = OK_NEW_OPERATOR CFileFilterInput(parchivefile);
-			CFileFilterOutput* pOutput = OK_NEW_OPERATOR CFileFilterOutput(poutputfile);
-			CXZDeCompressFilter* pFilter = OK_NEW_OPERATOR CXZDeCompressFilter(pInput, pOutput);
+			CCppObjectPtr<CFileFilterInput> pInput = OK_NEW_OPERATOR CFileFilterInput(parchivefile);
+			CCppObjectPtr<CFileFilterOutput> pOutput = OK_NEW_OPERATOR CFileFilterOutput(poutputfile);
+			CCppObjectPtr<CFilter> pFilter = OK_NEW_OPERATOR CXZDeCompressFilter(pInput, pOutput);
 
 			pFilter->open();
 			pFilter->do_filter();
 			pFilter->close();
-
-			pFilter->release();
-			pOutput->release();
-			pInput->release();
-			parchivefile->release();
-			poutputfile->release();
 		}
 		catch (CBaseException* ex)
 		{
 			if (parchivefile)
-			{
 				parchivefile->Close();
-				parchivefile->release();
-			}
 			if (poutputfile)
-			{
 				poutputfile->Close();
-				poutputfile->release();
-			}
 			CERR << ex->GetExceptionMessage() << endl;
 			return;
 		}
@@ -259,7 +211,7 @@ static void XTarDoFiles(CStringLiteral tarfile, CStringLiteral outputdir, CStrin
 		{
 			CFilePath tmp(foutf);
 
-			tmp.set_Filename(NULL);
+			tmp.set_Filename(nullptr);
 			CWinDirectoryIterator::MakeDirectory(tmp);
 		}
 		else
@@ -279,7 +231,7 @@ static void XTarDoFiles(CStringLiteral tarfile, CStringLiteral outputdir, CStrin
 	if (!(fcurDir.IsEmpty()))
 	{
 		if (CWinDirectoryIterator::FileExists(fcurDir))
-			fcurDir.set_Filename(NULL);
+			fcurDir.set_Filename(nullptr);
 		fcurDir.MakeDirectory();
 		if (CWinDirectoryIterator::DirectoryExists(fcurDir) >= 0)
 			useCurDir = false;
@@ -290,7 +242,7 @@ static void XTarDoFiles(CStringLiteral tarfile, CStringLiteral outputdir, CStrin
 	pArchiveFile = OK_NEW_OPERATOR CSecurityFile(ftarfile);
 
 	CTarArchive tarArchive(pArchiveFile);
-	CArchiveIterator *tarIt = tarArchive.begin();
+	CCppObjectPtr<CArchiveIterator> tarIt = tarArchive.begin();
 
 	while (tarIt->Next())
 	{
@@ -334,26 +286,20 @@ static void XTarDoFiles(CStringLiteral tarfile, CStringLiteral outputdir, CStrin
 #endif
 					if (bExtract)
 					{
-						CArchiveFile* afile = tarIt->GetFile();
-						CFileFilterInput* pInput = OK_NEW_OPERATOR CFileFilterInput(afile);
-						CSecurityFile* ofile = OK_NEW_OPERATOR CSecurityFile;
+						CCppObjectPtr<CArchiveFile> afile = tarIt->GetFile();
+						CCppObjectPtr<CFileFilterInput> pInput = OK_NEW_OPERATOR CFileFilterInput(afile);
+						CCppObjectPtr<CSecurityFile> ofile = OK_NEW_OPERATOR CSecurityFile;
 
 						ofile->Create(fpath, false, CFile::BinaryFile_NoEncoding, Cast(mode_t, vfilemode));
 
-						CFileFilterOutput* pOutput = OK_NEW_OPERATOR CFileFilterOutput(ofile);
-						CCopyFilter* pFilter = OK_NEW_OPERATOR CCopyFilter(pInput, pOutput);
+						CCppObjectPtr<CFileFilterOutput> pOutput = OK_NEW_OPERATOR CFileFilterOutput(ofile);
+						CCppObjectPtr<CFilter> pFilter = OK_NEW_OPERATOR CCopyFilter(pInput, pOutput);
 
 						pFilter->open();
 						pFilter->do_filter();
 						pFilter->close();
 
 						CWinDirectoryIterator::WriteFileTimes(fpath, ftime, ftime, ftime);
-
-						pFilter->release();
-						pInput->release();
-						pOutput->release();
-						afile->release();
-						ofile->release();
 					}
 					else
 						tarIt->Skip();
@@ -483,14 +429,9 @@ static void XTarDoFiles(CStringLiteral tarfile, CStringLiteral outputdir, CStrin
 			break;
 		}
 	}
-	tarIt->release();
 	pArchiveFile->Close();
-	pArchiveFile->release();
 	if (pOutFile)
-	{
 		pOutFile->Close();
-		pOutFile->release();
-	}
 
 	CERR << _T("Summary:") << endl;
 	CERR << _T("  #Files=") << nFiles << endl;

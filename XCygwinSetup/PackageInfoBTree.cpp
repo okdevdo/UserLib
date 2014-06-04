@@ -37,7 +37,7 @@ class CPackageInfoBTreeFilterOutput: public CFilterOutput
 {
 public:
 	CPackageInfoBTreeFilterOutput(Ref(CPackageInfoBTree) _btree, ConstRef(CFilePath) iniRootPath):
-	    m_btree(_btree), m_iniRootPath(iniRootPath), m_current(NULL), m_installInfo(NULL), m_status(0)
+	    m_btree(_btree), m_iniRootPath(iniRootPath), m_current(nullptr), m_installInfo(nullptr), m_status(0)
 	{
 	}
 
@@ -92,7 +92,7 @@ void CPackageInfoBTreeFilterOutput::write(Ref(CByteBuffer) outputbuf)
 				m_current = OK_NEW_OPERATOR CPackageInfo(tmp);
 				m_btree.InsertSorted(m_current);
 			}
-			m_installInfo = NULL;
+			m_installInfo = nullptr;
 			m_installCat.SetString(__FILE__LINE__ _T("Curr"));
 			m_status = 1;
 		}
@@ -110,7 +110,7 @@ void CPackageInfoBTreeFilterOutput::write(Ref(CByteBuffer) outputbuf)
 			outputbuf.get_SubBuffer(1, pos - 1, buf);
 			m_installCat.convertFromByteBuffer(buf);
 			m_installCat.Trim();
-			m_installInfo = NULL;
+			m_installInfo = nullptr;
 			break;
 		}
 		pos = outputbuf.find_Char(':');
@@ -252,10 +252,10 @@ void CPackageInfoBTreeFilterOutput::write(Ref(CByteBuffer) outputbuf)
 void CPackageInfoBTree::Fill(ConstRef(CStringBuffer) inputfilepath)
 {
 	CFilePath iniRootPath(inputfilepath);
-	Ptr(CSecurityFile) iniFile = NULL;
-	Ptr(CFilterInput) pInput = NULL;
-	Ptr(CFilterOutput) pOutput = NULL;
-	Ptr(CFilter) pFilter = NULL;
+	CCppObjectPtr<CSecurityFile> iniFile = nullptr;
+	CCppObjectPtr<CFilterInput> pInput = nullptr;
+	CCppObjectPtr<CFilterOutput> pOutput = nullptr;
+	CCppObjectPtr<CFilter> pFilter = nullptr;
 
 	try
 	{
@@ -270,24 +270,11 @@ void CPackageInfoBTree::Fill(ConstRef(CStringBuffer) inputfilepath)
 		pFilter->open();
 		pFilter->do_filter();
 		pFilter->close();
-
-		pInput->release();
-		pOutput->release();
-		pFilter->release();
-		iniFile->release();
 	}
 	catch ( CSecurityFileException* ex )
 	{
 		CERR << ex->GetExceptionMessage() << endl;
 		if (theConsoleApp->is_stdout_redirected())
 			COUT << ex->GetExceptionMessage() << endl;
-		if ( NotPtrCheck(pInput) )
-			pInput->release();
-		if ( NotPtrCheck(pOutput) )
-			pOutput->release();
-		if ( NotPtrCheck(pFilter) )
-			pFilter->release();
-		if ( NotPtrCheck(iniFile) )
-			iniFile->release();
 	}
 }

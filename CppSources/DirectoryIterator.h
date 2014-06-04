@@ -166,7 +166,6 @@ public:
      *  \details Copy a file.
      */
     static void CopyFile(ConstRef(CFilePath) from, ConstRef(CFilePath) to);
-
 	/**
 	 *  \brief Default getter of path separator character
 	 *  

@@ -22,18 +22,17 @@
 
 void okEnumAllServices()
 {
-	Ptr(CServiceManager) pManager = OK_NEW_OPERATOR CServiceManager;
+	CCppObjectPtr<CServiceManager> pManager = OK_NEW_OPERATOR CServiceManager;
 
 	pManager->StartUp();
 	pManager->EnumAll();
 	pManager->Print();
 	pManager->CleanUp();
-	pManager->release();
 }
 
 void okStartServices(ConstRef(TMBCharList) services)
 {
-	Ptr(CServiceManager) pManager = OK_NEW_OPERATOR CServiceManager;
+	CCppObjectPtr<CServiceManager> pManager = OK_NEW_OPERATOR CServiceManager;
 	TMBCharList::Iterator it = services.Begin();
 
 	pManager->StartUp();
@@ -43,12 +42,11 @@ void okStartServices(ConstRef(TMBCharList) services)
 		++it;
 	}
 	pManager->CleanUp();
-	pManager->release();
 }
 
 void okStopServices(ConstRef(TMBCharList) services)
 {
-	Ptr(CServiceManager) pManager = OK_NEW_OPERATOR CServiceManager;
+	CCppObjectPtr<CServiceManager> pManager = OK_NEW_OPERATOR CServiceManager;
 	TMBCharList::Iterator it = services.Begin();
 
 	pManager->StartUp();
@@ -58,12 +56,11 @@ void okStopServices(ConstRef(TMBCharList) services)
 		++it;
 	}
 	pManager->CleanUp();
-	pManager->release();
 }
 
 void okEnableServices(ConstRef(TMBCharList) services)
 {
-	Ptr(CServiceManager) pManager = OK_NEW_OPERATOR CServiceManager;
+	CCppObjectPtr<CServiceManager> pManager = OK_NEW_OPERATOR CServiceManager;
 	TMBCharList::Iterator it = services.Begin();
 
 	pManager->StartUp();
@@ -73,12 +70,11 @@ void okEnableServices(ConstRef(TMBCharList) services)
 		++it;
 	}
 	pManager->CleanUp();
-	pManager->release();
 }
 
 void okDisableServices(ConstRef(TMBCharList) services)
 {
-	Ptr(CServiceManager) pManager = OK_NEW_OPERATOR CServiceManager;
+	CCppObjectPtr<CServiceManager> pManager = OK_NEW_OPERATOR CServiceManager;
 	TMBCharList::Iterator it = services.Begin();
 
 	pManager->StartUp();
@@ -88,12 +84,11 @@ void okDisableServices(ConstRef(TMBCharList) services)
 		++it;
 	}
 	pManager->CleanUp();
-	pManager->release();
 }
 
 void okDeleteServices(ConstRef(TMBCharList) services)
 {
-	Ptr(CServiceManager) pManager = OK_NEW_OPERATOR CServiceManager;
+	CCppObjectPtr<CServiceManager> pManager = OK_NEW_OPERATOR CServiceManager;
 	TMBCharList::Iterator it = services.Begin();
 
 	pManager->StartUp();
@@ -103,7 +98,6 @@ void okDeleteServices(ConstRef(TMBCharList) services)
 		++it;
 	}
 	pManager->CleanUp();
-	pManager->release();
 }
 
 

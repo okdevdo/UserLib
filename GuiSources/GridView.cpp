@@ -58,15 +58,15 @@ void CGridViewEmptyCell::set_Selected(bool selected)
 CGridViewEmptyCell* CGridViewEmptyCell::HitTest(POINT pt)
 {
 	if ( !m_gridView )
-		return NULL;
+		return nullptr;
 
 	RECT borderRect; ::CopyRect(&borderRect, &m_borderRect);
 
 	if ( (pt.y >= borderRect.top) && (pt.y < borderRect.bottom) && ((pt.x < borderRect.left) || (pt.x > borderRect.right)) )
-		return NULL;
+		return nullptr;
 	if ( ::PtInRect(&borderRect, pt) )
 		return this;
-	return NULL;
+	return nullptr;
 }
 
 void CGridViewEmptyCell::OnAdjustRects(INT right, INT bottom)
@@ -181,7 +181,7 @@ void CGridViewCell::set_Selected(bool selected)
 				int ix = m_gridView->inx_SelCell(this);
 
 				if ( ix > -1 )
-					m_gridView->set_SelCell(ix, NULL);
+					m_gridView->set_SelCell(ix, nullptr);
 			}
 			m_gridView->Update(FALSE);
 		}
@@ -207,19 +207,19 @@ void CGridViewCell::set_Focused(bool focused)
 CGridViewCell* CGridViewCell::HitTest(POINT pt, INT xPos, INT yPos, INT cBottom)
 {
 	if ( !m_gridView )
-		return NULL;
+		return nullptr;
 
 	RECT borderRect; ::CopyRect(&borderRect, &m_borderRect); ::OffsetRect(&borderRect, -xPos, -yPos);
 
 	if ( borderRect.bottom < 0 )
-		return NULL;
+		return nullptr;
 	if ( borderRect.top >= cBottom )
-		return NULL;
+		return nullptr;
 	if ( (pt.y >= borderRect.top) && (pt.y < borderRect.bottom) && ((pt.x < borderRect.left) || (pt.x > borderRect.right)) )
-		return NULL;
+		return nullptr;
 	if ( ::PtInRect(&borderRect, pt) )
 		return this;
-	return NULL;
+	return nullptr;
 }
 
 void CGridViewCell::OnCalcRects(Gdiplus::Graphics* graphics, LPRECT pRect, LPINT maxWidth, LPINT maxHeight)
@@ -322,7 +322,7 @@ CGridViewColumn::CGridViewColumn(CGridView* pGridView, LPCTSTR text, int lench):
 	m_text(__FILE__LINE__ text, lench),
 	m_selected(false),
 	m_editable(false),
-	m_editor(NULL)
+	m_editor(nullptr)
 {
 	::SetRectEmpty(&m_textRect);
 	::SetRectEmpty(&m_borderRect);
@@ -335,7 +335,7 @@ CGridViewColumn::CGridViewColumn(CGridView* pGridView, ConstRef(CStringBuffer) t
 	m_text(text),
 	m_selected(false),
 	m_editable(false),
-	m_editor(NULL)
+	m_editor(nullptr)
 {
 	::SetRectEmpty(&m_textRect);
 	::SetRectEmpty(&m_borderRect);
@@ -377,7 +377,7 @@ void CGridViewColumn::set_Selected(bool selected)
 				int ix = m_gridView->inx_SelColumn(this);
 
 				if ( ix > -1 )
-					m_gridView->set_SelColumn(ix, NULL);
+					m_gridView->set_SelColumn(ix, nullptr);
 			}
 		}
 
@@ -406,15 +406,15 @@ void CGridViewColumn::set_Selected(bool selected)
 CGridViewColumn* CGridViewColumn::HitTest(POINT pt)
 {
 	if ( !m_gridView )
-		return NULL;
+		return nullptr;
 
 	RECT borderRect; ::CopyRect(&borderRect, &m_borderRect);
 
 	if ( (pt.y >= borderRect.top) && (pt.y < borderRect.bottom) && ((pt.x < borderRect.left) || (pt.x > borderRect.right)) )
-		return NULL;
+		return nullptr;
 	if ( ::PtInRect(&borderRect, pt) )
 		return this;
-	return NULL;
+	return nullptr;
 }
 
 void CGridViewColumn::OnCalcRects(Gdiplus::Graphics* graphics, LPRECT pRect, LPINT maxWidth, LPINT maxHeight)
@@ -498,13 +498,6 @@ void CGridViewColumn::OnPaint(Gdiplus::Graphics* graphics)
 	graphics->DrawLine(&grayPen, borderRectF.X, borderRectF.Y + borderRectF.Height, borderRectF.X + borderRectF.Width, borderRectF.Y + borderRectF.Height);
 }
 
-static void __stdcall TDeleteFunc_CGridViewCells( ConstPointer data, Pointer context )
-{
-	Ptr(CGridViewCell) p = CastAnyPtr(CGridViewCell, CastMutable(Pointer, data));
-
-	delete p;
-}
-
 CGridViewRow::CGridViewRow(CGridView* pGridView, LPCTSTR text, int lench):
 	m_gridView(pGridView),
 	m_text(__FILE__LINE__ text, lench),
@@ -550,17 +543,17 @@ void CGridViewRow::set_Text(LPCTSTR pText, int lench)
 CGridViewCell* CGridViewRow::get_Cell(LPCTSTR name)
 {
 	if ( (!m_gridView) || (!name) )
-		return NULL;
+		return nullptr;
 
 	CGridViewColumn* column = m_gridView->get_Column(name);
 		
 	if ( !column )
-		return NULL;
+		return nullptr;
 
 	int colIndex = m_gridView->inx_Column(column);
 
 	if ( (colIndex < 0) || (Cast(dword, colIndex) >= m_cells.Count()) )
-		return NULL;
+		return nullptr;
 
 	return get_Cell(colIndex);
 }
@@ -646,7 +639,7 @@ void CGridViewRow::set_Selected(bool selected)
 				int ix = m_gridView->inx_SelRow(this);
 
 				if ( ix > -1 )
-					m_gridView->set_SelRow(ix, NULL);
+					m_gridView->set_SelRow(ix, nullptr);
 			}
 		}
 		m_gridView->BeginUpdate();
@@ -668,19 +661,19 @@ void CGridViewRow::set_Selected(bool selected)
 CGridViewRow* CGridViewRow::HitTest(POINT pt, INT xPos, INT yPos, INT cBottom)
 {
 	if ( !m_gridView )
-		return NULL;
+		return nullptr;
 
 	RECT borderRect; ::CopyRect(&borderRect, &m_borderRect); ::OffsetRect(&borderRect, -xPos, -yPos);
 
 	if ( borderRect.bottom < 0 )
-		return NULL;
+		return nullptr;
 	if ( borderRect.top >= cBottom )
-		return NULL;
+		return nullptr;
 	if ( (pt.y >= borderRect.top) && (pt.y < borderRect.bottom) && ((pt.x < borderRect.left) || (pt.x > borderRect.right)) )
-		return NULL;
+		return nullptr;
 	if ( ::PtInRect(&borderRect, pt) )
 		return this;
-	return NULL;
+	return nullptr;
 }
 
 void CGridViewRow::OnCalcRects(Gdiplus::Graphics* graphics, LPRECT pRect, LPINT maxWidth, LPINT maxHeight)
@@ -796,37 +789,19 @@ BEGIN_MESSAGE_MAP(CControl, CGridView)
 	ON_WM_NOTIFY(NM_EDITORCURSORDOWN,OnEditorCursorDown)
 END_MESSAGE_MAP()
 
-static void __stdcall TDeleteFunc_Empty( ConstPointer data, Pointer context )
-{
-}
-
-static void __stdcall TDeleteFunc_CGridViewRows( ConstPointer data, Pointer context )
-{
-	Ptr(CGridViewRow) p = CastAnyPtr(CGridViewRow, CastMutable(Pointer, data));
-
-	delete p;
-}
-
-static void __stdcall TDeleteFunc_CGridViewColumns( ConstPointer data, Pointer context )
-{
-	Ptr(CGridViewColumn) p = CastAnyPtr(CGridViewColumn, CastMutable(Pointer, data));
-
-	delete p;
-}
-
 CGridView::CGridView(LPCTSTR name):
     CControl(name),
 	m_multiSelect(false),
 	m_editable(false),
-	m_emptyCell(NULL),
+	m_emptyCell(nullptr),
 	m_columns(__FILE__LINE__ 32, 64),
 	m_rows(__FILE__LINE__ 64, 128),
 	m_selCells(__FILE__LINE__ 256, 1024),
 	m_selRows(__FILE__LINE__ 64, 128),
 	m_selColumns(__FILE__LINE__ 32, 64),
-	m_currentCell(NULL),
-	m_stringFormat(NULL),
-	m_editor(NULL)
+	m_currentCell(nullptr),
+	m_stringFormat(nullptr),
+	m_editor(nullptr)
 {
 	m_emptyCell = OK_NEW_OPERATOR CGridViewEmptyCell(this);
 	m_stringFormat = new Gdiplus::StringFormat(Gdiplus::StringFormat::GenericTypographic());
@@ -837,15 +812,15 @@ CGridView::CGridView(ConstRef(CStringBuffer) name):
     CControl(name),
 	m_multiSelect(false),
 	m_editable(false),
-	m_emptyCell(NULL),
+	m_emptyCell(nullptr),
 	m_columns(__FILE__LINE__ 32, 64),
 	m_rows(__FILE__LINE__ 64, 128),
 	m_selCells(__FILE__LINE__ 256, 1024),
 	m_selRows(__FILE__LINE__ 64, 128),
 	m_selColumns(__FILE__LINE__ 32, 64),
-	m_currentCell(NULL),
-	m_stringFormat(NULL),
-	m_editor(NULL)
+	m_currentCell(nullptr),
+	m_stringFormat(nullptr),
+	m_editor(nullptr)
 {
 	m_emptyCell = OK_NEW_OPERATOR CGridViewEmptyCell(this);
 	m_stringFormat = new Gdiplus::StringFormat(Gdiplus::StringFormat::GenericTypographic());
@@ -921,7 +896,7 @@ CGridViewColumn* CGridView::get_Column(LPCTSTR name)
 			return column;
 		++it;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void CGridView::set_Column(dword ix, CGridViewColumn* column)
@@ -943,8 +918,8 @@ void CGridView::set_Column(dword ix, CGridViewColumn* column)
 			if ( ix < row->get_CellCount() )
 			{
 				if ( m_currentCell == row->get_Cell(ix) )
-					m_currentCell = NULL;
-				row->set_Cell(ix, NULL);
+					m_currentCell = nullptr;
+				row->set_Cell(ix, nullptr);
 			}
 			++it;
 		}
@@ -1008,7 +983,7 @@ void CGridView::set_Row(dword ix, CGridViewRow* row)
 			int jx = row1->inx_Cell(m_currentCell);
 
 			if ( jx > -1 )
-				m_currentCell = NULL;
+				m_currentCell = nullptr;
 		}
 		m_rows.Remove(m_rows.Index(ix));
 	}
@@ -1025,7 +1000,7 @@ void CGridView::set_Row(dword ix, CGridViewRow* row)
 			int jx = row1->inx_Cell(m_currentCell);
 
 			if ( jx > -1 )
-				m_currentCell = NULL;
+				m_currentCell = nullptr;
 		}
 		delete row1;
 		m_rows.SetData(m_rows.Index(ix), row);
@@ -1160,7 +1135,7 @@ void CGridView::set_CurrentCell(CGridViewCell* cell)
 CGridViewCell* CGridView::get_Cell(dword column, LPCTSTR key)
 {
 	if ( column >= m_columns.Count() )
-		return NULL;
+		return nullptr;
 
 	CGridViewRows::Iterator it = m_rows.Begin();
 
@@ -1181,7 +1156,7 @@ CGridViewCell* CGridView::get_Cell(dword column, LPCTSTR key)
 		}
 		++it;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void CGridView::SelectAll(bool selected)
@@ -1393,7 +1368,7 @@ LRESULT CGridView::OnLButtonDown(WPARAM wParam, LPARAM lParam)
 			}
 		}
 		CGridViewColumns::Iterator itCol = m_columns.Begin();
-		CGridViewColumn* column = NULL;
+		CGridViewColumn* column = nullptr;
 
 		while ( itCol )
 		{
@@ -1466,7 +1441,7 @@ LRESULT CGridView::OnLButtonDown(WPARAM wParam, LPARAM lParam)
 		}
 
 		CGridViewRows::Iterator itRow = m_rows.Begin();
-		CGridViewRow* row = NULL;
+		CGridViewRow* row = nullptr;
 
 		while ( itRow )
 		{
@@ -1538,7 +1513,7 @@ LRESULT CGridView::OnLButtonDown(WPARAM wParam, LPARAM lParam)
 			return 0;
 		}
 
-		CGridViewCell* cell = NULL;
+		CGridViewCell* cell = nullptr;
 
 		itRow = m_rows.Begin();
 		while ( itRow )
@@ -1685,8 +1660,8 @@ LRESULT CGridView::OnLButtonDblClk(WPARAM wParam, LPARAM lParam)
 		GetClientRect(&clientRect);
 
 		CGridViewRows::Iterator itRow = m_rows.Begin();
-		CGridViewRow* row = NULL;
-		CGridViewCell* cell = NULL;
+		CGridViewRow* row = nullptr;
+		CGridViewCell* cell = nullptr;
 
 		while ( itRow )
 		{
@@ -1789,7 +1764,7 @@ LRESULT CGridView::OnKeyDown(WPARAM wParam, LPARAM lParam)
 				m_currentCell->set_Focused(true);
 			}
 			else
-				m_currentCell = NULL;
+				m_currentCell = nullptr;
 			SendNotifyMessage(NM_GRIDVIEWROWINSERTED, (LPARAM)newRow);
 			EndUpdate(TRUE);
 		}
@@ -1818,7 +1793,7 @@ LRESULT CGridView::OnKeyDown(WPARAM wParam, LPARAM lParam)
 
 			BeginUpdate();
 			m_currentCell->set_Focused(false);
-			set_Row(ix, NULL);
+			set_Row(ix, nullptr);
 			SendNotifyMessage(NM_GRIDVIEWROWDELETED, (LPARAM)currentRow);
 
 			if ( (Cast(dword, ix) < get_RowCount()) || ((ix > 0) && (Cast(dword, --ix) < get_RowCount())) )
@@ -1828,7 +1803,7 @@ LRESULT CGridView::OnKeyDown(WPARAM wParam, LPARAM lParam)
 			}
 			else
 			{
-				m_currentCell = NULL;
+				m_currentCell = nullptr;
 				SendNotifyMessage(NM_GRIDVIEWFOCUSED, (LPARAM)this);
 			}
 			EndUpdate(TRUE);
@@ -2159,7 +2134,7 @@ void CGridView::_ShowEditor()
 	if ( (!m_editable) || (!m_currentCell) || (!(m_currentCell->get_Column())) || (!(m_currentCell->get_Column()->is_Editable()))  )
 		return;
 
-	CControl* editor = NULL;
+	CControl* editor = nullptr;
 
 	if ( m_currentCell->get_Column()->get_Editor() )
 	{
@@ -2200,7 +2175,7 @@ void CGridView::_CloseEditor(BOOL bSave)
 	if ( (!m_editable) || (!m_currentCell) || (!(m_currentCell->get_Column())) || (!(m_currentCell->get_Column()->is_Editable()))  )
 		return;
 
-	CControl* editor = NULL;
+	CControl* editor = nullptr;
 
 	if ( m_currentCell->get_Column()->get_Editor() )
 		editor = m_currentCell->get_Column()->get_Editor();

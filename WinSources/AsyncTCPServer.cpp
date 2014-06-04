@@ -38,7 +38,7 @@ CAsyncTCPServer::CAsyncTCPServer(Ptr(CAsyncIOManager) pManager):
     CAsyncIOBuffer(pManager),
 	m_Server(),
 	m_Protocol(),
-	m_AcceptFunc(NULL),
+	m_AcceptFunc(nullptr),
 	m_ClientConnection(INVALID_SOCKET)
 {
 	CTcpClientImpl::Initialize();
@@ -52,7 +52,7 @@ CAsyncTCPServer::~CAsyncTCPServer(void)
 void CAsyncTCPServer::Open(CConstPointer pServer, CConstPointer pProtocol)
 {
 	SOCKET s = INVALID_SOCKET;
-	ADDRINFOT *result = NULL;
+	ADDRINFOT *result = nullptr;
     ADDRINFOT hints;
     int iResult;
 
@@ -66,7 +66,7 @@ void CAsyncTCPServer::Open(CConstPointer pServer, CConstPointer pProtocol)
     if ( iResult != 0 )
 		ThrowDefaultException(__FILE__LINE__ _T("CAsyncTCPServer::OpenConnection"));
 
-	s = WSASocket(result->ai_family, result->ai_socktype, result->ai_protocol, NULL, 0, WSA_FLAG_OVERLAPPED);
+	s = WSASocket(result->ai_family, result->ai_socktype, result->ai_protocol, nullptr, 0, WSA_FLAG_OVERLAPPED);
     if ( s == INVALID_SOCKET )
 	{
         FreeAddrInfo(result);
@@ -117,11 +117,11 @@ void CAsyncTCPServer::Accept(Ref(CByteBuffer) buf, Ptr(CAbstractThreadCallback) 
         nRet = WSAIoctl((SOCKET)(m_pData->get_file()), SIO_GET_EXTENSION_FUNCTION_POINTER,
 			&acceptex_guid, sizeof(acceptex_guid),
 			&m_AcceptFunc, sizeof(m_AcceptFunc), &bytes,
-            NULL, NULL);
+            nullptr, nullptr);
         if ( nRet == SOCKET_ERROR )
 			ThrowDefaultException(__FILE__LINE__ _T("CAsyncTCPServer::Accept"));
 	}
-	m_ClientConnection = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_IP, NULL, 0, WSA_FLAG_OVERLAPPED); 
+	m_ClientConnection = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_IP, nullptr, 0, WSA_FLAG_OVERLAPPED); 
 	if( m_ClientConnection == INVALID_SOCKET )
 		ThrowDefaultException(__FILE__LINE__ _T("CAsyncTCPServer::Accept"));
 
@@ -132,7 +132,7 @@ void CAsyncTCPServer::Accept(Ref(CByteBuffer) buf, Ptr(CAbstractThreadCallback) 
 	m_pData->set_buffer(buf);
 	m_pData->set_bytestransferred(0);
 	m_pData->set_callback(pHandler);
-	m_pData->set_ioop(CAsyncIOData::IORead);
+	m_pData->set_ioop(CAsyncIOData::IOAccept);
 	s_memset(m_pData->get_overlapped(), 0, sizeof(OVERLAPPED));
 
 	LPFN_ACCEPTEX acceptex = (LPFN_ACCEPTEX) m_AcceptFunc;
@@ -144,7 +144,6 @@ void CAsyncTCPServer::Accept(Ref(CByteBuffer) buf, Ptr(CAbstractThreadCallback) 
 		if ( WSAGetLastError() != ERROR_IO_PENDING )
 			ThrowDefaultException(__FILE__LINE__ _T("CAsyncTCPServer::Accept"));
 	}
-	m_pManager->AddTask(m_pData);
 }
 
 void CAsyncTCPServer::CreateClientConnection(Ptr(CAsyncTCPClient) result)

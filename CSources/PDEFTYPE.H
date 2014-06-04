@@ -313,8 +313,8 @@
 
 /* definitions of toolbox shortcuts */
 #ifdef __cplusplus
-#define PtrCheck(p)             (!(p))
-#define NotPtrCheck(p)          (!!(p))
+#define PtrCheck(p)             (nullptr == (p))
+#define NotPtrCheck(p)          (nullptr != (p))
 #else
 #define PtrCheck(p)             (NULL==(p))
 #define NotPtrCheck(p)          (NULL!=(p))

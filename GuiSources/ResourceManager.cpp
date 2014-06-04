@@ -56,7 +56,7 @@ HANDLE CResourceManager::get_resource(LPTSTR wndclass, CResourceManager::TResour
 
 	if (m_resourceCache.MatchSorted(it, &item))
 	{
-		if ( (*it)->CachedResource != NULL )
+		if ( (*it)->CachedResource != nullptr )
 			return (*it)->CachedResource;
 		switch ( (*it)->ResourceType ) 
 		{
@@ -77,12 +77,12 @@ HANDLE CResourceManager::get_resource(LPTSTR wndclass, CResourceManager::TResour
 			(*it)->CachedResource = ::LoadMenu(theGuiApp->get_GuiInstance(), MAKEINTRESOURCE((*it)->ResourceID));
 			break;
 		default:
-			(*it)->CachedResource = NULL;
+			(*it)->CachedResource = nullptr;
 			break;
 		}
 		return (*it)->CachedResource;
 	}
-	return NULL;
+	return nullptr;
 }
 
 DWORD CResourceManager::get_resourceID(LPTSTR wndclass, CResourceManager::TResourceType rsrctype)
@@ -130,7 +130,7 @@ Gdiplus::Font* CFontManager::parse_Font(ConstRef(CStringBuffer) _text)
 
 	vFontData.Split(_T(","), vSplit, 64, &vSplitCnt);
 	if ( vSplitCnt == 0 )
-		return NULL;
+		return nullptr;
 	if ( vSplitCnt > 0 )
 	{
 		vFontFamily.SetString(__FILE__LINE__ vSplit[0]);
@@ -187,14 +187,14 @@ Gdiplus::Font* CFontManager::parse_Font(ConstRef(CStringBuffer) _text)
 	Gdiplus::FontFamily fontFamily(vFontFamily);
 
 	if ( fontFamily.GetLastStatus() != Gdiplus::Ok )
-		return NULL;
+		return nullptr;
 
 	Gdiplus::Font* vFont = new Gdiplus::Font(&fontFamily, Cast(Gdiplus::REAL, emSize), fontStyle, emSizeUnit);
 
 	if ( vFont->GetLastStatus() != Gdiplus::Ok )
 	{
 		delete vFont;
-		return NULL;
+		return nullptr;
 	}
 	return vFont;
 }
@@ -291,7 +291,7 @@ void CFontManager::set_Font(CStringLiteral _key, ConstRef(CStringBuffer) _text)
 		return;
 	
 	bool bDelete = _text.IsEmpty();
-	Gdiplus::Font* pFont = NULL;
+	Gdiplus::Font* pFont = nullptr;
 
 	if ( !bDelete )
 	{
@@ -347,9 +347,9 @@ public:
 		if (res == 0)
 		{
 			if (ppa->bPrivateCopy == ppd->bPrivateCopy)
-				return false;
+				return true;
 		}
-		return true;
+		return false;
 	}
 };
 
@@ -619,7 +619,7 @@ bool CBrushManager::has_Brush(CStringLiteral _key)
 Gdiplus::Brush* CBrushManager::get_Brush(CStringLiteral _key, ConstRef(Gdiplus::Color) _defaultcolor)
 {
 	if ( _key.IsEmpty() )
-		return NULL;
+		return nullptr;
 
 	TBrushItem item(_key);
 	TBrushItems::Iterator it = m_brushCache.FindSorted(&item);
@@ -731,7 +731,7 @@ void CBrushManager::set_Brush(CStringLiteral _key, ConstRef(CStringBuffer) _text
 		return;
 	
 	bool bDelete = _text.IsEmpty();
-	Gdiplus::Brush* pBrush = NULL;
+	Gdiplus::Brush* pBrush = nullptr;
 
 	if ( !bDelete )
 	{
@@ -805,7 +805,7 @@ void CBrushManager::remove_Duplicates(Gdiplus::Brush* _brush)
 Gdiplus::Brush* CBrushManager::parse_Brush(ConstRef(CStringBuffer) _text)
 {
 	if ( _text.IsEmpty() )
-		return NULL;
+		return nullptr;
 
 	sword ix = s_bsearch(
 		vBrushManagerNamedColors, 
@@ -873,5 +873,5 @@ Gdiplus::Brush* CBrushManager::parse_Brush(ConstRef(CStringBuffer) _text)
 
 		return new Gdiplus::SolidBrush(Gdiplus::Color(Cast(BYTE, a & 0xFF), Cast(BYTE, r & 0xFF), Cast(BYTE, g & 0xFF), Cast(BYTE, b & 0xFF)));
 	}
-	return NULL;
+	return nullptr;
 }

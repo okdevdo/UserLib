@@ -160,7 +160,7 @@ CStringConstIterator& CStringConstIterator::FindReverse( mbchar c, WULong mod )
 	if ( IsEnd() )
 		return *this;
 
-	CPointer p = NULL;
+	CPointer p = nullptr;
 
     switch ( mod ) {
     case cComparePure:
@@ -186,7 +186,7 @@ CStringConstIterator& CStringConstIterator::Find( CConstPointer str, WULong mod 
 	if ( IsEnd() )
 		return *this;
 
-	CPointer p = NULL;
+	CPointer p = nullptr;
 
     switch ( mod ) {
     case cComparePure:
@@ -314,7 +314,7 @@ CStringConstIterator& CStringConstIterator::FirstStrOf(CArray a2, WULong a2Num, 
 	p = s2;
 	for (i = 0; i < a2Num; ++i)
 		*p++ = a2[i][0];
-	p = NULL;
+	p = nullptr;
 
 	switch (mod) {
 	case cComparePure:
@@ -648,7 +648,7 @@ CStringConstIterator& CStringConstIterator::EatCharacter( Ref(WChar) value )
 
 CStringConstIterator& CStringConstIterator::EatWord( Ref(CPointer) pValue, Ref(WULong) sValue )
 {
-	pValue = NULL;
+	pValue = nullptr;
 	sValue = 0;
 	if ( IsEnd() )
 		return *this;

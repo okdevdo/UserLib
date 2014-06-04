@@ -23,17 +23,17 @@
 #include "SHA1.H"
 
 CSHA1Buffer::CSHA1Buffer(void):
-    _hexBuffer(), _sha1Data(NULL)
+    _hexBuffer(), _sha1Data(nullptr)
 {
 }
 
 CSHA1Buffer::CSHA1Buffer(ConstRef(CStringBuffer) _hexData):
-    _hexBuffer(_hexData), _sha1Data(NULL)
+    _hexBuffer(_hexData), _sha1Data(nullptr)
 {
 }
 
 CSHA1Buffer::CSHA1Buffer(Ptr(CFile) _file):
-    _hexBuffer(), _sha1Data(NULL)
+    _hexBuffer(), _sha1Data(nullptr)
 {
 	CByteBuffer buf(__FILE__LINE__ 16384);
 
@@ -48,7 +48,7 @@ CSHA1Buffer::CSHA1Buffer(Ptr(CFile) _file):
 }
 
 CSHA1Buffer::CSHA1Buffer(ConstRef(CSHA1Buffer) _copy):
-    _hexBuffer(_copy._hexBuffer), _sha1Data(NULL)
+    _hexBuffer(_copy._hexBuffer), _sha1Data(nullptr)
 {
 }
 
@@ -56,14 +56,14 @@ CSHA1Buffer::~CSHA1Buffer(void)
 {
 	if ( NotPtrCheck(_sha1Data) )
 		TFfree(_sha1Data);
-	_sha1Data = NULL;
+	_sha1Data = nullptr;
 }
 
 void CSHA1Buffer::operator = (ConstRef(CStringBuffer) _copy)
 {
 	if ( NotPtrCheck(_sha1Data) )
 		TFfree(_sha1Data);
-	_sha1Data = NULL;
+	_sha1Data = nullptr;
 	_hexBuffer = _copy;
 }
 
@@ -71,7 +71,7 @@ void CSHA1Buffer::operator = (ConstRef(CSHA1Buffer) _copy)
 {
 	if ( NotPtrCheck(_sha1Data) )
 		TFfree(_sha1Data);
-	_sha1Data = NULL;
+	_sha1Data = nullptr;
 	_hexBuffer = _copy._hexBuffer;
 }
 
@@ -102,5 +102,5 @@ void CSHA1Buffer::Finish()
 	_hexBuffer.convertToHex(digest);
 
 	TFfree(_sha1Data);
-	_sha1Data = NULL;
+	_sha1Data = nullptr;
 }

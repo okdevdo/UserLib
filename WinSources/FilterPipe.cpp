@@ -90,7 +90,7 @@ void CFilterThreadedPipeConnector::read(Ref(CByteBuffer) inputbuf)
 
 			tv.tv_sec = 0;
 			tv.tv_usec = 200000;
-			select(0, NULL, NULL, NULL, &tv);
+			select(0, nullptr, nullptr, nullptr, &tv);
 		}
 #endif
 		lock.lock();

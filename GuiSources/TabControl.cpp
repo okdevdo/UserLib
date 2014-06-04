@@ -122,7 +122,7 @@ void CTabPage::calc_TitleRect(Gdiplus::Graphics* pGraphics, LPPOINT pPt, LONG* m
 	pParent->GetClientRect(&r);
 	Convert2RectF(&rF, &r);
 
-	Gdiplus::Font* pFont = NULL;
+	Gdiplus::Font* pFont = nullptr;
 
 	if ( m_selected )
 		pFont = pParent->get_Font(_T(".Title.Font.Selected"), _T("TabControl"));
@@ -162,8 +162,8 @@ void CTabPage::paint_TitleRect(Gdiplus::Graphics* pGraphics)
 
 	Gdiplus::PointF pt(Cast(Gdiplus::REAL, m_titleRect.left + 2 + ((m_titleRect.bottom - m_titleRect.top) / 2)), Cast(Gdiplus::REAL, m_titleRect.top + 2));
 	Gdiplus::Brush* pBackgroundColorNormal = pParent->get_Brush(_T(".BackgroundColor.Normal"), _T("TabControl"), Gdiplus::Color::White);
-	Gdiplus::Brush* pBackgroundColorSelected = NULL;
-	Gdiplus::Brush* pForegroundColor = NULL;
+	Gdiplus::Brush* pBackgroundColorSelected = nullptr;
+	Gdiplus::Brush* pForegroundColor = nullptr;
 
 	if ( m_selected )
 	{
@@ -215,7 +215,7 @@ void CTabPage::paint_TitleRect(Gdiplus::Graphics* pGraphics)
 		pGraphics->FillPath(pBackgroundColorSelected, &path);
 	pGraphics->DrawPath(&blackPen, &path);
 
-	Gdiplus::Font* pFont = NULL;
+	Gdiplus::Font* pFont = nullptr;
 
 	if ( m_selected )
 		pFont = pParent->get_Font(_T(".Title.Font.Selected"), _T("TabControl"));
@@ -251,7 +251,7 @@ END_MESSAGE_MAP()
 CTabControl::CTabControl(LPCTSTR name):
     CControl(name),
 	m_TitleOrientation(TTitleOrientationTop),
-	m_currentTabPage(NULL)
+	m_currentTabPage(nullptr)
 {
 	::SetRectEmpty(&m_titleBarRect);
 	m_mouseclick.x = 0;
@@ -261,7 +261,7 @@ CTabControl::CTabControl(LPCTSTR name):
 CTabControl::CTabControl(ConstRef(CStringBuffer) name):
     CControl(name),
 	m_TitleOrientation(TTitleOrientationTop),
-	m_currentTabPage(NULL)
+	m_currentTabPage(nullptr)
 {
 	::SetRectEmpty(&m_titleBarRect);
 	m_mouseclick.x = 0;
@@ -484,7 +484,7 @@ typedef struct _tagEnumChildrenCTabControlOnLButtonDownParam
 	CTabPage* result;
 
 	_tagEnumChildrenCTabControlOnLButtonDownParam(HWND _parent, POINT& _pt):
-	    parent(_parent), pt(_pt), result(NULL) {}
+	    parent(_parent), pt(_pt), result(nullptr) {}
 } TEnumChildrenCTabControlOnLButtonDownParam;
 
 static BOOL CALLBACK EnumChildProc_CTabControl_OnLButtonDown(HWND hwnd, LPARAM lParam)
@@ -553,19 +553,19 @@ LRESULT CTabControl::OnMouseMove(WPARAM wParam, LPARAM lParam)
 				param.result->get_TitleRect(&r1);
 				m_currentTabPage->get_TitleRect(&r2);
 				if ( r1.left < r2.left )
-					param.result->SetWindowPos(m_currentTabPage, NULL, 0);
+					param.result->SetWindowPos(m_currentTabPage, nullptr, 0);
 				else if ( r1.left > r2.left )
-					m_currentTabPage->SetWindowPos(param.result, NULL, 0);
+					m_currentTabPage->SetWindowPos(param.result, nullptr, 0);
 				else if ( r1.top < r2.top )
-					param.result->SetWindowPos(m_currentTabPage, NULL, 0);
+					param.result->SetWindowPos(m_currentTabPage, nullptr, 0);
 				else
-					m_currentTabPage->SetWindowPos(param.result, NULL, 0);
+					m_currentTabPage->SetWindowPos(param.result, nullptr, 0);
 				Update(TRUE);
 			}
 		}
 		else if ( ::PtInRect(&m_titleBarRect, pt) )
 		{
-			m_currentTabPage->SetWindowPos(HWND_BOTTOM, NULL, 0);
+			m_currentTabPage->SetWindowPos(HWND_BOTTOM, nullptr, 0);
 			Update(TRUE);
 		}
 		else

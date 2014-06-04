@@ -36,18 +36,11 @@ CAbstractConsoleMenuNavigationCallback::~CAbstractConsoleMenuNavigationCallback(
 {
 }
 
-static void __stdcall MenuItemListDeleteFunc( ConstPointer data, Pointer context )
-{
-	CConsoleMenuItem* p = CastAnyPtr(CConsoleMenuItem, CastMutable(Pointer, data));
-
-	p->release();
-}
-
 CConsolePopupMenu::CConsolePopupMenu(CConstPointer name, CConsole* pConsole):
     CConsoleWindow(name, pConsole),
 	m_MenuItemList(__FILE__LINE__0),
 	m_MenuCurrent(),
-	m_Callback(NULL)
+	m_Callback()
 {
 }
 
@@ -55,7 +48,7 @@ CConsolePopupMenu::CConsolePopupMenu(CConstPointer name, CConstPointer title, CC
     CConsoleWindow(name, title, pConsole),
 	m_MenuItemList(__FILE__LINE__0),
 	m_MenuCurrent(),
-	m_Callback(NULL)
+	m_Callback()
 {
 }
 
@@ -63,7 +56,7 @@ CConsolePopupMenu::CConsolePopupMenu(CConsoleMainMenu* mainMenu, CConstPointer n
     CConsoleWindow(name, title, pConsole),
 	m_MenuItemList(__FILE__LINE__0),
 	m_MenuCurrent(),
-	m_Callback(NULL)
+	m_Callback()
 {
 	if ( mainMenu )
 		m_Callback = OK_NEW_OPERATOR CConsoleMenuNavigationCallback<CConsoleMainMenu>(
@@ -72,9 +65,6 @@ CConsolePopupMenu::CConsolePopupMenu(CConsoleMainMenu* mainMenu, CConstPointer n
 
 CConsolePopupMenu::~CConsolePopupMenu(void)
 {
-	m_MenuItemList.Close();
-	if ( m_Callback )
-		m_Callback->release();
 }
 
 void CConsolePopupMenu::DoMenuItem(CConsoleMenuItem* pMenuItem)

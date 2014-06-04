@@ -139,7 +139,7 @@ void CSystemTime::GetTime(Ref(SYSTEMTIME) v, TimeType ttype) const
 			v = m_Time;
 			break;
 		case UTCTime:
-			TzSpecificLocalTimeToSystemTime(NULL, CastMutablePtr(SYSTEMTIME, &m_Time), &v);
+			TzSpecificLocalTimeToSystemTime(nullptr, CastMutablePtr(SYSTEMTIME, &m_Time), &v);
 			break;
 		}
 		break;
@@ -147,7 +147,7 @@ void CSystemTime::GetTime(Ref(SYSTEMTIME) v, TimeType ttype) const
 		switch (ttype)
 		{
 		case LocalTime:
-			SystemTimeToTzSpecificLocalTime(NULL, CastMutablePtr(SYSTEMTIME, &m_Time), &v);
+			SystemTimeToTzSpecificLocalTime(nullptr, CastMutablePtr(SYSTEMTIME, &m_Time), &v);
 			break;
 		case UTCTime:
 			v = m_Time;
@@ -172,7 +172,7 @@ void CSystemTime::GetFileTime(Ref(FILETIME) v, TimeType ttype) const
 			SystemTimeToFileTime(&m_Time, &v);
 			break;
 		case UTCTime:
-			TzSpecificLocalTimeToSystemTime(NULL, CastMutablePtr(SYSTEMTIME, &m_Time), &st);
+			TzSpecificLocalTimeToSystemTime(nullptr, CastMutablePtr(SYSTEMTIME, &m_Time), &st);
 			SystemTimeToFileTime(&st, &v);
 			break;
 		}
@@ -181,7 +181,7 @@ void CSystemTime::GetFileTime(Ref(FILETIME) v, TimeType ttype) const
 		switch (ttype)
 		{
 		case LocalTime:
-			SystemTimeToTzSpecificLocalTime(NULL, CastMutablePtr(SYSTEMTIME, &m_Time), &st);
+			SystemTimeToTzSpecificLocalTime(nullptr, CastMutablePtr(SYSTEMTIME, &m_Time), &st);
 			SystemTimeToFileTime(&st, &v);
 			break;
 		case UTCTime:

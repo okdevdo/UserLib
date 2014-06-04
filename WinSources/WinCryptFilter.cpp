@@ -106,17 +106,17 @@ dword CWinCryptEncryptFilter::_algo1()
 	HCRYPTKEY hXchgKey = NULL;
 	HCRYPTHASH hHash = NULL;
 
-	PBYTE pbKeyBlob = NULL;
+	PBYTE pbKeyBlob = nullptr;
 	DWORD dwKeyBlobLen = 0;
 
-	PBYTE pbBuffer = NULL;
+	PBYTE pbBuffer = nullptr;
 	DWORD dwBlockLen = 0;
 	DWORD dwBufferLen = 0;
 	DWORD dwCount = 0;
 
 	bool fEOF = false;
 
-	HandleError(CryptAcquireContext(&hCryptProv, NULL, MS_ENHANCED_PROV, PROV_RSA_FULL, 0),
+	HandleError(CryptAcquireContext(&hCryptProv, nullptr, MS_ENHANCED_PROV, PROV_RSA_FULL, 0),
 		__FILE__LINE__ _T("CryptAcquireContext"), _T("CWinCryptEncryptFilter::do_filter"));
 
 	if (_passwd.IsEmpty())
@@ -135,7 +135,7 @@ dword CWinCryptEncryptFilter::_algo1()
 			HandleError(CryptGenKey(hCryptProv, AT_KEYEXCHANGE, CRYPT_EXPORTABLE, &hXchgKey),
 				__FILE__LINE__ _T("CryptGenKey"), _T("CWinCryptEncryptFilter::do_filter"));
 		}
-		HandleError(CryptExportKey(hKey, hXchgKey, SIMPLEBLOB, 0, NULL, &dwKeyBlobLen),
+		HandleError(CryptExportKey(hKey, hXchgKey, SIMPLEBLOB, 0, nullptr, &dwKeyBlobLen),
 			__FILE__LINE__ _T("CryptExportKey"), _T("CWinCryptEncryptFilter::do_filter"));
 		//datalen = sizeof(DWORD);
 		//keylen = 0;
@@ -235,7 +235,7 @@ dword CWinCryptEncryptFilter::_algo2()
 
 	if (_passwd.IsEmpty())
 		throw OK_NEW_OPERATOR CWinCryptException(__FILE__LINE__ _T("Password cannot be empty in %s"), _T("CWinCryptEncryptFilter::do_filter"));
-	HandleError(CryptAcquireContext(&hProv, NULL, MS_ENHANCED_PROV, PROV_RSA_FULL, 0),
+	HandleError(CryptAcquireContext(&hProv, nullptr, MS_ENHANCED_PROV, PROV_RSA_FULL, 0),
 		__FILE__LINE__ _T("CryptAcquireContext"), _T("CWinCryptEncryptFilter::do_filter"));
 	HandleError(CryptCreateHash(hProv, CALG_MD5, 0, 0, &hHash),
 		__FILE__LINE__ _T("CryptCreateHash"), _T("CWinCryptEncryptFilter::do_filter"));
@@ -247,13 +247,13 @@ dword CWinCryptEncryptFilter::_algo2()
 	HandleError(CryptGenKey(hProv, AT_KEYEXCHANGE, 0x08000000 | CRYPT_EXPORTABLE, &hXchgKey),
 		__FILE__LINE__ _T("CryptGenKey"), _T("CWinCryptEncryptFilter::do_filter"));
 	datalen = 0;
-	HandleError(CryptExportKey(hXchgKey, 0, PRIVATEKEYBLOB, 0, NULL, &datalen),
+	HandleError(CryptExportKey(hXchgKey, 0, PRIVATEKEYBLOB, 0, nullptr, &datalen),
 		__FILE__LINE__ _T("CryptExportKey"), _T("CWinCryptEncryptFilter::do_filter"));
 	buf1.set_BufferSize(__FILE__LINE__ datalen);
 	HandleError(CryptExportKey(hXchgKey, 0, PRIVATEKEYBLOB, 0, buf1.get_Buffer(), &datalen),
 		__FILE__LINE__ _T("CryptExportKey"), _T("CWinCryptEncryptFilter::do_filter"));
 	datalen = datalen1 = buf1.get_BufferSize();
-	HandleError(CryptEncrypt(hKey, NULL, TRUE, 0, NULL, &datalen, buf1.get_BufferSize()),
+	HandleError(CryptEncrypt(hKey, NULL, TRUE, 0, nullptr, &datalen, buf1.get_BufferSize()),
 		__FILE__LINE__ _T("CryptEncrypt"), _T("CWinCryptEncryptFilter::do_filter"));
 	buf1.set_BufferSize(__FILE__LINE__ datalen);
 	HandleError(CryptEncrypt(hKey, NULL, TRUE, 0, buf1.get_Buffer(), &datalen1, buf1.get_BufferSize()),
@@ -314,12 +314,12 @@ dword CWinCryptEncryptFilter::_algo3()
 	if (_passwd.IsEmpty())
 		throw OK_NEW_OPERATOR CWinCryptException(__FILE__LINE__ _T("Password cannot be empty in %s"), _T("CWinCryptEncryptFilter::do_filter"));
 
-	HandleError(BCryptOpenAlgorithmProvider(&algHHash, BCRYPT_SHA512_ALGORITHM, NULL, 0),
+	HandleError(BCryptOpenAlgorithmProvider(&algHHash, BCRYPT_SHA512_ALGORITHM, nullptr, 0),
 		__FILE__LINE__ _T("BCryptOpenAlgorithmProvider"), _T("CWinCryptEncryptFilter::do_filter"));
 	HandleError(BCryptGetProperty(algHHash, BCRYPT_OBJECT_LENGTH, CastAnyPtr(BYTE, &cbHashObject), sizeof(DWORD), &cbData, 0),
 		__FILE__LINE__ _T("BCryptGetProperty"), _T("CWinCryptEncryptFilter::do_filter"));
 	vHashObject.set_BufferSize(__FILE__LINE__ cbHashObject);
-	HandleError(BCryptCreateHash(algHHash, &hashH, vHashObject.get_Buffer(), cbHashObject, NULL, 0, 0),
+	HandleError(BCryptCreateHash(algHHash, &hashH, vHashObject.get_Buffer(), cbHashObject, nullptr, 0, 0),
 		__FILE__LINE__ _T("BCryptCreateHash"), _T("CWinCryptEncryptFilter::do_filter"));
 	_passwd.convertToByteBuffer(buf);
 	HandleError(BCryptHashData(hashH, buf.get_Buffer(), buf.get_BufferSize(), 0),
@@ -334,7 +334,7 @@ dword CWinCryptEncryptFilter::_algo3()
 	HandleError(BCryptCloseAlgorithmProvider(algHHash, 0),
 		__FILE__LINE__ _T("BCryptCloseAlgorithmProvider"), _T("CWinCryptEncryptFilter::do_filter"));
 
-	HandleError(BCryptOpenAlgorithmProvider(&algH, BCRYPT_DES_ALGORITHM, NULL, 0),
+	HandleError(BCryptOpenAlgorithmProvider(&algH, BCRYPT_DES_ALGORITHM, nullptr, 0),
 		__FILE__LINE__ _T("BCryptOpenAlgorithmProvider"), _T("CWinCryptEncryptFilter::do_filter"));
 	HandleError(BCryptGetProperty(algH, BCRYPT_OBJECT_LENGTH, CastAnyPtr(BYTE, &cbKeyObject), sizeof(DWORD), &cbData, 0),
 		__FILE__LINE__ _T("BCryptGetProperty"), _T("CWinCryptEncryptFilter::do_filter"));
@@ -372,13 +372,13 @@ dword CWinCryptEncryptFilter::_algo3()
 		if (0 == buf.get_BufferSize())
 			break;
 
-		HandleError(BCryptEncrypt(keyH, buf.get_Buffer(), buf.get_BufferSize(), NULL, vIV.get_Buffer(), vIV.get_BufferSize(), NULL, 0, &cbResult, BCRYPT_BLOCK_PADDING),
+		HandleError(BCryptEncrypt(keyH, buf.get_Buffer(), buf.get_BufferSize(), nullptr, vIV.get_Buffer(), vIV.get_BufferSize(), nullptr, 0, &cbResult, BCRYPT_BLOCK_PADDING),
 			__FILE__LINE__ _T("BCryptEncrypt"), _T("CWinCryptEncryptFilter::do_filter"));
 		buf2.set_BufferSize(__FILE__LINE__ sizeof(DWORD));
 		DerefAnyPtr(DWORD, buf2.get_Buffer()) = cbResult;
 		write(buf2);
 		buf1.set_BufferSize(__FILE__LINE__ cbResult);
-		HandleError(BCryptEncrypt(keyH, buf.get_Buffer(), buf.get_BufferSize(), NULL, vIV.get_Buffer(), vIV.get_BufferSize(), buf1.get_Buffer(), buf1.get_BufferSize(), &cbResult, BCRYPT_BLOCK_PADDING),
+		HandleError(BCryptEncrypt(keyH, buf.get_Buffer(), buf.get_BufferSize(), nullptr, vIV.get_Buffer(), vIV.get_BufferSize(), buf1.get_Buffer(), buf1.get_BufferSize(), &cbResult, BCRYPT_BLOCK_PADDING),
 			__FILE__LINE__ _T("BCryptEncrypt"), _T("CWinCryptEncryptFilter::do_filter"));
 		write(buf1);
 	}
@@ -411,12 +411,12 @@ dword CWinCryptEncryptFilter::_algo4()
 	if (_passwd.IsEmpty())
 		throw OK_NEW_OPERATOR CWinCryptException(__FILE__LINE__ _T("Password cannot be empty in %s"), _T("CWinCryptEncryptFilter::do_filter"));
 
-	HandleError(BCryptOpenAlgorithmProvider(&algHHash, BCRYPT_SHA512_ALGORITHM, NULL, 0),
+	HandleError(BCryptOpenAlgorithmProvider(&algHHash, BCRYPT_SHA512_ALGORITHM, nullptr, 0),
 		__FILE__LINE__ _T("BCryptOpenAlgorithmProvider"), _T("CWinCryptEncryptFilter::do_filter"));
 	HandleError(BCryptGetProperty(algHHash, BCRYPT_OBJECT_LENGTH, CastAnyPtr(BYTE, &cbHashObject), sizeof(DWORD), &cbData, 0),
 		__FILE__LINE__ _T("BCryptGetProperty"), _T("CWinCryptEncryptFilter::do_filter"));
 	vHashObject.set_BufferSize(__FILE__LINE__ cbHashObject);
-	HandleError(BCryptCreateHash(algHHash, &hashH, vHashObject.get_Buffer(), cbHashObject, NULL, 0, 0),
+	HandleError(BCryptCreateHash(algHHash, &hashH, vHashObject.get_Buffer(), cbHashObject, nullptr, 0, 0),
 		__FILE__LINE__ _T("BCryptCreateHash"), _T("CWinCryptEncryptFilter::do_filter"));
 	_passwd.convertToByteBuffer(buf);
 	HandleError(BCryptHashData(hashH, buf.get_Buffer(), buf.get_BufferSize(), 0),
@@ -431,7 +431,7 @@ dword CWinCryptEncryptFilter::_algo4()
 	HandleError(BCryptCloseAlgorithmProvider(algHHash, 0),
 		__FILE__LINE__ _T("BCryptCloseAlgorithmProvider"), _T("CWinCryptEncryptFilter::do_filter"));
 
-	HandleError(BCryptOpenAlgorithmProvider(&algH, BCRYPT_AES_ALGORITHM, NULL, 0),
+	HandleError(BCryptOpenAlgorithmProvider(&algH, BCRYPT_AES_ALGORITHM, nullptr, 0),
 		__FILE__LINE__ _T("BCryptOpenAlgorithmProvider"), _T("CWinCryptEncryptFilter::do_filter"));
 	HandleError(BCryptGetProperty(algH, BCRYPT_OBJECT_LENGTH, CastAnyPtr(BYTE, &cbKeyObject), sizeof(DWORD), &cbData, 0),
 		__FILE__LINE__ _T("BCryptGetProperty"), _T("CWinCryptEncryptFilter::do_filter"));
@@ -469,13 +469,13 @@ dword CWinCryptEncryptFilter::_algo4()
 		if (0 == buf.get_BufferSize())
 			break;
 
-		HandleError(BCryptEncrypt(keyH, buf.get_Buffer(), buf.get_BufferSize(), NULL, vIV.get_Buffer(), vIV.get_BufferSize(), NULL, 0, &cbResult, BCRYPT_BLOCK_PADDING),
+		HandleError(BCryptEncrypt(keyH, buf.get_Buffer(), buf.get_BufferSize(), nullptr, vIV.get_Buffer(), vIV.get_BufferSize(), nullptr, 0, &cbResult, BCRYPT_BLOCK_PADDING),
 			__FILE__LINE__ _T("BCryptEncrypt"), _T("CWinCryptEncryptFilter::do_filter"));
 		buf2.set_BufferSize(__FILE__LINE__ sizeof(DWORD));
 		DerefAnyPtr(DWORD, buf2.get_Buffer()) = cbResult;
 		write(buf2);
 		buf1.set_BufferSize(__FILE__LINE__ cbResult);
-		HandleError(BCryptEncrypt(keyH, buf.get_Buffer(), buf.get_BufferSize(), NULL, vIV.get_Buffer(), vIV.get_BufferSize(), buf1.get_Buffer(), buf1.get_BufferSize(), &cbResult, BCRYPT_BLOCK_PADDING),
+		HandleError(BCryptEncrypt(keyH, buf.get_Buffer(), buf.get_BufferSize(), nullptr, vIV.get_Buffer(), vIV.get_BufferSize(), buf1.get_Buffer(), buf1.get_BufferSize(), &cbResult, BCRYPT_BLOCK_PADDING),
 			__FILE__LINE__ _T("BCryptEncrypt"), _T("CWinCryptEncryptFilter::do_filter"));
 		write(buf1);
 	}
@@ -572,14 +572,14 @@ dword CWinCryptDecryptFilter::_algo1()
 	HCRYPTPROV hCryptProv = NULL;
 
 	DWORD dwCount;
-	PBYTE pbBuffer = NULL;
+	PBYTE pbBuffer = nullptr;
 	DWORD dwBlockLen;
 	DWORD dwBufferLen;
 	DWORD dwKeyBlobLen;
 
 	bool fEOF;
 
-	HandleError(CryptAcquireContext(&hCryptProv, NULL, MS_ENHANCED_PROV, PROV_RSA_FULL, 0),
+	HandleError(CryptAcquireContext(&hCryptProv, nullptr, MS_ENHANCED_PROV, PROV_RSA_FULL, 0),
 		__FILE__LINE__ _T("CryptAcquireContext"), _T("CWinCryptDecryptFilter::do_filter"));
 
 	if (_passwd.IsEmpty())
@@ -668,7 +668,7 @@ dword CWinCryptDecryptFilter::_algo2()
 		throw OK_NEW_OPERATOR CWinCryptException(__FILE__LINE__ _T("File magic illegal in %s"), _T("CWinCryptDecryptFilter::do_filter"));
 	datalen = DerefAnyPtr(DWORD, buf.get_Buffer() + 8);
 
-	HandleError(CryptAcquireContext(&hProv, NULL, MS_ENHANCED_PROV, PROV_RSA_FULL, 0),
+	HandleError(CryptAcquireContext(&hProv, nullptr, MS_ENHANCED_PROV, PROV_RSA_FULL, 0),
 		__FILE__LINE__ _T("CryptAcquireContext"), _T("CWinCryptDecryptFilter::do_filter)"));
 	HandleError(CryptCreateHash(hProv, CALG_MD5, 0, 0, &hHash),
 		__FILE__LINE__ _T("CryptCreateHash"), _T("CWinCryptDecryptFilter::do_filter)"));
@@ -755,12 +755,12 @@ dword CWinCryptDecryptFilter::_algo3()
 	if (_passwd.IsEmpty())
 		throw OK_NEW_OPERATOR CWinCryptException(__FILE__LINE__ _T("Password cannot be empty in %s"), _T("CWinCryptDecryptFilter::do_filter"));
 
-	HandleError(BCryptOpenAlgorithmProvider(&algHHash, BCRYPT_SHA512_ALGORITHM, NULL, 0),
+	HandleError(BCryptOpenAlgorithmProvider(&algHHash, BCRYPT_SHA512_ALGORITHM, nullptr, 0),
 		__FILE__LINE__ _T("BCryptOpenAlgorithmProvider"), _T("CWinCryptDecryptFilter::do_filter"));
 	HandleError(BCryptGetProperty(algHHash, BCRYPT_OBJECT_LENGTH, CastAnyPtr(BYTE, &cbHashObject), sizeof(DWORD), &cbData, 0),
 		__FILE__LINE__ _T("BCryptGetProperty"), _T("CWinCryptDecryptFilter::do_filter"));
 	vHashObject.set_BufferSize(__FILE__LINE__ cbHashObject);
-	HandleError(BCryptCreateHash(algHHash, &hashH, vHashObject.get_Buffer(), cbHashObject, NULL, 0, 0),
+	HandleError(BCryptCreateHash(algHHash, &hashH, vHashObject.get_Buffer(), cbHashObject, nullptr, 0, 0),
 		__FILE__LINE__ _T("BCryptCreateHash"), _T("CWinCryptDecryptFilter::do_filter"));
 	_passwd.convertToByteBuffer(buf);
 	HandleError(BCryptHashData(hashH, buf.get_Buffer(), buf.get_BufferSize(), 0),
@@ -775,7 +775,7 @@ dword CWinCryptDecryptFilter::_algo3()
 	HandleError(BCryptCloseAlgorithmProvider(algHHash, 0),
 		__FILE__LINE__ _T("BCryptCloseAlgorithmProvider"), _T("CWinCryptDecryptFilter::do_filter"));
 
-	HandleError(BCryptOpenAlgorithmProvider(&algH, BCRYPT_DES_ALGORITHM, NULL, 0),
+	HandleError(BCryptOpenAlgorithmProvider(&algH, BCRYPT_DES_ALGORITHM, nullptr, 0),
 		__FILE__LINE__ _T("BCryptOpenAlgorithmProvider"), _T("CWinCryptDecryptFilter::do_filter"));
 	HandleError(BCryptGetProperty(algH, BCRYPT_OBJECT_LENGTH, CastAnyPtr(BYTE, &cbKeyObject), sizeof(DWORD), &cbData, 0),
 		__FILE__LINE__ _T("BCryptGetProperty"), _T("CWinCryptDecryptFilter::do_filter"));
@@ -811,10 +811,10 @@ dword CWinCryptDecryptFilter::_algo3()
 		if (0 == buf.get_BufferSize())
 			break;
 
-		HandleError(BCryptDecrypt(keyH, buf.get_Buffer(), buf.get_BufferSize(), NULL, vIV.get_Buffer(), vIV.get_BufferSize(), NULL, 0, &cbResult, BCRYPT_BLOCK_PADDING),
+		HandleError(BCryptDecrypt(keyH, buf.get_Buffer(), buf.get_BufferSize(), nullptr, vIV.get_Buffer(), vIV.get_BufferSize(), nullptr, 0, &cbResult, BCRYPT_BLOCK_PADDING),
 			__FILE__LINE__ _T("BCryptEncrypt"), _T("CWinCryptDecryptFilter::do_filter"));
 		buf1.set_BufferSize(__FILE__LINE__ cbResult);
-		HandleError(BCryptDecrypt(keyH, buf.get_Buffer(), buf.get_BufferSize(), NULL, vIV.get_Buffer(), vIV.get_BufferSize(), buf1.get_Buffer(), cbResult, &cbResult, BCRYPT_BLOCK_PADDING),
+		HandleError(BCryptDecrypt(keyH, buf.get_Buffer(), buf.get_BufferSize(), nullptr, vIV.get_Buffer(), vIV.get_BufferSize(), buf1.get_Buffer(), cbResult, &cbResult, BCRYPT_BLOCK_PADDING),
 			__FILE__LINE__ _T("BCryptEncrypt"), _T("CWinCryptDecryptFilter::do_filter"));
 		buf1.set_BufferSize(__FILE__LINE__ cbResult);
 		write(buf1);
@@ -853,12 +853,12 @@ dword CWinCryptDecryptFilter::_algo4()
 	if (_passwd.IsEmpty())
 		throw OK_NEW_OPERATOR CWinCryptException(__FILE__LINE__ _T("Password cannot be empty in %s"), _T("CWinCryptDecryptFilter::do_filter"));
 
-	HandleError(BCryptOpenAlgorithmProvider(&algHHash, BCRYPT_SHA512_ALGORITHM, NULL, 0),
+	HandleError(BCryptOpenAlgorithmProvider(&algHHash, BCRYPT_SHA512_ALGORITHM, nullptr, 0),
 		__FILE__LINE__ _T("BCryptOpenAlgorithmProvider"), _T("CWinCryptDecryptFilter::do_filter"));
 	HandleError(BCryptGetProperty(algHHash, BCRYPT_OBJECT_LENGTH, CastAnyPtr(BYTE, &cbHashObject), sizeof(DWORD), &cbData, 0),
 		__FILE__LINE__ _T("BCryptGetProperty"), _T("CWinCryptDecryptFilter::do_filter"));
 	vHashObject.set_BufferSize(__FILE__LINE__ cbHashObject);
-	HandleError(BCryptCreateHash(algHHash, &hashH, vHashObject.get_Buffer(), cbHashObject, NULL, 0, 0),
+	HandleError(BCryptCreateHash(algHHash, &hashH, vHashObject.get_Buffer(), cbHashObject, nullptr, 0, 0),
 		__FILE__LINE__ _T("BCryptCreateHash"), _T("CWinCryptDecryptFilter::do_filter"));
 	_passwd.convertToByteBuffer(buf);
 	HandleError(BCryptHashData(hashH, buf.get_Buffer(), buf.get_BufferSize(), 0),
@@ -873,7 +873,7 @@ dword CWinCryptDecryptFilter::_algo4()
 	HandleError(BCryptCloseAlgorithmProvider(algHHash, 0),
 		__FILE__LINE__ _T("BCryptCloseAlgorithmProvider"), _T("CWinCryptDecryptFilter::do_filter"));
 
-	HandleError(BCryptOpenAlgorithmProvider(&algH, BCRYPT_AES_ALGORITHM, NULL, 0),
+	HandleError(BCryptOpenAlgorithmProvider(&algH, BCRYPT_AES_ALGORITHM, nullptr, 0),
 		__FILE__LINE__ _T("BCryptOpenAlgorithmProvider"), _T("CWinCryptDecryptFilter::do_filter"));
 	HandleError(BCryptGetProperty(algH, BCRYPT_OBJECT_LENGTH, CastAnyPtr(BYTE, &cbKeyObject), sizeof(DWORD), &cbData, 0),
 		__FILE__LINE__ _T("BCryptGetProperty"), _T("CWinCryptDecryptFilter::do_filter"));
@@ -913,10 +913,10 @@ dword CWinCryptDecryptFilter::_algo4()
 		if (0 == buf.get_BufferSize())
 			break;
 
-		HandleError(BCryptDecrypt(keyH, buf.get_Buffer(), buf.get_BufferSize(), NULL, vIV.get_Buffer(), vIV.get_BufferSize(), NULL, 0, &cbResult, BCRYPT_BLOCK_PADDING),
+		HandleError(BCryptDecrypt(keyH, buf.get_Buffer(), buf.get_BufferSize(), nullptr, vIV.get_Buffer(), vIV.get_BufferSize(), nullptr, 0, &cbResult, BCRYPT_BLOCK_PADDING),
 			__FILE__LINE__ _T("BCryptEncrypt"), _T("CWinCryptDecryptFilter::do_filter"));
 		buf1.set_BufferSize(__FILE__LINE__ cbResult);
-		HandleError(BCryptDecrypt(keyH, buf.get_Buffer(), buf.get_BufferSize(), NULL, vIV.get_Buffer(), vIV.get_BufferSize(), buf1.get_Buffer(), cbResult, &cbResult, BCRYPT_BLOCK_PADDING),
+		HandleError(BCryptDecrypt(keyH, buf.get_Buffer(), buf.get_BufferSize(), nullptr, vIV.get_Buffer(), vIV.get_BufferSize(), buf1.get_Buffer(), cbResult, &cbResult, BCRYPT_BLOCK_PADDING),
 			__FILE__LINE__ _T("BCryptEncrypt"), _T("CWinCryptDecryptFilter::do_filter"));
 		buf1.set_BufferSize(__FILE__LINE__ cbResult);
 		write(buf1);

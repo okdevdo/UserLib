@@ -68,7 +68,7 @@ CEventLoggerImpl::CEventLoggerImpl():
 #if (_WIN32_WINNT >= _WIN32_WINNT_VISTA) && (OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR)
 _handle(0LL),
 #endif
-_classicHandle(NULL)
+_classicHandle(nullptr)
 {
 	InitializeLog();
 	InitializeClassicLog();
@@ -89,8 +89,8 @@ void CEventLoggerImpl::InitializeLog()
 
 		status = EventRegister(
 			&OKREIS_PROVIDER_GUID,	// GUID that identifies the provider
-			NULL,					// Callback not used
-			NULL,					// Context not used
+			nullptr,					// Callback not used
+			nullptr,					// Context not used
 			&_handle				// Used when calling EventWrite and EventUnregister
 			);
 		if (ERROR_SUCCESS != status)
@@ -114,7 +114,7 @@ void CEventLoggerImpl::InitializeClassicLog()
 {
 	if (!_classicHandle)
 	{
-		_classicHandle = RegisterEventSource(NULL, PROVIDER_NAME);
+		_classicHandle = RegisterEventSource(nullptr, PROVIDER_NAME);
 		if (!_classicHandle)
 			throw OK_NEW_OPERATOR CEventLoggerException(__FILE__LINE__ _T("in %s CEventLoggerException"), _T("CEventLoggerImpl::InitializeClassicLog"), CWinException::WinExtError);
 	}
@@ -125,7 +125,7 @@ void CEventLoggerImpl::DeInitializeClassicLog()
 	if (_classicHandle)
 	{
 		DeregisterEventSource(_classicHandle);
-		_classicHandle = NULL;
+		_classicHandle = nullptr;
 	}
 }
 
@@ -134,7 +134,7 @@ void CEventLoggerImpl::WriteLog(CEventLogger::InfoLevel level, CConstPointer msg
 #if (_WIN32_WINNT >= _WIN32_WINNT_VISTA) && (OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR)
 	DWORD status = ERROR_SUCCESS;
 	EVENT_DATA_DESCRIPTOR DataDescriptors[1];
-	PCEVENT_DESCRIPTOR EventDescriptor = NULL;
+	PCEVENT_DESCRIPTOR EventDescriptor = nullptr;
 
 	InitializeLog();
 	switch (level)
@@ -167,10 +167,10 @@ void CEventLoggerImpl::WriteLog(CEventLogger::InfoLevel level, CConstPointer msg
 
 void CEventLoggerImpl::WriteClassicLog(CEventLogger::InfoLevel level, CEventLogger::Category category, CConstPointer msgtext)
 {
-	HANDLE hToken = NULL;
+	HANDLE hToken = nullptr;
 	DWORD status = ERROR_SUCCESS;
-	PSID pOwnerSid = NULL;
-	PSECURITY_DESCRIPTOR pSecurityDesc = NULL;
+	PSID pOwnerSid = nullptr;
+	PSECURITY_DESCRIPTOR pSecurityDesc = nullptr;
 	LPCTSTR pInsertStrings[1] = { msgtext };
 	WORD wType;
 	WORD wCategory;
@@ -179,7 +179,7 @@ void CEventLoggerImpl::WriteClassicLog(CEventLogger::InfoLevel level, CEventLogg
 	if (!OpenProcessToken(::GetCurrentProcess(), TOKEN_ALL_ACCESS, &hToken))
 		throw OK_NEW_OPERATOR CEventLoggerException(__FILE__LINE__ _T("in %s CEventLoggerException"), _T("CEventLoggerImpl::WriteClassicLog"), CWinException::WinExtError);
 
-	status = GetSecurityInfo(hToken, SE_KERNEL_OBJECT, OWNER_SECURITY_INFORMATION, &pOwnerSid, NULL, NULL, NULL, &pSecurityDesc);
+	status = GetSecurityInfo(hToken, SE_KERNEL_OBJECT, OWNER_SECURITY_INFORMATION, &pOwnerSid, nullptr, nullptr, nullptr, &pSecurityDesc);
 	if (ERROR_SUCCESS != status)
 		throw OK_NEW_OPERATOR CEventLoggerException(__FILE__LINE__ _T("in %s CEventLoggerException"), _T("CEventLogger::WriteLog"), CWinException::WinExtError, status);
 
@@ -208,7 +208,7 @@ void CEventLoggerImpl::WriteClassicLog(CEventLogger::InfoLevel level, CEventLogg
 		wCategory = UI_CATEGORY;
 		break;
 	}
-	if (!ReportEvent(_classicHandle, wType, wCategory, MSG_ERROR_TEXT, pOwnerSid, 1, 0, pInsertStrings, NULL))
+	if (!ReportEvent(_classicHandle, wType, wCategory, MSG_ERROR_TEXT, pOwnerSid, 1, 0, pInsertStrings, nullptr))
 		throw OK_NEW_OPERATOR CEventLoggerException(__FILE__LINE__ _T("in %s CEventLoggerException"), _T("CEventLoggerImpl::WriteClassicLog"), CWinException::WinExtError);
 
 	if (pSecurityDesc)
@@ -218,7 +218,7 @@ void CEventLoggerImpl::WriteClassicLog(CEventLogger::InfoLevel level, CEventLogg
 		CloseHandle(hToken);
 }
 
-Ptr(CEventLoggerImpl) CEventLogger::_impl = NULL;
+Ptr(CEventLoggerImpl) CEventLogger::_impl = nullptr;
 
 CEventLogger::CEventLogger()
 {
@@ -341,6 +341,6 @@ void CEventLogger::CleanUp()
 	if (_impl)
 	{
 		_impl->release();
-		_impl = NULL;
+		_impl = nullptr;
 	}
 }

@@ -73,12 +73,12 @@ CConsoleLayoutItem::~CConsoleLayoutItem(void)
 
 Ptr(CConsoleControl) CConsoleLayoutItem::GetControl()
 {
-	return NULL;
+	return nullptr;
 }
 
 Ptr(CConsoleLayout) CConsoleLayoutItem::GetLayout()
 {
-	return NULL;
+	return nullptr;
 }
 
 
@@ -123,16 +123,6 @@ CConsoleLayoutLayoutItem::~CConsoleLayoutLayoutItem(void)
 Ptr(CConsoleLayout) CConsoleLayoutLayoutItem::GetLayout()
 {
 	return m_Item;
-}
-
-static void __stdcall CConsoleLayoutItemDeleteFunc( ConstPointer data, Pointer context )
-{
-	Ptr(CConsoleLayoutItem) p = CastAnyPtr(CConsoleLayoutItem, CastMutable(Pointer, data));
-	Ptr(CConsoleLayout) pLayout = p->GetLayout();
-
-	if ( NotPtrCheck(pLayout) )
-		pLayout->release();
-	p->release();
 }
 
 CConsoleLayout::CConsoleLayout(void):
@@ -210,7 +200,7 @@ CConsoleHBoxLayout::~CConsoleHBoxLayout(void)
 void CConsoleHBoxLayout::Setup(Ptr(CConsoleLayoutItem) layoutItem)
 {
 	CConsoleLayoutItemVector::Iterator it = m_Items.Begin();
-	Ptr(CConsoleLayoutItem) pLayoutItem = NULL;
+	Ptr(CConsoleLayoutItem) pLayoutItem = nullptr;
 	COORD minSize;
 	COORD maxSize;
 	COORD prefSize;
@@ -315,7 +305,7 @@ void CConsoleHBoxLayout::Setup(Ptr(CConsoleLayoutItem) layoutItem)
 void CConsoleHBoxLayout::Create(COORD pos, COORD size)
 {
 	CConsoleLayoutItemVector::Iterator it = m_Items.Begin();
-	Ptr(CConsoleLayoutItem) pLayoutItem = NULL;
+	Ptr(CConsoleLayoutItem) pLayoutItem = nullptr;
 	sword fix = 0;
 	sword fixSz = 0;
 	sword fill = 0;
@@ -408,7 +398,7 @@ void CConsoleHBoxLayout::Create(COORD pos, COORD size)
 void CConsoleHBoxLayout::Move(COORD topleft)
 {
 	CConsoleLayoutItemVector::Iterator it = m_Items.Begin();
-	Ptr(CConsoleLayoutItem) pLayoutItem = NULL;
+	Ptr(CConsoleLayoutItem) pLayoutItem = nullptr;
 	COORD deltaPos;
 	COORD pos;
 	bool bFirst = true;
@@ -462,7 +452,7 @@ CConsoleVBoxLayout::~CConsoleVBoxLayout(void)
 void CConsoleVBoxLayout::Setup(Ptr(CConsoleLayoutItem) layoutItem)
 {
 	CConsoleLayoutItemVector::Iterator it = m_Items.Begin();
-	Ptr(CConsoleLayoutItem) pLayoutItem = NULL;
+	Ptr(CConsoleLayoutItem) pLayoutItem = nullptr;
 	COORD minSize;
 	COORD maxSize;
 	COORD prefSize;
@@ -564,7 +554,7 @@ void CConsoleVBoxLayout::Setup(Ptr(CConsoleLayoutItem) layoutItem)
 void CConsoleVBoxLayout::Create(COORD pos, COORD size)
 {
 	CConsoleLayoutItemVector::Iterator it = m_Items.Begin();
-	Ptr(CConsoleLayoutItem) pLayoutItem = NULL;
+	Ptr(CConsoleLayoutItem) pLayoutItem = nullptr;
 	sword fix = 0;
 	sword fixSz = 0;
 	sword fill = 0;
@@ -657,7 +647,7 @@ void CConsoleVBoxLayout::Create(COORD pos, COORD size)
 void CConsoleVBoxLayout::Move(COORD topleft)
 {
 	CConsoleLayoutItemVector::Iterator it = m_Items.Begin();
-	Ptr(CConsoleLayoutItem) pLayoutItem = NULL;
+	Ptr(CConsoleLayoutItem) pLayoutItem = nullptr;
 	COORD deltaPos;
 	COORD pos;
 	bool bFirst = true;

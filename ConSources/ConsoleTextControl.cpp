@@ -27,11 +27,11 @@
 CConsoleTextControl::CConsoleTextControl(CConstPointer name, CConsole* pConsole):
     CConsoleControl(name, pConsole),
     m_TextLineCnt(0),
-    m_TextLines(NULL),
-	m_TextLineLen(NULL),
-	m_TextLineAlloc(NULL),
+    m_TextLines(nullptr),
+	m_TextLineLen(nullptr),
+	m_TextLineAlloc(nullptr),
 	m_SelectionMode(false),
-	m_UndoGroup(NULL),
+	m_UndoGroup(),
 	m_MultiLine(false),
 	m_MaxChars(0)
 {
@@ -40,11 +40,11 @@ CConsoleTextControl::CConsoleTextControl(CConstPointer name, CConsole* pConsole)
 CConsoleTextControl::CConsoleTextControl(CConstPointer name, CConstPointer title, CConsole* pConsole):
     CConsoleControl(name, title, pConsole),
     m_TextLineCnt(0),
-    m_TextLines(NULL),
-	m_TextLineLen(NULL),
-	m_TextLineAlloc(NULL),
+    m_TextLines(nullptr),
+	m_TextLineLen(nullptr),
+	m_TextLineAlloc(nullptr),
 	m_SelectionMode(false),
-	m_UndoGroup(NULL),
+	m_UndoGroup(),
 	m_MultiLine(false),
 	m_MaxChars(0)
 {
@@ -53,11 +53,11 @@ CConsoleTextControl::CConsoleTextControl(CConstPointer name, CConstPointer title
 CConsoleTextControl::CConsoleTextControl(CAbstractConsoleControlCallback* callback, CConstPointer name, CConstPointer title, CConsole* pConsole):
     CConsoleControl(callback, name, title, pConsole),
     m_TextLineCnt(0),
-    m_TextLines(NULL),
-	m_TextLineLen(NULL),
-	m_TextLineAlloc(NULL),
+    m_TextLines(nullptr),
+	m_TextLineLen(nullptr),
+	m_TextLineAlloc(nullptr),
 	m_SelectionMode(false),
-	m_UndoGroup(NULL),
+	m_UndoGroup(),
 	m_MultiLine(false),
 	m_MaxChars(0)
 {
@@ -66,11 +66,11 @@ CConsoleTextControl::CConsoleTextControl(CAbstractConsoleControlCallback* callba
 CConsoleTextControl::CConsoleTextControl(word taborder, CAbstractConsoleControlCallback* callback, CConstPointer name, CConstPointer title, CConsole* pConsole):
     CConsoleControl(taborder, callback, name, title, pConsole),
     m_TextLineCnt(0),
-    m_TextLines(NULL),
-	m_TextLineLen(NULL),
-	m_TextLineAlloc(NULL),
+    m_TextLines(nullptr),
+	m_TextLineLen(nullptr),
+	m_TextLineAlloc(nullptr),
 	m_SelectionMode(false),
-	m_UndoGroup(NULL),
+	m_UndoGroup(),
 	m_MultiLine(false),
 	m_MaxChars(0)
 {
@@ -79,11 +79,11 @@ CConsoleTextControl::CConsoleTextControl(word taborder, CAbstractConsoleControlC
 CConsoleTextControl::CConsoleTextControl(sdword maxchars, bool multiline, word taborder, CAbstractConsoleControlCallback* callback, CConstPointer name, CConstPointer title, CConsole* pConsole):
     CConsoleControl(taborder, callback, name, title, pConsole),
     m_TextLineCnt(0),
-    m_TextLines(NULL),
-	m_TextLineLen(NULL),
-	m_TextLineAlloc(NULL),
+    m_TextLines(nullptr),
+	m_TextLineLen(nullptr),
+	m_TextLineAlloc(nullptr),
 	m_SelectionMode(false),
-	m_UndoGroup(NULL),
+	m_UndoGroup(),
 	m_MultiLine(multiline),
 	m_MaxChars(maxchars)
 {
@@ -100,8 +100,6 @@ CConsoleTextControl::~CConsoleTextControl(void)
 		TFfree(m_TextLineLen);
 	if ( m_TextLineAlloc )
 		TFfree(m_TextLineAlloc);
-	if ( m_UndoGroup )
-		m_UndoGroup->release();
 }
 
 bool CConsoleTextControl::GetMultiLine()
@@ -180,9 +178,9 @@ void CConsoleTextControl::Initialize(bool _emptyText)
 		TFfree(m_TextLineAlloc);
     m_TextLineCnt = 0;
 	m_TextLineLenMax = 0;
-    m_TextLines = NULL;
-	m_TextLineLen = NULL;
-	m_TextLineAlloc = NULL;
+    m_TextLines = nullptr;
+	m_TextLineLen = nullptr;
+	m_TextLineAlloc = nullptr;
 
 	if ( PtrCheck(m_UndoGroup) )
 	{

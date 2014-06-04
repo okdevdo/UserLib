@@ -25,24 +25,8 @@
 
 IMPL_WINEXCEPTION(CAsyncIOManagerException, CWinException)
 
-static void __stdcall EmptyDeleteFunc( ConstPointer data, Pointer context )
-{
-}
-
-static sword __stdcall AsyncIOData_SearchAndSortFunc( ConstPointer item, ConstPointer data )
-{
-	Ptr(CAsyncIOData) pData1 = CastAnyPtr(CAsyncIOData, CastMutable(Pointer, item));
-	Ptr(CAsyncIOData) pData2 = CastAnyPtr(CAsyncIOData, CastMutable(Pointer, data));
-
-	if ( pData1 == pData2 )
-		return 0;
-	return 1;
-}
-
-
 CAsyncIOManager::CAsyncIOManager(dword iothcnt, dword wmin, dword wexp, dword wmax) :
-    m_iocp(NULL),
-	m_tasks(__FILE__LINE__ 256, 256),
+    m_iocp(nullptr),
 	m_tiocppool(__FILE__LINE__ iothcnt, 0, iothcnt, CThreadPool::LongLiveTask),
 	m_tworkerpool(__FILE__LINE__ wmin, wexp, wmax, CThreadPool::QuickResponse),
 	m_stopevent()
@@ -55,8 +39,8 @@ CAsyncIOManager::~CAsyncIOManager(void)
 
 void CAsyncIOManager::Create(void)
 {
-	m_iocp = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, m_tiocppool.GetMaximumThreads());
-	if ( m_iocp == NULL )
+	m_iocp = CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr, 0, m_tiocppool.GetMaximumThreads());
+	if ( m_iocp == nullptr )
 		throw OK_NEW_OPERATOR CAsyncIOManagerException(__FILE__LINE__ _T("%s Exception"), _T("CAsyncIOManager::Create"), CWinException::WinExtError);
 
 	CScopedLock lock;
@@ -78,22 +62,22 @@ void CAsyncIOManager::WaitForComplete(void)
 	m_tworkerpool.JoinAll();
 	m_tiocppool.StopAll();
 	for (dword i = 0; i < m_tiocppool.GetMaximumThreads(); ++i)
-		PostQueuedCompletionStatus(m_iocp, 0, NULL, NULL);
+		PostQueuedCompletionStatus(m_iocp, 0, NULL, nullptr);
 	m_tiocppool.JoinAll();
 }
 
 void CAsyncIOManager::Close(void)
 {
-	if ( m_iocp != NULL )
+	if ( m_iocp != nullptr )
 	{
 		CloseHandle(m_iocp);
-		m_iocp = NULL;
+		m_iocp = nullptr;
 	}
 }
 
 dword CAsyncIOManager::RunTask(void)
 {
-	if ( m_iocp == NULL )
+	if ( m_iocp == nullptr )
 		return ULONG_MAX;
 
 	BOOL bSuccess;
@@ -106,31 +90,27 @@ dword CAsyncIOManager::RunTask(void)
 		bSuccess = GetQueuedCompletionStatus(m_iocp, &dwIoSize, (PDWORD_PTR)&pData, (LPOVERLAPPED *)&lpOverlapped, INFINITE);
 		if( !bSuccess )
 		{
-			if ( lpOverlapped == NULL )
+			if ( lpOverlapped == nullptr )
 				throw OK_NEW_OPERATOR CAsyncIOManagerException(__FILE__LINE__ _T("%s Exception"), _T("CAsyncIOManager::RunTask"), CWinException::WinExtError);
 			if ( GetLastError() == ERROR_HANDLE_EOF )
 			{
 				assert(dwIoSize == 0);
 				dwIoSize = 0;
 			}
-			if ( pData == NULL )
+			if ( pData == nullptr )
 				return 0;
 			pData->set_errorcode(GetLastError());
 		}
 		else
 		{
-			if ( pData == NULL )
+			if ( pData == nullptr )
 				return 0;
 			pData->set_errorcode(0);
 		}
-
+		
 		CScopedLock lock;
-		CAsyncIODataVector::Iterator it;
 
-		it = m_tasks.Find<CCppObjectEqualFunctor<CAsyncIOData>>(pData);
-		if ( it )
-			m_tasks.Remove(it);
-
+		assert(NotPtrCheck(pData->get_callback()));
 		pData->set_bytestransferred(dwIoSize);
 		pData->get_overlapped()->Offset += dwIoSize;
 		m_tworkerpool.AddTask(pData->get_callback());
@@ -139,19 +119,12 @@ dword CAsyncIOManager::RunTask(void)
 
 void CAsyncIOManager::Register(Ptr(CAsyncIOData) pData)
 {
-	if ( m_iocp == NULL )
+	if ( m_iocp == nullptr )
 		return;
 
 	HANDLE iocp;
 
 	iocp = CreateIoCompletionPort(pData->get_file(), m_iocp, (DWORD_PTR)pData, 0);
-	if ( iocp == NULL )
+	if ( iocp == nullptr )
 		throw OK_NEW_OPERATOR CAsyncIOManagerException(__FILE__LINE__ _T("%s Exception"), _T("CAsyncIOManager::Register"), CWinException::WinExtError);
-}
-
-void CAsyncIOManager::AddTask(Ptr(CAsyncIOData) pData)
-{
-	CScopedLock lock;
-
-	m_tasks.Append(pData);
 }

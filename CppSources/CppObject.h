@@ -56,48 +56,57 @@ public:
 	typedef cppobj element_type;
 
 	CCppObjectPtr(): _p(NULL) {}
-	CCppObjectPtr(Ptr(element_type) p, bool _addref = false) : _p(p)
+	CCppObjectPtr(Ptr(element_type) p, bool _addref = false) : _p(nullptr)
 	{
-		assert(_p);
+		attach(p);
 		if (_addref)
 			addRef();
 	}
-	CCppObjectPtr(ConstRef(this_type) _copy) : _p(_copy._p)
+	CCppObjectPtr(ConstRef(this_type) _copy) : _p(nullptr)
 	{
-		if (_p)
+		attach(_copy._p);
+		if (NotPtrCheck(_p))
 			addRef();
 	}
 	template <typename other_type>
-	CCppObjectPtr(ConstRef(CCppObjectPtr<other_type>) _copy) : _p(_copy._p)
+	CCppObjectPtr(ConstRef(CCppObjectPtr<other_type>) _copy) : _p(nullptr)
 	{
-		if (_p)
+		attach(_copy._p);
+		if (NotPtrCheck(_p))
 			addRef();
 	}
-	CCppObjectPtr(RefRef(this_type) _copy) : _p(_copy._p)
+	CCppObjectPtr(RefRef(this_type) _copy) : _p(nullptr)
 	{
-		_copy._p = NULL;
+		attach(_copy._p);
+		_copy.detach();
+	}
+	template <typename other_type>
+	CCppObjectPtr(RefRef(CCppObjectPtr<other_type>) _copy) : _p(nullptr)
+	{
+		attach(_copy._p);
+		_copy.detach();
 	}
 	~CCppObjectPtr()
 	{
-		if (_p)
+		if (NotPtrCheck(_p))
 			release(); 
 	}
 
 	Ref(this_type) operator=(Ptr(element_type) _copy)
 	{
-		if (_p)
-			release(); 
-		_p = _copy;
+		if (NotPtrCheck(_p))
+			release();
+		attach(_copy);
 		return *this;
 	}
 	Ref(this_type) operator=(ConstRef(this_type) _copy)
 	{
 		if (this != &_copy)
 		{
-			if (_p)
+			if (NotPtrCheck(_p))
 				release();
-			_p = _copy._p;
-			if (_p)
+			attach(_copy._p);
+			if (NotPtrCheck(_p))
 				addRef();
 		}
 		return *this;
@@ -105,10 +114,10 @@ public:
 	template <typename other_type>
 	Ref(this_type) operator=(ConstRef(CCppObjectPtr<other_type>) _copy)
 	{
-		if (_p)
+		if (NotPtrCheck(_p))
 			release();
-		_p = CastAnyPtr(element_type, CastMutablePtr(other_type, _copy._p));
-		if (_p)
+		attach(_copy._p);
+		if (NotPtrCheck(_p))
 			addRef();
 		return *this;
 	}
@@ -116,17 +125,36 @@ public:
 	{
 		if (this != &_copy)
 		{
-			if (_p)
+			if (NotPtrCheck(_p))
 				release();
-			_p = _copy._p;
-			_copy._p = NULL;
+			attach(_copy._p);
+			_copy.detach();
 		}
+		return *this;
+	}
+	template <typename other_type>
+	Ref(this_type) operator=(RefRef(CCppObjectPtr<other_type>) _copy)
+	{
+		if (NotPtrCheck(_p))
+			release();
+		attach(_copy._p);
+		_copy.detach();
 		return *this;
 	}
 
 	operator Ptr(element_type)()
 	{
 		return _p;
+	}
+
+	operator Ptr(element_type)() const
+	{
+		return _p;
+	}
+
+	operator bool() const
+	{
+		return NotPtrCheck(_p);
 	}
 
 	Ptr(element_type) get() const
@@ -158,7 +186,7 @@ public:
 
 		assert(_p);
 		_ret = _p->release();
-		_p = NULL;
+		_p = nullptr;
 		return _ret;
 	}
 
@@ -166,6 +194,27 @@ public:
 	{
 		assert(_p);
 		return _p->addRef();
+	}
+
+	void attach(Ptr(element_type) p)
+	{
+		assert(p);
+		_p = p;
+	}
+
+	template <typename other_type>
+	void attach(Ptr(other_type) p)
+	{
+		assert(p);
+		_p = CastAnyPtr(element_type, p);
+	}
+
+	Ptr(element_type) detach()
+	{
+		Ptr(element_type) p = _p;
+
+		_p = nullptr;
+		return p;
 	}
 
 private:
@@ -179,9 +228,33 @@ __inline bool operator == (ConstRef(CCppObjectPtr<cppobj>) a, ConstRef(CCppObjec
 }
 
 template <typename cppobj>
+__inline bool operator == (ConstRef(CCppObjectPtr<cppobj>) a, ConstRef(nullptr_t) b)
+{
+	return a.get() == nullptr;
+}
+
+template <typename cppobj>
+__inline bool operator == (ConstRef(nullptr_t) a, ConstRef(CCppObjectPtr<cppobj>) b)
+{
+	return nullptr == b.get();
+}
+
+template <typename cppobj>
 __inline bool operator != (ConstRef(CCppObjectPtr<cppobj>) a, ConstRef(CCppObjectPtr<cppobj>) b)
 {
 	return a.get() != b.get();
+}
+
+template <typename cppobj>
+__inline bool operator != (ConstRef(CCppObjectPtr<cppobj>) a, ConstRef(nullptr_t) b)
+{
+	return a.get() != nullptr;
+}
+
+template <typename cppobj>
+__inline bool operator != (ConstRef(nullptr_t) a, ConstRef(CCppObjectPtr<cppobj>) b)
+{
+	return nullptr != b.get();
 }
 
 template <typename T>
@@ -245,7 +318,7 @@ class CCppObjectEqualFunctor
 public:
 	bool operator()(ConstPtr(T) r1, ConstPtr(T) r2) const
 	{
-		return r1 != r2;
+		return r1 == r2;
 	}
 };
 

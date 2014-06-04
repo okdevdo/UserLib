@@ -24,23 +24,8 @@
 
 IMPL_EXCEPTION(CSqLite3Exception, CBaseException)
 
-static void __stdcall CSqLite3ColumnsDeleteFunc(ConstPointer data, Pointer context)
-{
-	Ptr(CSqLite3Column) column = CastAnyPtr(CSqLite3Column, CastMutable(Pointer, data));
-
-	column->release();
-}
-
-static sword __stdcall CSqLite3ColumnsSearchAndSortFunc(ConstPointer item, ConstPointer data)
-{
-	Ptr(CSqLite3Column) pColumn = CastAnyPtr(CSqLite3Column, CastMutable(Pointer, item));
-	CStringLiteral pName(CastAny(CPointer, CastMutable(Pointer, data)));
-
-	return pName.Compare(pColumn->get_Name());
-}
-
 CSqLite3Environment::CSqLite3Environment(void) :
-_lpImpl(NULL)
+_lpImpl(nullptr)
 {
 	_lpImpl = OK_NEW_OPERATOR CSqLite3EnvironmentImpl();
 }
@@ -55,7 +40,7 @@ CSqLite3Exception* CSqLite3Environment::get_LastError() const
 {
 	if (_lpImpl)
 		return _lpImpl->get_LastError();
-	return NULL;
+	return nullptr;
 }
 
 void CSqLite3Environment::set_LastError(CSqLite3Exception* pLastError)
@@ -68,7 +53,7 @@ CSqLite3Connection* CSqLite3Environment::create_Connection()
 {
 	if (_lpImpl)
 		return OK_NEW_OPERATOR CSqLite3Connection(this, _lpImpl->create_Connection());
-	return NULL;
+	return nullptr;
 }
 
 void CSqLite3Environment::Open()
@@ -102,7 +87,7 @@ CSqLite3Statement* CSqLite3Connection::create_Statement()
 {
 	if (_lpImpl)
 		return OK_NEW_OPERATOR CSqLite3Statement(_lpEnv, _lpImpl->create_Statement());
-	return NULL;
+	return nullptr;
 }
 
 void CSqLite3Connection::free_Statement(CSqLite3Statement* pStmt)
@@ -195,7 +180,7 @@ CSqLite3Column* CSqLite3Statement::get_ColumnInfo(word ix) const
 
 	if (it)
 		return *it;
-	return NULL;
+	return nullptr;
 }
 
 CSqLite3Column* CSqLite3Statement::get_ColumnInfo(CConstPointer name)
@@ -205,7 +190,7 @@ CSqLite3Column* CSqLite3Statement::get_ColumnInfo(CConstPointer name)
 
 	if (it)
 		return *it;
-	return NULL;
+	return nullptr;
 }
 
 sqword CSqLite3Statement::get_RowCount() const
@@ -272,7 +257,7 @@ void CSqLite3Statement::BindColumns(int nArg, ...)
 		for (sword i = 0; i < nArg; ++i)
 		{
 			CSqLite3Column::TDataType vDataType = Cast(CSqLite3Column::TDataType, va_arg(argList, int));
-			Ptr(CSqLite3Column) pColumn = OK_NEW_OPERATOR CSqLite3Column(NULL, vDataType);
+			Ptr(CSqLite3Column) pColumn = OK_NEW_OPERATOR CSqLite3Column(nullptr, vDataType);
 
 			_columns.Append(pColumn);
 		}
@@ -325,7 +310,7 @@ CStringBuffer CSqLite3Column::get_DataTypeAsStr() const
 	switch (_dataType)
 	{
 	case CSqLite3Column::eSQL_NULL:
-		vResult.SetString(__FILE__LINE__ _T("NULL"));
+		vResult.SetString(__FILE__LINE__ _T("nullptr"));
 		break;
 	case CSqLite3Column::eSQL_BLOB:
 		vResult.SetString(__FILE__LINE__ _T("BLOB"));

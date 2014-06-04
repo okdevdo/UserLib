@@ -54,13 +54,13 @@ CConsole::CConsole(void):
     m_StdOutput(INVALID_HANDLE_VALUE),
 	m_ConsoleOutput(INVALID_HANDLE_VALUE),
 #endif
-	m_ScreenBuffer(NULL),
-	m_MainMenu(NULL),
+	m_ScreenBuffer(nullptr),
+	m_MainMenu(),
 	m_WindowList(__FILE__LINE__0),
 	m_PopupMenus(__FILE__LINE__0),
 	m_ModalDialogs(__FILE__LINE__0),
 	m_DeleteModalDialogs(__FILE__LINE__0),
-	m_PopupControl(NULL),
+	m_PopupControl(nullptr),
 	m_PopupControlRemove(false)
 {
 	m_ScreenBufferSize.X = 0;
@@ -71,8 +71,6 @@ CConsole::CConsole(void):
 
 CConsole::~CConsole(void)
 {
-	if ( m_MainMenu )
-		m_MainMenu->release();
 	if ( m_ScreenBuffer )
 		TFfree(m_ScreenBuffer);
 }
@@ -81,7 +79,7 @@ void CConsole::Start()
 {
 #ifdef OK_SYS_WINDOWS
 	m_StdInput = GetStdHandle(STD_INPUT_HANDLE);
-    if ( (m_StdInput == INVALID_HANDLE_VALUE) || (m_StdInput == NULL) )
+    if ( (m_StdInput == INVALID_HANDLE_VALUE) || (m_StdInput == nullptr) )
 	{
 		m_StdInput = INVALID_HANDLE_VALUE;
 		ThrowDefaultException(__FILE__LINE__ _T("CConsole::Start"));
@@ -94,7 +92,7 @@ void CConsole::Start()
 		ThrowDefaultException(__FILE__LINE__ _T("CConsole::Start"));
 
 	m_StdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-	if ( (m_StdOutput == INVALID_HANDLE_VALUE) || (m_StdOutput == NULL) )
+	if ( (m_StdOutput == INVALID_HANDLE_VALUE) || (m_StdOutput == nullptr) )
 	{
 		m_StdOutput = INVALID_HANDLE_VALUE;
 		ThrowDefaultException(__FILE__LINE__ _T("CConsole::Start"));
@@ -103,9 +101,9 @@ void CConsole::Start()
 	m_ConsoleOutput = CreateConsoleScreenBuffer( 
 		GENERIC_READ | GENERIC_WRITE,       // read/write access 
 		FILE_SHARE_READ | FILE_SHARE_WRITE, // shared 
-		NULL,                               // default security attributes 
+		nullptr,                               // default security attributes 
 		CONSOLE_TEXTMODE_BUFFER,            // must be TEXTMODE 
-		NULL);                              // reserved; must be NULL 
+		nullptr);                              // reserved; must be nullptr 
 	if ( m_ConsoleOutput == INVALID_HANDLE_VALUE )
 		ThrowDefaultException(__FILE__LINE__ _T("CConsole::Start"));
 
@@ -171,7 +169,7 @@ void CConsole::Start()
 	}
 	if ( has_mouse() )
 	{
-		mousemask(ALL_MOUSE_EVENTS, NULL);
+		mousemask(ALL_MOUSE_EVENTS, nullptr);
 		m_HasMouse = true;
 	}
 	getmaxyx(stdscr, m_ScreenBufferSize.Y, m_ScreenBufferSize.X);
@@ -272,8 +270,8 @@ void CConsole::Run()
 	{
 		if ( m_PopupControlRemove )
 		{
-			m_PopupControl = NULL;
-			PostPaintEvent(NULL, true);
+			m_PopupControl = nullptr;
+			PostPaintEvent(nullptr, true);
 			m_PopupControlRemove = false;
 		}
 		while ( m_DeleteModalDialogs.Count() > 0 )
@@ -307,8 +305,8 @@ void CConsole::Run()
 	{
 		if ( m_PopupControlRemove )
 		{
-			m_PopupControl = NULL;
-			PostPaintEvent(NULL, true);
+			m_PopupControl = nullptr;
+			PostPaintEvent(nullptr, true);
 			m_PopupControlRemove = false;
 		}
 		while ( m_DeleteModalDialogs.Count() > 0 )
@@ -625,7 +623,7 @@ bool CConsole::DispatchInputRecord(ConstRef(INPUT_RECORD) input)
 				size.Y = 1;
 				m_MainMenu->ResizeWindow(size, false);
 			}
-			PostPaintEvent(NULL, true);
+			PostPaintEvent(nullptr, true);
 		}
 		break;
 	default:
@@ -755,7 +753,7 @@ bool CConsole::DispatchInputRecord(int input)
 			size.Y = 1;
 			m_MainMenu->ResizeWindow(size, false);
 		}
-		PostPaintEvent(NULL, true);
+		PostPaintEvent(nullptr, true);
 		break;
 	default:
 		if ( !DispatchKeyEvent(input) )
@@ -796,7 +794,7 @@ void CConsole::CreateConsoleWindow(CConsoleWindow* pWindow)
 
 		pDialog->SetFocus(false);
 	}
-	assert(pWindow != NULL);
+	assert(pWindow != nullptr);
 
 	if ( NotPtrCheck(m_MainMenu) && (m_LastWindowPos.Y == 0) )
 		m_LastWindowPos.Y = 1;
@@ -823,7 +821,7 @@ void CConsole::CreateConsoleWindow(CConsoleWindow* pWindow)
 
 void CConsole::SetConsoleMainMenu(CConsoleMainMenu* pMainMenu)
 {
-	assert(pMainMenu != NULL);
+	assert(pMainMenu != nullptr);
 
 	COORD pos;
 	COORD sz;
@@ -850,7 +848,7 @@ void CConsole::CloseConsolePopupControl()
 
 void CConsole::CreateConsolePopupMenu(CConsolePopupMenu* pPopupMenu, COORD pos)
 {
-	assert(pPopupMenu != NULL);
+	assert(pPopupMenu != nullptr);
 
 	m_PopupMenus.Prepend(pPopupMenu);
 	if ( pPopupMenu->IsCreated() )
@@ -865,7 +863,7 @@ void CConsole::CreateConsolePopupMenu(CConsolePopupMenu* pPopupMenu, COORD pos)
 CConsolePopupMenu* CConsole::GetCurrentConsolePopupMenu()
 {
 	if ( m_PopupMenus.Count() == 0 )
-		return NULL;
+		return nullptr;
 	return CastDynamic(CConsolePopupMenu*, *(m_PopupMenus.Begin()));
 }
 
@@ -874,7 +872,7 @@ void CConsole::CloseConsolePopupMenu()
 	if ( m_PopupMenus.Count() > 0 )
 	{
 		m_PopupMenus.Remove(m_PopupMenus.Begin());
-		PostPaintEvent(NULL, true);
+		PostPaintEvent(nullptr, true);
 	}
 }
 
@@ -895,7 +893,7 @@ void CConsole::CreateConsoleModalDialog(CConsoleDialog* pDialog, COORD size)
 
 		pDialog->SetFocus(false);
 	}
-	assert(pDialog != NULL);
+	assert(pDialog != nullptr);
 	COORD pos;
 
 	pos.X = (m_ScreenBufferSize.X - size.X) / 2;
@@ -925,7 +923,7 @@ CConsoleDialog* CConsole::GetCurrentConsoleModalDialog()
 
 		return pDialog;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void CConsole::CloseConsoleModalDialog(CConsoleWindow* pWindow)
@@ -942,7 +940,7 @@ void CConsole::CloseConsoleModalDialog(CConsoleWindow* pWindow)
 			pDialog->SetFocus(false);
 			m_ModalDialogs.Remove(it);
 			m_DeleteModalDialogs.Append(pDialog);
-			PostPaintEvent(NULL, true);
+			PostPaintEvent(nullptr, true);
 		}
 		else
 			return;
@@ -966,7 +964,7 @@ void CConsole::CloseConsoleModalDialog(CConsoleWindow* pWindow)
 
 void CConsole::PostPaintEvent(CConsoleWindow* pWindow, bool repaintall)
 {
-	assert(m_ScreenBuffer != NULL);
+	assert(m_ScreenBuffer != nullptr);
 
 	if ( repaintall )
 	{
@@ -995,7 +993,7 @@ void CConsole::PostPaintEvent(CConsoleWindow* pWindow, bool repaintall)
 		{
 			pWindow1 = *it;
 			if ( pWindow1 == pWindow )
-				pWindow = NULL;
+				pWindow = nullptr;
 			pWindow1->Paint(m_ScreenBufferSize, m_ScreenBuffer);
 			--it;
 		}
@@ -1005,7 +1003,7 @@ void CConsole::PostPaintEvent(CConsoleWindow* pWindow, bool repaintall)
 		{
 			pWindow1 = *it;
 			if ( pWindow1 == pWindow )
-				pWindow = NULL;
+				pWindow = nullptr;
 			pWindow1->Paint(m_ScreenBufferSize, m_ScreenBuffer);
 			--it;
 		}
@@ -1015,7 +1013,7 @@ void CConsole::PostPaintEvent(CConsoleWindow* pWindow, bool repaintall)
 		{
 			pWindow1 = *it;
 			if ( pWindow1 == pWindow )
-				pWindow = NULL;
+				pWindow = nullptr;
 			pWindow1->Paint(m_ScreenBufferSize, m_ScreenBuffer);
 			--it;
 		}
@@ -1074,7 +1072,7 @@ void CConsole::MaximizeWindow(CConsoleWindow* pWindow)
 	if ( m_MainMenu )
 		--(possz.Y);
 	pWindow->ResizeWindow(possz, false);
-	PostPaintEvent(NULL, true);
+	PostPaintEvent(nullptr, true);
 }
 
 void CConsole::CloseWindow(CConsoleWindow* pWindow)
@@ -1093,7 +1091,7 @@ void CConsole::CloseWindow(CConsoleWindow* pWindow)
 	{
 		(*it)->SetFocus(false);
 		m_WindowList.Remove<CCppObjectReleaseFunctor<CConsoleWindow> >(it);
-		PostPaintEvent(NULL, true);
+		PostPaintEvent(nullptr, true);
 		if ( m_WindowList.Count() > 0 )
 		{
 			CConsoleWindow* pWindow = *(m_WindowList.Begin());

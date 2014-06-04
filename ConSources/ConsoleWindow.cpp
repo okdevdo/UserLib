@@ -217,7 +217,7 @@ static const TCHAR _graphics[] = {
 CConsoleWindow::CConsoleWindow(CConstPointer name, CConsole* pConsole):
     m_Console(pConsole),
 	m_Name(__FILE__LINE__ name),
-    m_ScreenBuffer(NULL),
+    m_ScreenBuffer(nullptr),
 	m_Color(pConsole->GetDefaultColor()),
 	m_HighLightColor(pConsole->GetDefaultHighlightedColor()),
 	m_Title(),
@@ -237,7 +237,7 @@ CConsoleWindow::CConsoleWindow(CConstPointer name, CConsole* pConsole):
 CConsoleWindow::CConsoleWindow(CConstPointer name, CConstPointer title, CConsole* pConsole):
     m_Console(pConsole),
 	m_Name(__FILE__LINE__ name),
-    m_ScreenBuffer(NULL),
+    m_ScreenBuffer(nullptr),
 	m_Color(pConsole->GetDefaultColor()),
 	m_HighLightColor(pConsole->GetDefaultHighlightedColor()),
 	m_Title(__FILE__LINE__ title),
@@ -643,7 +643,7 @@ void CConsoleWindow::DrawSingleChar(COORD pos, TCHAR ch, color_t color)
 
 void CConsoleWindow::DrawString(ConstRef(SMALL_RECT) rect, CConstPointer ch, color_t color, bool bFill)
 {
-	assert(ch != NULL);
+	assert(ch != nullptr);
 	assert(rect.Left <= rect.Right);
 	assert(rect.Top <= rect.Bottom);
 

@@ -115,8 +115,8 @@ static bool _TestExcludeSpecs(ConstRef(CStringBuffer) afile, ConstRef(TMBCharLis
 
 void XUnzipViewFiles(ConstRef(CFilePath) fzipfile, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs, CStringLiteral mode)
 {
-	CSecurityFile* pArchiveFile = NULL;
-	CArchiveIterator *zipIt = NULL;
+	CCppObjectPtr<CSecurityFile> pArchiveFile;
+	CCppObjectPtr<CArchiveIterator> zipIt;
 	CFilePath fcurDir;
 	WBool modeVerbose = false;
 	WBool modeFull = true;
@@ -288,30 +288,21 @@ void XUnzipViewFiles(ConstRef(CFilePath) fzipfile, ConstRef(TMBCharList) filespe
 				break;
 			}
 		}
-		zipIt->release();
-		zipIt = NULL;
 		pArchiveFile->Close();
-		pArchiveFile->release();
-		pArchiveFile = NULL;
 	}
 	catch (CBaseException* ex)
 	{
 		CERR << ex->GetExceptionMessage() << endl;
-		if (zipIt)
-			zipIt->release();
 		if (pArchiveFile)
-		{
 			pArchiveFile->Close();
-			pArchiveFile->release();
-		}
 	}
 }
 
 void XUnzipExtractFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, WBool overwrite, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs)
 {
 	CFilePath fcurDir;
-	CSecurityFile* pArchiveFile = NULL;
-	CArchiveIterator *zipIt = NULL;
+	CCppObjectPtr<CSecurityFile> pArchiveFile;
+	CCppObjectPtr<CArchiveIterator> zipIt;
 
 	try
 	{
@@ -388,15 +379,15 @@ void XUnzipExtractFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, WBool ov
 							zipIt->GetProperty(_T("NTFSATIME"), vLastAccessTime, isLastAccessNull);
 							zipIt->GetProperty(_T("NTFSMTIME"), vLastWriteTime, isLastWriteNull);
 
-							CArchiveFile* afile = zipIt->GetFile();
-							CFileFilterInput* pInput = OK_NEW_OPERATOR CFileFilterInput(afile);
+							CCppObjectPtr<CArchiveFile> afile = zipIt->GetFile();
+							CCppObjectPtr<CFileFilterInput> pInput = OK_NEW_OPERATOR CFileFilterInput(afile);
 
-							CSecurityFile* pOutFile = OK_NEW_OPERATOR CSecurityFile;
+							CCppObjectPtr<CSecurityFile> pOutFile = OK_NEW_OPERATOR CSecurityFile;
 
 							pOutFile->Create(fpath, false, CFile::BinaryFile_NoEncoding);
 
-							CFileFilterOutput* pOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutFile);
-							CZipDeCompressFilter* pFilter = OK_NEW_OPERATOR CZipDeCompressFilter(pInput, pOutput);
+							CCppObjectPtr<CFileFilterOutput> pOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutFile);
+							CCppObjectPtr<CZipDeCompressFilter> pFilter = OK_NEW_OPERATOR CZipDeCompressFilter(pInput, pOutput);
 
 							pFilter->open();
 							pFilter->do_filter();
@@ -421,12 +412,6 @@ void XUnzipExtractFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, WBool ov
 
 								CWinDirectoryIterator::_WriteFileTimes(fpath, &vCTime, &vATime, &vMTime);
 							}
-
-							pFilter->release();
-							pInput->release();
-							pOutput->release();
-							afile->release();
-							pOutFile->release();
 							bSkip = false;
 						}
 					}
@@ -439,30 +424,22 @@ void XUnzipExtractFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, WBool ov
 				break;
 			}
 		}
-		zipIt->release();
-		zipIt = NULL;
-		pArchiveFile->Close();
-		pArchiveFile->release();
-		pArchiveFile = NULL;
+		if (pArchiveFile)
+			pArchiveFile->Close();
 	}
 	catch (CBaseException* ex)
 	{
 		CERR << ex->GetExceptionMessage() << endl;
-		if (zipIt)
-			zipIt->release();
 		if (pArchiveFile)
-		{
 			pArchiveFile->Close();
-			pArchiveFile->release();
-		}
 	}
 }
 
 void XUnzipFreshenFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs)
 {
 	CFilePath fcurDir;
-	CSecurityFile* pArchiveFile = NULL;
-	CArchiveIterator *zipIt = NULL;
+	CCppObjectPtr<CSecurityFile> pArchiveFile;
+	CCppObjectPtr<CArchiveIterator> zipIt;
 
 	try
 	{
@@ -567,15 +544,15 @@ void XUnzipFreshenFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, ConstRef
 
 								CWinDirectoryIterator::UnlinkFile(fpath);
 
-								CArchiveFile* afile = zipIt->GetFile();
-								CFileFilterInput* pInput = OK_NEW_OPERATOR CFileFilterInput(afile);
+								CCppObjectPtr<CArchiveFile> afile = zipIt->GetFile();
+								CCppObjectPtr<CFileFilterInput> pInput = OK_NEW_OPERATOR CFileFilterInput(afile);
 
-								CSecurityFile* pOutFile = OK_NEW_OPERATOR CSecurityFile;
+								CCppObjectPtr<CSecurityFile> pOutFile = OK_NEW_OPERATOR CSecurityFile;
 
 								pOutFile->Create(fpath, false, CFile::BinaryFile_NoEncoding);
 
-								CFileFilterOutput* pOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutFile);
-								CZipDeCompressFilter* pFilter = OK_NEW_OPERATOR CZipDeCompressFilter(pInput, pOutput);
+								CCppObjectPtr<CFileFilterOutput> pOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutFile);
+								CCppObjectPtr<CZipDeCompressFilter> pFilter = OK_NEW_OPERATOR CZipDeCompressFilter(pInput, pOutput);
 
 								pFilter->open();
 								pFilter->do_filter();
@@ -600,16 +577,8 @@ void XUnzipFreshenFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, ConstRef
 
 									CWinDirectoryIterator::_WriteFileTimes(fpath, &vCTime, &vATime, &vMTime);
 								}
-
-								pFilter->release();
-								pInput->release();
-								pOutput->release();
-								afile->release();
-								pOutFile->release();
-
 								tmp.FormatString(__FILE__LINE__ _T("File '%s' freshened\n  FILETIME=%s\n  ARCHIVE =%s\n"), fpath.GetString(), tmpFileTime.GetString(), tmpArchiveTime.GetString());
 								COUT << tmp;
-
 								bSkip = false;
 							}
 						}
@@ -623,30 +592,21 @@ void XUnzipFreshenFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, ConstRef
 				break;
 			}
 		}
-		zipIt->release();
-		zipIt = NULL;
 		pArchiveFile->Close();
-		pArchiveFile->release();
-		pArchiveFile = NULL;
 	}
 	catch (CBaseException* ex)
 	{
 		CERR << ex->GetExceptionMessage() << endl;
-		if (zipIt)
-			zipIt->release();
 		if (pArchiveFile)
-		{
 			pArchiveFile->Close();
-			pArchiveFile->release();
-		}
 	}
 }
 
 void XUnzipNewerFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, ConstRef(TMBCharList) filespecs, ConstRef(TMBCharList) excludespecs)
 {
 	CFilePath fcurDir;
-	CSecurityFile* pArchiveFile = NULL;
-	CArchiveIterator *zipIt = NULL;
+	CCppObjectPtr<CSecurityFile> pArchiveFile;
+	CCppObjectPtr<CArchiveIterator> zipIt;
 
 	try
 	{
@@ -755,15 +715,15 @@ void XUnzipNewerFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, ConstRef(T
 						{
 							CStringBuffer tmp;
 
-							CArchiveFile* afile = zipIt->GetFile();
-							CFileFilterInput* pInput = OK_NEW_OPERATOR CFileFilterInput(afile);
+							CCppObjectPtr<CArchiveFile> afile = zipIt->GetFile();
+							CCppObjectPtr<CFileFilterInput> pInput = OK_NEW_OPERATOR CFileFilterInput(afile);
 
-							CSecurityFile* pOutFile = OK_NEW_OPERATOR CSecurityFile;
+							CCppObjectPtr<CSecurityFile> pOutFile = OK_NEW_OPERATOR CSecurityFile;
 
 							pOutFile->Create(fpath, false, CFile::BinaryFile_NoEncoding);
 
-							CFileFilterOutput* pOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutFile);
-							CZipDeCompressFilter* pFilter = OK_NEW_OPERATOR CZipDeCompressFilter(pInput, pOutput);
+							CCppObjectPtr<CFileFilterOutput> pOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutFile);
+							CCppObjectPtr<CZipDeCompressFilter> pFilter = OK_NEW_OPERATOR CZipDeCompressFilter(pInput, pOutput);
 
 							pFilter->open();
 							pFilter->do_filter();
@@ -788,19 +748,11 @@ void XUnzipNewerFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, ConstRef(T
 
 								CWinDirectoryIterator::_WriteFileTimes(fpath, &vCTime, &vATime, &vMTime);
 							}
-
-							pFilter->release();
-							pInput->release();
-							pOutput->release();
-							afile->release();
-							pOutFile->release();
-
 							if (tmpFileTime.IsEmpty())
 								tmp.FormatString(__FILE__LINE__ _T("File '%s' created\n"), fpath.GetString());
 							else
 								tmp.FormatString(__FILE__LINE__ _T("File '%s' freshened\n  FILETIME=%s\n  ARCHIVE =%s\n"), fpath.GetString(), tmpFileTime.GetString(), tmpArchiveTime.GetString());
 							COUT << tmp;
-
 							bSkip = false;
 						}
 					}
@@ -813,21 +765,14 @@ void XUnzipNewerFiles(ConstRef(CFilePath) fzipfile, WBool usefolders, ConstRef(T
 				break;
 			}
 		}
-		zipIt->release();
-		zipIt = NULL;
-		pArchiveFile->Close();
-		pArchiveFile->release();
-		pArchiveFile = NULL;
+		if (pArchiveFile)
+			pArchiveFile->Close();
 	}
 	catch (CBaseException* ex)
 	{
 		CERR << ex->GetExceptionMessage() << endl;
-		if (zipIt)
-			zipIt->release();
 		if (pArchiveFile)
-		{
 			pArchiveFile->Close();
-			pArchiveFile->release();
-		}
 	}
 }
+

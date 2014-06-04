@@ -39,7 +39,7 @@ Ptr(CX509_VERIFY_PARAM) CX509_VERIFY_PARAM::create()
 	Ptr(X509_VERIFY_PARAM) pParam = X509_VERIFY_PARAM_new();
 
 	if (!pParam)
-		return NULL;
+		return nullptr;
 
 	Ptr(CX509_VERIFY_PARAM) p = OK_NEW_OPERATOR CX509_VERIFY_PARAM(pParam);
 
@@ -51,7 +51,7 @@ void CX509_VERIFY_PARAM::free()
 {
 	if (_raw)
 		X509_VERIFY_PARAM_free(CastAnyPtr(X509_VERIFY_PARAM, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 CX509_NAME::CX509_NAME(ConstPointer pX509Name) : COpenSSLClass(pX509Name)
@@ -68,7 +68,7 @@ Ptr(CX509_NAME) CX509_NAME::create()
 	Ptr(X509_NAME) pName = X509_NAME_new();
 
 	if (!pName)
-		return NULL;
+		return nullptr;
 
 	Ptr(CX509_NAME) p = OK_NEW_OPERATOR CX509_NAME(pName);
 
@@ -80,7 +80,7 @@ void CX509_NAME::free()
 {
 	if (_raw)
 		X509_NAME_free(CastAnyPtr(X509_NAME, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 CX509_EXTENSION::CX509_EXTENSION(ConstPointer pX509Extension) : COpenSSLClass(pX509Extension)
@@ -97,7 +97,7 @@ Ptr(CX509_EXTENSION) CX509_EXTENSION::create()
 	Ptr(X509_EXTENSION) pExt = X509_EXTENSION_new();
 
 	if (!pExt)
-		return NULL;
+		return nullptr;
 
 	Ptr(CX509_EXTENSION) p = OK_NEW_OPERATOR CX509_EXTENSION(pExt);
 
@@ -109,7 +109,7 @@ void CX509_EXTENSION::free()
 {
 	if (_raw)
 		X509_EXTENSION_free(CastAnyPtr(X509_EXTENSION, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 
@@ -127,7 +127,7 @@ Ptr(CX509) CX509::create()
 	Ptr(X509) pX509 = X509_new();
 
 	if (!pX509)
-		return NULL;
+		return nullptr;
 
 	Ptr(CX509) p = OK_NEW_OPERATOR CX509(pX509);
 
@@ -139,7 +139,7 @@ void CX509::free()
 {
 	if (_raw)
 		X509_free(CastAnyPtr(X509, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 int CX509::verify(CEVP_PKEY *r)
@@ -169,14 +169,14 @@ int CX509::digest(const CEVP_MD *type, unsigned char *md, unsigned int *len)
 
 CX509 *CX509::d2i_fp(FILE *fp, CX509 **x509)
 {
-	Ptr(X509) ret = NULL;
+	Ptr(X509) ret = nullptr;
 
-	if (NULL == d2i_X509_fp(fp, &ret))
-		return NULL;
+	if (nullptr == d2i_X509_fp(fp, &ret))
+		return nullptr;
 
 	Ptr(CX509) ret2 = OK_NEW_OPERATOR CX509(ret);
 
-	if ((x509 != NULL) && (*x509 == NULL))
+	if ((x509 != nullptr) && (*x509 == nullptr))
 		*x509 = ret2;
 	return ret2;
 }
@@ -188,14 +188,14 @@ int CX509::i2d_fp(FILE *fp)
 
 CX509 *CX509::d2i_bio(CBIO *bp, CX509 **x509)
 {
-	Ptr(X509) ret = NULL;
+	Ptr(X509) ret = nullptr;
 
-	if (NULL == d2i_X509_bio(CastAnyPtr(BIO, CastMutable(Pointer, bp->get_bio())), &ret))
-		return NULL;
+	if (nullptr == d2i_X509_bio(CastAnyPtr(BIO, CastMutable(Pointer, bp->get_bio())), &ret))
+		return nullptr;
 
 	Ptr(CX509) ret2 = OK_NEW_OPERATOR CX509(ret);
 
-	if ((x509 != NULL) && (*x509 == NULL))
+	if ((x509 != nullptr) && (*x509 == nullptr))
 		*x509 = ret2;
 	return ret2;
 }
@@ -227,14 +227,14 @@ int CX509::i2d_AUX(unsigned char **pp)
 
 CX509 *CX509::d2i_AUX(CX509 **x509, const unsigned char **pp, long length)
 {
-	Ptr(X509) ret = NULL;
+	Ptr(X509) ret = nullptr;
 
-	if (NULL == d2i_X509_AUX(&ret, pp, length))
-		return NULL;
+	if (nullptr == d2i_X509_AUX(&ret, pp, length))
+		return nullptr;
 
 	Ptr(CX509) ret2 = OK_NEW_OPERATOR CX509(ret);
 
-	if ((x509 != NULL) && (*x509 == NULL))
+	if ((x509 != nullptr) && (*x509 == nullptr))
 		*x509 = ret2;
 	return ret2;
 }
@@ -295,7 +295,7 @@ CASN1_INTEGER *CX509::get_serialNumber()
 
 	if (ret)
 		return OK_NEW_OPERATOR CASN1_INTEGER(ret);
-	return NULL;
+	return nullptr;
 }
 
 int CX509::set_issuer_name(CX509_NAME *name)
@@ -309,7 +309,7 @@ CX509_NAME *CX509::get_issuer_name()
 
 	if (ret)
 		return OK_NEW_OPERATOR CX509_NAME(ret);
-	return NULL;
+	return nullptr;
 }
 
 int CX509::set_subject_name(CX509_NAME *name)
@@ -323,7 +323,7 @@ CX509_NAME *CX509::get_subject_name()
 
 	if (ret)
 		return OK_NEW_OPERATOR CX509_NAME(ret);
-	return NULL;
+	return nullptr;
 }
 
 int CX509::set_notBefore(const CASN1_TIME *tm)
@@ -347,7 +347,7 @@ CEVP_PKEY *CX509::get_pubkey()
 
 	if (ret)
 		return OK_NEW_OPERATOR CEVP_PKEY(ret);
-	return NULL;
+	return nullptr;
 }
 
 CASN1_BIT_STRING* CX509::get0_pubkey_bitstr()
@@ -356,7 +356,7 @@ CASN1_BIT_STRING* CX509::get0_pubkey_bitstr()
 
 	if (ret)
 		return OK_NEW_OPERATOR CASN1_BIT_STRING(ret);
-	return NULL;
+	return nullptr;
 }
 
 int	CX509::certificate_type(CEVP_PKEY *pubkey /* optional */)
@@ -455,7 +455,7 @@ CX509_EXTENSION *CX509::get_ext(int loc)
 
 	if (ret)
 		return OK_NEW_OPERATOR CX509_EXTENSION(ret);
-	return NULL;
+	return nullptr;
 }
 
 CX509_EXTENSION *CX509::delete_ext(int loc)
@@ -464,7 +464,7 @@ CX509_EXTENSION *CX509::delete_ext(int loc)
 
 	if (ret)
 		return OK_NEW_OPERATOR CX509_EXTENSION(ret);
-	return NULL;
+	return nullptr;
 }
 
 int	CX509::add_ext(CX509_EXTENSION *ex, int loc)
@@ -501,7 +501,7 @@ Ptr(CX509_STORE) CX509_STORE::create()
 	Ptr(X509_STORE) pStore = X509_STORE_new();
 
 	if (!pStore)
-		return NULL;
+		return nullptr;
 
 	Ptr(CX509_STORE) p = OK_NEW_OPERATOR CX509_STORE(pStore);
 
@@ -513,7 +513,7 @@ void CX509_STORE::free()
 {
 	if (_raw)
 		X509_STORE_free(CastAnyPtr(X509_STORE, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 CX509_STORE_CTX::CX509_STORE_CTX(ConstPointer pX509Name) : COpenSSLClass(pX509Name)
@@ -530,7 +530,7 @@ Ptr(CX509_STORE_CTX) CX509_STORE_CTX::create()
 	Ptr(X509_STORE_CTX) pCtx = X509_STORE_CTX_new();
 
 	if (!pCtx)
-		return NULL;
+		return nullptr;
 
 	Ptr(CX509_STORE_CTX) p = OK_NEW_OPERATOR CX509_STORE_CTX(pCtx);
 
@@ -542,6 +542,6 @@ void CX509_STORE_CTX::free()
 {
 	if (_raw)
 		X509_STORE_CTX_free(CastAnyPtr(X509_STORE_CTX, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 

@@ -60,7 +60,7 @@ CODBCStatementImpl::CODBCStatementImpl(CODBCEnvironmentImpl* lpEnv, SQLHSTMT lpS
 	_siNumResultColumns = 0;
 	_siNumResultRows = 0;
 	_siNumParams = 0;
-	_pParamArrayResults = NULL;
+	_pParamArrayResults = nullptr;
 	_siParamArrayCnt = 0;
 
 }
@@ -332,7 +332,7 @@ void CODBCStatementImpl::BindParameter(word no, CConstPointer name, SDWConstPoin
 	SQLULEN vParameterSize;
 	SQLSMALLINT vDecimalDigits;
 	SQLSMALLINT vNullable;
-	SQLHDESC hIpd = NULL;
+	SQLHDESC hIpd = nullptr;
 
 	TRYODBC(this,
 		SQL_HANDLE_STMT,
@@ -401,7 +401,7 @@ void CODBCStatementImpl::BindParameter(word no, CConstPointer name, const double
 	SQLULEN vParameterSize;
 	SQLSMALLINT vDecimalDigits;
 	SQLSMALLINT vNullable;
-	SQLHDESC hIpd = NULL;
+	SQLHDESC hIpd = nullptr;
 
 	TRYODBC(this,
 		SQL_HANDLE_STMT,
@@ -470,7 +470,7 @@ void CODBCStatementImpl::BindParameter(word no, CConstPointer name, CConstPointe
 	SQLULEN vParameterSize;
 	SQLSMALLINT vDecimalDigits;
 	SQLSMALLINT vNullable;
-	SQLHDESC hIpd = NULL;
+	SQLHDESC hIpd = nullptr;
 
 	TRYODBC(this,
 		SQL_HANDLE_STMT,
@@ -576,7 +576,7 @@ void CODBCStatementImpl::Execute(LPCTSTR pCommand)
 	}
 	if (_pParamArrayResults)
 	{
-		Ptr(CODBCException) pEx = NULL;
+		Ptr(CODBCException) pEx = nullptr;
 
 		for (SQLULEN i = 0; i < _siParamArrayCnt; i++)
 		{
@@ -643,7 +643,7 @@ void CODBCStatementImpl::BindColumns(Ref(CODBCStatement::CODBCColumns) cols)
 			SQL_HANDLE_STMT,
 			SQLDescribeCol(_lpStmt,
 			iCol,
-			NULL,
+			nullptr,
 			0,
 			&vNameLength,
 			&vDataType,
@@ -661,11 +661,11 @@ void CODBCStatementImpl::BindColumns(Ref(CODBCStatement::CODBCColumns) cols)
 				iCol,
 				CastAnyPtr(SQLTCHAR, CastMutable(CPointer, vTmp.GetString())),
 				vNameLength + 1,
-				NULL,
-				NULL,
-				NULL,
-				NULL,
-				NULL));
+				nullptr,
+				nullptr,
+				nullptr,
+				nullptr,
+				nullptr));
 		}
 		
 		CODBCColumn::TDataType vDataTypeEnum = CODBCColumn::eSQL_NULL;
@@ -959,7 +959,7 @@ void CODBCStatementImpl::Reset()
 	if (_pParamArrayResults)
 	{
 		TFfree(_pParamArrayResults);
-		_pParamArrayResults = NULL;
+		_pParamArrayResults = nullptr;
 	}
 	_siParamArrayCnt = 0;
 	if (_lpStmt)
@@ -991,7 +991,7 @@ void CODBCStatementImpl::Free()
 	if (_lpStmt)
 	{
 		SQLFreeHandle(SQL_HANDLE_STMT, _lpStmt);
-		_lpStmt = NULL;
+		_lpStmt = nullptr;
 	}
 }
 
@@ -1032,7 +1032,7 @@ void CODBCStatementImpl::HandleError(SQLSMALLINT hType, RETCODE	RetCode)
 		&iError,
 		(SQLTCHAR*)szMessage,
 		(SQLSMALLINT)(sizeof(szMessage) / sizeof(TCHAR)),
-		(SQLSMALLINT *)NULL) == SQL_SUCCESS)
+		(SQLSMALLINT *)nullptr) == SQL_SUCCESS)
 	{
 
 		// Hide data truncated..
@@ -1152,21 +1152,21 @@ void CODBCConnectionImpl::Open(LPCTSTR _pszConnStr)
 		GetDesktopWindow(),
 		(SQLTCHAR*)_pszConnStr,
 		SQL_NTS,
-		NULL,
+		nullptr,
 		0,
-		NULL,
+		nullptr,
 		SQL_DRIVER_COMPLETE));
 #endif
 #ifdef OK_SYS_WINDOWS64
 	TRYODBC(this,
 		SQL_HANDLE_DBC,
 		SQLDriverConnect(_lpDbc,
-		NULL,
+		nullptr,
 		(SQLTCHAR*)_pszConnStr,
 		SQL_NTS,
-		NULL,
+		nullptr,
 		0,
-		NULL,
+		nullptr,
 		SQL_DRIVER_COMPLETE));
 #endif
 #endif
@@ -1177,9 +1177,9 @@ void CODBCConnectionImpl::Open(LPCTSTR _pszConnStr)
 		GetDesktopWindow(),
 		(SQLTCHAR*)_pszConnStr,
 		SQL_NTS,
-		NULL,
+		nullptr,
 		0,
-		NULL,
+		nullptr,
 		SQL_DRIVER_COMPLETE));
 #endif
 
@@ -1189,7 +1189,7 @@ void CODBCConnectionImpl::Open(LPCTSTR _pszConnStr)
 	//					SQL_ACTIVE_STATEMENTS,
 	//					&_numStmts,
 	//					0,
-	//					NULL));
+	//					nullptr));
 
 	return;
 _exit:
@@ -1208,7 +1208,7 @@ CODBCStatementImpl* CODBCConnectionImpl::create_Statement()
 		throw pEx;
 	}
 
-	SQLHSTMT lpStmt = NULL;
+	SQLHSTMT lpStmt = nullptr;
 
 	TRYODBC(this,
 		SQL_HANDLE_DBC,
@@ -1219,7 +1219,7 @@ CODBCStatementImpl* CODBCConnectionImpl::create_Statement()
 _exit:
 	if (_lpEnv->get_LastError())
 		throw _lpEnv->get_LastError();
-	return NULL;
+	return nullptr;
 }
 
 void CODBCConnectionImpl::free_Statement(CODBCStatementImpl* pStmt)
@@ -1252,7 +1252,7 @@ void CODBCConnectionImpl::Close()
 	if (_lpDbc)
 	{
 		SQLFreeConnect(_lpDbc);
-		_lpDbc = NULL;
+		_lpDbc = nullptr;
 	}
 }
 
@@ -1290,7 +1290,7 @@ void CODBCConnectionImpl::HandleError(SQLSMALLINT hType, RETCODE RetCode)
 		&iError,
 		(SQLTCHAR*)szMessage,
 		(SQLSMALLINT)(sizeof(szMessage) / sizeof(TCHAR)),
-		(SQLSMALLINT *)NULL) == SQL_SUCCESS)
+		(SQLSMALLINT *)nullptr) == SQL_SUCCESS)
 	{
 
 		// Hide data truncated..
@@ -1301,8 +1301,8 @@ void CODBCConnectionImpl::HandleError(SQLSMALLINT hType, RETCODE RetCode)
 
 CODBCEnvironmentImpl::CODBCEnvironmentImpl(void)
 {
-	_lpEnv = NULL;
-	_lastError = NULL;
+	_lpEnv = nullptr;
+	_lastError = nullptr;
 }
 
 
@@ -1311,7 +1311,7 @@ CODBCEnvironmentImpl::~CODBCEnvironmentImpl(void)
 	Close();
 	if (_lastError)
 		delete _lastError;
-	_lastError = NULL;
+	_lastError = nullptr;
 }
 
 void CODBCEnvironmentImpl::set_LastError(CODBCException* pLastError)
@@ -1324,9 +1324,9 @@ void CODBCEnvironmentImpl::set_LastError(CODBCException* pLastError)
 CODBCConnectionImpl* CODBCEnvironmentImpl::create_Connection()
 {
 	if (!_lpEnv)
-		return NULL;
+		return nullptr;
 
-	SQLHDBC lpDbc = NULL;
+	SQLHDBC lpDbc = nullptr;
 
 	TRYODBC1(this,
 		SQL_HANDLE_ENV,
@@ -1336,7 +1336,7 @@ CODBCConnectionImpl* CODBCEnvironmentImpl::create_Connection()
 _exit:
 	if (_lastError)
 		throw _lastError;
-	return NULL;
+	return nullptr;
 }
 
 void CODBCEnvironmentImpl::Open()
@@ -1360,7 +1360,7 @@ void CODBCEnvironmentImpl::Close()
 	if (_lpEnv)
 	{
 		SQLFreeEnv(_lpEnv);
-		_lpEnv = NULL;
+		_lpEnv = nullptr;
 	}
 }
 
@@ -1389,7 +1389,7 @@ void CODBCEnvironmentImpl::HandleError(SQLSMALLINT hType, RETCODE RetCode)
 		&iError,
 		(SQLTCHAR*)szMessage,
 		(SQLSMALLINT)(sizeof(szMessage) / sizeof(TCHAR)),
-		(SQLSMALLINT *)NULL) == SQL_SUCCESS)
+		(SQLSMALLINT *)nullptr) == SQL_SUCCESS)
 	{
 
 		// Hide data truncated..

@@ -135,31 +135,13 @@ void TestTCPClientKeepAlive(CStringLiteral command)
 	}
 }
 
-static void __stdcall CTestTCPServerDeleteFunc( ConstPointer data, Pointer context )
-{
-	CTcpClient* pClient = CastAnyPtr(CTcpClient, CastMutable(Pointer, data));
-
-	pClient->release();
-}
-
-static void __stdcall CAbstractThreadCallbackDeleteFunc( ConstPointer data, Pointer context )
-{
-	CAbstractThreadCallback* pCallback = CastAnyPtr(CAbstractThreadCallback, CastMutable(Pointer, data));
-
-	pCallback->release();
-}
-
-static void __stdcall EmptyDeleteFunc( ConstPointer data, Pointer context )
-{
-}
-
 class CTestTCPServerKeepAlive: public CTcpServer
 {
 public:
 	CTestTCPServerKeepAlive(): 
 		_callback(__FILE__LINE__0),
 		_tcpclients(__FILE__LINE__0),
-		_current(NULL), 
+		_current(nullptr), 
 		_threadpool(__FILE__LINE__ 5, 5, 0, CThreadPool::QuickResponse), 
 		_bExit(false)
 	{
@@ -235,7 +217,7 @@ public:
 	dword ClientTask()
 	{
 		CScopedLock _lock;
-		CTcpClient* pClient = NULL;
+		CTcpClient* pClient = nullptr;
 		tcpclients_t::Iterator it = _tcpclients.Begin();
 				
 		if ( it && (*it) )
@@ -323,7 +305,7 @@ public:
 			OK_NEW_OPERATOR CThreadCallback<CTestTCPServerKeepAlive>(this, &CTestTCPServerKeepAlive::ClientTask);
 
 		_tcpclients.Append(_current);
-		_current = NULL;
+		_current = nullptr;
 		//pCallback->addRef();
 		_callback.Append(pCallback);
 		_threadpool.AddTask(pCallback);
@@ -349,7 +331,7 @@ void TestTCPServerKeepAlive()
 
 	try
 	{
-		server.OpenConnection(NULL, DEFAULT_PORT);
+		server.OpenConnection(nullptr, DEFAULT_PORT);
 		serverTask.Start();
 		serverTask.Join();
 		server.CloseConnection();

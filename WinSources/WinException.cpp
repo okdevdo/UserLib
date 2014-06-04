@@ -106,12 +106,12 @@ CStringBuffer CWinException::GetMessagePostfix(CWinException::TErrorType errType
 				FORMAT_MESSAGE_ALLOCATE_BUFFER | 
 				FORMAT_MESSAGE_FROM_SYSTEM | 
 				FORMAT_MESSAGE_IGNORE_INSERTS,
-				NULL,
+				nullptr,
 				lastError,
 				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
 				(LPTSTR) &lpMsgBuf,
 				0,
-				NULL 
+				nullptr 
 			);
 	
 			tmp.FormatString(__FILE__LINE__ _T(" (Windows Error: 0x%08x - %s)"), lastError, lpMsgBuf);
@@ -127,12 +127,12 @@ CStringBuffer CWinException::GetMessagePostfix(CWinException::TErrorType errType
 				FORMAT_MESSAGE_ALLOCATE_BUFFER | 
 				FORMAT_MESSAGE_FROM_SYSTEM | 
 				FORMAT_MESSAGE_IGNORE_INSERTS,
-				NULL,
+				nullptr,
 				lastError,
 				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
 				(LPTSTR) &lpMsgBuf,
 				0,
-				NULL 
+				nullptr 
 			);
 	
 			tmp.FormatString(__FILE__LINE__ _T(" (Windows Sockets Error: 0x%08x - %s)"), lastError, lpMsgBuf);

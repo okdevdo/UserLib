@@ -61,10 +61,6 @@ static const char * vNCHitTestCodes[] = {
 };
 #endif
 
-static void __stdcall TDeleteFunc_Empty( ConstPointer data, Pointer context )
-{
-}
-
 //***********************************************************
 // CDockWindow
 //***********************************************************
@@ -73,7 +69,7 @@ class CDockWindowNeighbourEqualFunctor
 public:
 	bool operator()(ConstPtr(CDockWindow::TNeighbour) pArray, ConstPtr(CDockWindow::TNeighbour) pData) const
 	{
-		return pArray->win != pData->win;
+		return pArray->win == pData->win;
 	}
 };
 
@@ -82,7 +78,7 @@ class CDockWindowNeighbourFullEqualFunctor
 public:
 	bool operator()(ConstPtr(CDockWindow::TNeighbour) pArray, ConstPtr(CDockWindow::TNeighbour) pData) const
 	{
-		return (pArray->win != pData->win) || (pArray->style != pData->style);
+		return (pArray->win == pData->win) && (pArray->style == pData->style);
 	}
 };
 
@@ -112,9 +108,9 @@ CDockWindow::CDockWindow(LPCTSTR name):
     CWin(TDockWindow, name),
 	m_neighbours(__FILE__LINE__ 16, 16),
 	m_dockingstyle(TDockingStyleNone),
-	m_control(NULL),
+	m_control(nullptr),
 	m_isFloating(FALSE),
-	m_pDockInfo(NULL),
+	m_pDockInfo(nullptr),
 	m_childID(0),
 	m_isSizing(FALSE),
 	m_SizingEdge(HTNOWHERE)
@@ -125,9 +121,9 @@ CDockWindow::CDockWindow(ConstRef(CStringBuffer) name):
     CWin(TDockWindow, name),
 	m_neighbours(__FILE__LINE__ 16, 16),
 	m_dockingstyle(TDockingStyleNone),
-	m_control(NULL),
+	m_control(nullptr),
 	m_isFloating(FALSE),
-	m_pDockInfo(NULL),
+	m_pDockInfo(nullptr),
 	m_childID(0),
 	m_isSizing(FALSE),
 	m_SizingEdge(HTNOWHERE)
@@ -151,8 +147,8 @@ BOOL CDockWindow::PreCreate(CREATESTRUCT& cs)
 	{
 		cs.style = WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME;
 		cs.dwExStyle = WS_EX_TOOLWINDOW;
-		cs.hwndParent = NULL;
-		cs.hMenu = NULL;
+		cs.hwndParent = nullptr;
+		cs.hMenu = nullptr;
 		cs.x = 100;
 		cs.y = 100;
 	}
@@ -181,7 +177,7 @@ void CDockWindow::get_FontKeys(Ref(CDataVectorT<CStringBuffer>) _keys)
 
 void CDockWindow::Refresh()
 {
-	::RedrawWindow(m_hwnd, NULL, NULL, RDW_FRAME | RDW_INVALIDATE | RDW_UPDATENOW | RDW_NOCHILDREN);
+	::RedrawWindow(m_hwnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_UPDATENOW | RDW_NOCHILDREN);
 	m_control->Refresh();
 }
 
@@ -193,7 +189,7 @@ void CDockWindow::set_Caption(ConstRef(CStringBuffer) caption)
 		if ( m_isFloating )
 			set_windowtext(m_caption);
 		else
-			SetWindowPos(NULL, SWP_DRAWFRAME);
+			SetWindowPos(nullptr, SWP_DRAWFRAME);
 	}
 }
 
@@ -203,7 +199,7 @@ void CDockWindow::Dock(LPRECT r)
 	DWORD style = WS_CHILD | WS_VISIBLE;
 	RECT r1;
 
-	assert(frame != NULL);
+	assert(frame != nullptr);
 	m_isFloating = FALSE;
 	SetWindowLong(GWL_STYLE, style);
 	SetWindowLong(GWL_EXSTYLE, 0);
@@ -862,7 +858,7 @@ void CDockWindow::RemoveNeighbour(CDockWindow* win)
 	assert(pNode);
 	int ix = pListView->inx_Node(pNode);
 	assert(ix >= 0);
-	pListView->set_Node(ix, NULL);
+	pListView->set_Node(ix, nullptr);
 #endif
 	}
 }
@@ -1149,7 +1145,7 @@ void CDockWindow::NcHitTest(POINT pt)
 		if ( m_pDockInfo && m_pDockInfo->TestSizable(this, HTTOP) )
 		{
 			m_SizingEdge = HTTOP;
-			SetCursor(LoadCursor(NULL, IDC_SIZENS));
+			SetCursor(LoadCursor(nullptr, IDC_SIZENS));
 		}
 	}
 	else if ( ::PtInRect(&rtopleft, pt) )
@@ -1158,7 +1154,7 @@ void CDockWindow::NcHitTest(POINT pt)
 		if ( m_pDockInfo && m_pDockInfo->TestSizable(this, HTTOPLEFT) )
 		{
 			m_SizingEdge = HTTOPLEFT;
-			SetCursor(LoadCursor(NULL, IDC_SIZENWSE));
+			SetCursor(LoadCursor(nullptr, IDC_SIZENWSE));
 		}
 	}
 	else if ( ::PtInRect(&rtopright, pt) )
@@ -1167,7 +1163,7 @@ void CDockWindow::NcHitTest(POINT pt)
 		if ( m_pDockInfo && m_pDockInfo->TestSizable(this, HTTOPRIGHT) )
 		{
 			m_SizingEdge = HTTOPRIGHT;
-			SetCursor(LoadCursor(NULL, IDC_SIZENESW));
+			SetCursor(LoadCursor(nullptr, IDC_SIZENESW));
 		}
 	}
 	else if ( ::PtInRect(&rleft, pt) )
@@ -1176,7 +1172,7 @@ void CDockWindow::NcHitTest(POINT pt)
 		if ( m_pDockInfo && m_pDockInfo->TestSizable(this, HTLEFT) )
 		{
 			m_SizingEdge = HTLEFT;
-			SetCursor(LoadCursor(NULL, IDC_SIZEWE));
+			SetCursor(LoadCursor(nullptr, IDC_SIZEWE));
 		}
 	}
 	else if ( ::PtInRect(&rright, pt) )
@@ -1185,7 +1181,7 @@ void CDockWindow::NcHitTest(POINT pt)
 		if ( m_pDockInfo && m_pDockInfo->TestSizable(this, HTRIGHT) )
 		{
 			m_SizingEdge = HTRIGHT;
-			SetCursor(LoadCursor(NULL, IDC_SIZEWE));
+			SetCursor(LoadCursor(nullptr, IDC_SIZEWE));
 		}
 	}
 	else if ( ::PtInRect(&rbottom, pt) )
@@ -1194,7 +1190,7 @@ void CDockWindow::NcHitTest(POINT pt)
 		if ( m_pDockInfo && m_pDockInfo->TestSizable(this, HTBOTTOM) )
 		{
 			m_SizingEdge = HTBOTTOM;
-			SetCursor(LoadCursor(NULL, IDC_SIZENS));
+			SetCursor(LoadCursor(nullptr, IDC_SIZENS));
 		}
 	}
 	else if ( ::PtInRect(&rbottomright, pt) )
@@ -1203,7 +1199,7 @@ void CDockWindow::NcHitTest(POINT pt)
 		if ( m_pDockInfo && m_pDockInfo->TestSizable(this, HTBOTTOMRIGHT) )
 		{
 			m_SizingEdge = HTBOTTOMRIGHT;
-			SetCursor(LoadCursor(NULL, IDC_SIZENWSE));
+			SetCursor(LoadCursor(nullptr, IDC_SIZENWSE));
 		}
 	}
 	else if ( ::PtInRect(&rbottomleft, pt) )
@@ -1212,13 +1208,13 @@ void CDockWindow::NcHitTest(POINT pt)
 		if ( m_pDockInfo && m_pDockInfo->TestSizable(this, HTBOTTOMLEFT) )
 		{
 			m_SizingEdge = HTBOTTOMLEFT;
-			SetCursor(LoadCursor(NULL, IDC_SIZENESW));
+			SetCursor(LoadCursor(nullptr, IDC_SIZENESW));
 		}
 	}
 	else
 	{
 		m_SizingEdge = HTNOWHERE;
-		SetCursor(LoadCursor(NULL, IDC_ARROW));
+		SetCursor(LoadCursor(nullptr, IDC_ARROW));
 	}
 #ifdef __DEBUG1__
 	theGuiApp->DebugString("%ls After NcHitTest %d, m_SizingEdge=%s\n", get_name().GetString(), debugID, 
@@ -1531,7 +1527,7 @@ LRESULT CDockWindow::OnTabPageDragged(WPARAM wParam, LPARAM lParam)
 	pTabPageDragged->GetWindowRect(&r);
 	::GetCursorPos(&pt);
 
-	CDockWindow* pdockwindow = m_pDockInfo->CreateFloating(NULL, &r);
+	CDockWindow* pdockwindow = m_pDockInfo->CreateFloating(nullptr, &r);
 	CTabControl* pTabControl = CastDynamicPtr(CTabControl, pdockwindow->get_Client());
 	CStringBuffer name;
 
@@ -1540,11 +1536,11 @@ LRESULT CDockWindow::OnTabPageDragged(WPARAM wParam, LPARAM lParam)
 	name.FormatString(__FILE__LINE__ _T("%s.TabPage%d"), pTabControl->get_name(), pTabPageDragged->get_childID());
 	pTabPageDragged->set_name(name);
 	pTabPageDragged->set_Text(name);
-	pTabControl->set_CurrentTabPage(NULL);
+	pTabControl->set_CurrentTabPage(nullptr);
 	pTabControl->SendMessage(WM_SIZE, 0, 0);
 	pdockwindow->SendMessage(WM_SIZE, 0, 0);
 
-	pTabControlDragged->set_CurrentTabPage(NULL);
+	pTabControlDragged->set_CurrentTabPage(nullptr);
 	pTabControlDragged->SendMessage(WM_SIZE, 0, 0);
 
 	pdockwindow->GetWindowRect(&r);
@@ -1575,7 +1571,7 @@ LRESULT CDockWindow::OnTabPageSelected(WPARAM wParam, LPARAM lParam)
 class CDockTarget : public CPopup
 {
 public:
-	CDockTarget(LPCTSTR name = NULL);
+	CDockTarget(LPCTSTR name = nullptr);
 	CDockTarget(ConstRef(CStringBuffer) name);
 	virtual ~CDockTarget();
 
@@ -1586,7 +1582,7 @@ public:
 	virtual void SetInitialPos(LPRECT r);
 
 	__inline bool is_Hovered() { return m_bHovered; }
-	__inline void set_Hovered(bool b) { if ( m_bHovered != b ) { m_bHovered = b; if ( is_created() ) InvalidateRect(NULL, FALSE); } }
+	__inline void set_Hovered(bool b) { if ( m_bHovered != b ) { m_bHovered = b; if ( is_created() ) InvalidateRect(nullptr, FALSE); } }
 
 	LRESULT OnCreate(WPARAM wParam, LPARAM lParam);
 	LRESULT OnPaint(WPARAM wParam, LPARAM lParam);
@@ -1728,10 +1724,10 @@ public:
 	virtual void SetInitialPos(LPRECT r);
 
 	__inline int is_IHovered() { return m_iHovered; }
-	__inline void set_IHovered(int b) { if ( m_iHovered != b ) { m_iHovered = b; if ( is_created() ) InvalidateRect(NULL, FALSE); } }
+	__inline void set_IHovered(int b) { if ( m_iHovered != b ) { m_iHovered = b; if ( is_created() ) InvalidateRect(nullptr, FALSE); } }
 
 	__inline bool is_OverClientArea() { return m_isOverClientArea; }
-	__inline void set_OverClientArea(bool b) { if ( m_isOverClientArea != b ) { m_isOverClientArea = b; if ( is_created() ) InvalidateRect(NULL, FALSE); } }
+	__inline void set_OverClientArea(bool b) { if ( m_isOverClientArea != b ) { m_isOverClientArea = b; if ( is_created() ) InvalidateRect(nullptr, FALSE); } }
 
 	LRESULT OnCreate(WPARAM wParam, LPARAM lParam);
 	LRESULT OnPaint(WPARAM wParam, LPARAM lParam);
@@ -2171,9 +2167,9 @@ void CDockWindowVector::Resize(CDockWindow::TDockingStyle style, bool isNeighbou
 	Iterator it = Begin();
 	RECT r;
 	LONG vmax = LONG_MAX;
-	CDockWindow* pmax = NULL;
+	CDockWindow* pmax = nullptr;
 	LONG vmin = 0;
-	CDockWindow* pmin = NULL;
+	CDockWindow* pmin = nullptr;
 
 	while ( it )
 	{
@@ -2309,7 +2305,7 @@ typedef struct _tagFindDockWindowByNameParams
 	CDockWindow* pResult;
 
 	_tagFindDockWindowByNameParams(ConstRef(CStringLiteral) _name):
-		name(_name), pResult(NULL) {}
+		name(_name), pResult(nullptr) {}
 } TFindDockWindowByNameParams;
 
 class FindDockWindowByNameForEachFunctor
@@ -2339,7 +2335,7 @@ typedef struct _tagFindDockWindowParams
 	bool bAnyNonFloatingWindows;
 
 	_tagFindDockWindowParams(POINT _pt) :
-		pt(_pt), pResult(NULL), bAnyNonFloatingWindows(false) {}
+		pt(_pt), pResult(nullptr), bAnyNonFloatingWindows(false) {}
 } TFindDockWindowParams;
 
 class FindDockWindowForEachFunctor
@@ -2422,32 +2418,6 @@ public:
 	TSortDockWindowsParams params;
 };
 
-
-
-
-
-
-
-
-
-static sword __stdcall TSearchAndSortFunc_DockInfoClose( ConstPointer ArrayItem, ConstPointer DataItem )
-{
-	CDockWindow* pWin = CastAnyPtr(CDockWindow, CastMutable(Pointer, ArrayItem));
-
-	pWin->DestroyWindow();
-	return 1;
-}
-
-static sword __stdcall TSearchAndSortFunc_DockInfoFind( ConstPointer ArrayItem, ConstPointer DataItem )
-{
-	CDockWindow* pWinArray = CastAnyPtr(CDockWindow, CastMutable(Pointer, ArrayItem));
-	CDockWindow* pWinData = CastAnyPtr(CDockWindow, CastMutable(Pointer, DataItem));
-
-	if ( pWinArray == pWinData )
-		return 0;
-	return 1;
-}
-
 typedef struct _tagSASFindDockWindowParams
 {
 	POINT pt;
@@ -2455,7 +2425,7 @@ typedef struct _tagSASFindDockWindowParams
 	bool bAnyNonFloatingWindows;
 
 	_tagSASFindDockWindowParams(POINT _pt):
-	    pt(_pt), pResult(NULL), bAnyNonFloatingWindows(false) {}
+	    pt(_pt), pResult(nullptr), bAnyNonFloatingWindows(false) {}
 } TSASFindDockWindowParams;
 
 static sword __stdcall TSearchAndSortUserFunc_FindDockWindow( ConstPointer ArrayItem, ConstPointer DataItem, ConstPointer context )
@@ -2480,7 +2450,7 @@ typedef struct _tagSASFindDockWindowByNameParams
 	CDockWindow* pResult;
 
 	_tagSASFindDockWindowByNameParams(ConstRef(CStringLiteral) _name):
-	    name(_name), pResult(NULL) {}
+	    name(_name), pResult(nullptr) {}
 } TSASFindDockWindowByNameParams;
 
 static sword __stdcall TSearchAndSortUserFunc_FindDockWindowByName( ConstPointer ArrayItem, ConstPointer DataItem, ConstPointer context )
@@ -2558,16 +2528,16 @@ static sword __stdcall TSearchAndSortUserFunc_SortDockWindows( ConstPointer Arra
 CDockInfo::CDockInfo(CWin* pFrame):
     m_dockwindows(__FILE__LINE__ 16,16),
 	m_floatingdockwindows(__FILE__LINE__ 16,16),
-	m_pdockwin(NULL),
-	m_pundockwin(NULL),
-	m_pCurrentFloatingWindow(NULL),
+	m_pdockwin(nullptr),
+	m_pundockwin(nullptr),
+	m_pCurrentFloatingWindow(nullptr),
 	m_pFrame(pFrame),
-	m_pTargetCenter(NULL),
-	m_pHint(NULL),
+	m_pTargetCenter(nullptr),
+	m_pHint(nullptr),
 	m_shutdown(FALSE)
 {
 	for ( int ix = TDockTargetLeft; ix <= TDockTargetBottom; ++ix )
-		m_pTarget[ix] = NULL;
+		m_pTarget[ix] = nullptr;
 	::SetRectEmpty(&m_windowRect);
 	::SetRectEmpty(&m_clientRect);
 }
@@ -2993,7 +2963,7 @@ void CDockInfo::LoadStatus()
 CDockWindow* CDockInfo::CreateFloating(LPCTSTR name, LPRECT rect)
 {
 	if ( !m_pFrame )
-		return NULL;
+		return nullptr;
 
 	UINT cmdcode = get_cmdcode();
 	CStringBuffer name0(__FILE__LINE__ name);
@@ -3033,7 +3003,7 @@ CDockWindow* CDockInfo::CreateFloating(LPCTSTR name, LPRECT rect)
 CDockWindow* CDockInfo::CreateDocked(LPCTSTR name, LPRECT rect)
 {
 	if ( (!m_pFrame) || (!rect) )
-		return NULL;
+		return nullptr;
 
 	UINT cmdcode = get_cmdcode();
 	CStringBuffer name0(__FILE__LINE__ name);
@@ -3411,12 +3381,12 @@ void CDockInfo::set_windowrect(LPRECT r)
 		}
 		m_pundockwin->ClearNeighbours();
 		m_floatingdockwindows.Append(m_pundockwin);
-		m_pundockwin = NULL;
+		m_pundockwin = nullptr;
 	}
 	if ( m_pdockwin )
 	{
 		m_dockwindows.Append(m_pdockwin);
-		m_pdockwin = NULL;
+		m_pdockwin = nullptr;
 	}
 }
 
@@ -4377,7 +4347,7 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 						name.FormatString(__FILE__LINE__ _T("%s.TabPage%d"), pTabCtrl2->get_name(), pPage->get_childID());
 						pPage->set_name(name);
 						pPage->set_Text(name);
-						pPage->SetWindowPos(HWND_BOTTOM, NULL, 0);
+						pPage->SetWindowPos(HWND_BOTTOM, nullptr, 0);
 						pPage->set_Selected(false);
 						pPage = pPage1;
 					}
@@ -4644,21 +4614,12 @@ void CDockInfo::HideDockTargets()
 {
 	if ( !m_pTargetCenter )
 		return;
-	m_pCurrentFloatingWindow = NULL;
+	m_pCurrentFloatingWindow = nullptr;
 	if ( m_pTargetCenter->is_Visible() )
 		m_pTargetCenter->set_Visible(FALSE);
 	if ( m_pTarget[TDockTargetLeft]->is_Visible() )
 		for ( int ix = TDockTargetLeft; ix <= TDockTargetBottom; ++ix )
 			m_pTarget[ix]->set_Visible(FALSE);
-}
-
-static sword __stdcall TSearchAndSortFunc_ShowFloatingWindows( ConstPointer ArrayItem, ConstPointer DataItem )
-{
-	CDockWindow* pWin = CastAnyPtr(CDockWindow, CastMutable(Pointer, ArrayItem));
-
-	if ( !(pWin->is_Visible()) )
-		pWin->set_Visible(TRUE);
-	return 1;
 }
 
 class ShowFloatingWindowsForEachFunctor
@@ -4675,15 +4636,6 @@ public:
 void CDockInfo::ShowFloatingWindows()
 {
 	m_floatingdockwindows.ForEach<ShowFloatingWindowsForEachFunctor>();
-}
-
-static sword __stdcall TSearchAndSortFunc_HideFloatingWindows( ConstPointer ArrayItem, ConstPointer DataItem )
-{
-	CDockWindow* pWin = CastAnyPtr(CDockWindow, CastMutable(Pointer, ArrayItem));
-
-	if ( pWin->is_Visible() )
-		pWin->set_Visible(FALSE);
-	return 1;
 }
 
 class HideFloatingWindowsForEachFunctor
@@ -5697,10 +5649,10 @@ bool CDockInfo::TestSizable(CDockWindow* pWin, INT edge)
 		if ( r.left == m_windowRect.left )
 			return false;
 		if ( r.left == m_clientRect.right )
-			return TestSizableClientLeft(pWin, NULL, NULL);
+			return TestSizableClientLeft(pWin, nullptr, nullptr);
 		{
 			CDockWindow::TNeighbourVector::Iterator it = pWin->get_FirstNeighbour(CDockWindow::TDockingStyleLeft);
-			CDockWindow* pLeftNeighbour = NULL;
+			CDockWindow* pLeftNeighbour = nullptr;
 			bool bResultTop0 = false;
 			bool bResultBottom0 = false;
 			bool bResultTop1 = false;
@@ -5716,8 +5668,8 @@ bool CDockInfo::TestSizable(CDockWindow* pWin, INT edge)
 				bResultTop0 = true;
 				bResultBottom0 = true;
 			}
-			bResultTop1 = TestSizableLeftTop(pWin, NULL, pLeftNeighbour, NULL, r.left);
-			bResultBottom1 = TestSizableLeftBottom(pWin, NULL, pLeftNeighbour, NULL, r.left);
+			bResultTop1 = TestSizableLeftTop(pWin, nullptr, pLeftNeighbour, nullptr, r.left);
+			bResultBottom1 = TestSizableLeftBottom(pWin, nullptr, pLeftNeighbour, nullptr, r.left);
 			return (bResultTop0 && bResultBottom0) || (bResultTop1 && bResultBottom1);
 		}
 		break;
@@ -5725,10 +5677,10 @@ bool CDockInfo::TestSizable(CDockWindow* pWin, INT edge)
 		if ( r.right == m_windowRect.right )
 			return false;
 		if ( r.right == m_clientRect.left )
-			return TestSizableClientRight(pWin, NULL, NULL);
+			return TestSizableClientRight(pWin, nullptr, nullptr);
 		{
 			CDockWindow::TNeighbourVector::Iterator it = pWin->get_FirstNeighbour(CDockWindow::TDockingStyleRight);
-			CDockWindow* pRightNeighbour = NULL;
+			CDockWindow* pRightNeighbour = nullptr;
 			bool bResultTop0 = false;
 			bool bResultBottom0 = false;
 			bool bResultTop1 = false;
@@ -5744,8 +5696,8 @@ bool CDockInfo::TestSizable(CDockWindow* pWin, INT edge)
 				bResultTop0 = true;
 				bResultBottom0 = true;
 			}
-			bResultTop1 = TestSizableLeftTop(pRightNeighbour, NULL, pWin, NULL, r.right);
-			bResultBottom1 = TestSizableLeftBottom(pRightNeighbour, NULL, pWin, NULL, r.right);
+			bResultTop1 = TestSizableLeftTop(pRightNeighbour, nullptr, pWin, nullptr, r.right);
+			bResultBottom1 = TestSizableLeftBottom(pRightNeighbour, nullptr, pWin, nullptr, r.right);
 			return (bResultTop0 && bResultBottom0) || (bResultTop1 && bResultBottom1);
 		}
 		break;
@@ -5753,10 +5705,10 @@ bool CDockInfo::TestSizable(CDockWindow* pWin, INT edge)
 		if ( r.top == m_windowRect.top )
 			return false;
 		if ( r.top == m_clientRect.bottom )
-			return TestSizableClientTop(pWin, NULL, NULL);
+			return TestSizableClientTop(pWin, nullptr, nullptr);
 		{
 			CDockWindow::TNeighbourVector::Iterator it = pWin->get_FirstNeighbour(CDockWindow::TDockingStyleTop);
-			CDockWindow* pTopNeighbour = NULL;
+			CDockWindow* pTopNeighbour = nullptr;
 			bool bResultLeft0 = false;
 			bool bResultRight0 = false;
 			bool bResultLeft1 = false;
@@ -5772,8 +5724,8 @@ bool CDockInfo::TestSizable(CDockWindow* pWin, INT edge)
 				bResultLeft0 = true;
 				bResultRight0 = true;
 			}
-			bResultLeft1 = TestSizableTopLeft(pWin, NULL, pTopNeighbour, NULL, r.top);
-			bResultRight1 = TestSizableTopRight(pWin, NULL, pTopNeighbour, NULL, r.top);
+			bResultLeft1 = TestSizableTopLeft(pWin, nullptr, pTopNeighbour, nullptr, r.top);
+			bResultRight1 = TestSizableTopRight(pWin, nullptr, pTopNeighbour, nullptr, r.top);
 			return (bResultLeft0 && bResultRight0) || (bResultLeft1 && bResultRight1);
 		}
 		break;
@@ -5785,10 +5737,10 @@ bool CDockInfo::TestSizable(CDockWindow* pWin, INT edge)
 		if ( r.bottom == m_windowRect.bottom )
 			return false;
 		if ( r.bottom == m_clientRect.top )
-			return TestSizableClientBottom(pWin, NULL, NULL);
+			return TestSizableClientBottom(pWin, nullptr, nullptr);
 		{
 			CDockWindow::TNeighbourVector::Iterator it = pWin->get_FirstNeighbour(CDockWindow::TDockingStyleBottom);
-			CDockWindow* pBottomNeighbour = NULL;
+			CDockWindow* pBottomNeighbour = nullptr;
 			bool bResultLeft0 = false;
 			bool bResultRight0 = false;
 			bool bResultLeft1 = false;
@@ -5804,8 +5756,8 @@ bool CDockInfo::TestSizable(CDockWindow* pWin, INT edge)
 				bResultLeft0 = true;
 				bResultRight0 = true;
 			}
-			bResultLeft1 = TestSizableTopLeft(pBottomNeighbour, NULL, pWin, NULL, r.bottom);
-			bResultRight1 = TestSizableTopRight(pBottomNeighbour, NULL, pWin, NULL, r.bottom);
+			bResultLeft1 = TestSizableTopLeft(pBottomNeighbour, nullptr, pWin, nullptr, r.bottom);
+			bResultRight1 = TestSizableTopRight(pBottomNeighbour, nullptr, pWin, nullptr, r.bottom);
 			return (bResultLeft0 && bResultRight0) || (bResultLeft1 && bResultRight1);
 		}
 		break;
@@ -5843,7 +5795,7 @@ bool CDockInfo::Resize(CDockWindow* pWin, INT edge, POINT ptDelta)
 		else
 		{
 			CDockWindow::TNeighbourVector::Iterator it = pWin->get_FirstNeighbour(CDockWindow::TDockingStyleLeft);
-			CDockWindow* pLeftNeighbour = NULL;
+			CDockWindow* pLeftNeighbour = nullptr;
 			bool bResultTop0 = false;
 			bool bResultBottom0 = false;
 			bool bResultTop1 = false;
@@ -5906,7 +5858,7 @@ bool CDockInfo::Resize(CDockWindow* pWin, INT edge, POINT ptDelta)
 		else
 		{
 			CDockWindow::TNeighbourVector::Iterator it = pWin->get_FirstNeighbour(CDockWindow::TDockingStyleRight);
-			CDockWindow* pRightNeighbour = NULL;
+			CDockWindow* pRightNeighbour = nullptr;
 			bool bResultTop0 = false;
 			bool bResultBottom0 = false;
 			bool bResultTop1 = false;
@@ -5969,7 +5921,7 @@ bool CDockInfo::Resize(CDockWindow* pWin, INT edge, POINT ptDelta)
 		else
 		{
 			CDockWindow::TNeighbourVector::Iterator it = pWin->get_FirstNeighbour(CDockWindow::TDockingStyleTop);
-			CDockWindow* pTopNeighbour = NULL;
+			CDockWindow* pTopNeighbour = nullptr;
 			bool bResultLeft0 = false;
 			bool bResultRight0 = false;
 			bool bResultLeft1 = false;
@@ -6036,7 +5988,7 @@ bool CDockInfo::Resize(CDockWindow* pWin, INT edge, POINT ptDelta)
 		else
 		{
 			CDockWindow::TNeighbourVector::Iterator it = pWin->get_FirstNeighbour(CDockWindow::TDockingStyleBottom);
-			CDockWindow* pBottomNeighbour = NULL;
+			CDockWindow* pBottomNeighbour = nullptr;
 			bool bResultLeft0 = false;
 			bool bResultRight0 = false;
 			bool bResultLeft1 = false;

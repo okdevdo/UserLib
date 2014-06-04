@@ -50,7 +50,7 @@ void COpenSSLLib::Initialize()
 	SSL_library_init();
 
 	/* Load config file, and other important initialisation */
-	OPENSSL_config(NULL);
+	OPENSSL_config(nullptr);
 }
 
 void COpenSSLLib::PrintErrorsFp(FILE *fp)

@@ -29,10 +29,6 @@
 #endif
 #endif
 
-void __stdcall VectorEmptyDeleteFunc(ConstPointer data, Pointer context)
-{
-}
-
 class XServiceApplication : public CServiceApplication
 {
 public:
@@ -98,7 +94,7 @@ public:
 				CByteBuffer buf;
 
 				tmp.convertToByteBuffer(buf);
-				WriteFile(GetStdHandle(STD_OUTPUT_HANDLE), buf.get_Buffer(), buf.get_BufferSize(), NULL, NULL);
+				WriteFile(GetStdHandle(STD_OUTPUT_HANDLE), buf.get_Buffer(), buf.get_BufferSize(), nullptr, nullptr);
 			}
 			return 0;
 		}

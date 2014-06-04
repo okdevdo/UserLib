@@ -22,13 +22,12 @@
 #include "File.h"
 #include "DirectoryIterator.h"
 #include "FlagRegister.h"
-#include "CppDataStructures.h"
 #include "DataHashtable.h"
 #include "DataGraph.h"
 
 static void LoadTestData(CConstPointer _TestFunction, unsigned int *numbers, unsigned int cnt)
 {
-	Ptr(CFile) _DataFile = NULL;
+	CCppObjectPtr<CFile> _DataFile;
 
 	CFilePath fname(__FILE__LINE__ _T("DataFiles"));
 
@@ -77,7 +76,7 @@ static void LoadTestData(CConstPointer _TestFunction, unsigned int *numbers, uns
 		else
 		{
 			_DataFile->Create(fname, false, CFile::BinaryFile_NoEncoding);
-			srand((unsigned)time(NULL));
+			srand((unsigned)time(nullptr));
 			for (i = 0; i < cnt; ++i)
 			{
 #ifdef OK_COMP_GNUC
@@ -105,21 +104,16 @@ static void LoadTestData(CConstPointer _TestFunction, unsigned int *numbers, uns
 			}
 		}
 		_DataFile->Close();
-		_DataFile->release();
-		_DataFile = NULL;
 	}
 	catch (CBaseException* ex)
 	{
 		CERR << ex->GetExceptionMessage() << endl;
-		_DataFile->release();
-		_DataFile = NULL;
-		return;
 	}
 }
 
 static void LoadTestData64(CConstPointer _TestFunction, ULongPointer *numbers, unsigned int cnt)
 {
-	Ptr(CFile) _DataFile = NULL;
+	CCppObjectPtr<CFile> _DataFile;
 
 #ifdef OK_CPU_32BIT
 	CFilePath fname(__FILE__LINE__ _T("DataFiles"));
@@ -178,7 +172,7 @@ static void LoadTestData64(CConstPointer _TestFunction, ULongPointer *numbers, u
 		else
 		{
 			_DataFile->Create(fname, false, CFile::BinaryFile_NoEncoding);
-			srand((unsigned)time(NULL));
+			srand((unsigned)time(nullptr));
 			for (i = 0; i < cnt; ++i)
 			{
 #ifdef OK_COMP_GNUC
@@ -212,15 +206,10 @@ static void LoadTestData64(CConstPointer _TestFunction, ULongPointer *numbers, u
 			}
 		}
 		_DataFile->Close();
-		_DataFile->release();
-		_DataFile = NULL;
 	}
 	catch (CBaseException* ex)
 	{
 		CERR << ex->GetExceptionMessage() << endl;
-		_DataFile->release();
-		_DataFile = NULL;
-		return;
 	}
 }
 
@@ -260,217 +249,6 @@ static void TestFlagRegister()
 		WriteErrorTestFile(1, _T("End of Loop: ix != 63"));
 	TFfree(p1);
 	TFfree(p2);
-	WriteSuccessTestFile(1);
-
-	CloseTestFile();
-}
-
-template <class Item, class Key>
-class CBinaryTreeDebugT: public CBinaryTreeT<Item, Key>
-{
-protected:
-	typedef CBinaryTreeT<Item, Key> super;
-#ifdef OK_COMP_GNUC
-	typedef typename super::node* link;
-#endif
-
-	void testR(link h)
-	{
-		if (h == 0) return;
-		if ((h->l == 0) && (h->r == 0))
-		{
-			if (h->N != 1)
-				WriteErrorTestFile(1, _T("h->N != 1"));
-			return;
-		}
-		if (h->l == 0)
-		{
-			if (h->N != (h->r->N + 1))
-				WriteErrorTestFile(1, _T("h->N != (h->r->N + 1)"));
-			if (h->item.key() >= h->r->item.key())
-				WriteErrorTestFile(1, _T("h->item.key() >= h->r->item.key()"));
-			testR(h->r);
-			return;
-		}
-		if (h->r == 0)
-		{
-			if (h->N != (h->l->N + 1))
-				WriteErrorTestFile(1, _T("h->N != (h->l->N + 1)"));
-			if (h->item.key() <= h->l->item.key())
-				WriteErrorTestFile(1, _T("h->item.key() <= h->l->item.key()"));
-			testR(h->l);
-			return;
-		}
-		if (h->N != (h->l->N + h->r->N + 1))
-			WriteErrorTestFile(1, _T("h->N != (h->l->N + h->r->N + 1)"));
-		if (h->item.key() >= h->r->item.key())
-			WriteErrorTestFile(1, _T("h->item.key() >= h->r->item.key()"));
-		if (h->item.key() <= h->l->item.key())
-			WriteErrorTestFile(1, _T("h->item.key() <= h->l->item.key()"));
-		testR(h->l);
-		testR(h->r);
-	}
-public:
-	CBinaryTreeDebugT(int maxN = 0):
-		super(maxN)
-	{
-	}
-	void test()
-	{
-		testR(super::head);
-	}
-};
-
-static void TestCBinaryTreeT()
-{
-	OpenTestFile(_T("TestCBinaryTreeT"));
-
-	CBinaryTreeDebugT<Item, unsigned int> _st(1000);
-	int i;
-	Item result;
-	unsigned int numbers[1000];
-
-	LoadTestData(_T("TestCBinaryTreeT"), numbers, 1000);
-	for ( i = 0; i < 1000; ++i )
-	{
-		_st.insert(Item(numbers[i], i));
-		if ( (i % 100) == 0 )
-			_st.test();
-	}
-	qsort(numbers, 1000, sizeof(unsigned int), TestCompareSRand);
-
-	WriteTestFile(1, _T("Height of Tree before balance = %d"), _st.height());
-	_st.test();
-	_st.balance();
-	WriteTestFile(1, _T("Height of Tree after balance = %d"), _st.height());
-	_st.test();
-	for ( i = 0; i < 1000; ++i )
-	{
-		result = _st.search(numbers[i]);
-		if (!(result == Item(numbers[i], i)))
-			WriteErrorTestFile(1, _T("result != Item(numbers[%d], %d)"), i, i);
-	}
-	//_st.inOrder(showVisitor);
-	result = _st.select(1);
-	for ( i = 0; i < 1000; ++i )
-	{
-		_st.remove(numbers[i]);
-		if ( (i % 100) == 0 )
-			_st.test();
-	}
-	WriteSuccessTestFile(1);
-
-	CloseTestFile();
-}
-
-template <class Item, class Key, int M> // M must be even
-class CDebugBTreeT : public CBTreeT<Item, Key, M>
-{
-protected:
-	typedef CBTreeT<Item, Key, M> super;
-#ifdef OK_COMP_GNUC
-	typedef typename super::node* link;
-#endif
-	void testR(link h, int ht)
-	{
-		if (h->m == 0)
-			WriteErrorTestFile(1, _T("h->m == 0"));
-		if (ht == 0)
-		{
-			for (int j = 1; j < h->m; ++j) 
-				if (h->b[j - 1].key > h->b[j].key)
-					WriteErrorTestFile(1, _T("h->b[j - 1].key > h->b[j].key"));
-		}
-		else
-		{
-			if (h->b[0].key != h->b[0].next->b[0].key)
-				WriteErrorTestFile(1, _T("h->b[0].key != h->b[0].next->b[0].key"));
-			for (int j = 1; j < h->m; ++j)
-				if (h->b[j - 1].key >= h->b[j].key)
-					WriteErrorTestFile(1, _T("h->b[j - 1].key >= h->b[j].key"));
-			for (int j = 0; j < h->m; ++j)
-				testR(h->b[j].next, ht - 1);
-		}
-	}
-public:
-	void test()
-	{
-		testR(super::head, super::HT);
-	}
-};
-
-
-static void TestCBTreeT()
-{
-	OpenTestFile(_T("TestCBTreeT"));
-
-	CDebugBTreeT<Item, unsigned int, 100> _st;
-	int i;
-	int j;
-	Item result;
-	unsigned int* numbers = new unsigned int[100000];
-
-	LoadTestData(_T("TestCBTreeT"), numbers, 100000);
-	for ( i = 0; i < 100000; ++i )
-		_st.insert(Item(numbers[i], i));
-
-	_st.test();
-	for ( i = 0; i < 100000; ++i )
-	{
-		result = _st.search(numbers[i]);
-		if (!(result == Item(numbers[i], i)))
-			WriteErrorTestFile(1, _T("result != Item(numbers[i], i)"));
-	}
-	WriteTestFile(1, _T("Height of Tree = %d, Count of nodes = %d"), _st.height(), _st.count());
-
-	for ( i = 0; i < 100000; ++i )
-	{
-		_st.remove(numbers[i]);
-		if ((i % 100) == 0)
-		{
-			_st.test();
-			for (j = i + 1; j < 100000; ++j)
-			{
-				result = _st.search(numbers[j]);
-				if (!(result == Item(numbers[j], j)))
-					WriteErrorTestFile(1, _T("result != Item(numbers[j], j)"));
-			}
-		}
-	}
-	WriteTestFile(1, _T("Height of Tree = %d, Count of nodes = %d"), _st.height(), _st.count());
-	delete[] numbers;
-
-	WriteSuccessTestFile(1);
-
-	CloseTestFile();
-}
-
-static void TestLinkedListT()
-{
-	OpenTestFile(_T("TestLinkedListT"));
-
-	CLinkedListT<Item, unsigned int> _st;
-	int i;
-	Item result;
-	unsigned int numbers[1000];
-
-	LoadTestData(_T("TestLinkedListT"), numbers, 1000);
-	for (i = 0; i < 1000; ++i)
-		_st.insert(Item(numbers[i], i));
-	//qsort(numbers, 1000, sizeof(unsigned int), TestCompareSRand);
-    _st.sort();
-	for ( i = 0; i < 1000; ++i )
-	{
-		result = _st.search(numbers[i]);
-		if (!(result == Item(numbers[i], i)))
-			WriteErrorTestFile(1, _T("result != Item(numbers[i], i)"));
-	}
-	//_st.traverse(showVisitor);
-	for ( i = 0; i < 1000; ++i )
-		_st.remove(numbers[i]);
-	if (!(_st.empty()))
-		WriteErrorTestFile(1, _T("!(_st.empty())"));
-
 	WriteSuccessTestFile(1);
 
 	CloseTestFile();
@@ -547,6 +325,18 @@ static void TestDoubleLinkedListT()
 	unsigned int numbers[120];
 
 	LoadTestData(_T("TestDoubleLinkedListT"), numbers, 120);
+	for (i = 0; i < 120; ++i)
+		list.Append(numbers + i);
+	while (list.Count() > 0)
+	{
+		list.Remove(list.Begin());
+		it = list.Begin();
+		while (it)
+		{
+			assert(*it != 0);
+			++it;
+		}
+	}
 	for (i = 0; i < 120; ++i)
 		list.Append(numbers + i);
 
@@ -849,8 +639,8 @@ static void TestAVLBinaryTreeT()
 		it = list.FindSorted(numbers + i);
 		if ((i % 2) == 0)
 		{
-			if (*it != NULL)
-				WriteErrorTestFile(1, _T("*it != NULL"));
+			if (*it != nullptr)
+				WriteErrorTestFile(1, _T("*it != nullptr"));
 			if (!!it)
 				WriteErrorTestFile(1, _T("!!it"));
 		}
@@ -946,8 +736,8 @@ static void TestRBBinaryTreeT()
 		it = list.FindSorted(numbers + i);
 		if ((i % 2) == 0)
 		{
-			if (*it != NULL)
-				WriteErrorTestFile(1, _T("*it != NULL"));
+			if (*it != nullptr)
+				WriteErrorTestFile(1, _T("*it != nullptr"));
 			if (!!it)
 				WriteErrorTestFile(1, _T("!!it"));
 		}
@@ -1037,8 +827,8 @@ static void TestBTreeT()
 		it = list.FindSorted(numbers + i);
 		if ((i % 2) == 0)
 		{
-			if (*it != NULL)
-				WriteErrorTestFile(1, _T("*it != NULL"));
+			if (*it != nullptr)
+				WriteErrorTestFile(1, _T("*it != nullptr"));
 			if (!!it)
 				WriteErrorTestFile(1, _T("!!it"));
 		}
@@ -1074,12 +864,6 @@ void TestDataStructures()
 {
 	COUT << _T("********************** TestFlagRegister **********************") << endl;
 	TestFlagRegister();
-	COUT << _T("********************** TestCBinaryTreeT ***********************") << endl;
-	TestCBinaryTreeT();
-	COUT << _T("********************** TestCBTreeT *****************************") << endl;
-	TestCBTreeT();
-	COUT << _T("********************** TestLinkedListT ***********************") << endl;
-	TestLinkedListT();
 	COUT << _T("********************** TestHashLinkedListT *******************") << endl;
 	TestHashLinkedListT();
 	COUT << _T("********************** TestHashLinearExploreT ****************") << endl;

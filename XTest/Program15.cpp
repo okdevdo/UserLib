@@ -63,9 +63,12 @@ public:
 
 	void Run()
 	{
+		CFilePath finput(__FILE__LINE__ _T("UserLibTest.zip"));
+		CFilePath foutput(__FILE__LINE__ _T("UserLibTest1.zip"));
+
 		io_manager.Create();
-		input.Open(CFilePath(__FILE__LINE__ _T("UserLibTest.zip")), true);
-		output.Create(CFilePath(__FILE__LINE__ _T("UserLibTest1.zip")));
+		input.Open(finput, true);
+		output.Create(foutput);
 		input.Read(buffer, OK_NEW_OPERATOR CAsyncIODataCallback<CTestAsyncFile>(this, &CTestAsyncFile::read_callback, input.GetData()));
 		io_manager.WaitForComplete();
 		io_manager.Close();
@@ -94,23 +97,6 @@ public:
 	}
 };
 
-static sword __stdcall AsyncTCPClientListSearchAndSortFunc(ConstPointer item, ConstPointer data)
-{
-	Ptr(CAsyncTCPClient) pClient = CastAnyPtr(CAsyncTCPClient, CastMutable(Pointer, item));
-	Ptr(CAsyncIOData) pData = CastAnyPtr(CAsyncIOData, CastMutable(Pointer, data));
-
-	if ( pClient->GetData() == pData )
-		return 0;
-	return 1;
-}
-
-static void __stdcall AsyncTCPClientListDeleteFunc( ConstPointer data, Pointer context )
-{
-	Ptr(CAsyncTCPClient) pClient = CastAnyPtr(CAsyncTCPClient, CastMutable(Pointer, data));
-
-	pClient->release();
-}
-
 typedef CDataDoubleLinkedListT<CAsyncTCPClient> CAsyncTCPClientList;
 
 class CTestAsyncTCPClient
@@ -118,7 +104,8 @@ class CTestAsyncTCPClient
 public:
 	CTestAsyncTCPClient():
         io_manager(),
-		clientlist(__FILE__LINE__0)
+		clientlist(__FILE__LINE__0),
+		count(0)
 	{
 	}
 
@@ -136,6 +123,7 @@ public:
 		{
 			Ptr(CAsyncTCPClient) pClient = *it;
 
+			//if ((pData->get_bytestransferred() == 0) || (pData->get_errorcode() != 0) || (count++ >= 5))
 			if ((pData->get_bytestransferred() == 0) || (pData->get_errorcode() != 0))
 			{
 				pClient->Close();
@@ -144,7 +132,8 @@ public:
 					io_manager.Stop();
 				return 1;
 			}
-			printf("%s\n", pData->get_buffer().get_Buffer());
+			//printf("%s\n", pData->get_buffer().get_Buffer());
+			printf(".");
 
 			CByteBuffer buffer(__FILE__LINE__ 8192);
 
@@ -202,7 +191,7 @@ public:
 		BPointer bp = buffer.get_Buffer();
 		dword bcnt = buffer.get_BufferSize();
 
-		srand((unsigned)time(NULL));
+		srand((unsigned)time(nullptr));
 
 		do
 		{
@@ -232,6 +221,7 @@ public:
 protected:
 	CAsyncIOManager io_manager;
 	CAsyncTCPClientList clientlist;
+	dword count;
 };
 
 void TestAsyncTCPClient()
@@ -261,7 +251,7 @@ public:
 		CByteBuffer buffer(__FILE__LINE__ 8192);
 		CByteBuffer buffer1(__FILE__LINE__ 8192);
 
-		printf("%s\n", pData->get_buffer().get_Buffer());
+		//printf("%s\n", pData->get_buffer().get_Buffer());
 		
 		Ptr(CAsyncTCPClient) pClient = OK_NEW_OPERATOR CAsyncTCPClient(&io_manager);
 
@@ -299,14 +289,14 @@ public:
 					io_manager.Stop();
 				return 1;
 			}
-			printf("%s\n", pData->get_buffer().get_Buffer());
+			//printf("%s\n", pData->get_buffer().get_Buffer());
 
 			CByteBuffer buffer(__FILE__LINE__ 8192);
 
 			FillBuffer(buffer);
 			try
 			{
-				pClient->Write(buffer, OK_NEW_OPERATOR CAsyncIODataCallback<CTestAsyncTCPServer>(this, &CTestAsyncTCPServer::write_callback, pData));
+				pClient->Write(buffer, OK_NEW_OPERATOR CAsyncIODataCallback<CTestAsyncTCPServer>(this, &CTestAsyncTCPServer::write_callback, pClient->GetData()));
 			}
 			catch ( CBaseException* )
 			{
@@ -343,7 +333,7 @@ public:
 
 			try
 			{
-				pClient->Read(buffer, OK_NEW_OPERATOR CAsyncIODataCallback<CTestAsyncTCPServer>(this, &CTestAsyncTCPServer::read_callback, pData));
+				pClient->Read(buffer, OK_NEW_OPERATOR CAsyncIODataCallback<CTestAsyncTCPServer>(this, &CTestAsyncTCPServer::read_callback, pClient->GetData()));
 			}
 			catch ( CBaseException* )
 			{
@@ -389,7 +379,7 @@ public:
 		BPointer bp = buffer.get_Buffer();
 		dword bcnt = buffer.get_BufferSize();
 
-		srand((unsigned)time(NULL));
+		srand((unsigned)time(nullptr));
 
 		do
 		{

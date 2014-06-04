@@ -126,7 +126,7 @@ CStringBuffer GetCategoryString(LPCTSTR pProviderRoot, LPCTSTR pProvider, DWORD 
 
 	if (!(vFileName.IsEmpty()))
 	{
-		HMODULE hResources = LoadLibraryEx(vFileName, NULL, LOAD_LIBRARY_AS_IMAGE_RESOURCE | LOAD_LIBRARY_AS_DATAFILE);
+		HMODULE hResources = LoadLibraryEx(vFileName, nullptr, LOAD_LIBRARY_AS_IMAGE_RESOURCE | LOAD_LIBRARY_AS_DATAFILE);
 		if (!hResources)
 			ThrowDefaultException(__FILE__LINE__ _T("GetCategoryString"));
 
@@ -140,7 +140,7 @@ CStringBuffer GetCategoryString(LPCTSTR pProviderRoot, LPCTSTR pProvider, DWORD 
 			0,
 			CastAny(LPTSTR, &buffer),
 			0,
-			NULL))
+			nullptr))
 		{
 			FreeLibrary(hResources);		
 			ThrowDefaultException(__FILE__LINE__ _T("GetCategoryString"));		
@@ -202,7 +202,7 @@ CStringBuffer GetMessageString(LPCTSTR pProviderRoot, LPCTSTR pProvider, WORD Ev
 	dword fcnt;
 	//	DWORD dwFormatFlags = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_FROM_HMODULE | FORMAT_MESSAGE_ALLOCATE_BUFFER;
 	DWORD dwFormatFlags = FORMAT_MESSAGE_FROM_HMODULE | FORMAT_MESSAGE_ALLOCATE_BUFFER;
-	Ptr(DWORD_PTR) pArgs = NULL;
+	Ptr(DWORD_PTR) pArgs = nullptr;
 	LPTSTR pString = CastMutable(LPTSTR, argv);
 
 	vRegProvValue.Split(_T(";"), fArray, 64, &fcnt);
@@ -235,14 +235,14 @@ CStringBuffer GetMessageString(LPCTSTR pProviderRoot, LPCTSTR pProvider, WORD Ev
 			dwFormatFlags |= FORMAT_MESSAGE_IGNORE_INSERTS;
 	}
 
-	HMODULE hResources = NULL;
-	LPTSTR buffer = NULL;
+	HMODULE hResources = nullptr;
+	LPTSTR buffer = nullptr;
 
 	for (DWORD i = 0; i < fcnt; i++)
 	{
 		if (hResources)
 			FreeLibrary(hResources);
-		hResources = LoadLibraryEx(fArray[i], NULL, LOAD_LIBRARY_AS_IMAGE_RESOURCE | LOAD_LIBRARY_AS_DATAFILE);
+		hResources = LoadLibraryEx(fArray[i], nullptr, LOAD_LIBRARY_AS_IMAGE_RESOURCE | LOAD_LIBRARY_AS_DATAFILE);
 		if (!hResources)
 			ThrowDefaultException(__FILE__LINE__ _T("GetMessageString"));
 
@@ -308,15 +308,15 @@ DWORD ApplyParameterStringsToMessage(LPCTSTR pProviderRoot, LPCTSTR pProvider, R
 	size_t cch = 0;
 	WLong num = 0;
 	DWORD i = 0;
-	LPTSTR* pStartingAddresses = NULL;  // Array of pointers to the beginning of each parameter string in pMessage
-	LPTSTR* pEndingAddresses = NULL;    // Array of pointers to the end of each parameter string in pMessage
-	DWORD* pParameterIDs = NULL;        // Array of parameter identifiers found in pMessage
-	LPTSTR* pParameters = NULL;         // Array of the actual parameter strings
-	LPTSTR pTempMessage = NULL;
-	LPTSTR pTempFinalMessage = NULL;
+	LPTSTR* pStartingAddresses = nullptr;  // Array of pointers to the beginning of each parameter string in pMessage
+	LPTSTR* pEndingAddresses = nullptr;    // Array of pointers to the end of each parameter string in pMessage
+	DWORD* pParameterIDs = nullptr;        // Array of parameter identifiers found in pMessage
+	LPTSTR* pParameters = nullptr;         // Array of the actual parameter strings
+	LPTSTR pTempMessage = nullptr;
+	LPTSTR pTempFinalMessage = nullptr;
 
 	DWORD dwFormatFlags = FORMAT_MESSAGE_FROM_HMODULE | FORMAT_MESSAGE_ALLOCATE_BUFFER;
-	HMODULE hResources = NULL;
+	HMODULE hResources = nullptr;
 	CRegistry reg;
 	CStringBuffer vRegProvKey(__FILE__LINE__ _T("SYSTEM\\CurrentControlSet\\Services\\Eventlog\\"));
 	CStringBuffer vRegProvValue;
@@ -377,8 +377,8 @@ DWORD ApplyParameterStringsToMessage(LPCTSTR pProviderRoot, LPCTSTR pProvider, R
 		return status;
 	}
 
-	hResources = LoadLibraryEx(vRegProvValue.GetString(), NULL, LOAD_LIBRARY_AS_IMAGE_RESOURCE | LOAD_LIBRARY_AS_DATAFILE);
-	if (NULL == hResources)
+	hResources = LoadLibraryEx(vRegProvValue.GetString(), nullptr, LOAD_LIBRARY_AS_IMAGE_RESOURCE | LOAD_LIBRARY_AS_DATAFILE);
+	if (nullptr == hResources)
 	{
 		status = GetLastError();
 		return status;
@@ -388,7 +388,7 @@ DWORD ApplyParameterStringsToMessage(LPCTSTR pProviderRoot, LPCTSTR pProvider, R
 	// of each parameter insertion string.
 	cbBuffer = sizeof(LPTSTR) * dwParameterCount;
 	pStartingAddresses = (LPTSTR*)TFalloc(cbBuffer);
-	if (NULL == pStartingAddresses)
+	if (nullptr == pStartingAddresses)
 	{
 		status = ERROR_OUTOFMEMORY;
 		goto cleanup;
@@ -399,7 +399,7 @@ DWORD ApplyParameterStringsToMessage(LPCTSTR pProviderRoot, LPCTSTR pProvider, R
 	// Allocate an array of pointers that will contain the ending address (one
 	// character past the of the identifier) of the each parameter insertion string.
 	pEndingAddresses = (LPTSTR*)TFalloc(cbBuffer);
-	if (NULL == pEndingAddresses)
+	if (nullptr == pEndingAddresses)
 	{
 		status = ERROR_OUTOFMEMORY;
 		goto cleanup;
@@ -410,7 +410,7 @@ DWORD ApplyParameterStringsToMessage(LPCTSTR pProviderRoot, LPCTSTR pProvider, R
 	// Allocate an array of pointers that will contain pointers to the actual
 	// parameter strings.
 	pParameters = (LPTSTR*)TFalloc(cbBuffer);
-	if (NULL == pParameters)
+	if (nullptr == pParameters)
 	{
 		status = ERROR_OUTOFMEMORY;
 		goto cleanup;
@@ -421,7 +421,7 @@ DWORD ApplyParameterStringsToMessage(LPCTSTR pProviderRoot, LPCTSTR pProvider, R
 	// Allocate an array of DWORDs that will contain the message identifier
 	// for each parameter.
 	pParameterIDs = (DWORD*)TFalloc(cbBuffer);
-	if (NULL == pParameterIDs)
+	if (nullptr == pParameterIDs)
 	{
 		status = ERROR_OUTOFMEMORY;
 		goto cleanup;
@@ -463,12 +463,12 @@ DWORD ApplyParameterStringsToMessage(LPCTSTR pProviderRoot, LPCTSTR pProvider, R
 			0,
 			(LPTSTR)(&(pParameters[i])),
 			0,
-			NULL))
+			nullptr))
 		{
 			status = GetLastError();
 			goto cleanup;
 		}
-		if (NULL == pParameters[i])
+		if (nullptr == pParameters[i])
 		{
 			status = ERROR_INVALID_PARAMETER;
 			goto cleanup;
@@ -563,7 +563,7 @@ void CEventLogRecord::Load(PEVENTLOGRECORD rec, LPCTSTR providerRoot)
 
 	if (rec->UserSidLength > 0)
 	{
-		LPTSTR pSidName = NULL;
+		LPTSTR pSidName = nullptr;
 
 		if (ConvertSidToStringSid(CastAnyPtr(SID, l_ptradd(rec, rec->UserSidOffset)), &pSidName))
 		{
@@ -574,13 +574,13 @@ void CEventLogRecord::Load(PEVENTLOGRECORD rec, LPCTSTR providerRoot)
 		DWORD cchName = 0;
 		DWORD cchReferencedDomainName = 0;
 
-		LookupAccountSid(NULL, CastAnyPtr(SID, l_ptradd(rec, rec->UserSidOffset)), NULL, &cchName, NULL, &cchReferencedDomainName, &_userUse);
+		LookupAccountSid(nullptr, CastAnyPtr(SID, l_ptradd(rec, rec->UserSidOffset)), nullptr, &cchName, nullptr, &cchReferencedDomainName, &_userUse);
 		if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
 		{
 			_userAccount.SetSize(__FILE__LINE__ cchName);
 			_userDomain.SetSize(__FILE__LINE__ cchReferencedDomainName);
 
-			LookupAccountSid(NULL,
+			LookupAccountSid(nullptr,
 				CastAnyPtr(SID, l_ptradd(rec, rec->UserSidOffset)),
 				CastMutable(CPointer, _userAccount.GetString()), &cchName,
 				CastMutable(CPointer, _userDomain.GetString()), &cchReferencedDomainName, &_userUse);
@@ -609,7 +609,7 @@ void CEventLogRecord::Load(PEVENTLOGRECORD rec, LPCTSTR providerRoot)
 	{
 		CStringBuffer num;
 		PBYTE pData = CastAnyPtr(BYTE, l_ptradd(rec, rec->DataOffset));
-		PBYTE pData1 = NULL;
+		PBYTE pData1 = nullptr;
 
 		for (DWORD i = 0; i < (((rec->DataLength) / 8) * 8); i += 8)
 		{
@@ -841,27 +841,6 @@ void CEventLogRecord::Print(PrintOutput outputType, Ptr(CFile) outputFile)
 }
 
 //********************* CEventLogRecords ***************************************************
-static void __stdcall CEventLogRecordsDeleteFunc(ConstPointer data, Pointer context)
-{
-	CEventLogRecord* pInfo = CastAnyPtr(CEventLogRecord, CastMutable(Pointer, data));
-
-	pInfo->release();
-}
-
-static sword __stdcall CEventLogRecordsSearchAndSortFunc(ConstPointer pa, ConstPointer pb)
-{
-	CEventLogRecord* ppa = CastAnyPtr(CEventLogRecord, CastMutable(Pointer, pa));
-	CEventLogRecord* ppb = CastAnyPtr(CEventLogRecord, CastMutable(Pointer, pb));
-	sqword vdiff;
-
-	vdiff = ppa->get_recordno() - ppb->get_recordno();
-	if (vdiff < 0)
-		return 1;
-	if (vdiff > 0)
-		return -1;
-	return 0;
-}
-
 CEventLogRecords::CEventLogRecords(DECL_FILE_LINE0):
 	super(ARGS_FILE_LINE 16, 256)
 {
@@ -873,16 +852,16 @@ CEventLogRecords::~CEventLogRecords()
 
 void CEventLogRecords::Load()
 {
-	HANDLE hEventLog = NULL;
+	HANDLE hEventLog = nullptr;
 	DWORD status = ERROR_SUCCESS;
 	DWORD dwBytesToRead = 0;
 	DWORD dwBytesRead = 0;
 	DWORD dwMinimumBytesToRead = 0;
-	PBYTE pBuffer = NULL;
-	PBYTE pTemp = NULL;
-	HANDLE hToken = NULL;
+	PBYTE pBuffer = nullptr;
+	PBYTE pTemp = nullptr;
+	HANDLE hToken = nullptr;
 	CRegistry vRegistry;
-	LPTSTR vRegistryKey = NULL;
+	LPTSTR vRegistryKey = nullptr;
 	DWORD vRegistryKeyLen = 0L;
 	DWORD ix = 0;
 
@@ -903,7 +882,7 @@ void CEventLogRecords::Load()
 	while (vRegistry.QueryKeys(ix++, &vRegistryKey, &vRegistryKeyLen))
 	{
 		// The source name (provider) must exist as a subkey of Application.
-		hEventLog = OpenEventLog(NULL, vRegistryKey);
+		hEventLog = OpenEventLog(nullptr, vRegistryKey);
 		if (!hEventLog)
 			continue;
 
@@ -935,7 +914,7 @@ void CEventLogRecords::Load()
 			}
 			else
 			{
-				Ptr(CEventLogRecord) pEventRecord = NULL;
+				Ptr(CEventLogRecord) pEventRecord = nullptr;
 				PEVENTLOGRECORD pRecord = CastAnyPtr(EVENTLOGRECORD, pBuffer);
 				PEVENTLOGRECORD pEndRecord = CastAnyPtr(EVENTLOGRECORD, l_ptradd(pBuffer, dwBytesRead));
 
@@ -958,7 +937,7 @@ void CEventLogRecords::Load()
 		if (hEventLog)
 		{
 			CloseEventLog(hEventLog);
-			hEventLog = NULL;
+			hEventLog = nullptr;
 		}
 	}
 

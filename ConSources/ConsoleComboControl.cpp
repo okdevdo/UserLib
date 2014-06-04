@@ -25,32 +25,30 @@
 
 CConsoleComboControl::CConsoleComboControl(CConstPointer name, CConsole* pConsole):
     CConsoleControl(name, pConsole),
-	m_DropDownList(NULL)
+	m_DropDownList()
 {
 }
 
 CConsoleComboControl::CConsoleComboControl(CConstPointer name, CConstPointer title, CConsole* pConsole):
     CConsoleControl(name, title, pConsole),
-	m_DropDownList(NULL)
+	m_DropDownList()
 {
 }
 
 CConsoleComboControl::CConsoleComboControl(CAbstractConsoleControlCallback* callback, CConstPointer name, CConstPointer title, CConsole* pConsole):
     CConsoleControl(callback, name, title, pConsole),
-	m_DropDownList(NULL)
+	m_DropDownList()
 {
 }
 
 CConsoleComboControl::CConsoleComboControl(word taborder, CAbstractConsoleControlCallback* callback, CConstPointer name, CConstPointer title, CConsole* pConsole):
     CConsoleControl(taborder, callback, name, title, pConsole),
-	m_DropDownList(NULL)
+	m_DropDownList()
 {
 }
 
 CConsoleComboControl::~CConsoleComboControl(void)
 {
-	if ( m_DropDownList )
-		m_DropDownList->release();
 }
 
 void CConsoleComboControl::OpenDropDownList()

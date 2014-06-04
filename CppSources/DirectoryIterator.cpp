@@ -85,8 +85,8 @@ CDirectoryIterator::CDirectoryIterator():
 	_hFileFind(-1L)
 #endif
 #ifdef OK_SYS_UNIX
-	_hFileFind(NULL),
-	_tFileFind(NULL),
+	_hFileFind(nullptr),
+	_tFileFind(nullptr),
 	_bStatus(false),
 	_bAccess(false)
 #endif
@@ -99,8 +99,8 @@ CDirectoryIterator::CDirectoryIterator(ConstRef(CFilePath) path):
 	_hFileFind(-1L)
 #endif
 #ifdef OK_SYS_UNIX
-	_hFileFind(NULL),
-	_tFileFind(NULL),
+	_hFileFind(nullptr),
+	_tFileFind(nullptr),
 	_bStatus(false),
 	_bAccess(false)
 #endif
@@ -118,10 +118,10 @@ void CDirectoryIterator::GetCurrentDirectory(Ref(CFilePath) path)
     CPointer buffer;
 
 #ifdef OK_SYS_WINDOWS
-	if (NULL == (buffer = _tgetcwd(NULL, 0)))
+	if (nullptr == (buffer = _tgetcwd(nullptr, 0)))
 #endif
 #ifdef OK_SYS_UNIX
-	if (NULL == (buffer = getcwd(NULL, 0)))
+	if (nullptr == (buffer = getcwd(nullptr, 0)))
 #endif
 		throw OK_NEW_OPERATOR CDirectoryIteratorException(__FILE__LINE__ _T("in %s CDirectoryIteratorException"), 
 		    _T("CDirectoryIterator::GetCurrentDirectory"), errno);
@@ -777,7 +777,7 @@ void CDirectoryIterator::Close()
 #endif
 #ifdef OK_SYS_UNIX
 	closedir(_hFileFind);
-	_hFileFind = NULL;
+	_hFileFind = nullptr;
 	_bStatus = false;
 	_bAccess = false;
 #endif

@@ -26,10 +26,10 @@ IMPL_WINEXCEPTION(CEventException, CWinException)
 CEvent::CEvent(void)
 {
 	m_Event = CreateEvent( 
-        NULL,              // default security attributes
+        nullptr,              // default security attributes
         TRUE,              // manual reset
 		FALSE,             // initial state
-        NULL);             // unnamed event
+        nullptr);             // unnamed event
 	if ( !m_Event )
 		throw OK_NEW_OPERATOR CEventException(__FILE__LINE__ _T("in %s CEventException"), 
 		    _T("CEvent::CEvent"), CWinException::WinExtError);

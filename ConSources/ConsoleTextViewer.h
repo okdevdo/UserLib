@@ -95,7 +95,7 @@ protected:
 	bool *m_TextLineAlloc;
 	CFilePath m_Path;
 	bool m_SelectionMode;
-	Ptr(CConsoleUndoGroup) m_UndoGroup;
+	CCppObjectPtr<CConsoleUndoGroup> m_UndoGroup;
 
 #ifdef __DBGPRINT__
 	void PrintTextLine(sdword at);

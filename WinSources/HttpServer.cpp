@@ -228,7 +228,7 @@ static void FillStatusCodeList(Ptr(CHttpServer::StatusCodeList) list)
 }
 
 CHttpServer::CHttpServer(bool bWorker):
-_worker(bWorker), _data(NULL)
+_worker(bWorker), _data(nullptr)
 {
 	Initialize(bWorker);
 }
@@ -248,13 +248,13 @@ void CHttpServer::Initialize(bool bWorker)
 		WDATA(version) = v;
 		WDATA(statuscodelist) = new CHttpServer::StatusCodeList(150);
 		FillStatusCodeList(WDATA(statuscodelist));
-		HandleError(HttpInitialize(WDATA(version), HTTP_INITIALIZE_SERVER, NULL), __FILE__LINE__ _T("HttpInitialize"), _T("CHttpServer::Initialize"));
+		HandleError(HttpInitialize(WDATA(version), HTTP_INITIALIZE_SERVER, nullptr), __FILE__LINE__ _T("HttpInitialize"), _T("CHttpServer::Initialize"));
 	}
 	else
 	{
 		_data = TFalloc(sizeof(THttpServerData));
 		SDATA(version) = v;
-		HandleError(HttpInitialize(SDATA(version), HTTP_INITIALIZE_SERVER, NULL), __FILE__LINE__ _T("HttpInitialize"), _T("CHttpServer::Initialize"));
+		HandleError(HttpInitialize(SDATA(version), HTTP_INITIALIZE_SERVER, nullptr), __FILE__LINE__ _T("HttpInitialize"), _T("CHttpServer::Initialize"));
 	}
 	_worker = bWorker;
 }
@@ -286,7 +286,7 @@ void CHttpServer::Uninitialize()
 		if (SDATA(ssID))
 			HandleError(HttpCloseServerSession(SDATA(ssID)), __FILE__LINE__ _T("HttpCloseServerSession"), _T("CHttpServer::Uninitialize"));
 	}
-	HandleError(HttpTerminate(HTTP_INITIALIZE_SERVER, NULL), __FILE__LINE__ _T("HttpTerminate"), _T("CHttpServer::Uninitialize"));
+	HandleError(HttpTerminate(HTTP_INITIALIZE_SERVER, nullptr), __FILE__LINE__ _T("HttpTerminate"), _T("CHttpServer::Uninitialize"));
 }
 
 void CHttpServer::ShutdownRequestQueue()
@@ -310,7 +310,7 @@ void CHttpServer::CloseRequestQueue()
 		if (WDATA(hQueue))
 		{
 			HandleError(HttpCloseRequestQueue(WDATA(hQueue)), __FILE__LINE__ _T("HttpCloseRequestQueue"), _T("CHttpServer::ShutdownRequestQueue"));
-			WDATA(hQueue) = NULL;
+			WDATA(hQueue) = nullptr;
 		}
 	}
 	else
@@ -318,7 +318,7 @@ void CHttpServer::CloseRequestQueue()
 		if (SDATA(hQueue))
 		{
 			HandleError(HttpCloseRequestQueue(SDATA(hQueue)), __FILE__LINE__ _T("HttpCloseRequestQueue"), _T("CHttpServer::ShutdownRequestQueue"));
-			SDATA(hQueue) = NULL;
+			SDATA(hQueue) = nullptr;
 		}
 	}
 }
@@ -336,7 +336,7 @@ void CHttpServer::CreateRequestQueue(CConstPointer name)
 	dwLength = SECURITY_MAX_SID_SIZE;
 	SDATA(pLocalSID) = LocalAlloc(LMEM_FIXED, dwLength);
 	HandleError2(!!SDATA(pLocalSID), __FILE__LINE__ _T("LocalAlloc"), _T("CHttpServer::CreateRequestQueue"));
-	HandleError2(CreateWellKnownSid(WinWorldSid, NULL, SDATA(pLocalSID), &dwLength), __FILE__LINE__ _T("CreateWellKnownSid"), _T("CHttpServer::CreateRequestQueue"));
+	HandleError2(CreateWellKnownSid(WinWorldSid, nullptr, SDATA(pLocalSID), &dwLength), __FILE__LINE__ _T("CreateWellKnownSid"), _T("CHttpServer::CreateRequestQueue"));
 
 	ZeroMemory(&sea, sizeof(EXPLICIT_ACCESS));
 	sea.grfAccessPermissions = STANDARD_RIGHTS_ALL | SPECIFIC_RIGHTS_ALL;
@@ -346,7 +346,7 @@ void CHttpServer::CreateRequestQueue(CConstPointer name)
 	sea.Trustee.TrusteeType = TRUSTEE_IS_WELL_KNOWN_GROUP;
 	sea.Trustee.ptstrName = (LPTSTR)(SDATA(pLocalSID));
 
-	HandleError(SetEntriesInAcl(1, &sea, NULL, &(SDATA(pACL))), __FILE__LINE__ _T("SetEntriesInAcl"), _T("CHttpServer::CreateRequestQueue"));
+	HandleError(SetEntriesInAcl(1, &sea, nullptr, &(SDATA(pACL))), __FILE__LINE__ _T("SetEntriesInAcl"), _T("CHttpServer::CreateRequestQueue"));
 
 	SDATA(pSD) = (PSECURITY_DESCRIPTOR)LocalAlloc(LMEM_FIXED, SECURITY_DESCRIPTOR_MIN_LENGTH);
 	HandleError2(!!SDATA(pSD), __FILE__LINE__ _T("LocalAlloc"), _T("CHttpServer::CreateRequestQueue"));
@@ -361,11 +361,11 @@ void CHttpServer::CreateRequestQueue(CConstPointer name)
 
 	HTTP_503_RESPONSE_VERBOSITY v = Http503ResponseVerbosityLimited;
 
-	HandleError(HttpSetRequestQueueProperty(SDATA(hQueue), HttpServer503VerbosityProperty, &v, sizeof(HTTP_503_RESPONSE_VERBOSITY), 0, NULL), __FILE__LINE__ _T("HttpSetRequestQueueProperty"), _T("CHttpServer::CreateRequestQueue"));
+	HandleError(HttpSetRequestQueueProperty(SDATA(hQueue), HttpServer503VerbosityProperty, &v, sizeof(HTTP_503_RESPONSE_VERBOSITY), 0, nullptr), __FILE__LINE__ _T("HttpSetRequestQueueProperty"), _T("CHttpServer::CreateRequestQueue"));
 
 	ULONG n = 16;
 
-	HandleError(HttpSetRequestQueueProperty(SDATA(hQueue), HttpServerQueueLengthProperty, &n, sizeof(ULONG), 0, NULL), __FILE__LINE__ _T("HttpSetRequestQueueProperty"), _T("CHttpServer::CreateRequestQueue"));
+	HandleError(HttpSetRequestQueueProperty(SDATA(hQueue), HttpServerQueueLengthProperty, &n, sizeof(ULONG), 0, nullptr), __FILE__LINE__ _T("HttpSetRequestQueueProperty"), _T("CHttpServer::CreateRequestQueue"));
 }
 
 void CHttpServer::AddUrl(ConstRef(CStringBuffer) url, qword context)
@@ -546,7 +546,7 @@ void CHttpServer::RunServer()
 	HandleError(HttpSetUrlGroupProperty(SDATA(ugID), HttpServerBindingProperty, &bi, sizeof(HTTP_BINDING_INFO)), __FILE__LINE__ _T("HttpSetUrlGroupProperty"), _T("CHttpServer::RunServer"));
 
 	ZeroMemory(&(SDATA(ov)), sizeof(OVERLAPPED));
-	SDATA(ov).hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	SDATA(ov).hEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 	HandleError2(!!(SDATA(ov).hEvent), __FILE__LINE__ _T("CreateEvent"), _T("CHttpServer::RunServer"));
 	SDATA(pw)[0] = SDATA(ov).hEvent;
 	SDATA(pwm) = 1;
@@ -578,13 +578,13 @@ void CHttpServer::RunServer()
 			si.cb = sizeof(STARTUPINFO);
 			ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
 			if (SDATA(ExeArgs).IsEmpty())
-				HandleError2(CreateProcess(SDATA(workerExe).GetString(), NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi), __FILE__LINE__ _T("CreateProcess"), _T("CHttpServer::RunServer"));
+				HandleError2(CreateProcess(SDATA(workerExe).GetString(), nullptr, nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi), __FILE__LINE__ _T("CreateProcess"), _T("CHttpServer::RunServer"));
 			else
 			{
 				CStringBuffer cmd;
 
 				cmd.FormatString(__FILE__LINE__ _T("\"%s\" %s"), SDATA(workerExe).GetString(), SDATA(ExeArgs).GetString());
-				HandleError2(CreateProcess(NULL, CastMutable(CPointer, cmd.GetString()), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi), __FILE__LINE__ _T("CreateProcess"), _T("CHttpServer::RunServer"));
+				HandleError2(CreateProcess(nullptr, CastMutable(CPointer, cmd.GetString()), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi), __FILE__LINE__ _T("CreateProcess"), _T("CHttpServer::RunServer"));
 			}
 			if (SDATA(pim) < (MAXIMUM_WAIT_OBJECTS - 1))
 			{
@@ -646,7 +646,7 @@ void CHttpServer::OpenRequestQueue(CConstPointer name)
 	if (!_worker)
 		throw OK_NEW_OPERATOR CHttpServerException(__FILE__LINE__ _T("Program sequence error in %s"), _T("CHttpServer::OpenRequestQueue"), CWinException::WinExtError, ERROR_REQUEST_OUT_OF_SEQUENCE);
 
-	HandleError(HttpCreateRequestQueue(WDATA(version), name, NULL, HTTP_CREATE_REQUEST_QUEUE_FLAG_OPEN_EXISTING, &(WDATA(hQueue))), __FILE__LINE__ _T("HttpCreateRequestQueue"), _T("CHttpServer::OpenRequestQueue"));
+	HandleError(HttpCreateRequestQueue(WDATA(version), name, nullptr, HTTP_CREATE_REQUEST_QUEUE_FLAG_OPEN_EXISTING, &(WDATA(hQueue))), __FILE__LINE__ _T("HttpCreateRequestQueue"), _T("CHttpServer::OpenRequestQueue"));
 }
 
 void CHttpServer::ReceiveRequestHeader(Ref(RequestDataList) header, DWORD timeout)
@@ -664,7 +664,7 @@ void CHttpServer::ReceiveRequestHeader(Ref(RequestDataList) header, DWORD timeou
 		OVERLAPPED ov;
 
 		ZeroMemory(&ov, sizeof(OVERLAPPED));
-		ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+		ov.hEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 		if (PtrCheck(ov.hEvent))
 			HandleError2(FALSE, __FILE__LINE__ _T("CreateEvent"), _T("CHttpServer::OpenRequestQueue"));
 		ret = HttpReceiveHttpRequest(WDATA(hQueue), HTTP_NULL_ID, 0, WDATA(hrq), res, &res, &ov);
@@ -685,7 +685,7 @@ void CHttpServer::ReceiveRequestHeader(Ref(RequestDataList) header, DWORD timeou
 	}
 	else
 	{
-		ret = HttpReceiveHttpRequest(WDATA(hQueue), HTTP_NULL_ID, 0, WDATA(hrq), res, &res, NULL);
+		ret = HttpReceiveHttpRequest(WDATA(hQueue), HTTP_NULL_ID, 0, WDATA(hrq), res, &res, nullptr);
 		if (ret != ERROR_MORE_DATA)
 			HandleError(ret, __FILE__LINE__ _T("HttpReceiveHttpRequest"), _T("CHttpServer::OpenRequestQueue"));
 	}
@@ -976,7 +976,7 @@ void CHttpServer::ReceiveRequestBody(Ref(CByteLinkedBuffer) body)
 	{
 		res = 4096;
 		buf.set_BufferSize(__FILE__LINE__ res);
-		ret = HttpReceiveRequestEntityBody(WDATA(hQueue), WDATA(hrq)->RequestId, 0, CastAnyPtr(void, buf.get_Buffer()), res, &res, NULL);
+		ret = HttpReceiveRequestEntityBody(WDATA(hQueue), WDATA(hrq)->RequestId, 0, CastAnyPtr(void, buf.get_Buffer()), res, &res, nullptr);
 		if (res)
 		{
 			buf.set_BufferSize(__FILE__LINE__ res);
@@ -1028,7 +1028,7 @@ void CHttpServer::SendResponse(ConstRef(StatusCode) statuscode, ConstRef(Respons
 	hrp = CastAnyPtr(HTTP_RESPONSE, TFalloc(sz));
 	p = CastAny(PCHAR, _l_ptradd(hrp, sizeof(HTTP_RESPONSE)));
 	hrp->EntityChunkCount = Castword(body.GetBufferItemCount());
-	hrp->pEntityChunks = (hrp->EntityChunkCount > 0)?CastAnyPtr(HTTP_DATA_CHUNK, p):NULL;
+	hrp->pEntityChunks = (hrp->EntityChunkCount > 0)?CastAnyPtr(HTTP_DATA_CHUNK, p):nullptr;
 	p1 = CastAny(PCHAR, _l_ptradd(p, hrp->EntityChunkCount * sizeof(HTTP_DATA_CHUNK)));
 	for (int i = 0; i < hrp->EntityChunkCount; ++i)
 	{
@@ -1278,11 +1278,11 @@ void CHttpServer::SendResponse(ConstRef(StatusCode) statuscode, ConstRef(Respons
 		lfd.ServiceName = "HttpServerService";
 		lfd.ServiceNameLength = Castword(strlen(lfd.ServiceName));
 
-		HandleError(HttpSendHttpResponse(WDATA(hQueue), WDATA(hrq)->RequestId, 0, hrp, NULL, &res, NULL, 0, NULL, CastAnyPtr(HTTP_LOG_DATA, &lfd)), __FILE__LINE__ _T("HttpSendHttpResponse"), _T("CHttpServer::SendResponse"));
+		HandleError(HttpSendHttpResponse(WDATA(hQueue), WDATA(hrq)->RequestId, 0, hrp, nullptr, &res, nullptr, 0, nullptr, CastAnyPtr(HTTP_LOG_DATA, &lfd)), __FILE__LINE__ _T("HttpSendHttpResponse"), _T("CHttpServer::SendResponse"));
 		TFfree(pLog);
 	}
 	else
-		HandleError(HttpSendHttpResponse(WDATA(hQueue), WDATA(hrq)->RequestId, 0, hrp, NULL, &res, NULL, 0, NULL, NULL), __FILE__LINE__ _T("HttpSendHttpResponse"), _T("CHttpServer::SendResponse"));
+		HandleError(HttpSendHttpResponse(WDATA(hQueue), WDATA(hrq)->RequestId, 0, hrp, nullptr, &res, nullptr, 0, nullptr, nullptr), __FILE__LINE__ _T("HttpSendHttpResponse"), _T("CHttpServer::SendResponse"));
 
 }
 

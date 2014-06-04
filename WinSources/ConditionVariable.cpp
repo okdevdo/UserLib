@@ -30,17 +30,17 @@ CConditionVariable::CConditionVariable(void):
 #if (WINVER >= _WIN32_WINNT_VISTA) && (OK_COMP_MSC || (__MINGW32_MAJOR_VERSION > 3) || __MINGW64_VERSION_MAJOR)
 	InitializeConditionVariable(&m_condition);
 #else
-	m_event = CreateEvent(NULL, TRUE, FALSE, NULL);
+	m_event = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 #endif
 	InitializeCriticalSection(&m_lock);
 #endif
 #ifdef OK_SYS_UNIX
 	int errCode; 
 
-	if ( (errCode = pthread_cond_init(&m_condition, NULL)) != 0 )
+	if ( (errCode = pthread_cond_init(&m_condition, nullptr)) != 0 )
 		throw OK_NEW_OPERATOR CConditionVariableException(__FILE__LINE__ _T("in %s CConditionVariableException"), 
 		    _T("CConditionVariable::CConditionVariable"), CWinException::CRunTimeError, errCode);
-	if ( (errCode = pthread_mutex_init(&m_lock, NULL)) != 0 )
+	if ( (errCode = pthread_mutex_init(&m_lock, nullptr)) != 0 )
 		throw OK_NEW_OPERATOR CConditionVariableException(__FILE__LINE__ _T("in %s CConditionVariableException"), 
 		    _T("CConditionVariable::CConditionVariable"), CWinException::CRunTimeError, errCode);
 #endif

@@ -69,11 +69,11 @@ public:
 class TEventLogEventForEachFunctor
 {
 public:
-	TEventLogEventForEachFunctor(): pGridView(NULL), lRowCnt(0) {}
+	TEventLogEventForEachFunctor(): pGridView(nullptr), lRowCnt(0) {}
 
 	bool operator()(Ptr(CEventLogEvent) pEvent)
 	{
-		Ptr(CGridViewRow) pRow = NULL;
+		Ptr(CGridViewRow) pRow = nullptr;
 		CStringBuffer sText;
 
 		sText.FormatString(__FILE__LINE__ _T("Row%d"), lRowCnt);
@@ -102,7 +102,7 @@ public:
 class CEventLogEventForEachFunc
 {
 public:
-	CEventLogEventForEachFunc() : pGridView(NULL), lRowCnt(0) {}
+	CEventLogEventForEachFunc() : pGridView(nullptr), lRowCnt(0) {}
 	~CEventLogEventForEachFunc() {}
 
 	CGridView* pGridView;
@@ -114,7 +114,7 @@ bool __stdcall TEventLogEventForEachFunc(ConstPointer data, Pointer context)
 {
 	Ptr(CEventLogEvent) pEvent = CastAnyPtr(CEventLogEvent, CastMutable(Pointer, data));
 	Ptr(CEventLogEventForEachFunc) pContext = CastAnyPtr(CEventLogEventForEachFunc, context);
-	Ptr(CGridViewRow) pRow = NULL;
+	Ptr(CGridViewRow) pRow = nullptr;
 	CStringBuffer sText;
 
 	sText.FormatString(__FILE__LINE__ _T("Row%d"), pContext->lRowCnt);
@@ -332,9 +332,9 @@ END_MESSAGE_MAP()
 
 XGuiLog::XGuiLog(): 
 	CFrameWnd(_T("XGuiLog")),
-	m_pTabControl(NULL),
+	m_pTabControl(nullptr),
 	m_PageCnt(0),
-	m_pEditorContextMenu(NULL)
+	m_pEditorContextMenu(nullptr)
 {
 }
 
@@ -536,7 +536,7 @@ LRESULT XGuiLog::OnCreateChildren(WPARAM wParam, LPARAM lParam)
 	name.SetString(__FILE__LINE__ _T("TabControl"));
 	CDialog::AddDialogControl(OK_NEW_OPERATOR CTabControl(name));
 
-	::SetTimer(m_hwnd, 1001, 500, NULL);
+	::SetTimer(m_hwnd, 1001, 500, nullptr);
 	return 0;
 }
 
@@ -553,7 +553,7 @@ LRESULT XGuiLog::OnNewCommand(WPARAM wParam, LPARAM lParam)
 
 	//int cursel = DialogBox(theGuiApp->get_GuiInstance(), MAKEINTRESOURCE(IDD_OPENDIALOG), m_hwnd, Open);
 	INT_PTR cursel = pDialog->DoModal();
-	Ptr(CEventLogChannel) pChannel = NULL;
+	Ptr(CEventLogChannel) pChannel = nullptr;
 
 	switch ( cursel )
 	{

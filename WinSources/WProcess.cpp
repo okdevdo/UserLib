@@ -84,7 +84,7 @@ void CProcess::Create(ConstRef(CFilePath) _cmd, ConstRef(CStringBuffer) _args, C
 
 	saAttr.nLength = sizeof(SECURITY_ATTRIBUTES); 
 	saAttr.bInheritHandle = TRUE; 
-	saAttr.lpSecurityDescriptor = NULL; 
+	saAttr.lpSecurityDescriptor = nullptr; 
 
 	if ( !CreatePipe(&m_hChildStd_OUT_Rd, &m_hChildStd_OUT_Wr, &saAttr, 0) )
 		throw OK_NEW_OPERATOR CProcessException(__FILE__LINE__ _T("CProcess Exception in %s"), _T("CProcess::Create"), CWinException::WinExtError);
@@ -100,8 +100,8 @@ void CProcess::Create(ConstRef(CFilePath) _cmd, ConstRef(CStringBuffer) _args, C
 	STARTUPINFO siStartInfo;
 	BOOL bSuccess = FALSE;
 	DWORD flags = CREATE_NO_WINDOW;
-	LPVOID envP = NULL;
-	LPCTSTR startDirP = NULL;
+	LPVOID envP = nullptr;
+	LPCTSTR startDirP = nullptr;
 
 #ifdef _UNICODE
 	flags |= CREATE_UNICODE_ENVIRONMENT;
@@ -147,10 +147,10 @@ void CProcess::Create(ConstRef(CFilePath) _cmd, ConstRef(CStringBuffer) _args, C
 	if ( !(startDir.IsEmpty()) )
 		startDirP = Cast(LPCTSTR, CastMutable(CPointer, startDir.GetString()));
 
-	if ( !CreateProcess(NULL, 
+	if ( !CreateProcess(nullptr, 
 		Cast(LPTSTR, CastMutable(CPointer, cmdLine.GetString())),     // command line 
-		NULL,          // process security attributes 
-		NULL,          // primary thread security attributes 
+		nullptr,          // process security attributes 
+		nullptr,          // primary thread security attributes 
 		TRUE,          // handles are inherited 
 		flags,         // creation flags 
 		envP,          // environment 
@@ -180,9 +180,9 @@ void CProcess::Create(ConstRef(CFilePath) _cmd, ConstRef(CStringBuffer) _args, C
 	args.PrependString(fname);
 	args.PrependString(_T("\""));
 	args.SplitQuoted(_T("\""), _T(" "), argv, 64, &cnt);
-	argv[cnt] = NULL;
+	argv[cnt] = nullptr;
 
-	envp[0] = NULL;
+	envp[0] = nullptr;
 
     if ( 0 > pipe(m_stdin) )
 		throw OK_NEW_OPERATOR CProcessException(__FILE__LINE__ _T("CProcess Exception in %s"), _T("CProcess::Create"), CWinException::CRunTimeError);
@@ -190,7 +190,7 @@ void CProcess::Create(ConstRef(CFilePath) _cmd, ConstRef(CStringBuffer) _args, C
 		throw OK_NEW_OPERATOR CProcessException(__FILE__LINE__ _T("CProcess Exception in %s"), _T("CProcess::Create"), CWinException::CRunTimeError);
         
     sa.sa_handler = sigchldhandler;
-    if ( 0 > sigaction(SIGCHLD, &sa, NULL) )
+    if ( 0 > sigaction(SIGCHLD, &sa, nullptr) )
 		throw OK_NEW_OPERATOR CProcessException(__FILE__LINE__ _T("CProcess Exception in %s"), _T("CProcess::Create"), CWinException::CRunTimeError);
 
     if ( (childpid = fork()) == -1 )
@@ -296,7 +296,7 @@ void CProcess::Read(Ref(CByteBuffer) _buffer)
 #ifdef OK_SYS_WINDOWS
 	DWORD dwRead;
 
-   if ( !ReadFile( m_hChildStd_OUT_Rd, _buffer.get_Buffer(), _buffer.get_BufferSize(), &dwRead, NULL) )
+   if ( !ReadFile( m_hChildStd_OUT_Rd, _buffer.get_Buffer(), _buffer.get_BufferSize(), &dwRead, nullptr) )
    {
 	   if ( GetLastError() == ERROR_BROKEN_PIPE ) // 109 - Pipe has been ended by client program
 		   dwRead = 0;
@@ -337,7 +337,7 @@ void CProcess::Write(ConstRef(CByteBuffer) _buffer)
 
    DWORD dwWritten; 
 
-   if ( !WriteFile(m_hChildStd_IN_Wr , _buffer.get_Buffer(), _buffer.get_BufferSize(), &dwWritten, NULL) )
+   if ( !WriteFile(m_hChildStd_IN_Wr , _buffer.get_Buffer(), _buffer.get_BufferSize(), &dwWritten, nullptr) )
 		throw OK_NEW_OPERATOR CProcessException(__FILE__LINE__ _T("CProcess Exception in %s"), _T("CProcess::Write"), CWinException::WinExtError);
 #endif
 #ifdef OK_SYS_UNIX

@@ -32,7 +32,7 @@ ConstPtr(CEVP_MD) CEVP_MD::create_md_null()
 	ConstPtr(EVP_MD) pMd = EVP_md_null();
 
 	if (!pMd)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_MD) p = OK_NEW_OPERATOR CEVP_MD(pMd);
 
@@ -45,7 +45,7 @@ ConstPtr(CEVP_MD) CEVP_MD::create_md4()
 	ConstPtr(EVP_MD) pMd = EVP_md4();
 
 	if (!pMd)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_MD) p = OK_NEW_OPERATOR CEVP_MD(pMd);
 
@@ -58,7 +58,7 @@ ConstPtr(CEVP_MD) CEVP_MD::create_md5()
 	ConstPtr(EVP_MD) pMd = EVP_md5();
 
 	if (!pMd)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_MD) p = OK_NEW_OPERATOR CEVP_MD(pMd);
 
@@ -71,7 +71,7 @@ ConstPtr(CEVP_MD) CEVP_MD::create_sha()
 	ConstPtr(EVP_MD) pMd = EVP_sha();
 
 	if (!pMd)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_MD) p = OK_NEW_OPERATOR CEVP_MD(pMd);
 
@@ -84,7 +84,7 @@ ConstPtr(CEVP_MD) CEVP_MD::create_sha1()
 	ConstPtr(EVP_MD) pMd = EVP_sha1();
 
 	if (!pMd)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_MD) p = OK_NEW_OPERATOR CEVP_MD(pMd);
 
@@ -97,7 +97,7 @@ ConstPtr(CEVP_MD) CEVP_MD::create_dss()
 	ConstPtr(EVP_MD) pMd = EVP_dss();
 
 	if (!pMd)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_MD) p = OK_NEW_OPERATOR CEVP_MD(pMd);
 
@@ -110,7 +110,7 @@ ConstPtr(CEVP_MD) CEVP_MD::create_dss1()
 	ConstPtr(EVP_MD) pMd = EVP_dss1();
 
 	if (!pMd)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_MD) p = OK_NEW_OPERATOR CEVP_MD(pMd);
 
@@ -123,7 +123,7 @@ ConstPtr(CEVP_MD) CEVP_MD::create_mdc2()
 	ConstPtr(EVP_MD) pMd = EVP_mdc2();
 
 	if (!pMd)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_MD) p = OK_NEW_OPERATOR CEVP_MD(pMd);
 
@@ -136,7 +136,7 @@ ConstPtr(CEVP_MD) CEVP_MD::create_ripemd160()
 	ConstPtr(EVP_MD) pMd = EVP_ripemd160();
 
 	if (!pMd)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_MD) p = OK_NEW_OPERATOR CEVP_MD(pMd);
 
@@ -149,7 +149,7 @@ ConstPtr(CEVP_MD) CEVP_MD::create_sha224()
 	ConstPtr(EVP_MD) pMd = EVP_sha224();
 
 	if (!pMd)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_MD) p = OK_NEW_OPERATOR CEVP_MD(pMd);
 
@@ -162,7 +162,7 @@ ConstPtr(CEVP_MD) CEVP_MD::create_sha256()
 	ConstPtr(EVP_MD) pMd = EVP_sha256();
 
 	if (!pMd)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_MD) p = OK_NEW_OPERATOR CEVP_MD(pMd);
 
@@ -175,7 +175,7 @@ ConstPtr(CEVP_MD) CEVP_MD::create_sha384()
 	ConstPtr(EVP_MD) pMd = EVP_sha384();
 
 	if (!pMd)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_MD) p = OK_NEW_OPERATOR CEVP_MD(pMd);
 
@@ -188,7 +188,7 @@ ConstPtr(CEVP_MD) CEVP_MD::create_sha512()
 	ConstPtr(EVP_MD) pMd = EVP_sha512();
 
 	if (!pMd)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_MD) p = OK_NEW_OPERATOR CEVP_MD(pMd);
 
@@ -201,7 +201,7 @@ ConstPtr(CEVP_MD) CEVP_MD::get_digestbyname(const char *name)
 	ConstPtr(EVP_MD) pMd = EVP_get_digestbyname(name);
 
 	if (!pMd)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_MD) p = CastDynamicPtr(CEVP_MD, find_obj(pMd));
 
@@ -215,7 +215,7 @@ ConstPtr(CEVP_MD) CEVP_MD::get_digestbynid(int n)
 	ConstPtr(EVP_MD) pMd = EVP_get_digestbynid(n);
 
 	if (!pMd)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_MD) p = CastDynamicPtr(CEVP_MD, find_obj(pMd));
 
@@ -252,7 +252,7 @@ Ptr(CEVP_MD_CTX) CEVP_MD_CTX::create()
 	Ptr(EVP_MD_CTX) pMdCtx = EVP_MD_CTX_create();
 
 	if (!pMdCtx)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_MD_CTX) p = OK_NEW_OPERATOR CEVP_MD_CTX(pMdCtx);
 
@@ -272,7 +272,7 @@ int CEVP_MD_CTX::DigestInit(const CEVP_MD *type)
 
 int CEVP_MD_CTX::DigestInit_ex(const CEVP_MD *type, CENGINE *impl)
 {
-	return EVP_DigestInit_ex(CastAnyPtr(EVP_MD_CTX, _raw), CastAnyConstPtr(EVP_MD, type->get_md()), (PtrCheck(impl)?NULL:CastAnyPtr(ENGINE, CastMutable(Pointer, impl->get_impl()))));
+	return EVP_DigestInit_ex(CastAnyPtr(EVP_MD_CTX, _raw), CastAnyConstPtr(EVP_MD, type->get_md()), (PtrCheck(impl)?nullptr:CastAnyPtr(ENGINE, CastMutable(Pointer, impl->get_impl()))));
 }
 
 int CEVP_MD_CTX::DigestUpdate(const void *d, size_t cnt)
@@ -297,7 +297,7 @@ void CEVP_MD_CTX::SignInit(const CEVP_MD *type)
 
 int CEVP_MD_CTX::SignInit_ex(const CEVP_MD *type, CENGINE *impl)
 {
-	return EVP_SignInit_ex(CastAnyPtr(EVP_MD_CTX, _raw), CastAnyConstPtr(EVP_MD, type->get_md()), PtrCheck(impl) ? NULL : CastAnyPtr(ENGINE, CastMutable(Pointer, impl->get_impl())));
+	return EVP_SignInit_ex(CastAnyPtr(EVP_MD_CTX, _raw), CastAnyConstPtr(EVP_MD, type->get_md()), PtrCheck(impl) ? nullptr : CastAnyPtr(ENGINE, CastMutable(Pointer, impl->get_impl())));
 }
 
 int CEVP_MD_CTX::SignUpdate(const void *d, unsigned int cnt)
@@ -317,7 +317,7 @@ int CEVP_MD_CTX::VerifyInit(const CEVP_MD *type)
 
 int CEVP_MD_CTX::VerifyInit_ex(const CEVP_MD *type, CENGINE *impl)
 {
-	return EVP_VerifyInit_ex(CastAnyPtr(EVP_MD_CTX, _raw), CastAnyConstPtr(EVP_MD, type->get_md()), PtrCheck(impl) ? NULL : CastAnyPtr(ENGINE, CastMutable(Pointer, impl->get_impl())));
+	return EVP_VerifyInit_ex(CastAnyPtr(EVP_MD_CTX, _raw), CastAnyConstPtr(EVP_MD, type->get_md()), PtrCheck(impl) ? nullptr : CastAnyPtr(ENGINE, CastMutable(Pointer, impl->get_impl())));
 }
 
 int CEVP_MD_CTX::VerifyUpdate(const void *d, unsigned int cnt)
@@ -339,7 +339,7 @@ void CEVP_MD_CTX::destroy()
 {
 	if (_raw)
 		EVP_MD_CTX_destroy(CastAnyPtr(EVP_MD_CTX, _raw));
-	_raw = NULL;
+	_raw = nullptr;
 }
 
 const CEVP_MD *CEVP_MD_CTX::md()
@@ -347,7 +347,7 @@ const CEVP_MD *CEVP_MD_CTX::md()
 	ConstPtr(EVP_MD) pMD = EVP_MD_CTX_md(CastAnyPtr(EVP_MD_CTX, _raw));
 
 	if (!pMD)
-		return NULL;
+		return nullptr;
 
 	Ptr(CEVP_MD) p = CastDynamicPtr(CEVP_MD, find_obj(pMD));
 

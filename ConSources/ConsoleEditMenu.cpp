@@ -47,9 +47,9 @@ CConsoleEditMenu::~CConsoleEditMenu(void)
 CConsoleWindow* CConsoleEditMenu::GetCurrentWindow()
 {
 	if ( !m_Console )
-		return NULL;
+		return nullptr;
 
-	CConsoleWindow* result = NULL;
+	CConsoleWindow* result = nullptr;
 
 	result = m_Console->GetConsolePopupControl();
 	if ( NotPtrCheck(result) )
@@ -60,7 +60,7 @@ CConsoleWindow* CConsoleEditMenu::GetCurrentWindow()
 	result = m_Console->GetTopMostWindow();
 	if ( NotPtrCheck(result) )
 		return result;
-	return NULL;
+	return nullptr;
 }
 
 void CConsoleEditMenu::EditUndoMenuCallback(CConsoleMenuItem* pMenu)

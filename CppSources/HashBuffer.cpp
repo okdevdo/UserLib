@@ -28,14 +28,14 @@ CDataVectorT<CStringBuffer> CHashBuffer::_algos(__FILE__LINE__ 16, 16);
 CHashBuffer::CHashBuffer():
 _algo(0),
 _hexBuffer(),
-_hashData(NULL)
+_hashData(nullptr)
 {
 }
 
 CHashBuffer::CHashBuffer(word algo, Ptr(CFile) _file):
 _algo(0),
 _hexBuffer(),
-_hashData(NULL)
+_hashData(nullptr)
 {
 	Init(algo);
 	Append(_file);
@@ -68,7 +68,7 @@ void CHashBuffer::Init(word algo)
 	_algo = algo;
 	if (_hashData)
 		TFfree(_hashData);
-	_hashData = NULL;
+	_hashData = nullptr;
 	switch (_algo)
 	{
 	case 0:
@@ -221,7 +221,7 @@ void CHashBuffer::Finish()
 	}
 	_hexBuffer.convertToHex(buf);
 	TFfree(_hashData);
-	_hashData = NULL;
+	_hashData = nullptr;
 }
 
 word CHashBuffer::get_DigestSize() const

@@ -25,8 +25,8 @@ CPostgresStatementImpl::CPostgresStatementImpl(CPostgresEnvironmentImpl* lpEnv, 
 {
 	_lpEnv = lpEnv;
 	_lpConn = lpConn;
-	_lpResultset = NULL;
-	_boundParams = NULL;
+	_lpResultset = nullptr;
+	_boundParams = nullptr;
 	_siNumResultColumns = 0;
 	_siNumResultRows = 0;
 	_siNumCurrentRow = 0;
@@ -58,7 +58,7 @@ void CPostgresStatementImpl::Prepare(CConstPointer pCommand)
 
 	Free();
 
-	_lpResultset = PQprepare(_lpConn->get_Handle(), "", CastAnyPtr(char, bBuf.get_Buffer()), 0, NULL);
+	_lpResultset = PQprepare(_lpConn->get_Handle(), "", CastAnyPtr(char, bBuf.get_Buffer()), 0, nullptr);
 
 	switch (PQresultStatus(_lpResultset))
 	{
@@ -132,7 +132,7 @@ void CPostgresStatementImpl::Execute(CConstPointer pCommand)
 		_siNumResultRows = 0;
 		_siNumCurrentRow = 0;
 
-		if (!(_lpResultset = PQexecPrepared(_lpConn->get_Handle(), "", _siNumParams, _boundParams, NULL, NULL, 0)))
+		if (!(_lpResultset = PQexecPrepared(_lpConn->get_Handle(), "", _siNumParams, _boundParams, nullptr, nullptr, 0)))
 			_lpConn->HandleError(__FILE__LINE__ _T("PQexecPrepared"));
 
 		switch (PQresultStatus(_lpResultset))
@@ -209,7 +209,7 @@ static char *findOid(PGresult* typeTable, Oid value, Ptr(int) pLen)
 	}
 	if (pLen)
 		*pLen = 0;
-	return NULL;
+	return nullptr;
 }
 
 void CPostgresStatementImpl::BindColumns(Ref(CPostgresStatement::CPostgresColumns) cols)
@@ -297,12 +297,12 @@ void CPostgresStatementImpl::Close()
 	if (_lpResultset)
 	{
 		PQclear(_lpResultset);
-		_lpResultset = NULL;
+		_lpResultset = nullptr;
 	}
 	if (_boundParams)
 	{
 		TFfree(_boundParams);
-		_boundParams = NULL;
+		_boundParams = nullptr;
 	}
 }
 
@@ -334,7 +334,7 @@ void CPostgresStatementImpl::HandleError(DECL_FILE_LINE CConstPointer funcN)
 CPostgresConnectionImpl::CPostgresConnectionImpl(CPostgresEnvironmentImpl* lpEnv)
 {
 	_lpEnv = lpEnv;
-	_lpDBHandle = NULL;
+	_lpDBHandle = nullptr;
 	_bConnected = FALSE;
 	_numStmts = 0;
 	_cntStmts = 0;
@@ -415,7 +415,7 @@ void CPostgresConnectionImpl::Close()
 	}
 
 	PQfinish(_lpDBHandle);
-	_lpDBHandle = NULL;
+	_lpDBHandle = nullptr;
 	_bConnected = FALSE;
 }
 
@@ -440,7 +440,7 @@ void CPostgresConnectionImpl::HandleError(DECL_FILE_LINE CConstPointer funcN)
 
 CPostgresEnvironmentImpl::CPostgresEnvironmentImpl(void)
 {
-	_lastError = NULL;
+	_lastError = nullptr;
 }
 
 
@@ -449,7 +449,7 @@ CPostgresEnvironmentImpl::~CPostgresEnvironmentImpl(void)
 	Close();
 	if (_lastError)
 		delete _lastError;
-	_lastError = NULL;
+	_lastError = nullptr;
 }
 
 void CPostgresEnvironmentImpl::set_LastError(CPostgresException* pLastError)

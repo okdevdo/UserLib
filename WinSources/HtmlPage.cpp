@@ -36,25 +36,6 @@ CHtmlPage::ReplacePointer::~ReplacePointer()
 {
 }
 
-void __stdcall ReplacePointers_DeleteFunc( ConstPointer data, Pointer context )
-{
-	CHtmlPage::ReplacePointer* p = CastAnyPtr(CHtmlPage::ReplacePointer, CastMutable(Pointer, data));
-
-	p->release();
-}
-
-sword __stdcall ReplacePointers_SearchAndSortFunc( ConstPointer pa, ConstPointer pb )
-{
-	CHtmlPage::ReplacePointer* ppa = CastAnyPtr(CHtmlPage::ReplacePointer, CastMutable(Pointer, pa));
-	CHtmlPage::ReplacePointer* ppb = CastAnyPtr(CHtmlPage::ReplacePointer, CastMutable(Pointer, pb));
-
-	if ( ppa->_begin < ppb->_begin )
-		return -1;
-	if ( ppa->_begin == ppb->_begin )
-		return 0;
-	return 1;
-}
-
 CHtmlPage::ContentPointer::ContentPointer(ConstRef(CByteLinkedBuffer::Iterator) begin, ConstRef(CByteLinkedBuffer::Iterator) end) :
 	_begin(begin),
 	_end(end)
@@ -63,13 +44,6 @@ CHtmlPage::ContentPointer::ContentPointer(ConstRef(CByteLinkedBuffer::Iterator) 
 
 CHtmlPage::ContentPointer::~ContentPointer()
 {
-}
-
-void __stdcall ContentPointers_DeleteFunc(ConstPointer data, Pointer context)
-{
-	CHtmlPage::ContentPointer* p = CastAnyPtr(CHtmlPage::ContentPointer, CastMutable(Pointer, data));
-
-	p->release();
 }
 
 CHtmlPage::ResourceItem::ResourceItem(ConstRef(CStringBuffer) resource) :
@@ -84,25 +58,6 @@ CHtmlPage::ResourceItem::~ResourceItem()
 {
 }
 
-void __stdcall ResourceItems_DeleteFunc( ConstPointer data, Pointer context )
-{
-	CHtmlPage::ResourceItem* p = CastAnyPtr(CHtmlPage::ResourceItem, CastMutable(Pointer, data));
-
-	p->release();
-}
-
-sword __stdcall ResourceItems_SearchAndSortFunc( ConstPointer pa, ConstPointer pb )
-{
-	CHtmlPage::ResourceItem* ppa = CastAnyPtr(CHtmlPage::ResourceItem, CastMutable(Pointer, pa));
-	CHtmlPage::ResourceItem* ppb = CastAnyPtr(CHtmlPage::ResourceItem, CastMutable(Pointer, pb));
-
-	if ( ppa->_resource < ppb->_resource )
-		return -1;
-	if ( ppa->_resource == ppb->_resource )
-		return 0;
-	return 1;
-}
-
 CHtmlPage::ServerItem::ServerItem(ConstRef(CStringBuffer) server) :
 	_server(server),
 	_items(__FILE__LINE__ 16, 16)
@@ -111,25 +66,6 @@ CHtmlPage::ServerItem::ServerItem(ConstRef(CStringBuffer) server) :
 
 CHtmlPage::ServerItem::~ServerItem()
 {
-}
-
-sword __stdcall ServerItems_SearchAndSortFunc( ConstPointer pa, ConstPointer pb )
-{
-	CHtmlPage::ServerItem* ppa = CastAnyPtr(CHtmlPage::ServerItem, CastMutable(Pointer, pa));
-	CHtmlPage::ServerItem* ppb = CastAnyPtr(CHtmlPage::ServerItem, CastMutable(Pointer, pb));
-
-	if ( ppa->_server < ppb->_server )
-		return -1;
-	if ( ppa->_server == ppb->_server )
-		return 0;
-	return 1;
-}
-
-void __stdcall ServerItems_DeleteFunc( ConstPointer data, Pointer context )
-{
-	CHtmlPage::ServerItem* p = CastAnyPtr(CHtmlPage::ServerItem, CastMutable(Pointer, data));
-
-	p->release();
 }
 
 CHtmlPage::CHtmlPage(void):
@@ -247,7 +183,7 @@ void CHtmlPage::ReplaceImages()
 				{
 					ServerItem serverItem(urlHelper.get_Server());
 					ServerItems::Iterator itS = _serverItems.FindSorted(&serverItem);
-					ServerItem* pServerItem = NULL;
+					ServerItem* pServerItem = nullptr;
 
 					if (_serverItems.MatchSorted(itS, &serverItem))
 						pServerItem = (*itS);
@@ -258,13 +194,13 @@ void CHtmlPage::ReplaceImages()
 						if (itS)
 							pServerItem = (*itS);
 						else
-							pServerItem = NULL;
+							pServerItem = nullptr;
 					}
-					if ((pServerItem != NULL) && (!(urlHelper.get_Resource().IsEmpty())))
+					if ((pServerItem != nullptr) && (!(urlHelper.get_Resource().IsEmpty())))
 					{
 						ResourceItem resourceItem(urlHelper.get_Resource());
 						ResourceItems::Iterator itR = pServerItem->_items.FindSorted(&resourceItem);
-						ResourceItem* pResourceItem = NULL;
+						ResourceItem* pResourceItem = nullptr;
 
 						if (pServerItem->_items.MatchSorted(itR, &resourceItem))
 							pResourceItem = *itR;
@@ -275,9 +211,9 @@ void CHtmlPage::ReplaceImages()
 							if (itR)
 								pResourceItem = (*itR);
 							else
-								pResourceItem = NULL;
+								pResourceItem = nullptr;
 						}
-						if (pResourceItem != NULL)
+						if (pResourceItem != nullptr)
 						{
 							ContentPointer* pContentPointer = OK_NEW_OPERATOR ContentPointer(ccit1, ccit);
 							pResourceItem->_pointers.Append(pContentPointer);

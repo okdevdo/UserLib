@@ -39,24 +39,6 @@ using std::endl;
 #define DEFAULT_PORT _T("27017")
 #define MAX_BUFFER		512
 
-static void __stdcall DebugServerPrivateDeleteFunc( ConstPointer data, Pointer context )
-{
-	CTcpClient* pClient = CastAnyPtr(CTcpClient, CastMutable(Pointer, data));
-
-	pClient->release();
-}
-
-static void __stdcall AbstractThreadCallbackDeleteFunc( ConstPointer data, Pointer context )
-{
-	CAbstractThreadCallback* pCallback = CastAnyPtr(CAbstractThreadCallback, CastMutable(Pointer, data));
-
-	pCallback->release();
-}
-
-static void __stdcall EmptyDeleteFunc( ConstPointer data, Pointer context )
-{
-}
-
 class CDebugServerPrivate: public CTcpServer
 {
 public:
@@ -129,7 +111,7 @@ public:
 	dword ClientTask()
 	{
 		CScopedLock _lock;
-		CTcpClient* pClient = NULL;
+		CTcpClient* pClient = nullptr;
 		tcpclients_t::Iterator it = _tcpclients.Begin();
 				
 		if ( it && (*it) )
@@ -190,7 +172,7 @@ public:
 	dword ServerTask()
 	{
 		CScopedLock _lock;
-		Ptr(CTcpClient) _current = NULL;
+		Ptr(CTcpClient) _current = nullptr;
 
 		_lock.unlock();
 
@@ -217,7 +199,7 @@ public:
 			OK_NEW_OPERATOR CThreadCallback<CDebugServerPrivate>(this, &CDebugServerPrivate::ClientTask);
 
 		_tcpclients.Append(_current);
-		_current = NULL;
+		_current = nullptr;
 		pCallback->addRef();
 		_callback.Append(pCallback);
 		_threadpool.AddTask(pCallback);
@@ -251,7 +233,7 @@ void CDebugServer::RunServer(void)
 
 	try
 	{
-		_d->OpenConnection(NULL, DEFAULT_PORT);
+		_d->OpenConnection(nullptr, DEFAULT_PORT);
 		serverTask.Start();
 		serverTask.Join();
 		_d->CloseConnection();
@@ -267,7 +249,7 @@ void CDebugServer::RunServer(void)
 	_d->release();
 }
 
-Ptr(CDebugClient) CDebugClient::_instance = NULL;
+Ptr(CDebugClient) CDebugClient::_instance = nullptr;
 
 CDebugClient::CDebugClient(void):
 	_msgs(__FILE__LINE__ 16, 16)
@@ -294,7 +276,7 @@ void CDebugClient::FreeInstance()
 	_instance->Stop();
 	if ( NotPtrCheck(_instance) )
 		_instance->release();
-	_instance = NULL;
+	_instance = nullptr;
 }
 
 Ptr(CDebugClient) CDebugClient::Instance()

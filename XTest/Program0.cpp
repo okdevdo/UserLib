@@ -540,9 +540,9 @@ static void TestAesCryptFilter(int algorithm, int testcase, ConstPtr(AES_TEST_ST
 	CByteBuffer data(__FILE__LINE__ test->pt, 16);
 	CByteBuffer eout(__FILE__LINE__ test->ct, 16);
 
-	Ptr(CByteFilterInput) pInput1 = OK_NEW_OPERATOR CByteFilterInput(data);
-	Ptr(CByteFilterOutput) pOutput1 = OK_NEW_OPERATOR CByteFilterOutput();
-	Ptr(CCryptEncryptFilter) pEncryptFilter = OK_NEW_OPERATOR CCryptEncryptFilter(pInput1, pOutput1);
+	CCppObjectPtr<CByteFilterInput> pInput1 = OK_NEW_OPERATOR CByteFilterInput(data);
+	CCppObjectPtr<CByteFilterOutput> pOutput1 = OK_NEW_OPERATOR CByteFilterOutput();
+	CCppObjectPtr<CCryptEncryptFilter> pEncryptFilter = OK_NEW_OPERATOR CCryptEncryptFilter(pInput1, pOutput1);
 
 	pEncryptFilter->set_Algorithm(algorithm);
 	pEncryptFilter->set_key(key);
@@ -561,13 +561,9 @@ static void TestAesCryptFilter(int algorithm, int testcase, ConstPtr(AES_TEST_ST
 		WriteErrorTestFile(testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata.GetString(), seout.GetString());
 	}
 
-	pEncryptFilter->release();
-	pOutput1->release();
-	pInput1->release();
-
-	Ptr(CByteFilterInput) pInput2 = OK_NEW_OPERATOR CByteFilterInput(eout);
-	Ptr(CByteFilterOutput) pOutput2 = OK_NEW_OPERATOR CByteFilterOutput();
-	Ptr(CCryptDecryptFilter) pDecryptFilter = OK_NEW_OPERATOR CCryptDecryptFilter(pInput2, pOutput2);
+	CCppObjectPtr<CByteFilterInput> pInput2 = OK_NEW_OPERATOR CByteFilterInput(eout);
+	CCppObjectPtr<CByteFilterOutput> pOutput2 = OK_NEW_OPERATOR CByteFilterOutput();
+	CCppObjectPtr<CCryptDecryptFilter> pDecryptFilter = OK_NEW_OPERATOR CCryptDecryptFilter(pInput2, pOutput2);
 
 	pDecryptFilter->set_Algorithm(algorithm);
 	pDecryptFilter->set_key(key);
@@ -585,11 +581,6 @@ static void TestAesCryptFilter(int algorithm, int testcase, ConstPtr(AES_TEST_ST
 		sdata2.convertToHex(pOutput2->get_data());
 		WriteErrorTestFile(testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata2.GetString(), sdata1.GetString());
 	}
-
-	pDecryptFilter->release();
-	pOutput2->release();
-	pInput2->release();
-
 	WriteSuccessTestFile(testcase);
 }
 
@@ -600,9 +591,9 @@ static void TestAesCryptFilter1(int algorithm, int testcase, ConstPtr(AES_TEST_S
 	CByteBuffer data(__FILE__LINE__ test->pt, test->datalen);
 	CByteBuffer eout(__FILE__LINE__ test->ct, test->datalen);
 
-	Ptr(CByteFilterInput) pInput1 = OK_NEW_OPERATOR CByteFilterInput(data);
-	Ptr(CByteFilterOutput) pOutput1 = OK_NEW_OPERATOR CByteFilterOutput();
-	Ptr(CCryptEncryptFilter) pEncryptFilter = OK_NEW_OPERATOR CCryptEncryptFilter(pInput1, pOutput1);
+	CCppObjectPtr<CByteFilterInput> pInput1 = OK_NEW_OPERATOR CByteFilterInput(data);
+	CCppObjectPtr<CByteFilterOutput> pOutput1 = OK_NEW_OPERATOR CByteFilterOutput();
+	CCppObjectPtr<CCryptEncryptFilter> pEncryptFilter = OK_NEW_OPERATOR CCryptEncryptFilter(pInput1, pOutput1);
 
 	pEncryptFilter->set_Algorithm(algorithm);
 	pEncryptFilter->set_key(key);
@@ -621,13 +612,9 @@ static void TestAesCryptFilter1(int algorithm, int testcase, ConstPtr(AES_TEST_S
 		WriteErrorTestFile(testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata.GetString(), seout.GetString());
 	}
 
-	pEncryptFilter->release();
-	pOutput1->release();
-	pInput1->release();
-
-	Ptr(CByteFilterInput) pInput2 = OK_NEW_OPERATOR CByteFilterInput(eout);
-	Ptr(CByteFilterOutput) pOutput2 = OK_NEW_OPERATOR CByteFilterOutput();
-	Ptr(CCryptDecryptFilter) pDecryptFilter = OK_NEW_OPERATOR CCryptDecryptFilter(pInput2, pOutput2);
+	CCppObjectPtr<CByteFilterInput> pInput2 = OK_NEW_OPERATOR CByteFilterInput(eout);
+	CCppObjectPtr<CByteFilterOutput> pOutput2 = OK_NEW_OPERATOR CByteFilterOutput();
+	CCppObjectPtr<CCryptDecryptFilter> pDecryptFilter = OK_NEW_OPERATOR CCryptDecryptFilter(pInput2, pOutput2);
 
 	pDecryptFilter->set_Algorithm(algorithm);
 	pDecryptFilter->set_key(key);
@@ -645,11 +632,6 @@ static void TestAesCryptFilter1(int algorithm, int testcase, ConstPtr(AES_TEST_S
 		sdata2.convertToHex(pOutput2->get_data());
 		WriteErrorTestFile(testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata2.GetString(), sdata1.GetString());
 	}
-
-	pDecryptFilter->release();
-	pOutput2->release();
-	pInput2->release();
-
 	WriteSuccessTestFile(testcase);
 }
 
@@ -660,9 +642,9 @@ static void TestCryptFilter8(int algorithm, int testcase, ConstPtr(Crypt8_TEST_S
 	CByteBuffer eout(__FILE__LINE__ test->ct, 8);
 	CByteBuffer iv(__FILE__LINE__ test->iv, 8);
 
-	Ptr(CByteFilterInput) pInput1 = OK_NEW_OPERATOR CByteFilterInput(data);
-	Ptr(CByteFilterOutput) pOutput1 = OK_NEW_OPERATOR CByteFilterOutput();
-	Ptr(CCryptEncryptFilter) pEncryptFilter = OK_NEW_OPERATOR CCryptEncryptFilter(pInput1, pOutput1);
+	CCppObjectPtr<CByteFilterInput> pInput1 = OK_NEW_OPERATOR CByteFilterInput(data);
+	CCppObjectPtr<CByteFilterOutput> pOutput1 = OK_NEW_OPERATOR CByteFilterOutput();
+	CCppObjectPtr<CCryptEncryptFilter> pEncryptFilter = OK_NEW_OPERATOR CCryptEncryptFilter(pInput1, pOutput1);
 
 	pEncryptFilter->set_Algorithm(algorithm);
 	pEncryptFilter->set_key(key);
@@ -681,13 +663,9 @@ static void TestCryptFilter8(int algorithm, int testcase, ConstPtr(Crypt8_TEST_S
 		WriteErrorTestFile(testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata.GetString(), seout.GetString());
 	}
 
-	pEncryptFilter->release();
-	pOutput1->release();
-	pInput1->release();
-
-	Ptr(CByteFilterInput) pInput2 = OK_NEW_OPERATOR CByteFilterInput(eout);
-	Ptr(CByteFilterOutput) pOutput2 = OK_NEW_OPERATOR CByteFilterOutput();
-	Ptr(CCryptDecryptFilter) pDecryptFilter = OK_NEW_OPERATOR CCryptDecryptFilter(pInput2, pOutput2);
+	CCppObjectPtr<CByteFilterInput> pInput2 = OK_NEW_OPERATOR CByteFilterInput(eout);
+	CCppObjectPtr<CByteFilterOutput> pOutput2 = OK_NEW_OPERATOR CByteFilterOutput();
+	CCppObjectPtr<CCryptDecryptFilter> pDecryptFilter = OK_NEW_OPERATOR CCryptDecryptFilter(pInput2, pOutput2);
 
 	pDecryptFilter->set_Algorithm(algorithm);
 	pDecryptFilter->set_key(key);
@@ -705,11 +683,6 @@ static void TestCryptFilter8(int algorithm, int testcase, ConstPtr(Crypt8_TEST_S
 		sdata2.convertToHex(pOutput2->get_data());
 		WriteErrorTestFile(testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata2.GetString(), sdata1.GetString());
 	}
-
-	pDecryptFilter->release();
-	pOutput2->release();
-	pInput2->release();
-
 	WriteSuccessTestFile(testcase);
 }
 
@@ -719,9 +692,9 @@ static void TestTwofishCryptFilter(int algorithm, int testcase, ConstPtr(Twofish
 	CByteBuffer data(__FILE__LINE__ test->pt, 16);
 	CByteBuffer eout(__FILE__LINE__ test->ct, 16);
 
-	Ptr(CByteFilterInput) pInput1 = OK_NEW_OPERATOR CByteFilterInput(data);
-	Ptr(CByteFilterOutput) pOutput1 = OK_NEW_OPERATOR CByteFilterOutput();
-	Ptr(CCryptEncryptFilter) pEncryptFilter = OK_NEW_OPERATOR CCryptEncryptFilter(pInput1, pOutput1);
+	CCppObjectPtr<CByteFilterInput> pInput1 = OK_NEW_OPERATOR CByteFilterInput(data);
+	CCppObjectPtr<CByteFilterOutput> pOutput1 = OK_NEW_OPERATOR CByteFilterOutput();
+	CCppObjectPtr<CCryptEncryptFilter> pEncryptFilter = OK_NEW_OPERATOR CCryptEncryptFilter(pInput1, pOutput1);
 
 	pEncryptFilter->set_Algorithm(algorithm);
 	pEncryptFilter->set_key(key);
@@ -739,13 +712,9 @@ static void TestTwofishCryptFilter(int algorithm, int testcase, ConstPtr(Twofish
 		WriteErrorTestFile(testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata.GetString(), seout.GetString());
 	}
 
-	pEncryptFilter->release();
-	pOutput1->release();
-	pInput1->release();
-
-	Ptr(CByteFilterInput) pInput2 = OK_NEW_OPERATOR CByteFilterInput(eout);
-	Ptr(CByteFilterOutput) pOutput2 = OK_NEW_OPERATOR CByteFilterOutput();
-	Ptr(CCryptDecryptFilter) pDecryptFilter = OK_NEW_OPERATOR CCryptDecryptFilter(pInput2, pOutput2);
+	CCppObjectPtr<CByteFilterInput> pInput2 = OK_NEW_OPERATOR CByteFilterInput(eout);
+	CCppObjectPtr<CByteFilterOutput> pOutput2 = OK_NEW_OPERATOR CByteFilterOutput();
+	CCppObjectPtr<CCryptDecryptFilter> pDecryptFilter = OK_NEW_OPERATOR CCryptDecryptFilter(pInput2, pOutput2);
 
 	pDecryptFilter->set_Algorithm(algorithm);
 	pDecryptFilter->set_key(key);
@@ -762,39 +731,32 @@ static void TestTwofishCryptFilter(int algorithm, int testcase, ConstPtr(Twofish
 		sdata2.convertToHex(pOutput2->get_data());
 		WriteErrorTestFile(testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata2.GetString(), sdata1.GetString());
 	}
-
-	pDecryptFilter->release();
-	pOutput2->release();
-	pInput2->release();
-
 	WriteSuccessTestFile(testcase);
 }
 
 static void LoadAesTestData(ConstRef(CFilePath) sname, AES_TEST_STRUCT** pData, DWPointer pDatasize)
 {
-	Ptr(CFilterInput) pInput = NULL;
-	Ptr(CFilterOutput) pOutput = NULL;
-	Ptr(CFilter) pFilter = NULL;
+	CCppObjectPtr<CFilterInput> pInput;
+	CCppObjectPtr<CFilterOutput> pOutput;
+	CCppObjectPtr<CFilter> pFilter;
 
 	try
 	{
 		CDataVectorT<CStringBuffer> data(__FILE__LINE__ 256, 64);
 		CDataVectorT<CStringBuffer>::Iterator it;
+
 		pInput = OK_NEW_OPERATOR CFileFilterInput(sname);
 		pOutput = OK_NEW_OPERATOR CStringVectorFilterOutput(data);
 		pFilter = OK_NEW_OPERATOR CLineReadFilter(pInput, pOutput);
+
 		WLong vcount;
 		CPointer vkey;
 		WULong vkeyl;
-		AES_TEST_STRUCT *vdata = NULL;
+		AES_TEST_STRUCT *vdata = nullptr;
 
 		pFilter->open();
 		pFilter->do_filter();
 		pFilter->close();
-
-		pFilter->release();
-		pOutput->release();
-		pInput->release();
 
 		for (int run = 0; run < 2; ++run)
 		{
@@ -942,48 +904,39 @@ static void LoadAesTestData(ConstRef(CFilePath) sname, AES_TEST_STRUCT** pData, 
 					vdata = *pData;
 				}
 				else
-					vdata = NULL;
+					vdata = nullptr;
 			}
 		}
 	}
 	catch (CBaseException* ex)
 	{
 		CERR << ex->GetExceptionMessage() << endl;
-		if (pFilter)
-			pFilter->release();
-		if (pOutput)
-			pOutput->release();
-		if (pInput)
-			pInput->release();
-
 	}
 }
 
 static void LoadAesTestData1(ConstRef(CFilePath) sname, AES_TEST_STRUCT1** pData, DWPointer pDatasize)
 {
-	Ptr(CFilterInput) pInput = NULL;
-	Ptr(CFilterOutput) pOutput = NULL;
-	Ptr(CFilter) pFilter = NULL;
+	CCppObjectPtr<CFilterInput> pInput;
+	CCppObjectPtr<CFilterOutput> pOutput;
+	CCppObjectPtr<CFilter> pFilter;
 
 	try
 	{
 		CDataVectorT<CStringBuffer> data(__FILE__LINE__ 256, 64);
 		CDataVectorT<CStringBuffer>::Iterator it;
+
 		pInput = OK_NEW_OPERATOR CFileFilterInput(sname);
 		pOutput = OK_NEW_OPERATOR CStringVectorFilterOutput(data);
 		pFilter = OK_NEW_OPERATOR CLineReadFilter(pInput, pOutput);
+
 		WLong vcount;
 		CPointer vkey;
 		WULong vkeyl;
-		AES_TEST_STRUCT1 *vdata = NULL;
+		AES_TEST_STRUCT1 *vdata = nullptr;
 
 		pFilter->open();
 		pFilter->do_filter();
 		pFilter->close();
-
-		pFilter->release();
-		pOutput->release();
-		pInput->release();
 
 		for (int run = 0; run < 2; ++run)
 		{
@@ -1133,48 +1086,39 @@ static void LoadAesTestData1(ConstRef(CFilePath) sname, AES_TEST_STRUCT1** pData
 					vdata = *pData;
 				}
 				else
-					vdata = NULL;
+					vdata = nullptr;
 			}
 		}
 	}
 	catch (CBaseException* ex)
 	{
 		CERR << ex->GetExceptionMessage() << endl;
-		if (pFilter)
-			pFilter->release();
-		if (pOutput)
-			pOutput->release();
-		if (pInput)
-			pInput->release();
-
 	}
 }
 
 static void LoadTestData8(ConstRef(CFilePath) sname, Crypt8_TEST_STRUCT** pData, DWPointer pDatasize)
 {
-	Ptr(CFilterInput) pInput = NULL;
-	Ptr(CFilterOutput) pOutput = NULL;
-	Ptr(CFilter) pFilter = NULL;
+	CCppObjectPtr<CFilterInput> pInput;
+	CCppObjectPtr<CFilterOutput> pOutput;
+	CCppObjectPtr<CFilter> pFilter;
 
 	try
 	{
 		CDataVectorT<CStringBuffer> data(__FILE__LINE__ 256, 64);
 		CDataVectorT<CStringBuffer>::Iterator it;
+
 		pInput = OK_NEW_OPERATOR CFileFilterInput(sname);
 		pOutput = OK_NEW_OPERATOR CStringVectorFilterOutput(data);
 		pFilter = OK_NEW_OPERATOR CLineReadFilter(pInput, pOutput);
+
 		WLong vcount;
 		CPointer vkey;
 		WULong vkeyl;
-		Crypt8_TEST_STRUCT *vdata = NULL;
+		Crypt8_TEST_STRUCT *vdata = nullptr;
 
 		pFilter->open();
 		pFilter->do_filter();
 		pFilter->close();
-
-		pFilter->release();
-		pOutput->release();
-		pInput->release();
 
 		for (int run = 0; run < 2; ++run)
 		{
@@ -1342,48 +1286,39 @@ static void LoadTestData8(ConstRef(CFilePath) sname, Crypt8_TEST_STRUCT** pData,
 					vdata = *pData;
 				}
 				else
-					vdata = NULL;
+					vdata = nullptr;
 			}
 		}
 	}
 	catch (CBaseException* ex)
 	{
 		CERR << ex->GetExceptionMessage() << endl;
-		if (pFilter)
-			pFilter->release();
-		if (pOutput)
-			pOutput->release();
-		if (pInput)
-			pInput->release();
-
 	}
 }
 
 static void LoadTwofishTestData(ConstRef(CFilePath) sname, Twofish_TEST_STRUCT** pData, DWPointer pDatasize)
 {
-	Ptr(CFilterInput) pInput = NULL;
-	Ptr(CFilterOutput) pOutput = NULL;
-	Ptr(CFilter) pFilter = NULL;
+	CCppObjectPtr<CFilterInput> pInput;
+	CCppObjectPtr<CFilterOutput> pOutput;
+	CCppObjectPtr<CFilter> pFilter;
 
 	try
 	{
 		CDataVectorT<CStringBuffer> data(__FILE__LINE__ 256, 64);
 		CDataVectorT<CStringBuffer>::Iterator it;
+
 		pInput = OK_NEW_OPERATOR CFileFilterInput(sname);
 		pOutput = OK_NEW_OPERATOR CStringVectorFilterOutput(data);
 		pFilter = OK_NEW_OPERATOR CLineReadFilter(pInput, pOutput);
+
 		WLong vcount;
 		CPointer vkey;
 		WULong vkeyl;
-		Twofish_TEST_STRUCT *vdata = NULL;
+		Twofish_TEST_STRUCT *vdata = nullptr;
 
 		pFilter->open();
 		pFilter->do_filter();
 		pFilter->close();
-
-		pFilter->release();
-		pOutput->release();
-		pInput->release();
 
 		for (int run = 0; run < 2; ++run)
 		{
@@ -1495,20 +1430,13 @@ static void LoadTwofishTestData(ConstRef(CFilePath) sname, Twofish_TEST_STRUCT**
 					vdata = *pData;
 				}
 				else
-					vdata = NULL;
+					vdata = nullptr;
 			}
 		}
 	}
 	catch (CBaseException* ex)
 	{
 		CERR << ex->GetExceptionMessage() << endl;
-		if (pFilter)
-			pFilter->release();
-		if (pOutput)
-			pOutput->release();
-		if (pInput)
-			pInput->release();
-
 	}
 }
 
@@ -1522,7 +1450,7 @@ static void AesTestVectorData(int algorithm, Ref(int) testcase, CConstPointer tv
 
 	CFilePath fname(__FILE__LINE__ tv_file);
 	CDirectoryIterator it;
-	Ptr(AES_TEST_STRUCT) pData = NULL;
+	Ptr(AES_TEST_STRUCT) pData = nullptr;
 	dword vDataSize = 0;
 
 	try
@@ -1531,7 +1459,7 @@ static void AesTestVectorData(int algorithm, Ref(int) testcase, CConstPointer tv
 
 		while (it)
 		{
-			pData = NULL;
+			pData = nullptr;
 			vDataSize = 0;
 			LoadAesTestData(it.get_Path(), &pData, &vDataSize);
 			for (dword i = 0; i < vDataSize; ++i)
@@ -1557,7 +1485,7 @@ static void AesTestVectorData1(int algorithm, Ref(int) testcase, CConstPointer t
 
 	CFilePath fname(__FILE__LINE__ tv_file);
 	CDirectoryIterator it;
-	Ptr(AES_TEST_STRUCT1) pData = NULL;
+	Ptr(AES_TEST_STRUCT1) pData = nullptr;
 	dword vDataSize = 0;
 
 	try
@@ -1566,7 +1494,7 @@ static void AesTestVectorData1(int algorithm, Ref(int) testcase, CConstPointer t
 
 		while (it)
 		{
-			pData = NULL;
+			pData = nullptr;
 			vDataSize = 0;
 			LoadAesTestData1(it.get_Path(), &pData, &vDataSize);
 			for (dword i = 0; i < vDataSize; ++i)
@@ -1592,7 +1520,7 @@ static void TestVectorData8(int algorithm, Ref(int) testcase, CConstPointer tv_f
 
 	CFilePath fname(__FILE__LINE__ tv_file);
 	CDirectoryIterator it;
-	Ptr(Crypt8_TEST_STRUCT) pData = NULL;
+	Ptr(Crypt8_TEST_STRUCT) pData = nullptr;
 	dword vDataSize = 0;
 
 	try
@@ -1601,7 +1529,7 @@ static void TestVectorData8(int algorithm, Ref(int) testcase, CConstPointer tv_f
 
 		while (it)
 		{
-			pData = NULL;
+			pData = nullptr;
 			vDataSize = 0;
 			LoadTestData8(it.get_Path(), &pData, &vDataSize);
 			for (dword i = 0; i < vDataSize; ++i)
@@ -1627,7 +1555,7 @@ static void TwofishTestVectorData(int algorithm, Ref(int) testcase, CConstPointe
 
 	CFilePath fname(__FILE__LINE__ tv_file);
 	CDirectoryIterator it;
-	Ptr(Twofish_TEST_STRUCT) pData = NULL;
+	Ptr(Twofish_TEST_STRUCT) pData = nullptr;
 	dword vDataSize = 0;
 
 	try
@@ -1636,7 +1564,7 @@ static void TwofishTestVectorData(int algorithm, Ref(int) testcase, CConstPointe
 
 		while (it)
 		{
-			pData = NULL;
+			pData = nullptr;
 			vDataSize = 0;
 			LoadTwofishTestData(it.get_Path(), &pData, &vDataSize);
 			for (dword i = 0; i < vDataSize; ++i)

@@ -102,23 +102,6 @@ protected:
 	WDouble _q;
 };
 
-static void __stdcall QualityFactorItemDeleteFunc(ConstPointer data, Pointer context)
-{
-	Ptr(QualityFactorItem) item = CastAnyPtr(QualityFactorItem, CastMutable(Pointer, data));
-
-	item->release();
-}
-
-static sword __stdcall QualityFactorItemSearchAndSortFunc2(ConstPointer ArrayItem, ConstPointer DataItem)
-{
-	Ptr(QualityFactorItem) pArrayItem = CastAnyPtr(QualityFactorItem, CastMutable(Pointer, ArrayItem));
-	Ptr(QualityFactorItem) pDataItem = CastAnyPtr(QualityFactorItem, CastMutable(Pointer, DataItem));
-
-	if (pArrayItem->CompareQ2(pDataItem))
-		return 0;
-	return 1;
-}
-
 class QualityFactorItemEqualFunctor
 {
 public:
@@ -194,7 +177,7 @@ protected:
 		CPointer sar[8];
 		dword max;
 		WDouble q;
-		Ptr(QualityFactorItem) item = NULL;
+		Ptr(QualityFactorItem) item = nullptr;
 
 		tmp.Split(_T(";"), sar, 8, &max);
 		switch (max)
@@ -638,20 +621,14 @@ void RunClient(CConstPointer queueName, bool bLogging)
 
 							if (qfitem->get_Name().Compare(CStringLiteral(_T("deflate")), 0, CStringLiteral::cIgnoreCase) == 0)
 							{
-								CSecurityFile* pInputFile = OK_NEW_OPERATOR CSecurityFile(path);
-								CFileFilterInput* pInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
-								CByteLinkedBufferFilterOutput* pOutput = OK_NEW_OPERATOR CByteLinkedBufferFilterOutput(body);
-
-								CZLibCompressFilter* pFilter = OK_NEW_OPERATOR CZLibCompressFilter(pInput, pOutput);
+								CCppObjectPtr<CSecurityFile> pInputFile = OK_NEW_OPERATOR CSecurityFile(path);
+								CCppObjectPtr<CFileFilterInput> pInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
+								CCppObjectPtr<CByteLinkedBufferFilterOutput> pOutput = OK_NEW_OPERATOR CByteLinkedBufferFilterOutput(body);
+								CCppObjectPtr<CFilter> pFilter = OK_NEW_OPERATOR CZLibCompressFilter(pInput, pOutput);
 
 								pFilter->open();
 								pFilter->do_filter();
 								pFilter->close();
-
-								pFilter->release();
-								pOutput->release();
-								pInput->release();
-								pInputFile->release();
 
 								plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentEncoding")), CStringBuffer(__FILE__LINE__ _T("deflate"))));
 								plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("TransferEncoding")), CStringBuffer(__FILE__LINE__ _T("deflate"))));
@@ -662,20 +639,14 @@ void RunClient(CConstPointer queueName, bool bLogging)
 							}
 							if (qfitem->get_Name().Compare(CStringLiteral(_T("gzip")), 0, CStringLiteral::cIgnoreCase) == 0)
 							{
-								CSecurityFile* pInputFile = OK_NEW_OPERATOR CSecurityFile(path);
-								CFileFilterInput* pInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
-								CByteLinkedBufferFilterOutput* pOutput = OK_NEW_OPERATOR CByteLinkedBufferFilterOutput(body);
-
-								CGZipCompressFilter* pFilter = OK_NEW_OPERATOR CGZipCompressFilter(pInput, pOutput);
+								CCppObjectPtr<CSecurityFile> pInputFile = OK_NEW_OPERATOR CSecurityFile(path);
+								CCppObjectPtr<CFileFilterInput> pInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
+								CCppObjectPtr<CByteLinkedBufferFilterOutput> pOutput = OK_NEW_OPERATOR CByteLinkedBufferFilterOutput(body);
+								CCppObjectPtr<CFilter> pFilter = OK_NEW_OPERATOR CGZipCompressFilter(pInput, pOutput);
 
 								pFilter->open();
 								pFilter->do_filter();
 								pFilter->close();
-
-								pFilter->release();
-								pOutput->release();
-								pInput->release();
-								pInputFile->release();
 
 								plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentEncoding")), CStringBuffer(__FILE__LINE__ _T("gzip"))));
 								plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("TransferEncoding")), CStringBuffer(__FILE__LINE__ _T("gzip"))));

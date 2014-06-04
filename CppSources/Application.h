@@ -168,7 +168,7 @@ protected:
 	COptionVector m_definedOptions;
 	COptionVector m_Options;
 	WBool m_continueOptionProcessing;
-	CAbstractConfiguration* m_config;
+	CCppObjectPtr<CAbstractConfiguration> m_config;
 };
 
 #define theApp CApplication::instance()

@@ -31,27 +31,22 @@ static void TestSpecialBlowfishImport(void)
 {
 	CFilePath finp(__FILE__LINE__ _T("BlowfishTestVectorRaw.txt"));
 	CFilePath foutp(__FILE__LINE__ _T("BlowfishTestVector8.rsp"));
-	Ptr(CFile) inp = OK_NEW_OPERATOR CStreamFile(finp, true, false, CFile::BinaryFile_NoEncoding);
-	Ptr(CFile) outp = OK_NEW_OPERATOR CStreamFile;
+	CCppObjectPtr<CFile> inp = OK_NEW_OPERATOR CStreamFile(finp, true, false, CFile::BinaryFile_NoEncoding);
+	CCppObjectPtr<CFile> outp = OK_NEW_OPERATOR CStreamFile;
 	CDataVectorT<CStringBuffer> data(__FILE__LINE__ 256, 128);
 	CDataVectorT<CStringBuffer>::Iterator it;
 
 	outp->Create(foutp, false, CFile::BinaryFile_NoEncoding);
 
-	Ptr(CFilterInput) ffinp = OK_NEW_OPERATOR CFileFilterInput(inp);
-	Ptr(CFilterOutput) ffoutp = OK_NEW_OPERATOR CStringVectorFilterOutput(data);
-	Ptr(CFilter) ffilter = OK_NEW_OPERATOR CLineReadFilter(ffinp, ffoutp);
+	CCppObjectPtr<CFilterInput> ffinp = OK_NEW_OPERATOR CFileFilterInput(inp);
+	CCppObjectPtr<CFilterOutput> ffoutp = OK_NEW_OPERATOR CStringVectorFilterOutput(data);
+	CCppObjectPtr<CFilter> ffilter = OK_NEW_OPERATOR CLineReadFilter(ffinp, ffoutp);
 	bool bFirst = true;
 	int r = 0;
 
 	ffilter->open();
 	ffilter->do_filter();
 	ffilter->close();
-
-	ffilter->release();
-	ffoutp->release();
-	ffinp->release();
-	inp->release();
 
 	it = data.Begin();
 	while (it)
@@ -94,7 +89,6 @@ static void TestSpecialBlowfishImport(void)
 		++it;
 	}
 	outp->Close();
-	outp->release();
 }
 #endif
 
@@ -103,27 +97,22 @@ static void TestSpecialDESImport(void)
 {
 	CFilePath finp(__FILE__LINE__ _T("DESTestVectorRaw.txt"));
 	CFilePath foutp(__FILE__LINE__ _T("DESTestVector8.rsp"));
-	Ptr(CFile) inp = OK_NEW_OPERATOR CStreamFile(finp, true, false, CFile::BinaryFile_NoEncoding);
-	Ptr(CFile) outp = OK_NEW_OPERATOR CStreamFile;
+	CCppObjectPtr<CFile> inp = OK_NEW_OPERATOR CStreamFile(finp, true, false, CFile::BinaryFile_NoEncoding);
+	CCppObjectPtr<CFile> outp = OK_NEW_OPERATOR CStreamFile;
 	CDataVectorT<CStringBuffer> data(__FILE__LINE__ 256, 128);
 	CDataVectorT<CStringBuffer>::Iterator it;
 
 	outp->Create(foutp, false, CFile::BinaryFile_NoEncoding);
 
-	Ptr(CFilterInput) ffinp = OK_NEW_OPERATOR CFileFilterInput(inp);
-	Ptr(CFilterOutput) ffoutp = OK_NEW_OPERATOR CStringVectorFilterOutput(data);
-	Ptr(CFilter) ffilter = OK_NEW_OPERATOR CLineReadFilter(ffinp, ffoutp);
+	CCppObjectPtr<CFilterInput> ffinp = OK_NEW_OPERATOR CFileFilterInput(inp);
+	CCppObjectPtr<CFilterOutput> ffoutp = OK_NEW_OPERATOR CStringVectorFilterOutput(data);
+	CCppObjectPtr<CFilter> ffilter = OK_NEW_OPERATOR CLineReadFilter(ffinp, ffoutp);
 	bool bFirst = true;
 	int r = 0;
 
 	ffilter->open();
 	ffilter->do_filter();
 	ffilter->close();
-
-	ffilter->release();
-	ffoutp->release();
-	ffinp->release();
-	inp->release();
 
 	it = data.Begin();
 	while (it)
@@ -166,7 +155,6 @@ static void TestSpecialDESImport(void)
 		++it;
 	}
 	outp->Close();
-	outp->release();
 }
 #endif
 
@@ -174,7 +162,7 @@ static void TestSpecial(void)
 {
 }
 
-static Ptr(CFile) _TestFile = NULL;
+static Ptr(CFile) _TestFile = nullptr;
 static WBool _AcceptsTests = false;
 static WBool _HasErrors = false;
 
@@ -184,7 +172,7 @@ void OpenTestFile(CConstPointer _TestFunction)
 	{
 		_TestFile->Close();
 		_TestFile->release();
-		_TestFile = NULL;
+		_TestFile = nullptr;
 	}
 
 	CFilePath fname(__FILE__LINE__ _T("LogFiles"));
@@ -235,7 +223,7 @@ void OpenTestFile(CConstPointer _TestFunction)
 	{
 		CERR << ex->GetExceptionMessage() << endl;
 		_TestFile->release();
-		_TestFile = NULL;
+		_TestFile = nullptr;
 		return;
 	}
 	_HasErrors = false;
@@ -346,7 +334,7 @@ void CloseTestFile()
 	CFilePath fname1;
 	CByteBuffer bBuf1;
 	CByteBuffer bBuf2;
-	Ptr(CFile) vTestFile = NULL;
+	Ptr(CFile) vTestFile = nullptr;
 
 	try
 	{
@@ -436,7 +424,7 @@ _exit:
 	}
 	_TestFile->Close();
 	_TestFile->release();
-	_TestFile = NULL;
+	_TestFile = nullptr;
 }
 
 sword __stdcall TestSortFunc(ConstPointer pa, ConstPointer pb)
@@ -860,7 +848,7 @@ public:
 	virtual int main()
 	{
 		CFilePath curdir(__FILE__LINE__ _T("_TestDir"));
-		CStreamFile* pOutFile = NULL;
+		CStreamFile* pOutFile = nullptr;
 
 
 		if (m_help || (!m_AnyOption))

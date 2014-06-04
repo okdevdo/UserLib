@@ -51,7 +51,7 @@ static void ThrowDefaultException(DECL_FILE_LINE CConstPointer func, CConstPoint
 static PEVT_VARIANT GetProperty(EVT_HANDLE handle, DWORD dwIndex, EVT_PUBLISHER_METADATA_PROPERTY_ID PropertyId)
 {
 	DWORD status = ERROR_SUCCESS;
-	PEVT_VARIANT pvBuffer = NULL;
+	PEVT_VARIANT pvBuffer = nullptr;
 	DWORD dwBufferSize = 0;
 	DWORD dwBufferUsed = 0;
 
@@ -88,7 +88,7 @@ static CStringBuffer GetMessageString(EVT_HANDLE hMetadata, UINT32 messageID)
 	DWORD dwBufferUsed = 0;
 	DWORD status = 0;
 
-	if (!EvtFormatMessage(hMetadata, NULL, messageID, 0, NULL, EvtFormatMessageId, dwBufferSize, NULL, &dwBufferUsed))
+	if (!EvtFormatMessage(hMetadata, nullptr, messageID, 0, nullptr, EvtFormatMessageId, dwBufferSize, nullptr, &dwBufferUsed))
 	{
 		status = GetLastError();
 		if (ERROR_INSUFFICIENT_BUFFER == status)
@@ -99,7 +99,7 @@ static CStringBuffer GetMessageString(EVT_HANDLE hMetadata, UINT32 messageID)
 			if ((pBuffer.GetAllocSize() / szchar) >= dwBufferSize)
 			{
 				status = ERROR_SUCCESS;
-				if (!EvtFormatMessage(hMetadata, NULL, messageID, 0, NULL, EvtFormatMessageId, dwBufferSize, CastMutable(CPointer, pBuffer.GetString()), &dwBufferUsed))
+				if (!EvtFormatMessage(hMetadata, nullptr, messageID, 0, nullptr, EvtFormatMessageId, dwBufferSize, CastMutable(CPointer, pBuffer.GetString()), &dwBufferUsed))
 					status = GetLastError();
 			}
 			else
@@ -129,7 +129,7 @@ CEventLogProviderChannel::~CEventLogProviderChannel()
 
 BOOLEAN CEventLogProviderChannel::Load(EVT_HANDLE hMetadata, EVT_HANDLE hChannels, UINT32 dwIndex)
 {
-	PEVT_VARIANT pvBuffer = NULL;
+	PEVT_VARIANT pvBuffer = nullptr;
 
 	pvBuffer = GetProperty(hChannels, dwIndex, EvtPublisherMetadataChannelReferenceMessageID);
 	if (pvBuffer)
@@ -188,7 +188,7 @@ CEventLogProviderLevel::~CEventLogProviderLevel()
 
 BOOLEAN CEventLogProviderLevel::Load(EVT_HANDLE hMetadata, EVT_HANDLE hLevels, UINT32 dwIndex)
 {
-	PEVT_VARIANT pvBuffer = NULL;
+	PEVT_VARIANT pvBuffer = nullptr;
 
 	pvBuffer = GetProperty(hLevels, dwIndex, EvtPublisherMetadataLevelMessageID);
 	if (pvBuffer)
@@ -228,7 +228,7 @@ CEventLogProviderTask::~CEventLogProviderTask()
 
 BOOLEAN CEventLogProviderTask::Load(EVT_HANDLE hMetadata, EVT_HANDLE hTasks, UINT32 dwIndex)
 {
-	PEVT_VARIANT pvBuffer = NULL;
+	PEVT_VARIANT pvBuffer = nullptr;
 
 	pvBuffer = GetProperty(hTasks, dwIndex, EvtPublisherMetadataTaskMessageID);
 	if (pvBuffer)
@@ -281,7 +281,7 @@ CEventLogProviderOpCode::~CEventLogProviderOpCode()
 
 BOOLEAN CEventLogProviderOpCode::Load(EVT_HANDLE hMetadata, EVT_HANDLE hOpCodes, UINT32 dwIndex)
 {
-	PEVT_VARIANT pvBuffer = NULL;
+	PEVT_VARIANT pvBuffer = nullptr;
 
 	pvBuffer = GetProperty(hOpCodes, dwIndex, EvtPublisherMetadataOpcodeMessageID);
 	if (pvBuffer)
@@ -321,7 +321,7 @@ CEventLogProviderKeyWord::~CEventLogProviderKeyWord()
 
 BOOLEAN CEventLogProviderKeyWord::Load(EVT_HANDLE hMetadata, EVT_HANDLE hKeyWords, UINT32 dwIndex)
 {
-	PEVT_VARIANT pvBuffer = NULL;
+	PEVT_VARIANT pvBuffer = nullptr;
 
 	pvBuffer = GetProperty(hKeyWords, dwIndex, EvtPublisherMetadataKeywordMessageID);
 	if (pvBuffer)
@@ -349,21 +349,17 @@ BOOLEAN CEventLogProviderKeyWord::Load(EVT_HANDLE hMetadata, EVT_HANDLE hKeyWord
 }
 
 //================== CEventLogProviderEvent =========================================
-static void __stdcall CEventLogProviderEventKeyWordDeleteFunc(ConstPointer data, Pointer context)
-{
-}
-
 CEventLogProviderEvent::CEventLogProviderEvent() :
 _id(0),
 _version(0),
 _channelValue(0),
-_channel(NULL),
+_channel(nullptr),
 _levelValue(0),
-_level(NULL),
+_level(nullptr),
 _opCodeValue(0),
-_opCode(NULL),
+_opCode(nullptr),
 _taskValue(0),
-_task(NULL),
+_task(nullptr),
 _keyWordValue(0),
 _keyWordList(__FILE__LINE__0),
 _messageID(0),
@@ -376,48 +372,6 @@ CEventLogProviderEvent::~CEventLogProviderEvent()
 }
 
 //================== CEventLogProvider =========================================
-static void __stdcall CEventLogProviderChannelDeleteFunc(ConstPointer data, Pointer context)
-{
-	CEventLogProviderChannel* pInfo = CastAnyPtr(CEventLogProviderChannel, CastMutable(Pointer, data));
-
-	pInfo->release();
-}
-
-static void __stdcall CEventLogProviderLevelDeleteFunc(ConstPointer data, Pointer context)
-{
-	CEventLogProviderLevel* pInfo = CastAnyPtr(CEventLogProviderLevel, CastMutable(Pointer, data));
-
-	pInfo->release();
-}
-
-static void __stdcall CEventLogProviderTaskDeleteFunc(ConstPointer data, Pointer context)
-{
-	CEventLogProviderTask* pInfo = CastAnyPtr(CEventLogProviderTask, CastMutable(Pointer, data));
-
-	pInfo->release();
-}
-
-static void __stdcall CEventLogProviderOpCodeDeleteFunc(ConstPointer data, Pointer context)
-{
-	CEventLogProviderOpCode* pInfo = CastAnyPtr(CEventLogProviderOpCode, CastMutable(Pointer, data));
-
-	pInfo->release();
-}
-
-static void __stdcall CEventLogProviderKeyWordDeleteFunc(ConstPointer data, Pointer context)
-{
-	CEventLogProviderKeyWord* pInfo = CastAnyPtr(CEventLogProviderKeyWord, CastMutable(Pointer, data));
-
-	pInfo->release();
-}
-
-static void __stdcall CEventLogProviderEventDeleteFunc(ConstPointer data, Pointer context)
-{
-	CEventLogProviderEvent* pInfo = CastAnyPtr(CEventLogProviderEvent, CastMutable(Pointer, data));
-
-	pInfo->release();
-}
-
 CEventLogProvider::CEventLogProvider() :
 _name(),
 _guid(),
@@ -442,7 +396,7 @@ CEventLogProvider::~CEventLogProvider()
 Ptr(CEventLogProviderChannel) CEventLogProvider::get_channel(UINT32 v) const
 {
 	CDataDoubleLinkedListT<CEventLogProviderChannel>::Iterator it = _channelList.Begin();
-	Ptr(CEventLogProviderChannel) p = NULL;
+	Ptr(CEventLogProviderChannel) p = nullptr;
 
 	while (it)
 	{
@@ -451,13 +405,13 @@ Ptr(CEventLogProviderChannel) CEventLogProvider::get_channel(UINT32 v) const
 			return p;
 		++it;
 	}
-	return NULL;
+	return nullptr;
 }
 
 Ptr(CEventLogProviderLevel) CEventLogProvider::get_level(UINT32 v) const
 {
 	CDataDoubleLinkedListT<CEventLogProviderLevel>::Iterator it = _levelList.Begin();
-	Ptr(CEventLogProviderLevel) p = NULL;
+	Ptr(CEventLogProviderLevel) p = nullptr;
 
 	while (it)
 	{
@@ -466,13 +420,13 @@ Ptr(CEventLogProviderLevel) CEventLogProvider::get_level(UINT32 v) const
 			return p;
 		++it;
 	}
-	return NULL;
+	return nullptr;
 }
 
 Ptr(CEventLogProviderTask) CEventLogProvider::get_task(UINT32 v) const
 {
 	CDataDoubleLinkedListT<CEventLogProviderTask>::Iterator it = _taskList.Begin();
-	Ptr(CEventLogProviderTask) p = NULL;
+	Ptr(CEventLogProviderTask) p = nullptr;
 
 	while (it)
 	{
@@ -481,7 +435,7 @@ Ptr(CEventLogProviderTask) CEventLogProvider::get_task(UINT32 v) const
 			return p;
 		++it;
 	}
-	return NULL;
+	return nullptr;
 }
 
 // Used to get the message string or name for an opcode. Search the messages block sequentially 
@@ -492,8 +446,8 @@ Ptr(CEventLogProviderTask) CEventLogProvider::get_task(UINT32 v) const
 Ptr(CEventLogProviderOpCode) CEventLogProvider::get_opCode(UINT32 vOpCode, UINT32 vTask) const
 {
 	CDataDoubleLinkedListT<CEventLogProviderOpCode>::Iterator it = _opCodeList.Begin();
-	Ptr(CEventLogProviderOpCode) p = NULL;
-	Ptr(CEventLogProviderOpCode) pSave = NULL;  // Points to the global opcode (low word is zero)
+	Ptr(CEventLogProviderOpCode) p = nullptr;
+	Ptr(CEventLogProviderOpCode) pSave = nullptr;  // Points to the global opcode (low word is zero)
 
 	while (it)
 	{
@@ -518,7 +472,7 @@ CEventLogProviderKeyWords CEventLogProvider::get_keyWords(UINT64 v) const
 {
 	CEventLogProviderKeyWords result __FILE__LINE__0P;
 	CEventLogProviderKeyWords::Iterator it = _keyWordList.Begin();
-	Ptr(CEventLogProviderKeyWord) p = NULL;
+	Ptr(CEventLogProviderKeyWord) p = nullptr;
 
 	while (it)
 	{
@@ -536,7 +490,7 @@ CEventLogProviderKeyWords CEventLogProvider::get_keyWords(UINT64 v) const
 Ptr(CEventLogProviderEvent) CEventLogProvider::get_event(UINT32 eventID) const
 {
 	CDataDoubleLinkedListT<CEventLogProviderEvent>::Iterator it = _eventList.Begin();
-	Ptr(CEventLogProviderEvent) p = NULL;
+	Ptr(CEventLogProviderEvent) p = nullptr;
 
 	while (it)
 	{
@@ -545,7 +499,7 @@ Ptr(CEventLogProviderEvent) CEventLogProvider::get_event(UINT32 eventID) const
 			return p;
 		++it;
 	}
-	return NULL;
+	return nullptr;
 }
 
 BOOLEAN CEventLogProvider::Load(CConstPointer pName)
@@ -565,23 +519,23 @@ BOOLEAN CEventLogProvider::Load(ConstRef(CStringBuffer) name)
 void CEventLogProvider::_load()
 {
 	EVT_HANDLE hMetadata;
-	PEVT_VARIANT pProperty = NULL;
-	PEVT_VARIANT pTemp = NULL;
+	PEVT_VARIANT pProperty = nullptr;
+	PEVT_VARIANT pTemp = nullptr;
 	DWORD dwBufferSize = 0;
 	DWORD dwBufferUsed = 0;
 	DWORD status = ERROR_SUCCESS;
 	DWORD dwArraySize = 0;
 	DWORD dwBlockSize = 0;
-	LPTSTR pMessage = NULL;
-	EVT_HANDLE hEvents = NULL;
-	EVT_HANDLE hEvent = NULL;
+	LPTSTR pMessage = nullptr;
+	EVT_HANDLE hEvents = nullptr;
+	EVT_HANDLE hEvent = nullptr;
 
 	if (_name.IsEmpty())
 		return;
 
-	if (NULL == (hMetadata = EvtOpenPublisherMetadata(NULL,
+	if (nullptr == (hMetadata = EvtOpenPublisherMetadata(nullptr,
 		_name.GetString(),
-		NULL,
+		nullptr,
 		0, //MAKELCID(MAKELANGID(LANG_GERMAN, SUBLANG_GERMAN), 0), 
 		0)))
 		ThrowDefaultException(__FILE__LINE__ _T("CEventLogProvider::_load"), _name.GetString());
@@ -601,7 +555,7 @@ void CEventLogProvider::_load()
 				if (pTemp)
 				{
 					pProperty = pTemp;
-					pTemp = NULL;
+					pTemp = nullptr;
 					status = ERROR_SUCCESS;
 					if (!EvtGetPublisherMetadataProperty(hMetadata, (EVT_PUBLISHER_METADATA_PROPERTY_ID)Id, 0, dwBufferSize, pProperty, &dwBufferUsed))
 						status = GetLastError();
@@ -861,11 +815,11 @@ void CEventLogProvider::_load()
 		}
 	}
 
-	if (NULL == (hEvents = EvtOpenEventMetadataEnum(hMetadata, 0)))
+	if (nullptr == (hEvents = EvtOpenEventMetadataEnum(hMetadata, 0)))
 		ThrowDefaultException(__FILE__LINE__ _T("CEventLogProvider::_load"));
 	while (true)
 	{
-		if (NULL == (hEvent = EvtNextEventMetadata(hEvents, 0)))
+		if (nullptr == (hEvent = EvtNextEventMetadata(hEvents, 0)))
 		{
 			status = GetLastError();
 			if (ERROR_NO_MORE_ITEMS != status)
@@ -896,7 +850,7 @@ void CEventLogProvider::_load()
 					if (pTemp)
 					{
 						pProperty = pTemp;
-						pTemp = NULL;
+						pTemp = nullptr;
 						status = ERROR_SUCCESS;
 						if (!EvtGetEventMetadataProperty(hEvent, (EVT_EVENT_METADATA_PROPERTY_ID)Id, 0, dwBufferSize, pProperty, &dwBufferUsed))
 							status = GetLastError();
@@ -1015,7 +969,7 @@ void CEventLogProvider::_load()
 		_eventList.Append(pEvent);
 
 		EvtClose(hEvent);
-		hEvent = NULL;
+		hEvent = nullptr;
 	}
 
 	if (hEvents)
@@ -1031,21 +985,6 @@ void CEventLogProvider::_load()
 }
 
 //================== CEventLogProviders =========================================
-static sword __stdcall CEventLogProvidersSearchAndSortFunc(ConstPointer pa, ConstPointer pb)
-{
-	CEventLogProvider* ppa = CastAnyPtr(CEventLogProvider, CastMutable(Pointer, pa));
-	CEventLogProvider* ppb = CastAnyPtr(CEventLogProvider, CastMutable(Pointer, pb));
-
-	return (ppa->get_name().Compare(ppb->get_name()));
-}
-
-static void __stdcall CEventLogProvidersDeleteFunc(ConstPointer data, Pointer context)
-{
-	CEventLogProvider* pInfo = CastAnyPtr(CEventLogProvider, CastMutable(Pointer, data));
-
-	pInfo->release();
-}
-
 CEventLogProviders::CEventLogProviders(DECL_FILE_LINE0) :
 	super(ARGS_FILE_LINE 16, 256)
 {}
@@ -1056,14 +995,14 @@ CEventLogProviders::~CEventLogProviders()
 
 BOOLEAN CEventLogProviders::Load()
 {
-	EVT_HANDLE hProviders = NULL;
-	LPTSTR pwcsProviderName = NULL;
-	LPTSTR pTemp = NULL;
+	EVT_HANDLE hProviders = nullptr;
+	LPTSTR pwcsProviderName = nullptr;
+	LPTSTR pTemp = nullptr;
 	DWORD dwBufferSize = 0;
 	DWORD dwBufferUsed = 0;
 	DWORD status = ERROR_SUCCESS;
 
-	if (NULL == (hProviders = EvtOpenPublisherEnum(NULL, 0)))
+	if (nullptr == (hProviders = EvtOpenPublisherEnum(nullptr, 0)))
 		ThrowDefaultException(__FILE__LINE__ _T("CEventLogProviders::Load"));
 
 	while (true)
@@ -1083,7 +1022,7 @@ BOOLEAN CEventLogProviders::Load()
 				if (pTemp)
 				{
 					pwcsProviderName = pTemp;
-					pTemp = NULL;
+					pTemp = nullptr;
 					status = ERROR_SUCCESS;
 					if (!EvtNextPublisherId(hProviders, dwBufferSize, pwcsProviderName, &dwBufferUsed))
 						status = GetLastError();
@@ -1111,7 +1050,7 @@ BOOLEAN CEventLogProviders::Load()
 		{
 			if (provider)
 				provider->release();
-			provider = NULL;
+			provider = nullptr;
 		}
 		RtlZeroMemory(pwcsProviderName, dwBufferUsed * sizeof(TCHAR));
 	}
@@ -1134,5 +1073,5 @@ Ptr(CEventLogProvider) CEventLogProviders::FindSorted(ConstRef(CStringBuffer) na
 
 	if (super::MatchSorted(fIt, &toFind))
 		return *fIt;
-	return NULL;
+	return nullptr;
 }

@@ -94,12 +94,12 @@ void CEventLogChannel::set_enabled(BOOLEAN b)
 {
 	if (_enabled != b)
 	{
-		EVT_HANDLE hChannel = NULL;
+		EVT_HANDLE hChannel = nullptr;
 		EVT_VARIANT ChannelProperty;
 		DWORD dwBufferSize = sizeof(EVT_VARIANT);
 
-		hChannel = EvtOpenChannelConfig(NULL, _name.GetString(), 0);
-		if (NULL == hChannel)
+		hChannel = EvtOpenChannelConfig(nullptr, _name.GetString(), 0);
+		if (nullptr == hChannel)
 			ThrowDefaultException(__FILE__LINE__ _T("CEventLogChannel::set_enabled"), _name.GetString());
 
 		RtlZeroMemory(&ChannelProperty, dwBufferSize);
@@ -126,12 +126,12 @@ void CEventLogChannel::set_isolation(EVT_CHANNEL_ISOLATION_TYPE t)
 {
 	if (_isolation != t)
 	{
-		EVT_HANDLE hChannel = NULL;
+		EVT_HANDLE hChannel = nullptr;
 		EVT_VARIANT ChannelProperty;
 		DWORD dwBufferSize = sizeof(EVT_VARIANT);
 
-		hChannel = EvtOpenChannelConfig(NULL, _name.GetString(), 0);
-		if (NULL == hChannel)
+		hChannel = EvtOpenChannelConfig(nullptr, _name.GetString(), 0);
+		if (nullptr == hChannel)
 			ThrowDefaultException(__FILE__LINE__ _T("CEventLogChannel::set_isolation"), _name.GetString());
 
 		RtlZeroMemory(&ChannelProperty, dwBufferSize);
@@ -158,12 +158,12 @@ void CEventLogChannel::set_access(CConstPointer s)
 {
 	if (_access.Compare((CStringLiteral)s) != 0)
 	{
-		EVT_HANDLE hChannel = NULL;
+		EVT_HANDLE hChannel = nullptr;
 		EVT_VARIANT ChannelProperty;
 		DWORD dwBufferSize = sizeof(EVT_VARIANT);
 
-		hChannel = EvtOpenChannelConfig(NULL, _name.GetString(), 0);
-		if (NULL == hChannel)
+		hChannel = EvtOpenChannelConfig(nullptr, _name.GetString(), 0);
+		if (nullptr == hChannel)
 			ThrowDefaultException(__FILE__LINE__ _T("CEventLogChannel::set_access"), _name.GetString());
 
 		RtlZeroMemory(&ChannelProperty, dwBufferSize);
@@ -190,12 +190,12 @@ void CEventLogChannel::set_retention(BOOLEAN b)
 {
 	if (_retention != b)
 	{
-		EVT_HANDLE hChannel = NULL;
+		EVT_HANDLE hChannel = nullptr;
 		EVT_VARIANT ChannelProperty;
 		DWORD dwBufferSize = sizeof(EVT_VARIANT);
 
-		hChannel = EvtOpenChannelConfig(NULL, _name.GetString(), 0);
-		if (NULL == hChannel)
+		hChannel = EvtOpenChannelConfig(nullptr, _name.GetString(), 0);
+		if (nullptr == hChannel)
 			ThrowDefaultException(__FILE__LINE__ _T("CEventLogChannel::set_retention"), _name.GetString());
 
 		RtlZeroMemory(&ChannelProperty, dwBufferSize);
@@ -222,12 +222,12 @@ void CEventLogChannel::set_autoBackup(BOOLEAN b)
 {
 	if (_autoBackup != b)
 	{
-		EVT_HANDLE hChannel = NULL;
+		EVT_HANDLE hChannel = nullptr;
 		EVT_VARIANT ChannelProperty;
 		DWORD dwBufferSize = sizeof(EVT_VARIANT);
 
-		hChannel = EvtOpenChannelConfig(NULL, _name.GetString(), 0);
-		if (NULL == hChannel)
+		hChannel = EvtOpenChannelConfig(nullptr, _name.GetString(), 0);
+		if (nullptr == hChannel)
 			ThrowDefaultException(__FILE__LINE__ _T("CEventLogChannel::set_autoBackup"), _name.GetString());
 
 		RtlZeroMemory(&ChannelProperty, dwBufferSize);
@@ -254,12 +254,12 @@ void CEventLogChannel::set_maxSize(UINT64 v)
 {
 	if (_maxSize != v)
 	{
-		EVT_HANDLE hChannel = NULL;
+		EVT_HANDLE hChannel = nullptr;
 		EVT_VARIANT ChannelProperty;
 		DWORD dwBufferSize = sizeof(EVT_VARIANT);
 
-		hChannel = EvtOpenChannelConfig(NULL, _name.GetString(), 0);
-		if (NULL == hChannel)
+		hChannel = EvtOpenChannelConfig(nullptr, _name.GetString(), 0);
+		if (nullptr == hChannel)
 			ThrowDefaultException(__FILE__LINE__ _T("CEventLogChannel::set_maxSize"), _name.GetString());
 
 		RtlZeroMemory(&ChannelProperty, dwBufferSize);
@@ -286,12 +286,12 @@ void CEventLogChannel::set_logFilePath(ConstRef(CFilePath) p)
 {
 	if (_logFilePath.get_Path() != p.get_Path())
 	{
-		EVT_HANDLE hChannel = NULL;
+		EVT_HANDLE hChannel = nullptr;
 		EVT_VARIANT ChannelProperty;
 		DWORD dwBufferSize = sizeof(EVT_VARIANT);
 
-		hChannel = EvtOpenChannelConfig(NULL, _name.GetString(), 0);
-		if (NULL == hChannel)
+		hChannel = EvtOpenChannelConfig(nullptr, _name.GetString(), 0);
+		if (nullptr == hChannel)
 			ThrowDefaultException(__FILE__LINE__ _T("CEventLogChannel::set_logFilePath"), _name.GetString());
 
 		RtlZeroMemory(&ChannelProperty, dwBufferSize);
@@ -318,12 +318,12 @@ void CEventLogChannel::set_level(UINT32 v)
 {
 	if (_level != v)
 	{
-		EVT_HANDLE hChannel = NULL;
+		EVT_HANDLE hChannel = nullptr;
 		EVT_VARIANT ChannelProperty;
 		DWORD dwBufferSize = sizeof(EVT_VARIANT);
 
-		hChannel = EvtOpenChannelConfig(NULL, _name.GetString(), 0);
-		if (NULL == hChannel)
+		hChannel = EvtOpenChannelConfig(nullptr, _name.GetString(), 0);
+		if (nullptr == hChannel)
 			ThrowDefaultException(__FILE__LINE__ _T("CEventLogChannel::set_level"), _name.GetString());
 
 		RtlZeroMemory(&ChannelProperty, dwBufferSize);
@@ -350,12 +350,12 @@ void CEventLogChannel::set_keywords(UINT64 v)
 {
 	if (_keywords != v)
 	{
-		EVT_HANDLE hChannel = NULL;
+		EVT_HANDLE hChannel = nullptr;
 		EVT_VARIANT ChannelProperty;
 		DWORD dwBufferSize = sizeof(EVT_VARIANT);
 
-		hChannel = EvtOpenChannelConfig(NULL, _name.GetString(), 0);
-		if (NULL == hChannel)
+		hChannel = EvtOpenChannelConfig(nullptr, _name.GetString(), 0);
+		if (nullptr == hChannel)
 			ThrowDefaultException(__FILE__LINE__ _T("CEventLogChannel::set_keywords"), _name.GetString());
 
 		RtlZeroMemory(&ChannelProperty, dwBufferSize);
@@ -382,12 +382,12 @@ void CEventLogChannel::set_fileMax(UINT32 v)
 {
 	if (_fileMax != v)
 	{
-		EVT_HANDLE hChannel = NULL;
+		EVT_HANDLE hChannel = nullptr;
 		EVT_VARIANT ChannelProperty;
 		DWORD dwBufferSize = sizeof(EVT_VARIANT);
 
-		hChannel = EvtOpenChannelConfig(NULL, _name.GetString(), 0);
-		if (NULL == hChannel)
+		hChannel = EvtOpenChannelConfig(nullptr, _name.GetString(), 0);
+		if (nullptr == hChannel)
 			ThrowDefaultException(__FILE__LINE__ _T("CEventLogChannel::set_fileMax"), _name.GetString());
 
 		RtlZeroMemory(&ChannelProperty, dwBufferSize);
@@ -412,16 +412,16 @@ void CEventLogChannel::set_fileMax(UINT32 v)
 
 void CEventLogChannel::_load()
 {
-	EVT_HANDLE hChannel = NULL;
-	PEVT_VARIANT pProperty = NULL;
-	PEVT_VARIANT pTemp = NULL;
+	EVT_HANDLE hChannel = nullptr;
+	PEVT_VARIANT pProperty = nullptr;
+	PEVT_VARIANT pTemp = nullptr;
 	DWORD dwBufferSize = 0;
 	DWORD dwBufferUsed = 0;
 	DWORD status = ERROR_SUCCESS;
 
 	if (_name.IsEmpty())
 		return;
-	if (NULL == (hChannel = EvtOpenChannelConfig(NULL, _name.GetString(), 0)))
+	if (nullptr == (hChannel = EvtOpenChannelConfig(nullptr, _name.GetString(), 0)))
 		ThrowDefaultException(__FILE__LINE__ _T("CEventLogChannel::_load"), _name.GetString());
 
 	for (int Id = 0; Id < EvtChannelConfigPropertyIdEND; Id++)
@@ -432,14 +432,14 @@ void CEventLogChannel::_load()
 			if (ERROR_INSUFFICIENT_BUFFER == status)
 			{
 				dwBufferSize = dwBufferUsed;
-				if (NULL == pProperty)
+				if (nullptr == pProperty)
 					pTemp = (PEVT_VARIANT)TFalloc(dwBufferSize);
 				else
 					pTemp = (PEVT_VARIANT)TFrealloc(pProperty, dwBufferSize);
 				if (pTemp)
 				{
 					pProperty = pTemp;
-					pTemp = NULL;
+					pTemp = nullptr;
 					status = ERROR_SUCCESS;
 					if (!EvtGetChannelConfigProperty(hChannel, (EVT_CHANNEL_CONFIG_PROPERTY_ID)Id, 0, dwBufferSize, pProperty, &dwBufferUsed))
 						status = GetLastError();
@@ -549,21 +549,6 @@ void CEventLogChannel::_load()
 }
 
 //================== CEventLogChannels =========================================
-static sword __stdcall CEventLogChannelsSearchAndSortFunc(ConstPointer pa, ConstPointer pb)
-{
-	CEventLogChannel* ppa = CastAnyPtr(CEventLogChannel, CastMutable(Pointer, pa));
-	CEventLogChannel* ppb = CastAnyPtr(CEventLogChannel, CastMutable(Pointer, pb));
-
-	return (ppa->get_name().Compare(ppb->get_name()));
-}
-
-static void __stdcall CEventLogChannelsDeleteFunc(ConstPointer data, Pointer context)
-{
-	CEventLogChannel* pInfo = CastAnyPtr(CEventLogChannel, CastMutable(Pointer, data));
-
-	pInfo->release();
-}
-
 CEventLogChannels::CEventLogChannels(DECL_FILE_LINE0) :
 	super(ARGS_FILE_LINE 16, 256)
 {
@@ -575,14 +560,14 @@ CEventLogChannels::~CEventLogChannels()
 
 BOOLEAN CEventLogChannels::Load()
 {
-	EVT_HANDLE hChannels = NULL;
-	LPTSTR pBuffer = NULL;
-	LPTSTR pTemp = NULL;
+	EVT_HANDLE hChannels = nullptr;
+	LPTSTR pBuffer = nullptr;
+	LPTSTR pTemp = nullptr;
 	DWORD dwBufferSize = 0;
 	DWORD dwBufferUsed = 0;
 	DWORD status = ERROR_SUCCESS;
 
-	if (NULL == (hChannels = EvtOpenChannelEnum(NULL, 0)))
+	if (nullptr == (hChannels = EvtOpenChannelEnum(nullptr, 0)))
 		ThrowDefaultException(__FILE__LINE__ _T("CEventLogChannels::Load"));
 
 	while (true)
@@ -602,7 +587,7 @@ BOOLEAN CEventLogChannels::Load()
 				if (pTemp)
 				{
 					pBuffer = pTemp;
-					pTemp = NULL;
+					pTemp = nullptr;
 
 					status = ERROR_SUCCESS;
 					if (!EvtNextChannelPath(hChannels, dwBufferSize, pBuffer, &dwBufferUsed))
@@ -631,7 +616,7 @@ BOOLEAN CEventLogChannels::Load()
 		{
 			if (pChannel)
 				pChannel->release();
-			pChannel = NULL;
+			pChannel = nullptr;
 		}
 	}
 
@@ -654,5 +639,5 @@ Ptr(CEventLogChannel) CEventLogChannels::FindSorted(ConstRef(CStringBuffer) name
 
 	if (super::MatchSorted(fIt, &toFind))
 		return *fIt;
-	return NULL;
+	return nullptr;
 }

@@ -153,13 +153,13 @@ void CTcpClientImpl::OpenConnection(CConstPointer server, CConstPointer port)
 		CloseConnection();
 
 #ifdef OK_COMP_GNUC
-	addrinfo *result = NULL;
-	addrinfo *ptr = NULL;
+	addrinfo *result = nullptr;
+	addrinfo *ptr = nullptr;
 	addrinfo hints;
 #endif
 #ifdef OK_COMP_MSC
-	ADDRINFOT *result = NULL;
-	ADDRINFOT *ptr = NULL;
+	ADDRINFOT *result = nullptr;
+	ADDRINFOT *ptr = nullptr;
 	ADDRINFOT hints;
 #endif
 	int iResult;
@@ -205,7 +205,7 @@ void CTcpClientImpl::OpenConnection(CConstPointer server, CConstPointer port)
 #endif
 
 	// Attempt to connect to an address until one succeeds
-	for (ptr = result; ptr != NULL; ptr = ptr->ai_next)
+	for (ptr = result; ptr != nullptr; ptr = ptr->ai_next)
 	{
 		// Create a SOCKET for connecting to server
 		_ConnectSocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
@@ -286,7 +286,7 @@ bool CTcpClientImpl::TestReceiveData(dword millisec)
 	FD_SET(_ConnectSocket, &rds);
 	tv.tv_sec = millisec / 1000;
 	tv.tv_usec = (millisec % 1000) * 1000;
-	iResult = select(Castsdword(_ConnectSocket + 1), &rds, NULL, NULL, &tv);
+	iResult = select(Castsdword(_ConnectSocket + 1), &rds, nullptr, nullptr, &tv);
 	if (iResult == SOCKET_ERROR)
 		ThrowClientException(__FILE__LINE__ _T("TestReceiveData"));
 	return (iResult == 1);
@@ -308,7 +308,7 @@ void CTcpClientImpl::ReceiveData(BPointer data, dword dataLen, dword* numBytesRe
 		FD_SET(_ConnectSocket, &rds);
 		tv.tv_sec = millisec / 1000;
 		tv.tv_usec = (millisec % 1000) * 1000;
-		iResult = select(Castsdword(_ConnectSocket + 1), &rds, NULL, NULL, &tv);
+		iResult = select(Castsdword(_ConnectSocket + 1), &rds, nullptr, nullptr, &tv);
 		if (iResult == SOCKET_ERROR)
 			ThrowClientException(__FILE__LINE__ _T("ReceiveData"));
 		if (iResult == 0)
@@ -353,7 +353,7 @@ CTcpClient::~CTcpClient(void)
 	if (_impl)
 	{
 		_impl->release();
-		_impl = NULL;
+		_impl = nullptr;
 	}
 }
 
@@ -437,11 +437,11 @@ void CTcpServerImpl::OpenConnection(CConstPointer server, CConstPointer port)
 		CloseConnection();
 
 #ifdef OK_COMP_GNUC
-	addrinfo *result = NULL;
+	addrinfo *result = nullptr;
 	addrinfo hints;
 #endif
 #ifdef OK_COMP_MSC
-	ADDRINFOT *result = NULL;
+	ADDRINFOT *result = nullptr;
 	ADDRINFOT hints;
 #endif
 	int iResult;
@@ -543,7 +543,7 @@ bool CTcpServerImpl::TestAccept(dword millisec)
 	FD_SET(_ListenSocket, &rds);
 	tv.tv_sec = 0;
 	tv.tv_usec = 0;
-	iResult = select(Castsdword(_ListenSocket + 1), &rds, NULL, NULL, &tv);
+	iResult = select(Castsdword(_ListenSocket + 1), &rds, nullptr, nullptr, &tv);
 	if (iResult == SOCKET_ERROR)
 		ThrowServerException(__FILE__LINE__ _T("TestAccept"));
 	cnt = 0;
@@ -554,7 +554,7 @@ bool CTcpServerImpl::TestAccept(dword millisec)
 		FD_SET(_ListenSocket, &rds);
 		tv.tv_sec = 0;
 		tv.tv_usec = 100000;
-		iResult = select(Castsdword(_ListenSocket + 1), &rds, NULL, NULL, &tv);
+		iResult = select(Castsdword(_ListenSocket + 1), &rds, nullptr, nullptr, &tv);
 		if (iResult == SOCKET_ERROR)
 			ThrowServerException(__FILE__LINE__ _T("TestAccept"));
 		++cnt;
@@ -567,7 +567,7 @@ void CTcpServerImpl::DoAccept(CTcpClient* client)
 	if ((_ListenSocket == INVALID_SOCKET) || (PtrCheck(client->get_Impl())))
 		return;
 
-	SOCKET ClientSocket = accept(_ListenSocket, NULL, NULL);
+	SOCKET ClientSocket = accept(_ListenSocket, nullptr, nullptr);
 
 	if (ClientSocket == INVALID_SOCKET)
 	{
@@ -598,7 +598,7 @@ CTcpServer::~CTcpServer(void)
 	if (_impl)
 	{
 		_impl->release();
-		_impl = NULL;
+		_impl = nullptr;
 	}
 }
 

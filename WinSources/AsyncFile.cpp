@@ -40,7 +40,7 @@ void CAsyncFile::Create(ConstRef(CFilePath) _path)
 	HANDLE fHandle;
 
 	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
-	sa.lpSecurityDescriptor = NULL;
+	sa.lpSecurityDescriptor = nullptr;
 	sa.bInheritHandle = TRUE;
 
 	fHandle = CreateFile(
@@ -50,7 +50,7 @@ void CAsyncFile::Create(ConstRef(CFilePath) _path)
 		&sa, // LPSECURITY_ATTRIBUTES lpSecurityAttributes,
 		CREATE_NEW, // DWORD dwCreationDisposition,
 		FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, // DWORD dwFlagsAndAttributes,
-		NULL // HANDLE hTemplateFile
+		nullptr // HANDLE hTemplateFile
 	);
 	if ( fHandle == INVALID_HANDLE_VALUE )
 		throw OK_NEW_OPERATOR CSecurityFileException(__FILE__LINE__ _T("%s Exception, Path = '%s'"), 
@@ -69,7 +69,7 @@ void CAsyncFile::Open(ConstRef(CFilePath) _path, bool _readOnly)
 	if ( !_readOnly )
 		dwDesiredAccess |= GENERIC_WRITE;
 	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
-	sa.lpSecurityDescriptor = NULL;
+	sa.lpSecurityDescriptor = nullptr;
 	sa.bInheritHandle = TRUE;
 
 	fHandle = CreateFile(
@@ -79,7 +79,7 @@ void CAsyncFile::Open(ConstRef(CFilePath) _path, bool _readOnly)
 		&sa, // LPSECURITY_ATTRIBUTES lpSecurityAttributes,
 		OPEN_EXISTING, // DWORD dwCreationDisposition,
 		FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, // DWORD dwFlagsAndAttributes,
-		NULL // HANDLE hTemplateFile
+		nullptr // HANDLE hTemplateFile
 	);
 	if ( fHandle == INVALID_HANDLE_VALUE )
 		throw OK_NEW_OPERATOR CSecurityFileException(__FILE__LINE__ _T("%s Exception, Path = '%s'"), 
@@ -100,12 +100,11 @@ void CAsyncFile::Read(Ref(CByteBuffer) buf, Ptr(CAbstractThreadCallback) pHandle
 	m_pData->set_bytestransferred(0);
 	m_pData->set_callback(pHandler);
 	m_pData->set_ioop(CAsyncIOData::IORead);
-	if ( !ReadFile(m_pData->get_file(), m_pData->get_buffer().get_Buffer(), m_pData->get_buffer().get_BufferSize(), NULL, m_pData->get_overlapped()) )
+	if ( !ReadFile(m_pData->get_file(), m_pData->get_buffer().get_Buffer(), m_pData->get_buffer().get_BufferSize(), nullptr, m_pData->get_overlapped()) )
 	{
 		if ( GetLastError() != ERROR_IO_PENDING )
 			throw OK_NEW_OPERATOR CSecurityFileException(__FILE__LINE__ _T("%s Exception"), _T("CAsyncFile::Read"), CWinException::WinExtError);
 	}
-	m_pManager->AddTask(m_pData);
 }
 
 void CAsyncFile::Write(ConstRef(CByteBuffer) buf, Ptr(CAbstractThreadCallback) pHandler)
@@ -114,10 +113,9 @@ void CAsyncFile::Write(ConstRef(CByteBuffer) buf, Ptr(CAbstractThreadCallback) p
 	m_pData->set_bytestransferred(0);
 	m_pData->set_callback(pHandler);
 	m_pData->set_ioop(CAsyncIOData::IOWrite);
-	if ( !WriteFile(m_pData->get_file(), m_pData->get_buffer().get_Buffer(), m_pData->get_buffer().get_BufferSize(), NULL, m_pData->get_overlapped()) )
+	if ( !WriteFile(m_pData->get_file(), m_pData->get_buffer().get_Buffer(), m_pData->get_buffer().get_BufferSize(), nullptr, m_pData->get_overlapped()) )
 	{
 		if ( GetLastError() != ERROR_IO_PENDING )
 			throw OK_NEW_OPERATOR CSecurityFileException(__FILE__LINE__ _T("%s Exception"), _T("CAsyncFile::Write"), CWinException::WinExtError);
 	}
-	m_pManager->AddTask(m_pData);
 }

@@ -98,7 +98,7 @@ protected:
 	sdword m_TextLineLenMax;
 	bool *m_TextLineAlloc;
 	bool m_SelectionMode;
-	Ptr(CConsoleUndoGroup) m_UndoGroup;
+	CCppObjectPtr<CConsoleUndoGroup> m_UndoGroup;
 	bool m_MultiLine;
 	sdword m_MaxChars;
 

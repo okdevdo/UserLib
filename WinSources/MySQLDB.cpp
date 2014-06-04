@@ -25,7 +25,7 @@
 IMPL_WINEXCEPTION(CMySQLException, CWinException)
 
 CMySQLEnvironment::CMySQLEnvironment(void) :
-_lpImpl(NULL)
+_lpImpl(nullptr)
 {
 	_lpImpl = OK_NEW_OPERATOR CMySQLEnvironmentImpl();
 }
@@ -40,7 +40,7 @@ CMySQLException* CMySQLEnvironment::get_LastError() const
 {
 	if (_lpImpl)
 		return _lpImpl->get_LastError();
-	return NULL;
+	return nullptr;
 }
 
 void CMySQLEnvironment::set_LastError(CMySQLException* pLastError)
@@ -53,7 +53,7 @@ CMySQLConnection* CMySQLEnvironment::create_Connection()
 {
 	if (_lpImpl)
 		return OK_NEW_OPERATOR CMySQLConnection(this, _lpImpl->create_Connection());
-	return NULL;
+	return nullptr;
 }
 
 void CMySQLEnvironment::Open()
@@ -113,7 +113,7 @@ CMySQLStatement* CMySQLConnection::create_Statement()
 {
 	if (_lpImpl)
 		return OK_NEW_OPERATOR CMySQLStatement(_lpEnv, _lpImpl->create_Statement());
-	return NULL;
+	return nullptr;
 }
 
 void CMySQLConnection::free_Statement(CMySQLStatement* pStmt)
@@ -134,21 +134,6 @@ void CMySQLConnection::Close()
 {
 	if (_lpImpl)
 		_lpImpl->Close();
-}
-
-static void __stdcall CMySQLColumnsDeleteFunc(ConstPointer data, Pointer context)
-{
-	Ptr(CMySQLColumn) column = CastAnyPtr(CMySQLColumn, CastMutable(Pointer, data));
-
-	column->release();
-}
-
-static sword __stdcall CMySQLColumnsSearchAndSortFunc(ConstPointer item, ConstPointer data)
-{
-	Ptr(CMySQLColumn) pColumn = CastAnyPtr(CMySQLColumn, CastMutable(Pointer, item));
-	CStringLiteral pName(CastAny(CPointer, CastMutable(Pointer, data)));
-
-	return pName.Compare(pColumn->get_Name());
 }
 
 CMySQLStatement::CMySQLStatement(CMySQLEnvironment* lpEnv, CMySQLStatementImpl* lpStmtImpl) :
@@ -179,7 +164,7 @@ CMySQLColumn* CMySQLStatement::get_ColumnInfo(word ix) const
 
 	if (it)
 		return *it;
-	return NULL;
+	return nullptr;
 }
 
 CMySQLColumn* CMySQLStatement::get_ColumnInfo(CConstPointer name)
@@ -189,7 +174,7 @@ CMySQLColumn* CMySQLStatement::get_ColumnInfo(CConstPointer name)
 
 	if (it)
 		return *it;
-	return NULL;
+	return nullptr;
 }
 
 sqword CMySQLStatement::get_RowCount() const

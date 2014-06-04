@@ -35,10 +35,6 @@
 #endif
 #include <stdio.h>
 
-static void __stdcall VectorEmptyDeleteFunc( ConstPointer data, Pointer context )
-{
-}
-
 class XUnzipApplication: public CApplication
 {
 public:
@@ -201,7 +197,7 @@ public:
 
 	virtual int main()
 	{
-		CStreamFile* pOutFile = NULL;
+		CCppObjectPtr<CStreamFile> pOutFile;
 		CFilePath fcurdir;
 		CFilePath fziparchive(__FILE__LINE__ m_sZipArchive);
 		CFilePath foutf(__FILE__LINE__ m_sOutputFile);
@@ -225,7 +221,7 @@ public:
 			CFilePath finputdir(__FILE__LINE__ m_sOutputDir);
 
 			if (CWinDirectoryIterator::FileExists(finputdir))
-				finputdir.set_Filename(NULL);
+				finputdir.set_Filename(nullptr);
 			finputdir.MakeDirectory();
 			if (CWinDirectoryIterator::DirectoryExists(finputdir) < 0)
 			{
@@ -246,7 +242,7 @@ public:
 			{
 				CFilePath tmp(foutf);
 
-				tmp.set_Filename(NULL);
+				tmp.set_Filename(nullptr);
 				CDirectoryIterator::MakeDirectory(tmp);
 			}
 			else
@@ -295,10 +291,7 @@ public:
 				XUnzipNewerFiles(fziparchive, m_bUseFolders, m_sUnzipFileSpecs, m_sExclude);
 		}
 		if (pOutFile)
-		{
 			pOutFile->Close();
-			pOutFile->release();
-		}
 		if (m_bOutputDir)
 			CDirectoryIterator::SetCurrentDirectory(fcurdir);
 		return result;

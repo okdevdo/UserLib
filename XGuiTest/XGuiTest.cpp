@@ -1136,9 +1136,9 @@ END_MESSAGE_MAP()
 
 XGuiTest::XGuiTest(): 
 	CFrameWnd(_T("XGuiTest")),
-	m_pTabControl(NULL),
+	m_pTabControl(nullptr),
 	m_PageCnt(0),
-	m_pEditorContextMenu(NULL)
+	m_pEditorContextMenu(nullptr)
 {
 }
 
@@ -1340,7 +1340,7 @@ LRESULT XGuiTest::OnCreateChildren(WPARAM wParam, LPARAM lParam)
 	name.SetString(__FILE__LINE__ _T("TabControl"));
 	CDialog::AddDialogControl(OK_NEW_OPERATOR CTabControl(name));
 
-	::SetTimer(m_hwnd, 1001, 500, NULL);
+	::SetTimer(m_hwnd, 1001, 500, nullptr);
 	return 0;
 }
 

@@ -128,7 +128,7 @@ static void __stdcall PrintElementDefinition(ConstPtr(CSAXParserElementDefinitio
 		break;
 	}
 	COUT << _T(", ") << def->get_name();
-	def->ForEach(TElementDefinitionForEachFunc, NULL);
+	def->ForEach(TElementDefinitionForEachFunc, nullptr);
 	COUT << _T(")");
 }
 

@@ -24,27 +24,6 @@
 #include "ConsoleTextControl.h"
 #include "DataBase.h"
 
-static void __stdcall DataRow_DeleteFunc( ConstPointer data, Pointer context )
-{
-	CConsoleTableViewer::DataRow* p = CastAnyPtr(CConsoleTableViewer::DataRow, CastMutable(Pointer, data));
-
-	p->release();
-}
-
-static void __stdcall DataColumn_DeleteFunc( ConstPointer data, Pointer context )
-{
-	CConsoleTableViewer::DataColumn* p = CastAnyPtr(CConsoleTableViewer::DataColumn, CastMutable(Pointer, data));
-
-	p->release();
-}
-
-static void __stdcall DataItem_DeleteFunc( ConstPointer data, Pointer context )
-{
-	CConsoleTableViewer::DataItem* p = CastAnyPtr(CConsoleTableViewer::DataItem, CastMutable(Pointer, data));
-
-	p->release();
-}
-
 CConsoleTableViewer::DataRow::~DataRow()
 {
 	m_items.Close();
@@ -53,8 +32,6 @@ CConsoleTableViewer::DataRow::~DataRow()
 
 CConsoleTableViewer::DataColumn::~DataColumn()
 {
-	if ( NotPtrCheck(m_control) )
-		m_control->release();
 }
 
 TListCnt CConsoleTableViewer::DataColumnVector::get_width() const
@@ -89,7 +66,7 @@ Ptr(CConsoleTableViewer::DataColumn) CConsoleTableViewer::DataColumnVector::get_
 		pos1 = pos0;
 		++it;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void CConsoleTableViewer::DataColumnVector::draw_titles(sdword start, SMALL_RECT r, Ptr(CConsoleWindow) w)
@@ -191,11 +168,11 @@ Ptr(CConsoleTableViewer::DataItem) CConsoleTableViewer::DataRowVector::get_item(
 		col = row->get_columns().get_column(start.X, pos0);
 
 		if ( PtrCheck(col) )
-			return NULL;
+			return nullptr;
 		pos.X = pos0;
 		return row->get_item(col->get_col());
 	}
-	return NULL;
+	return nullptr;
 }
 
 void CConsoleTableViewer::DataRowVector::draw_items(LCOORD start, SMALL_RECT r, sdword cpos, sdword spos, Ptr(CConsoleWindow) w)
@@ -328,7 +305,7 @@ void CConsoleTableViewer::StartEdit(void)
 {
 	LCOORD start;
 	LCOORD pos;
-	Ptr(DataColumn) col = NULL;
+	Ptr(DataColumn) col = nullptr;
 
 	start.X = m_ClientArea.Left - m_NonClientArea.Left;
 	start.Y = m_ClientArea.Top - m_NonClientArea.Top;
@@ -389,7 +366,7 @@ void CConsoleTableViewer::Initialize()
 	m_ScrollPos.X = 0;
 	m_ScrollPos.Y = 0;
 	m_SelectionMode = false;
-	m_control = NULL;
+	m_control = nullptr;
 
 	m_rows.Close();
 	m_cols.Close();
@@ -659,7 +636,7 @@ void CConsoleTableViewer::Scroll()
 		m_ScrollPos.X = m_ScrollBarHInfo.Current;
 	DrawTableView();
 	SetCursorPosEx();
-	m_control = NULL;
+	m_control = nullptr;
 }
 
 bool CConsoleTableViewer::CheckVScroll(void)
@@ -759,7 +736,7 @@ bool CConsoleTableViewer::KeyDown(WORD virtualKeyCode, DWORD controlKeyState)
         CASE_KEY_ESCAPE:
 			if ( (controlKeyState & KeyStateAllMask) == 0 )
 			{
-				m_control = NULL;
+				m_control = nullptr;
 				PostPaintEvent();
 				SetCursorPosEx();
 			}
@@ -767,7 +744,7 @@ bool CConsoleTableViewer::KeyDown(WORD virtualKeyCode, DWORD controlKeyState)
         CASE_KEY_RETURN:
 			if ( (controlKeyState & KeyStateAllMask) == 0 )
 			{
-				m_control = NULL;
+				m_control = nullptr;
 				PostPaintEvent();
 				SetCursorPosEx();
 			}
@@ -775,7 +752,7 @@ bool CConsoleTableViewer::KeyDown(WORD virtualKeyCode, DWORD controlKeyState)
 		CASE_KEY_F2:
 			if ( (controlKeyState & KeyStateAllMask) == 0 )
 			{
-				m_control = NULL;
+				m_control = nullptr;
 				PostPaintEvent();
 				SetCursorPosEx();
 			}
@@ -1402,7 +1379,7 @@ bool CConsoleTableViewer::LeftMouseDown(COORD mousePos, DWORD controlKeyState)
 	{
 		if ( m_control->IsPosInClientRect(mousePos) )
 			return m_control->LeftMouseDown(mousePos, controlKeyState);
-		m_control = NULL;
+		m_control = nullptr;
 		bUpdate = true;
 	}
 	if ( (controlKeyState & KeyStateAllMask) == 0 )

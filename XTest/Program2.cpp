@@ -343,8 +343,8 @@ static void TestStrUtil()
 {
 	OpenTestFile(_T("TestStrUtil"));
 
-	wchar_t *sZahlEndU = NULL;
-	char *sZahlEndA = NULL;
+	wchar_t *sZahlEndU = nullptr;
+	char *sZahlEndA = nullptr;
 	long long vTestZahl;
 
 	for (dword i = 0; i < sizeof(TestZahlA) / sizeof(struct __tagTestZahlA); ++i)
@@ -370,22 +370,22 @@ static void TestStrStr()
 
 	CPointer p = s_strnistr2(_T("CONSOURCES"), _T("ConSources"), 10);
 
-	if ((p == NULL) || (s_strcmp(p, _T("CONSOURCES"))))
+	if ((p == nullptr) || (s_strcmp(p, _T("CONSOURCES"))))
 		WriteErrorTestFile(1, _T("p=%s != CONSOURCES"), p);
 
 	p = s_strnistr2(_T("CONSOURCESabcdef"), _T("ConSources"), 15);
 
-	if ((p == NULL) || (s_strcmp(p, _T("CONSOURCESabcdef"))))
+	if ((p == nullptr) || (s_strcmp(p, _T("CONSOURCESabcdef"))))
 		WriteErrorTestFile(1, _T("p=%s != CONSOURCESabcdef"), p);
 
 	p = s_strnistr2(_T("abcdefCONSOURCES"), _T("ConSources"), 15);
 
-	if ((p == NULL) || (s_strcmp(p, _T("CONSOURCES"))))
+	if ((p == nullptr) || (s_strcmp(p, _T("CONSOURCES"))))
 		WriteErrorTestFile(1, _T("p=%s != CONSOURCES"), p);
 
 	p = s_strnistr2(_T("abcdefCONSOURCESghijk"), _T("ConSources"), 20);
 
-	if ((p == NULL) || (s_strcmp(p, _T("CONSOURCESghijk"))))
+	if ((p == nullptr) || (s_strcmp(p, _T("CONSOURCESghijk"))))
 		WriteErrorTestFile(1, _T("p=%s != CONSOURCESghijk"), p);
 
 	WriteSuccessTestFile(1);

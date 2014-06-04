@@ -65,21 +65,6 @@ public:
 	CStringBuffer m_Guid;
 };
 
-sword __stdcall CProjectDepInfoSortAndSearchFunc(ConstPointer pa, ConstPointer pb)
-{
-	CProjectDepInfo* ppa = CastAnyPtr(CProjectDepInfo, CastMutable(Pointer, pa));
-	CProjectDepInfo* ppb = CastAnyPtr(CProjectDepInfo, CastMutable(Pointer, pb));
-
-	return ppa->m_Name.Compare(ppb->m_Name, 0, CStringLiteral::cIgnoreCase);
-}
-
-void __stdcall CProjectDepInfoDeleteFunc(ConstPointer data, Pointer context)
-{
-	CProjectDepInfo* pdata = CastAnyPtr(CProjectDepInfo, CastMutable(Pointer, data));
-
-	pdata->release();
-}
-
 typedef CDataVectorT<CProjectDepInfo, CStringByNameIgnoreCaseLessFunctor<CProjectDepInfo>> CProjectDepInfos;
 
 class CProjectFileInfo : public CCppObject
@@ -93,21 +78,6 @@ public:
 	CStringBuffer m_Name;
 	CStringBuffer m_Type;
 };
-
-sword __stdcall CProjectFileInfoSortAndSearchFunc(ConstPointer pa, ConstPointer pb)
-{
-	CProjectFileInfo* ppa = CastAnyPtr(CProjectFileInfo, CastMutable(Pointer, pa));
-	CProjectFileInfo* ppb = CastAnyPtr(CProjectFileInfo, CastMutable(Pointer, pb));
-
-	return ppa->m_Name.Compare(ppb->m_Name, 0, CStringLiteral::cIgnoreCase);
-}
-
-void __stdcall CProjectFileInfoDeleteFunc(ConstPointer data, Pointer context)
-{
-	CProjectFileInfo* pdata = CastAnyPtr(CProjectFileInfo, CastMutable(Pointer, data));
-
-	pdata->release();
-}
 
 typedef CDataVectorT<CProjectFileInfo, CStringByNameIgnoreCaseLessFunctor<CProjectFileInfo>> CProjectFileInfos;
 
@@ -201,21 +171,6 @@ public:
 	CProjectAdditionalDependencies m_AdditionalDependencies;
 };
 
-sword __stdcall CProjectInfoSortAndSearchFunc(ConstPointer pa, ConstPointer pb)
-{
-	CProjectInfo* ppa = CastAnyPtr(CProjectInfo, CastMutable(Pointer, pa));
-	CProjectInfo* ppb = CastAnyPtr(CProjectInfo, CastMutable(Pointer, pb));
-
-	return ppa->m_Name.Compare(ppb->m_Name, 0, CStringLiteral::cIgnoreCase);
-}
-
-void __stdcall CProjectInfoDeleteFunc(ConstPointer data, Pointer context)
-{
-	CProjectInfo* pdata = CastAnyPtr(CProjectInfo, CastMutable(Pointer, data));
-
-	pdata->release();
-}
-
 class CProjectInfos : public CDataVectorT<CProjectInfo, CStringByNameIgnoreCaseLessFunctor<CProjectInfo>>
 {
 	typedef CDataVectorT<CProjectInfo, CStringByNameIgnoreCaseLessFunctor<CProjectInfo>> super;
@@ -228,9 +183,9 @@ public:
 	{
 		CStringBuffer tmp;
 		CProjectInfo vdata(name);
-		super::Iterator it = FindSorted(&vdata);
+		super::Iterator it = super::FindSorted(&vdata);
 
-		if (it && (*it) && (CProjectInfoSortAndSearchFunc(*it, &vdata) == 0))
+		if (super::MatchSorted(it, &vdata))
 		{
 			tmp = (*it)->m_Folder;
 			tmp.PrependString(_T("..\\"));
@@ -296,7 +251,7 @@ public:
 	CXMLContentHandlers() : 
 		CSAXParserContentHandler(), 
 		m_ProjectInfos(__FILE__LINE__ 16, 16),
-		m_CurrentProjectInfo(NULL),
+		m_CurrentProjectInfo(nullptr),
 		m_state(0)
 	{
 	}
@@ -427,7 +382,7 @@ public:
 			if (m_CurrentProjectInfo)
 			{
 				m_ProjectInfos.Append(m_CurrentProjectInfo);
-				m_CurrentProjectInfo = NULL;
+				m_CurrentProjectInfo = nullptr;
 			}
 			return;
 		}
@@ -573,7 +528,7 @@ _T("EndGlobal\r\n");
 static void WriteSolutionFile(CConstPointer pVersion, ConstRef(CStringBuffer) guid, ConstRef(CProjectInfos) infos, bool hasWin64)
 {
 	CFilePath fname(__FILE__LINE__ _T("UserLib.sln"));
-	Ptr(CFile) ffile = OK_NEW_OPERATOR CStreamFile;
+	CCppObjectPtr<CFile> ffile = OK_NEW_OPERATOR CStreamFile;
 	CProjectInfos::Iterator it;
 	CProjectDepInfos::Iterator it1;
 
@@ -635,7 +590,6 @@ static void WriteSolutionFile(CConstPointer pVersion, ConstRef(CStringBuffer) gu
 	}
 	ffile->Write(SLNGlobalEnd);
 	ffile->Close();
-	ffile->release();
 }
 
 static CConstPointer VCXPROJStart[] = {
@@ -954,10 +908,10 @@ static CConstPointer VCXFILTEnde[] = {
 static void WriteProjectFile(CConstPointer pVersion, Ptr(CProjectInfo) info, bool hasWin64)
 {
 	CFilePath fname;
-	Ptr(CFile) fprojfile = OK_NEW_OPERATOR CStreamFile;
-	Ptr(CFile) ffilterfile = OK_NEW_OPERATOR CStreamFile;
-	CConstPointer vVersion = NULL;
-	CConstPointer vConfigurationType = NULL;
+	CCppObjectPtr<CFile> fprojfile = OK_NEW_OPERATOR CStreamFile;
+	CCppObjectPtr<CFile> ffilterfile = OK_NEW_OPERATOR CStreamFile;
+	CConstPointer vVersion = nullptr;
+	CConstPointer vConfigurationType = nullptr;
 	CStringBuffer tmp;
 
 	fname.set_Path(info->m_Name);
@@ -1429,11 +1383,9 @@ static void WriteProjectFile(CConstPointer pVersion, Ptr(CProjectInfo) info, boo
 
 	ffilterfile->Write(VCXFILTEnde[5]);
 	ffilterfile->Close();
-	ffilterfile->release();
 
 	fprojfile->Write(VCXPROJEnde);
 	fprojfile->Close();
-	fprojfile->release();
 }
 
 static void WriteProjectFiles(CConstPointer pVersion, ConstRef(CProjectInfos) infos, bool hasWin64)
@@ -1460,8 +1412,8 @@ void MetaProjectCreateProjectFilesVS(CConstPointer xml_file, CConstPointer pVers
 {
 	CFilePath fcurdir;
 	CFilePath fname(__FILE__LINE__ xml_file);
-	Ptr(CXMLContentHandlers) h = OK_NEW_OPERATOR CXMLContentHandlers();
-	Ptr(CSAXParser) pParser = OK_NEW_OPERATOR CSAXParser;
+	CCppObjectPtr<CXMLContentHandlers> h = OK_NEW_OPERATOR CXMLContentHandlers();
+	CCppObjectPtr<CSAXParser> pParser = OK_NEW_OPERATOR CSAXParser;
 
 	pParser->Create(h, _T("UTF-8"));
 	pParser->Parse(fname);
@@ -1476,6 +1428,5 @@ void MetaProjectCreateProjectFilesVS(CConstPointer xml_file, CConstPointer pVers
 	WriteSolutionFile(pVersion, h->m_ProjectsGuid, h->m_ProjectInfos, hasWin64);
 	WriteProjectFiles(pVersion, h->m_ProjectInfos, hasWin64);
 	CDirectoryIterator::SetCurrentDirectory(fcurdir);
-	pParser->release();
-	h->release();
 }
+

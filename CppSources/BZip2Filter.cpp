@@ -34,7 +34,7 @@ static void bzfree(void *opaque, void *p)
 }
 
 CBZip2CompressFilter::CBZip2CompressFilter(Ptr(CAbstractFilterInput) input, Ptr(CAbstractFilterOutput) output) :
-    CFilter(input, output), m_stream(NULL)
+    CFilter(input, output), m_stream(nullptr)
 {
 }
 
@@ -92,7 +92,7 @@ dword CBZip2CompressFilter::do_filter()
 		} while ( CastAnyPtr(bz_stream, m_stream)->avail_in > 0 );
 	}
 
-	CastAnyPtr(bz_stream, m_stream)->next_in = NULL;
+	CastAnyPtr(bz_stream, m_stream)->next_in = nullptr;
 	CastAnyPtr(bz_stream, m_stream)->avail_in = 0;
 
 	while ( res != BZ_STREAM_END )
@@ -125,7 +125,7 @@ void CBZip2CompressFilter::close()
 }
 
 CBZip2DeCompressFilter::CBZip2DeCompressFilter(Ptr(CAbstractFilterInput) input, Ptr(CAbstractFilterOutput) output) :
-    CFilter(input, output), m_stream(NULL)
+    CFilter(input, output), m_stream(nullptr)
 {
 }
 
@@ -185,7 +185,7 @@ dword CBZip2DeCompressFilter::do_filter()
 	}
 	if ( res != BZ_STREAM_END )
 	{
-		CastAnyPtr(bz_stream, m_stream)->next_in = NULL;
+		CastAnyPtr(bz_stream, m_stream)->next_in = nullptr;
 		CastAnyPtr(bz_stream, m_stream)->avail_in = 0;
 
 		do 

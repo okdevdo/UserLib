@@ -38,25 +38,27 @@ static void ThrowDefaultException(DECL_FILE_LINE CConstPointer func, long errCod
 		func, CWinException::WSAExtError, errCode);
 }
 
+CAsyncTCPClient::CAsyncTCPClient(Ptr(CAsyncIOData) pData):
+    CAsyncIOBuffer(pData),
+	m_Server(),
+	m_Protocol(),
+	m_bInit(false)
+{
+}
+
 CAsyncTCPClient::CAsyncTCPClient(Ptr(CAsyncIOManager) pManager):
     CAsyncIOBuffer(pManager),
 	m_Server(),
-	m_Protocol()
+	m_Protocol(),
+	m_bInit(true)
 {
 	CTcpClientImpl::Initialize();
 }
 
-CAsyncTCPClient::CAsyncTCPClient(Ptr(CAsyncIOData) pData):
-    CAsyncIOBuffer(),
-	m_Server(),
-	m_Protocol()
-{
-	m_pData = pData;
-}
-
 CAsyncTCPClient::~CAsyncTCPClient(void)
 {
-	CTcpClientImpl::Deinitialize();
+	if (m_bInit)
+		CTcpClientImpl::Deinitialize();
 }
 
 void CAsyncTCPClient::Open(CConstPointer pServer, CConstPointer pProtocol)
@@ -64,8 +66,8 @@ void CAsyncTCPClient::Open(CConstPointer pServer, CConstPointer pProtocol)
 	SOCKET s;
     int iResult;
 #ifdef OK_COMP_GNUC
-	addrinfo *result = NULL;
-	addrinfo *ptr = NULL;
+	addrinfo *result = nullptr;
+	addrinfo *ptr = nullptr;
 	addrinfo hints;
 	CStringBuffer vServer(__FILE__LINE__ pServer);
 	CStringBuffer vProtocol(__FILE__LINE__ pProtocol);
@@ -73,8 +75,8 @@ void CAsyncTCPClient::Open(CConstPointer pServer, CConstPointer pProtocol)
 	CByteBuffer bProtocol;
 #endif
 #ifdef OK_COMP_MSC
-	ADDRINFOT *result = NULL;
-	ADDRINFOT *ptr = NULL;
+	ADDRINFOT *result = nullptr;
+	ADDRINFOT *ptr = nullptr;
 	ADDRINFOT hints;
 #endif
 
@@ -95,10 +97,10 @@ void CAsyncTCPClient::Open(CConstPointer pServer, CConstPointer pProtocol)
 		ThrowDefaultException(__FILE__LINE__ _T("CAsyncTCPClient::Open"));
 
     // Attempt to connect to an address until one succeeds
-    for( ptr = result; ptr != NULL; ptr = ptr->ai_next )
+    for( ptr = result; ptr != nullptr; ptr = ptr->ai_next )
 	{
         // Create a SOCKET for connecting to server
-        s = WSASocket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol, NULL, 0, WSA_FLAG_OVERLAPPED);
+        s = WSASocket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol, nullptr, 0, WSA_FLAG_OVERLAPPED);
         if ( s == INVALID_SOCKET )
 			ThrowDefaultException(__FILE__LINE__ _T("CAsyncTCPClient::Open"));
         // Connect to server.
@@ -171,12 +173,11 @@ void CAsyncTCPClient::Read(Ref(CByteBuffer) buf, Ptr(CAbstractThreadCallback) pH
 	m_pData->set_bytestransferred(0);
 	m_pData->set_callback(pHandler);
 	m_pData->set_ioop(CAsyncIOData::IORead);
-	if ( WSARecv((SOCKET)(m_pData->get_file()), &wsabuf, 1, &numbytesrcvd, &flags, m_pData->get_overlapped(), NULL) )
+	if ( WSARecv((SOCKET)(m_pData->get_file()), &wsabuf, 1, &numbytesrcvd, &flags, m_pData->get_overlapped(), nullptr) )
 	{
 		if (  WSAGetLastError() != WSA_IO_PENDING )
 			ThrowDefaultException(__FILE__LINE__ _T("CAsyncTCPClient::Read"));
 	}
-	m_pManager->AddTask(m_pData);
 }
 
 void CAsyncTCPClient::Write(ConstRef(CByteBuffer) buf, Ptr(CAbstractThreadCallback) pHandler)
@@ -192,10 +193,9 @@ void CAsyncTCPClient::Write(ConstRef(CByteBuffer) buf, Ptr(CAbstractThreadCallba
 	m_pData->set_bytestransferred(0);
 	m_pData->set_callback(pHandler);
 	m_pData->set_ioop(CAsyncIOData::IOWrite);
-	if ( WSASend((SOCKET)(m_pData->get_file()), &wsabuf, 1, &numbytessend, flags, m_pData->get_overlapped(), NULL) )
+	if ( WSASend((SOCKET)(m_pData->get_file()), &wsabuf, 1, &numbytessend, flags, m_pData->get_overlapped(), nullptr) )
 	{
 		if ( WSAGetLastError() != WSA_IO_PENDING )
 			ThrowDefaultException(__FILE__LINE__ _T("CAsyncTCPClient::Write"));
 	}
-	m_pManager->AddTask(m_pData);
 }

@@ -24,34 +24,24 @@
 #include "ConsoleControl.h"
 #include "ConsoleLayout.h"
 
-static sword __stdcall ControlListFindByName(ConstPointer item, ConstPointer data)
-{
-	CConsoleControlWindow::ControlData* pItem = CastAnyPtr(CConsoleControlWindow::ControlData, CastMutable(Pointer, item));
-	CConsoleControl* pControl = pItem->control;
-	
-	return s_strcmp(pControl->GetName().GetString(), Cast(CConstPointer, data));
-}
-
 CConsoleControlWindow::CConsoleControlWindow(CConstPointer name, CConsole* pConsole):
     CConsoleWindow(name, pConsole),
 	m_ControlList(__FILE__LINE__0),
-	m_FocusControl(NULL),
-	m_pLayout(NULL)
+	m_FocusControl(nullptr),
+	m_pLayout()
 {
 }
 
 CConsoleControlWindow::CConsoleControlWindow(CConstPointer name, CConstPointer title, CConsole* pConsole):
     CConsoleWindow(name, title, pConsole),
 	m_ControlList(__FILE__LINE__0),
-	m_FocusControl(NULL),
-	m_pLayout(NULL)
+	m_FocusControl(nullptr),
+	m_pLayout()
 {
 }
 
 CConsoleControlWindow::~CConsoleControlWindow(void)
 {
-	if ( m_pLayout )
-		m_pLayout->release();
 }
 
 void CConsoleControlWindow::AddControl(CConsoleControl* pControl, COORD pos, COORD size)
@@ -69,18 +59,18 @@ CConsoleControl* CConsoleControlWindow::GetControl(CConstPointer name)
 {
 	ControlData data;
 
-	data.control = OK_NEW_OPERATOR CConsoleControl(name, NULL);
+	data.control = OK_NEW_OPERATOR CConsoleControl(name, nullptr);
 	ControlDataList::Iterator it = m_ControlList.FindSorted(&data);
 
 	if (m_ControlList.MatchSorted(it, &data))
 		return (*it)->control;
-	return NULL;
+	return nullptr;
 }
 
 CConsoleControl* CConsoleControlWindow::GetNextTabOrder(bool bnext)
 {
 	if ( !m_FocusControl )
-		return NULL;
+		return nullptr;
 
 	ControlDataList::Iterator it;
 	ControlData* pData;
@@ -89,7 +79,7 @@ CConsoleControl* CConsoleControlWindow::GetNextTabOrder(bool bnext)
 
 	if ( bnext )
 	{
-		CConsoleControl* pCtrlNext = NULL;
+		CConsoleControl* pCtrlNext = nullptr;
 		word nexttaborder = USHRT_MAX;
 
 		it = m_ControlList.Begin();
@@ -126,7 +116,7 @@ CConsoleControl* CConsoleControlWindow::GetNextTabOrder(bool bnext)
 	}
 	else
 	{
-		CConsoleControl* pCtrlPrev = NULL;
+		CConsoleControl* pCtrlPrev = nullptr;
 		word prevtaborder = 0;
 
 		it = m_ControlList.Begin();
@@ -167,7 +157,7 @@ CConsoleControl* CConsoleControlWindow::GetFirstTabOrder()
 {
 	ControlDataList::Iterator it = m_ControlList.Begin();
 	ControlData* pData;
-	CConsoleControl* focusCtrl = NULL;
+	CConsoleControl* focusCtrl = nullptr;
 	word taborder = USHRT_MAX;
 
 	while ( it )

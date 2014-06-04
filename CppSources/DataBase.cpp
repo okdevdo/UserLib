@@ -26,7 +26,7 @@
 IMPL_EXCEPTION(CDBaseException, CBaseException)
 
 CDBase::CDBase(void):
-    m_dbasefile(NULL)
+    m_dbasefile(nullptr)
 {
 }
 
@@ -257,7 +257,7 @@ void CDBase::Close()
 
 	if ( result )
 		throw OK_NEW_OPERATOR CDBaseException(__FILE__LINE__ _T("in %s CDBaseException"), _T("CDBase::Close"), result);
-	m_dbasefile = NULL;
+	m_dbasefile = nullptr;
 }
 
 bool CDBase::BeginIndex(dword index)
@@ -369,7 +369,7 @@ void CDBase::Import(ConstRef(CFilePath) path, CStringLiteral fielddelim, CString
 	dword maxrecordCount;
 	dword recordDelimLen;
 	CArray recordsplit;
-	CArray fieldsplit = NULL;
+	CArray fieldsplit = nullptr;
 	dword ix;
 	dword jx;
 	byte fieldtype; 
@@ -451,7 +451,7 @@ void CDBase::Import(ConstRef(CFilePath) path, CStringLiteral fielddelim, CString
 						SetTextField(jx, sbufField);
 						break;
 					case 'N':
-						doublefieldvalue = s_strtod(sbufField, NULL);
+						doublefieldvalue = s_strtod(sbufField, nullptr);
 						SetNumericField(jx, doublefieldvalue);
 						break;
 					case 'L':
@@ -579,7 +579,7 @@ bool CDBase::CompareDataEqual()
 Pointer CDBase::GetFieldRawData(dword fieldno)
 {
 	if ( PtrCheck(m_dbasefile) )
-		return NULL;
+		return nullptr;
 	return dbasefile_getfielddata(CastAnyPtr(dbasefile,m_dbasefile), fieldno);
 }
 

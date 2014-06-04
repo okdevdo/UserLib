@@ -99,17 +99,17 @@ public:
 	void DrawMenuItem(bool bHighlight = false);
 	dword GetTitleSize() const;
 
-	__inline bool HasSubMenu() { return m_SubMenu != NULL; }
+	__inline bool HasSubMenu() { return m_SubMenu != nullptr; }
 	__inline CConsolePopupMenu* GetSubMenu() { return m_SubMenu; }
 
 	virtual void Create(COORD pos, COORD size);
 	virtual void Resize();
 
 protected:
-	CAbstractConsoleMenuItemCallback* m_Callback;
+	CCppObjectPtr<CAbstractConsoleMenuItemCallback> m_Callback;
 	WORD m_VirtualKeyCode;
 	DWORD m_KeyModifiers;
-	CConsolePopupMenu* m_SubMenu;
+	CCppObjectPtr<CConsolePopupMenu> m_SubMenu;
 
 	CStringBuffer CreateMenuTitle() const;
 

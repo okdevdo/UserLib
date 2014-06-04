@@ -245,7 +245,7 @@ int CByteLinkedBuffer::Iterator::operator-(Iterator& other)
 
 CByteLinkedBuffer::Iterator& CByteLinkedBuffer::Iterator::Find(BPointer str, dword strLen)
 {
-	if ( (str == NULL) || (strLen == 0) )
+	if ( (str == nullptr) || (strLen == 0) )
 		return *this;
 	Find(*str);
 	while ( _index < _bufferItems.Count() )
@@ -262,7 +262,7 @@ CByteLinkedBuffer::Iterator& CByteLinkedBuffer::Iterator::Find(BPointer str, dwo
 
 CByteLinkedBuffer::Iterator& CByteLinkedBuffer::Iterator::FindAny(BPointer str, dword strLen)
 {
-	if ( (str == NULL) || (strLen == 0) )
+	if ( (str == nullptr) || (strLen == 0) )
 		return *this;
 	if ( _index < _bufferItems.Count() )
 	{
@@ -402,12 +402,12 @@ CByteLinkedBuffer::Iterator& CByteLinkedBuffer::Iterator::Find(byte ch)
 BPointer CByteLinkedBuffer::Iterator::operator *()
 {
 	if ( _index >= _bufferItems.Count() )
-		return NULL;
+		return nullptr;
 
 	TBufferItems::Iterator it = _bufferItems.Index(_index);
 
 	if ( (*it)->_bufferSize <= _pos )
-		return NULL;
+		return nullptr;
 	return (*it)->_buffer + _pos;
 }
 
@@ -559,7 +559,7 @@ void CByteLinkedBuffer::SetBegin(CByteLinkedBuffer::Iterator it)
 BPointer CByteLinkedBuffer::AddBufferItem(dword size)
 {
 	if (0 == size)
-		return NULL;
+		return nullptr;
 
 	Ptr(TBufferItem) item = OK_NEW_OPERATOR TBufferItem;
 
@@ -593,7 +593,7 @@ void CByteLinkedBuffer::AddBufferItem(BPointer buf, dword len)
 BPointer CByteLinkedBuffer::GetBufferItem(dword ix, dword* size) const
 {
 	if ( ix >= _bufferItems.Count() )
-		return NULL;
+		return nullptr;
 
 	TBufferItems::Iterator it = _bufferItems.Index(ix);
 
@@ -661,7 +661,7 @@ void CByteLinkedBuffer::RemoveBufferItem(dword ix)
 BPointer CByteLinkedBuffer::InsertBufferItem(dword ix, dword size)
 {
 	if ((ix >= _bufferItems.Count()) || (0 == size))
-		return NULL;
+		return nullptr;
 
 	TBufferItems::Iterator it = _bufferItems.Index(ix);
 	Ptr(TBufferItem) item = OK_NEW_OPERATOR TBufferItem;

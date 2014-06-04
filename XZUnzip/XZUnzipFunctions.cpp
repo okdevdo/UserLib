@@ -29,8 +29,8 @@ void XZUnzipExtractFile(CStringLiteral archivefile, CStringLiteral extractFile)
 {
 	CFilePath farchivefile(__FILE__LINE__ archivefile);
 	CFilePath foutputfile;
-	CSecurityFile* parchivefile = NULL;
-	CSecurityFile* poutputfile = NULL;
+	CCppObjectPtr<CSecurityFile> parchivefile;
+	CCppObjectPtr<CSecurityFile> poutputfile;
 
 	if (farchivefile.get_Extension().Compare(CStringLiteral(_T("xz")), 0, CStringLiteral::cIgnoreCase) != 0)
 	{
@@ -40,7 +40,7 @@ void XZUnzipExtractFile(CStringLiteral archivefile, CStringLiteral extractFile)
 	if (extractFile.IsEmpty())
 	{
 		foutputfile.set_Path(__FILE__LINE__ archivefile);
-		foutputfile.set_Extension(NULL);
+		foutputfile.set_Extension(nullptr);
 	}
 	else
 		foutputfile.set_Path(__FILE__LINE__ extractFile);
@@ -63,32 +63,20 @@ void XZUnzipExtractFile(CStringLiteral archivefile, CStringLiteral extractFile)
 
 		poutputfile->Create(foutputfile);
 
-		CFileFilterInput* pInput = OK_NEW_OPERATOR CFileFilterInput(parchivefile);
-		CFileFilterOutput* pOutput = OK_NEW_OPERATOR CFileFilterOutput(poutputfile);
-		CXZDeCompressFilter* pFilter = OK_NEW_OPERATOR CXZDeCompressFilter(pInput, pOutput);
+		CCppObjectPtr<CFileFilterInput> pInput = OK_NEW_OPERATOR CFileFilterInput(parchivefile);
+		CCppObjectPtr<CFileFilterOutput> pOutput = OK_NEW_OPERATOR CFileFilterOutput(poutputfile);
+		CCppObjectPtr<CXZDeCompressFilter> pFilter = OK_NEW_OPERATOR CXZDeCompressFilter(pInput, pOutput);
 
 		pFilter->open();
 		pFilter->do_filter();
 		pFilter->close();
-
-		pFilter->release();
-		pOutput->release();
-		pInput->release();
-		parchivefile->release();
-		poutputfile->release();
 	}
 	catch (CBaseException* ex)
 	{
 		if (parchivefile)
-		{
 			parchivefile->Close();
-			parchivefile->release();
-		}
 		if (poutputfile)
-		{
 			poutputfile->Close();
-			poutputfile->release();
-		}
 		CERR << ex->GetExceptionMessage() << endl;
 	}
 	CSecurityContext_FreeInstance

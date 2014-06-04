@@ -385,7 +385,7 @@ static void InitInfos(Ref(CMetaProjectInfos) ProjInfo, ConstRef(CAbstractConfigu
 void MetaProjectCreateProjectFilesXML(CConstPointer xml_file)
 {
 	CFilePath fname(__FILE__LINE__ xml_file);
-	Ptr(CFile) ffile = OK_NEW_OPERATOR CStreamFile;
+	CCppObjectPtr<CFile> ffile = OK_NEW_OPERATOR CStreamFile;
 	CDirectoryIterator it;
 	CStringBuffer tmp;
 	CStringBuffer tmp1;
@@ -566,5 +566,4 @@ void MetaProjectCreateProjectFilesXML(CConstPointer xml_file)
 	}
 	ffile->Write(_T("</Projects>"));
 	ffile->Close();
-	ffile->release();
 }

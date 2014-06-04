@@ -43,7 +43,7 @@ static void xml_free(void* p)
 
 
 CSAXParserImpl::CSAXParserImpl():
-_parser(NULL), _parsing(false), _contenthandler(NULL), _dtdhandler(NULL)
+_parser(nullptr), _parsing(false), _contenthandler(nullptr), _dtdhandler(nullptr)
 {
 }
 
@@ -121,7 +121,7 @@ ConstRef(CStringBuffer) CSAXParserImpl::get_encoding() const
 void CSAXParserImpl::set_encoding(CConstPointer encoding)
 {
 	_encoding.SetString(__FILE__LINE__ encoding);
-	if ((_parser != NULL) && (!_parsing))
+	if ((_parser != nullptr) && (!_parsing))
 		XML_SetEncoding(_parser, encoding);
 }
 
@@ -140,12 +140,12 @@ void CSAXParserImpl::Parse(ConstRef(CByteBuffer) xmltext, bool isFinal)
 	if (isFinal)
 	{
 		XML_ParserFree(_parser);
-		_parser = NULL;
+		_parser = nullptr;
 		_parsing = false;
 	}
 }
 
-#define GetParser(p,u) XML_Parser (p) = (u) ? CastAny(XML_Parser, (u)) : NULL; if (!(p)) return
+#define GetParser(p,u) XML_Parser (p) = (u) ? CastAny(XML_Parser, (u)) : nullptr; if (!(p)) return
 #define GetUserData(c,p) Ptr(CSAXParserImpl) c = CastAnyPtr(CSAXParserImpl, XML_GetUserData(p)); if (!(c)) return
 #define GetContentHandler(h,c)  Ptr(CSAXParserContentHandler) (h) = (c)->get_contenthandler(); if (!(h)) return
 #define GetDTDHandler(h,c)  Ptr(CSAXParserDTDHandler) (h) = (c)->get_dtdhandler(); if (!(h)) return
@@ -310,8 +310,8 @@ void XMLCALL CSAXParserImpl::EndDoctypeDeclHandler(void *userData)
 
 static void CopyElementDefinition(XML_Content *model, Ptr(CSAXParserElementDefinition) pDef)
 {
-	assert(model != NULL);
-	assert(pDef != NULL);
+	assert(model != nullptr);
+	assert(pDef != nullptr);
 
 	pDef->set_contentType(model->type);
 	pDef->set_contentQuant(model->quant);
@@ -335,7 +335,7 @@ void XMLCALL CSAXParserImpl::ElementDeclHandler(void *userData,
 	GetDTDHandler(h, c);
 
 	CStringBuffer vname(__FILE__LINE__ name);
-	Ptr(CSAXParserElementDefinition) pdef = NULL;
+	Ptr(CSAXParserElementDefinition) pdef = nullptr;
 
 	if (model)
 	{
@@ -409,7 +409,7 @@ int XMLCALL CSAXParserImpl::ExternalEntityRefHandler(
 	CStringBuffer vsystemId(__FILE__LINE__ systemId);
 	CStringBuffer vpublicId(__FILE__LINE__ publicId);
 
-	XML_Parser extParser = XML_ExternalEntityParserCreate(parser, context, NULL);
+	XML_Parser extParser = XML_ExternalEntityParserCreate(parser, context, nullptr);
 
 	CFilePath path(vsystemId);
 	Ptr(CDiskFile) f = OK_NEW_OPERATOR CDiskFile(path);

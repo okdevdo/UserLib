@@ -28,11 +28,11 @@
 CGuiApplication::CGuiApplication(LPCTSTR _defaultAppName):
 CApplication(CStringBuffer(__FILE__LINE__ CastAny(CConstPointer, _defaultAppName))),
 	m_guiinstance(0),
-	m_mainwnd(NULL),
+	m_mainwnd(nullptr),
 	m_cmdshow(SW_SHOWDEFAULT),
-	m_rsrcman(NULL),
-	m_fontman(NULL),
-	m_brushman(NULL)
+	m_rsrcman(nullptr),
+	m_fontman(nullptr),
+	m_brushman(nullptr)
 #ifdef __DEBUG__
 	, m_isDebug(false)
 	, m_debugID(0)
@@ -43,11 +43,11 @@ CApplication(CStringBuffer(__FILE__LINE__ CastAny(CConstPointer, _defaultAppName
 CGuiApplication::CGuiApplication(ConstRef(CStringBuffer) _defaultAppName):
     CApplication(_defaultAppName),
 	m_guiinstance(0),
-	m_mainwnd(NULL),
+	m_mainwnd(nullptr),
 	m_cmdshow(SW_SHOWDEFAULT),
-	m_rsrcman(NULL),
-	m_fontman(NULL),
-	m_brushman(NULL)
+	m_rsrcman(nullptr),
+	m_fontman(nullptr),
+	m_brushman(nullptr)
 #ifdef __DEBUG__
 	, m_isDebug(false)
 	, m_debugID(0)
@@ -99,7 +99,7 @@ int CGuiApplication::run(HINSTANCE hGuiInstance, int nCmdShow)
 #endif
     ULONG_PTR gdiplusToken;
 
-    if ( Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL) != Gdiplus::Ok )
+    if ( Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, nullptr) != Gdiplus::Ok )
 		return -4;
 
 	m_guiinstance = hGuiInstance;
@@ -124,17 +124,17 @@ int CGuiApplication::run(HINSTANCE hGuiInstance, int nCmdShow)
 	}
 	catch ( COptionException* ex )
 	{
-		MessageBox(NULL, ex->GetExceptionMessage().GetString(), _T("Option Exception"), MB_OK | MB_ICONERROR);
+		MessageBox(nullptr, ex->GetExceptionMessage().GetString(), _T("Option Exception"), MB_OK | MB_ICONERROR);
 		result = -4;
 	}
 	catch ( CBaseException* ex )
 	{
-		MessageBox(NULL, ex->GetExceptionMessage().GetString(), _T("Exception"), MB_OK | MB_ICONERROR);
+		MessageBox(nullptr, ex->GetExceptionMessage().GetString(), _T("Exception"), MB_OK | MB_ICONERROR);
 		result = -4;
 	}
 	catch ( ... )
 	{
-		MessageBox(NULL, _T("FATAL error"), _T("Exception"), MB_OK | MB_ICONERROR);
+		MessageBox(nullptr, _T("FATAL error"), _T("Exception"), MB_OK | MB_ICONERROR);
 		result = -4;
 	}
 	if ( m_brushman )
@@ -170,7 +170,7 @@ int CGuiApplication::do_messageloop(CFrameWnd* win)
 	BOOL bRet;
 
 	//m_mainwnd->PostMessage(WM_COMMAND, IDM_NEW, 0);
-	while ( (bRet = GetMessage(&msg, NULL, 0, 0)) != 0 )
+	while ( (bRet = GetMessage(&msg, nullptr, 0, 0)) != 0 )
 	{
 		if ( bRet == -1 )
 			return -4;
@@ -206,7 +206,7 @@ int CGuiApplication::do_messageloop(CMDIFrame* win)
 	BOOL bRet;
 
 	m_mainwnd->PostMessage(WM_COMMAND, IDM_NEW, 0);
-	while ( (bRet = GetMessage(&msg, NULL, 0, 0)) != 0 )
+	while ( (bRet = GetMessage(&msg, nullptr, 0, 0)) != 0 )
 	{
 		if ( bRet == -1 )
 			return -4;

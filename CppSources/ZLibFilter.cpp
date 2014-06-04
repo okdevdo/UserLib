@@ -46,7 +46,7 @@ static void ThrowDefaultException(DECL_FILE_LINE CConstPointer format, const cha
 }
 
 CZLibCompressFilter::CZLibCompressFilter(Ptr(CAbstractFilterInput) input, Ptr(CAbstractFilterOutput) output) :
-    CFilter(input, output), m_stream(NULL)
+    CFilter(input, output), m_stream(nullptr)
 {
 }
 
@@ -104,7 +104,7 @@ dword CZLibCompressFilter::do_filter()
 		} while ( CastAnyPtr(z_stream, m_stream)->avail_in > 0 );
 	}
 
-	CastAnyPtr(z_stream, m_stream)->next_in = NULL;
+	CastAnyPtr(z_stream, m_stream)->next_in = nullptr;
 	CastAnyPtr(z_stream, m_stream)->avail_in = 0;
 
 	while ( res != Z_STREAM_END )
@@ -137,7 +137,7 @@ void CZLibCompressFilter::close()
 }
 
 CZLibDeCompressFilter::CZLibDeCompressFilter(Ptr(CAbstractFilterInput) input, Ptr(CAbstractFilterOutput) output) :
-    CFilter(input, output), m_stream(NULL)
+    CFilter(input, output), m_stream(nullptr)
 {
 }
 
@@ -196,7 +196,7 @@ dword CZLibDeCompressFilter::do_filter()
 	}
 	if ( res != Z_STREAM_END )
 	{
-		CastAnyPtr(z_stream, m_stream)->next_in = NULL;
+		CastAnyPtr(z_stream, m_stream)->next_in = nullptr;
 		CastAnyPtr(z_stream, m_stream)->avail_in = 0;
 
 		do 

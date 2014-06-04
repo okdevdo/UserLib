@@ -114,14 +114,14 @@ void CDateTime::Now(TimeType ttype)
 	if (((time_t)(-1)) == tval)
 		throw CBaseException(__FILE__LINE__ _T("Exception in %s: time returns -1"), _T("CDateTime::Now"));
 
-	struct tm* ts = NULL;
+	struct tm* ts = nullptr;
 
 	if (ttype == LocalTime)
 		ts = localtime(&tval);
 	else
 		ts = gmtime(&tval);
-	if (NULL == ts)
-		throw CBaseException(__FILE__LINE__ _T("Exception in %s: localtime or gmtime returns NULL"), _T("CDateTime::Now"));
+	if (nullptr == ts)
+		throw CBaseException(__FILE__LINE__ _T("Exception in %s: localtime or gmtime returns nullptr"), _T("CDateTime::Now"));
 	s_memcpy(&m_TStruct, ts, sizeof(struct tm));
 	m_TType = ttype;
 }
@@ -172,7 +172,7 @@ void CDateTime::GetTime(Ref(time_t) t, TimeType ttype, Ptr(int) tdst) const
 			t = mktime2(&tstruct);
 			ts = localtime(&t);
 			if (PtrCheck(ts))
-				throw CBaseException(__FILE__LINE__ _T("Exception in %s: localtime returns NULL"), _T("CDateTime::GetTime"));
+				throw CBaseException(__FILE__LINE__ _T("Exception in %s: localtime returns nullptr"), _T("CDateTime::GetTime"));
 			if (NotPtrCheck(tdst))
 				*tdst = ts->tm_isdst;
 			t = mktime2(ts);
@@ -213,15 +213,15 @@ void CDateTime::SetTime(word dosdate, word dostime, int dst, TimeType ttype)
 
 void CDateTime::SetTime(time_t tval, int dst, CDateTime::TimeType ttype)
 {
-	struct tm* ts = NULL;
+	struct tm* ts = nullptr;
 	
 	s_memset(&m_TStruct, 0, sizeof(struct tm));
 	if (ttype == LocalTime)
 		ts = localtime(&tval);
 	else
 		ts = gmtime(&tval);
-	if ( NULL == ts )
-		throw CBaseException(__FILE__LINE__ _T("Exception in %s: localtime or gmtime returns NULL"), _T("CDateTime::SetTime"));
+	if ( nullptr == ts )
+		throw CBaseException(__FILE__LINE__ _T("Exception in %s: localtime or gmtime returns nullptr"), _T("CDateTime::SetTime"));
 	s_memcpy(&m_TStruct, ts, sizeof(struct tm));
 	m_TStruct.tm_isdst = dst;
 	m_TType = ttype;

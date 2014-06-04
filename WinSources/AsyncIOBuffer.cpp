@@ -21,15 +21,24 @@
 #include "WS_PCH.H"
 #include "AsyncIOBuffer.h"
 
-CAsyncIOBuffer::CAsyncIOBuffer(Ptr(CAsyncIOManager) pManager):
-    m_pManager(pManager),
-	m_pData(OK_NEW_OPERATOR CAsyncIOData())
+CAsyncIOBuffer::CAsyncIOBuffer(Ptr(CAsyncIOData) pData) :
+m_pManager(nullptr),
+m_pData(pData),
+m_bDetach(true)
+{
+}
+
+CAsyncIOBuffer::CAsyncIOBuffer(Ptr(CAsyncIOManager) pManager) :
+m_pManager(pManager),
+m_pData(OK_NEW_OPERATOR CAsyncIOData),
+m_bDetach(false)
 {
 }
 
 CAsyncIOBuffer::~CAsyncIOBuffer(void)
 {
-	m_pData->release();
+	if (m_bDetach)
+		m_pData.detach();
 }
 
 void CAsyncIOBuffer::Read(Ref(CByteBuffer) buf, Ptr(CAbstractThreadCallback) pHandler)

@@ -1170,7 +1170,7 @@ void* TFalloc(size_t sz)
 	if (PtrCheck(_defaultpoola) || PtrCheck(_defaultpoolf))
 		return NULL;
 	TFLOCK
-#ifdef __DEBUG__
+#ifdef __DEBUG1__
 		++_cntTFalloc;
 	if ((_cntTFalloc % 1000) == 0)
 	{

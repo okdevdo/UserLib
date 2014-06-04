@@ -38,10 +38,6 @@
 #include "TextControl.h"
 #include "Docking.h"
 
-static void __stdcall VectorEmptyDeleteFunc( ConstPointer data, Pointer context )
-{
-}
-
 static INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
@@ -86,9 +82,9 @@ END_MESSAGE_MAP()
 
 XGuiZip::XGuiZip(): 
 	CFrameWnd(_T("XGuiZip")),
-	m_pTabControl(NULL),
+	m_pTabControl(nullptr),
 	m_PageCnt(0),
-	m_pEditorContextMenu(NULL)
+	m_pEditorContextMenu(nullptr)
 {
 }
 
@@ -126,7 +122,7 @@ LRESULT XGuiZip::OnInitMenuPopup(WPARAM wParam, LPARAM lParam)
 			switch ( cmds[ix] )
 			{
 			case IDM_ADDFILES:
-				pCtrl->set_Enabled(m_pTabControl->get_CurrentTabPage() != NULL);
+				pCtrl->set_Enabled(m_pTabControl->get_CurrentTabPage() != nullptr);
 				break;
 			case IDM_EXTRACT:
 				{
@@ -379,7 +375,7 @@ LRESULT XGuiZip::OnOpenCommand(WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-static LPOPENFILENAME OFNHookProc_ofn = NULL;
+static LPOPENFILENAME OFNHookProc_ofn = nullptr;
 static UINT_PTR CALLBACK OFNHookProc_AddFilesExtract(HWND hdlg, UINT uiMsg, WPARAM wParam, LPARAM lParam)
 {
 	HWND hParent = ::GetParent(hdlg);

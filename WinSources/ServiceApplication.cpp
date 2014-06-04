@@ -43,13 +43,13 @@ bool CServiceApplication::is_service()
 	TCHAR *name;
 
 	h = GetProcessWindowStation();
-	if (h == NULL)
+	if (h == nullptr)
 	{
 		CEventLogger::WriteLog(CEventLogger::Error, _T("GetProcessWindowStation failed"));
 		CEventLogger::CleanUp();
 		return true;
 	}
-	if (GetUserObjectInformation(h, UOI_NAME, NULL, 0, &len) || (GetLastError() != ERROR_INSUFFICIENT_BUFFER))
+	if (GetUserObjectInformation(h, UOI_NAME, nullptr, 0, &len) || (GetLastError() != ERROR_INSUFFICIENT_BUFFER))
 	{
 		CEventLogger::WriteLog(CEventLogger::Error, _T("GetProcessWindowStation failed"));
 		CEventLogger::CleanUp();

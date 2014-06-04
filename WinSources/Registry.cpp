@@ -22,7 +22,7 @@
 #include "Registry.h"
 
 CRegistry::CRegistry(void):
-	_rootKey(NULL), _applicationKey(NULL), _dataKey(NULL)
+	_rootKey(nullptr), _applicationKey(nullptr), _dataKey(nullptr)
 {
 }
 
@@ -75,10 +75,10 @@ BOOL CRegistry::OpenApplication()
 			_rootKey,
 			TEXT("Software\\Oliver Kreis\\UserLib"),
 			0,
-			NULL,
+			nullptr,
 			REG_OPTION_NON_VOLATILE,
 			KEY_ALL_ACCESS,
-			NULL,
+			nullptr,
 			&_applicationKey,
 			&disposition)) != ERROR_SUCCESS)
 		{
@@ -106,12 +106,12 @@ BOOL CRegistry::OpenDataKey(LPCTSTR key)
 		_applicationKey?_applicationKey:_rootKey,
 		key,
 		0,
-		NULL,
+		nullptr,
 		REG_OPTION_NON_VOLATILE,
 		//		KEY_ALL_ACCESS,
 		//		KEY_QUERY_VALUE | STANDARD_RIGHTS_READ,
 		KEY_READ,
-		NULL,
+		nullptr,
 		&_dataKey,
 		&disposition)) != ERROR_SUCCESS)
 	{
@@ -139,10 +139,10 @@ BOOL CRegistry::QueryKeys(DWORD ix, LPTSTR* keyName, DWORD* keyNameLen)
 			ix,
 			*keyName,
 			&vKeyLen,
-			NULL,
-			NULL,
-			NULL,
-			NULL)) != ERROR_SUCCESS)
+			nullptr,
+			nullptr,
+			nullptr,
+			nullptr)) != ERROR_SUCCESS)
 		{
 			switch (ret)
 			{
@@ -151,15 +151,15 @@ BOOL CRegistry::QueryKeys(DWORD ix, LPTSTR* keyName, DWORD* keyNameLen)
 					*keyNameLen = 128;
 				else
 					*keyNameLen += 128;
-				if (*keyName == NULL)
+				if (*keyName == nullptr)
 					*keyName = (LPTSTR)TFalloc(*keyNameLen);
 				else
 					*keyName = (LPTSTR)TFrealloc(*keyName, *keyNameLen);
 				break;
 			case ERROR_NO_MORE_ITEMS:
-				if (*keyName != NULL)
+				if (*keyName != nullptr)
 					TFfree(*keyName);
-				*keyName = NULL;
+				*keyName = nullptr;
 				*keyNameLen = 0;
 				SetLastError(ERROR_SUCCESS);
 				return FALSE;
@@ -192,10 +192,10 @@ BOOL CRegistry::QueryValues(DWORD ix, LPTSTR* valueName, DWORD* valueNameLen)
 			ix,
 			*valueName,
 			&vValueLen,
-			NULL,
-			NULL,
-			NULL,
-			NULL)) != ERROR_SUCCESS)
+			nullptr,
+			nullptr,
+			nullptr,
+			nullptr)) != ERROR_SUCCESS)
 		{
 			switch (ret)
 			{
@@ -204,15 +204,15 @@ BOOL CRegistry::QueryValues(DWORD ix, LPTSTR* valueName, DWORD* valueNameLen)
 					*valueNameLen = 128;
 				else
 					*valueNameLen += 128;
-				if (*valueName == NULL)
+				if (*valueName == nullptr)
 					*valueName = (LPTSTR)TFalloc(*valueNameLen);
 				else
 					*valueName = (LPTSTR)TFrealloc(*valueName, *valueNameLen);
 				break;
 			case ERROR_NO_MORE_ITEMS:
-				if (*valueName != NULL)
+				if (*valueName != nullptr)
 					TFfree(*valueName);
-				*valueName = NULL;
+				*valueName = nullptr;
 				*valueNameLen = 0;
 				SetLastError(ERROR_SUCCESS);
 				return FALSE;
@@ -242,20 +242,20 @@ BOOL CRegistry::GetValueSize(LPCTSTR valueName, LPDWORD pSize)
     if ( (ret = RegQueryValueEx(
             _dataKey,
             valueName, 
-            NULL,
-            NULL,
-            NULL,
+            nullptr,
+            nullptr,
+            nullptr,
             pSize)) != ERROR_SUCCESS )
 #endif
 #endif
 #ifdef OK_COMP_MSC
 	if ((ret = RegGetValue(
 		_dataKey,
-		NULL,
+		nullptr,
 		valueName,
 		RRF_RT_ANY,
-		NULL,
-		NULL,
+		nullptr,
+		nullptr,
 		pSize)) != ERROR_SUCCESS) // size in bytes
 #endif
 	{
@@ -285,7 +285,7 @@ BOOL CRegistry::GetValue(LPCTSTR valueName, LPTSTR value)
 	if ( (ret = RegQueryValueEx(
 		_dataKey,
 		valueName, 
-		NULL,
+		nullptr,
 		&type,
 		(LPBYTE)value,
 		&size)) != ERROR_SUCCESS )
@@ -303,10 +303,10 @@ BOOL CRegistry::GetValue(LPCTSTR valueName, LPTSTR value)
 #ifdef OK_COMP_MSC
 	if ( (ret = RegGetValue(
 			_dataKey,
-			NULL,
+			nullptr,
 			valueName,
 			RRF_RT_REG_SZ,
-			NULL,
+			nullptr,
 			(PVOID)value,
 			&size)) != ERROR_SUCCESS )
 	{
@@ -335,7 +335,7 @@ BOOL CRegistry::GetValue(LPCTSTR valueName, LPDWORD value)
 		if ( (ret = RegQueryValueEx(
 			_dataKey,
 			valueName, 
-			NULL,
+			nullptr,
 			&type,
 			(LPBYTE)value,
 			&size)) != ERROR_SUCCESS )
@@ -353,10 +353,10 @@ BOOL CRegistry::GetValue(LPCTSTR valueName, LPDWORD value)
 #ifdef OK_COMP_MSC
 	if ( (ret = RegGetValue(
 			_dataKey,
-			NULL,
+			nullptr,
 			valueName,
 			RRF_RT_DWORD,
-			NULL,
+			nullptr,
 			(PVOID)value,
 			&size)) != ERROR_SUCCESS )
 		{
@@ -384,7 +384,7 @@ BOOL CRegistry::GetValue(LPCTSTR valueName, LPBYTE value, DWORD size)
         if ( (ret = RegQueryValueEx(
                 _dataKey,
                 valueName, 
-                NULL,
+                nullptr,
                 &type,
                 value,
                 &size)) != ERROR_SUCCESS )
@@ -402,10 +402,10 @@ BOOL CRegistry::GetValue(LPCTSTR valueName, LPBYTE value, DWORD size)
 #ifdef OK_COMP_MSC
 	if ( (ret = RegGetValue(
 			_dataKey,
-			NULL,
+			nullptr,
 			valueName,
 			RRF_RT_REG_BINARY,
-			NULL,
+			nullptr,
 			(PVOID)value,
 			&size)) != ERROR_SUCCESS )
 		{
@@ -494,7 +494,7 @@ void CRegistry::CloseDataKey()
 	if ( _dataKey )
 	{
 		RegCloseKey(_dataKey);
-		_dataKey = NULL;
+		_dataKey = nullptr;
 	}
 }
 
@@ -504,11 +504,11 @@ void CRegistry::Close()
 	if ( _applicationKey )
 	{
 		RegCloseKey(_applicationKey);
-		_applicationKey = NULL;
+		_applicationKey = nullptr;
 	}
 	if (_rootKey && (_rootKey != HKEY_LOCAL_MACHINE) && (_rootKey != HKEY_CURRENT_USER))
 	{
 		RegCloseKey(_rootKey);
-		_rootKey = NULL;
+		_rootKey = nullptr;
 	}
 }

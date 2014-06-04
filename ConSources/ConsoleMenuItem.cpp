@@ -37,25 +37,25 @@ CAbstractConsoleMenuItemCallback::~CAbstractConsoleMenuItemCallback()
 
 CConsoleMenuItem::CConsoleMenuItem(CConstPointer name, CConsole* pConsole):
     CConsoleWindow(name, pConsole),
-	m_Callback(NULL),
+	m_Callback(),
 	m_VirtualKeyCode(0),
 	m_KeyModifiers(0),
-	m_SubMenu(NULL)
+	m_SubMenu()
 {
 }
 
 CConsoleMenuItem::CConsoleMenuItem(CConstPointer name, CConstPointer title, CConsole* pConsole):
     CConsoleWindow(name, title, pConsole),
-	m_Callback(NULL),
+	m_Callback(),
 	m_VirtualKeyCode(0),
 	m_KeyModifiers(0),
-	m_SubMenu(NULL)
+	m_SubMenu()
 {
 }
 
 CConsoleMenuItem::CConsoleMenuItem(CConsolePopupMenu* subMenu, CConstPointer name, CConstPointer title, CConsole* pConsole):
     CConsoleWindow(name, title, pConsole),
-	m_Callback(NULL),
+	m_Callback(),
 	m_VirtualKeyCode(0),
 	m_KeyModifiers(0),
 	m_SubMenu(subMenu)
@@ -67,7 +67,7 @@ CConsoleMenuItem::CConsoleMenuItem(CAbstractConsoleMenuItemCallback* pCallback, 
 	m_Callback(pCallback),
 	m_VirtualKeyCode(0),
 	m_KeyModifiers(0),
-	m_SubMenu(NULL)
+	m_SubMenu()
 {
 }
 
@@ -76,16 +76,12 @@ CConsoleMenuItem::CConsoleMenuItem(WORD vkey, DWORD kmod, CAbstractConsoleMenuIt
 	m_Callback(pCallback),
 	m_VirtualKeyCode(vkey),
 	m_KeyModifiers(kmod),
-	m_SubMenu(NULL)
+	m_SubMenu()
 {
 }
 
 CConsoleMenuItem::~CConsoleMenuItem(void)
 {
-	if ( m_Callback )
-		m_Callback->release();
-	if ( m_SubMenu )
-		m_SubMenu->release();
 }
 
 bool CConsoleMenuItem::TestKeyCode(WORD vkey, DWORD kmod) 

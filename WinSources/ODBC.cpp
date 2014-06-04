@@ -57,7 +57,7 @@ bool CODBCException::FormatString(CConstPointer format, ...)
 }
 
 CODBCEnvironment::CODBCEnvironment(void):
-	_lpImpl(NULL)
+	_lpImpl(nullptr)
 {
 	_lpImpl = OK_NEW_OPERATOR CODBCEnvironmentImpl();
 }
@@ -72,7 +72,7 @@ CODBCException* CODBCEnvironment::get_LastError() const
 {
 	if (_lpImpl)
 		return _lpImpl->get_LastError();
-	return NULL;
+	return nullptr;
 }
 
 void CODBCEnvironment::set_LastError(CODBCException* pLastError)
@@ -85,7 +85,7 @@ CODBCConnection* CODBCEnvironment::create_Connection()
 {
 	if (_lpImpl)
 		return OK_NEW_OPERATOR CODBCConnection(this, _lpImpl->create_Connection());
-	return NULL;
+	return nullptr;
 }
 
 void CODBCEnvironment::Open()
@@ -152,7 +152,7 @@ CODBCStatement* CODBCConnection::create_Statement()
 {
 	if (_lpImpl)
 		return OK_NEW_OPERATOR CODBCStatement(_lpEnv, _lpImpl->create_Statement());
-	return NULL;
+	return nullptr;
 }
 
 void CODBCConnection::free_Statement(Ref(Ptr(CODBCStatement)) pStmt)
@@ -165,7 +165,7 @@ void CODBCConnection::free_Statement(Ref(Ptr(CODBCStatement)) pStmt)
 	if (pStmt)
 	{
 		pStmt->release();
-		pStmt = NULL;
+		pStmt = nullptr;
 	}
 }
 
@@ -179,21 +179,6 @@ void CODBCConnection::Close()
 {
 	if (_lpImpl)
 		_lpImpl->Close();
-}
-
-static void __stdcall CODBCColumnsDeleteFunc(ConstPointer data, Pointer context)
-{
-	Ptr(CODBCColumn) column = CastAnyPtr(CODBCColumn, CastMutable(Pointer, data));
-
-	column->release();
-}
-
-static sword __stdcall CODBCColumnsSearchAndSortFunc(ConstPointer item, ConstPointer data)
-{
-	Ptr(CODBCColumn) pColumn = CastAnyPtr(CODBCColumn, CastMutable(Pointer, item));
-	CStringLiteral pName(CastAny(CPointer, CastMutable(Pointer, data)));
-
-	return pName.Compare(pColumn->get_Name());
 }
 
 #ifdef OK_CPU_64BIT
@@ -233,7 +218,7 @@ CODBCColumn* CODBCStatement::get_ColumnInfo(word ix) const
 
 	if (it)
 		return *it;
-	return NULL;
+	return nullptr;
 }
 
 CODBCColumn* CODBCStatement::get_ColumnInfo(LPCTSTR name)
@@ -243,7 +228,7 @@ CODBCColumn* CODBCStatement::get_ColumnInfo(LPCTSTR name)
 
 	if (it)
 		return *it;
-	return NULL;
+	return nullptr;
 }
 
 sqword CODBCStatement::get_RowCount() const

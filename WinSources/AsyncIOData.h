@@ -28,7 +28,8 @@ class WINSOURCES_API CAsyncIOData: public CCppObject
 public:
 	enum IOOperation {
 		IORead,
-		IOWrite
+		IOWrite,
+		IOAccept
 	};
 
 	CAsyncIOData(void);

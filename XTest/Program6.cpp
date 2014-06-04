@@ -272,12 +272,12 @@ public:
 		_size.X -= 4;
 		_size.Y -= 4;
 
-		Ptr(CTestTabPageControl1) pTabPage1 = OK_NEW_OPERATOR CTestTabPageControl1(0, NULL, _T("TestTabPage1"), _T("TestTabPage1"), m_Console);
+		Ptr(CTestTabPageControl1) pTabPage1 = OK_NEW_OPERATOR CTestTabPageControl1(0, nullptr, _T("TestTabPage1"), _T("TestTabPage1"), m_Console);
 
 		pTabPage1->Initialize(_size);
 		AddTabPage(pTabPage1);
 
-		Ptr(CTestTabPageControl2) pTabPage2 = OK_NEW_OPERATOR CTestTabPageControl2(0, NULL, _T("TestTabPage2"), _T("TestTabPage2"), m_Console);
+		Ptr(CTestTabPageControl2) pTabPage2 = OK_NEW_OPERATOR CTestTabPageControl2(0, nullptr, _T("TestTabPage2"), _T("TestTabPage2"), m_Console);
 
 		pTabPage2->Initialize(_size);
 		AddTabPage(pTabPage2);
@@ -336,7 +336,7 @@ public:
 class CTestConsole: public CConsole
 {
 public:
-	CTestConsole(): m_NumWindows(0), m_pDialog(NULL) {}
+	CTestConsole(): m_NumWindows(0), m_pDialog(nullptr) {}
 
 	void TestDialogOeffnenMenuItem(CConsoleMenuItem* pMenu)
 	{
@@ -443,14 +443,14 @@ public:
 			CreateConsoleWindow(
 				OK_NEW_OPERATOR CConsoleTextViewer(path, name, path.get_Path(), this));
 			CloseConsoleModalDialog(m_pDialog);
-			m_pDialog = NULL;
+			m_pDialog = nullptr;
 		}
 	}
 	void TextDateiOeffnenCancelButton(CConsoleControl* pControl, DWORD command)
 	{
 		if ( NotPtrCheck(m_pDialog) )
 			CloseConsoleModalDialog(m_pDialog);
-		m_pDialog = NULL;
+		m_pDialog = nullptr;
 	}
 	void DateiBeendenMenuItem(CConsoleMenuItem* pMenu)
 	{

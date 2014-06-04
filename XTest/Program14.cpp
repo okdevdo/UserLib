@@ -140,21 +140,6 @@ public:
 	bool fLoadedAndCurrent;
 };
 
-void __stdcall TestFileInfoDeleteFunc( ConstPointer data, Pointer context )
-{
-	Ptr(CTestFileInfo) p = CastAnyPtr(CTestFileInfo, CastMutable(Pointer, data));
-
-	p->release();
-}
-
-sword __stdcall TestFileInfoSearchAndSortFunc( ConstPointer pa, ConstPointer pb )
-{
-	Ptr(CTestFileInfo) pa1 = CastAnyPtr(CTestFileInfo, CastMutable(Pointer, pa));
-	Ptr(CTestFileInfo) pb1 = CastAnyPtr(CTestFileInfo, CastMutable(Pointer, pb));
-
-	return pa1->fname.Compare(pb1->fname);
-}
-
 class CTestFileInfoVector;
 class CTestFileInfoVectorFilterOutput: public CFilterOutput
 {
@@ -194,19 +179,14 @@ public:
 
 	void LoadListFile(ConstRef(CFilePath) fpath)
 	{
-		CDiskFile* pInputFile = OK_NEW_OPERATOR CDiskFile(fpath, true, false, CFile::BinaryFile_NoEncoding);
-		CFilterInput* pInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
-		CFilterOutput* pOutput = OK_NEW_OPERATOR CTestFileInfoVectorFilterOutput(*this);
-		CFilter* pFilter = OK_NEW_OPERATOR CLineReadFilter(pInput, pOutput);
+		CCppObjectPtr<CDiskFile> pInputFile = OK_NEW_OPERATOR CDiskFile(fpath, true, false, CFile::BinaryFile_NoEncoding);
+		CCppObjectPtr<CFilterInput> pInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
+		CCppObjectPtr<CFilterOutput> pOutput = OK_NEW_OPERATOR CTestFileInfoVectorFilterOutput(*this);
+		CCppObjectPtr<CFilter> pFilter = OK_NEW_OPERATOR CLineReadFilter(pInput, pOutput);
 
 		pFilter->open();
 		pFilter->do_filter();
 		pFilter->close();
-
-		pFilter->release();
-		pOutput->release();
-		pInput->release();
-		pInputFile->release();
 	}
 
 	bool CompareFileInfo(ConstRef(CFilePath) fpath)

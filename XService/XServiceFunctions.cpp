@@ -35,20 +35,19 @@
 #define SERVICEDISPLAYNAME2 _T("Olivers Http Server Service")
 #define SERVICEDESCRIPTION2 _T("Olivers Http Server TestService")
 
-Ptr(CServiceManager) gSCManager = OK_NEW_OPERATOR CServiceManager;
+CCppObjectPtr<CServiceManager> gSCManager = OK_NEW_OPERATOR CServiceManager;
 
 class CServiceAsyncTCPClient : public CAsyncTCPClient
 {
 public:
-	CServiceAsyncTCPClient(Ptr(CAsyncIOManager) pManager = NULL, Ptr(CSqLite3Environment) env = NULL ) :
-		CAsyncTCPClient(pManager), _env(env), _conn(NULL), _stmt(NULL), _resultset(__FILE__LINE__ 16, 32), _bQuit(false)
+	CServiceAsyncTCPClient(Ptr(CAsyncIOData) pData) :
+		CAsyncTCPClient(pData), _env(nullptr), _conn(nullptr), _stmt(nullptr), _resultset(__FILE__LINE__ 16, 32), _bQuit(false)
 	{
 	}
 
-	CServiceAsyncTCPClient(Ptr(CAsyncIOData) pData) :
-		CAsyncTCPClient(), _env(NULL), _conn(NULL), _stmt(NULL), _resultset(__FILE__LINE__ 16, 32), _bQuit(false)
+	CServiceAsyncTCPClient(Ptr(CAsyncIOManager) pManager = nullptr, Ptr(CSqLite3Environment) env = nullptr ) :
+		CAsyncTCPClient(pManager), _env(env), _conn(nullptr), _stmt(nullptr), _resultset(__FILE__LINE__ 16, 32), _bQuit(false)
 	{
-		m_pData = pData;
 	}
 
 	virtual ~CServiceAsyncTCPClient() 
@@ -60,7 +59,7 @@ public:
 	void process_client_request(ConstRef(CStringBuffer) request, Ref(CByteBuffer) response)
 	{
 		CStringBuffer tmp(request);
-		CPointer output[64] = { NULL };
+		CPointer output[64] = { nullptr };
 		dword outputsize = 0;
 		CStringBuffer dbfile;
 
@@ -70,7 +69,7 @@ public:
 			if (s_strnicmp(output[i], _T("CONNECT:"), 8) == 0)
 			{
 				CStringBuffer tmp1(__FILE__LINE__ output[i] + 8);
-				CPointer output1[16] = { NULL };
+				CPointer output1[16] = { nullptr };
 				dword output1size = 0;
 				CStringBuffer user;
 				CStringBuffer passwd;
@@ -156,7 +155,7 @@ public:
 				if (_stmt)
 				{
 					_conn->free_Statement(_stmt);
-					_stmt = NULL;
+					_stmt = nullptr;
 				}
 				while (_resultset.Count() > 0)
 					_resultset.Remove(_resultset.Last());
@@ -219,13 +218,13 @@ public:
 			{
 				CStringBuffer tmp1(__FILE__LINE__ output[i] + 10);
 				CByteBuffer bBuf;
-				CPointer output1[16] = { NULL };
+				CPointer output1[16] = { nullptr };
 				dword output1size = 0;
 				sqword vRow = 0;
 
 				tmp1.Trim();
 				tmp1.Split(_T("="), output1, 16, &output1size);
-				vRow = s_strtoll(output1[1], NULL, 10);
+				vRow = s_strtoll(output1[1], nullptr, 10);
 				tmp1 = _resultset.GetData(_resultset.Index(Cast(TListIndex, vRow)));
 				tmp1.convertToUTF8(bBuf, false);
 				response.concat_Buffer(bBuf);
@@ -250,14 +249,14 @@ public:
 		if (_stmt)
 		{
 			_conn->free_Statement(_stmt);
-			_stmt = NULL;
+			_stmt = nullptr;
 		}
 		if (_conn)
 		{
 			_conn->Close();
 			_conn->release();
 		}
-		_env = NULL;
+		_env = nullptr;
 	}
 
 protected:
@@ -276,23 +275,6 @@ public:
 		return r1->GetData() == r2->GetData();
 	}
 };
-
-static sword __stdcall AsyncTCPClientListSearchAndSortFunc(ConstPointer item, ConstPointer data)
-{
-	Ptr(CServiceAsyncTCPClient) pClient = CastAnyPtr(CServiceAsyncTCPClient, CastMutable(Pointer, item));
-	Ptr(CAsyncIOData) pData = CastAnyPtr(CAsyncIOData, CastMutable(Pointer, data));
-
-	if (pClient->GetData() == pData)
-		return 0;
-	return 1;
-}
-
-static void __stdcall AsyncTCPClientListDeleteFunc(ConstPointer data, Pointer context)
-{
-	Ptr(CServiceAsyncTCPClient) pClient = CastAnyPtr(CServiceAsyncTCPClient, CastMutable(Pointer, data));
-
-	pClient->release();
-}
 
 typedef CDataDoubleLinkedListT<CServiceAsyncTCPClient> CAsyncTCPClientList;
 
@@ -386,7 +368,8 @@ public:
 	dword write_callback(Ptr(CAsyncIOData) pData)
 	{
 		CScopedLock lock;
-		CAsyncTCPClientList::Iterator it = clientlist.Find<AsyncTCPClientListEqualFunctor>(CastAnyPtr(CServiceAsyncTCPClient, pData));
+		CServiceAsyncTCPClient client(pData);
+		CAsyncTCPClientList::Iterator it = clientlist.Find<AsyncTCPClientListEqualFunctor>(&client);
 
 		if (it)
 		{
@@ -479,7 +462,7 @@ public:
 		{
 			_env->Close();
 			_env->release();
-			_env = NULL;
+			_env = nullptr;
 		}
 		io_manager.Stop();
 	}
@@ -518,8 +501,8 @@ static VOID WINAPI ServiceMain1(DWORD dwArgc, LPTSTR *lpszArgv)
 	if (!gSCManager)
 		return;
 
-	Ptr(CService) pService = NULL;
-	Ptr(CMain1Thread) pMainThread = NULL;
+	Ptr(CService) pService = nullptr;
+	Ptr(CMain1Thread) pMainThread = nullptr;
 
 	try
 	{
@@ -626,8 +609,8 @@ static VOID WINAPI ServiceMain2(DWORD dwArgc, LPTSTR *lpszArgv)
 	if (!gSCManager)
 		return;
 
-	Ptr(CService) pService = NULL;
-	Ptr(CMain2Thread) pMainThread = NULL;
+	Ptr(CService) pService = nullptr;
+	Ptr(CMain2Thread) pMainThread = nullptr;
 
 	try
 	{
@@ -700,11 +683,11 @@ CServiceInfoTable DispatchTable[] =
 {
 	{ SERVICENAME1, OK_NEW_OPERATOR CServiceInfo(SERVICENAME1, SERVICEDISPLAYNAME1, SERVICEDESCRIPTION1,
 	CServiceInfo::eMultiServices, CServiceInfo::eManualStartType, CServiceInfo::eErrorNormal,
-	NULL, NULL, ServiceMain1, ServiceMain1CtrlHandler) },
+	nullptr, nullptr, ServiceMain1, ServiceMain1CtrlHandler) },
 	{ SERVICENAME2, OK_NEW_OPERATOR CServiceInfo(SERVICENAME2, SERVICEDISPLAYNAME2, SERVICEDESCRIPTION2,
 	CServiceInfo::eMultiServices, CServiceInfo::eManualStartType, CServiceInfo::eErrorNormal,
-	NULL, NULL, ServiceMain2, ServiceMain2CtrlHandler) },
-	{ NULL, NULL }
+	nullptr, nullptr, ServiceMain2, ServiceMain2CtrlHandler) },
+	{ nullptr, nullptr }
 };
 
 
@@ -717,7 +700,6 @@ void okInstallServices(void)
 		gSCManager->StartUp();
 		gSCManager->Install(DispatchTable);
 		gSCManager->CleanUp();
-		gSCManager->release();
 		CEventLogger::CleanUp();
 	}
 	catch (CServiceException* ex)
@@ -736,7 +718,6 @@ void okStartServices(ConstRef(TMBCharList) services)
 		gSCManager->Load(DispatchTable);
 		gSCManager->Run(services);
 		gSCManager->CleanUp();
-		gSCManager->release();
 		CEventLogger::CleanUp();
 	}
 	catch (CServiceException* ex)

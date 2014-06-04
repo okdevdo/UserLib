@@ -92,7 +92,6 @@ private:
 };
 
 class CConsole;
-class CConsoleMenuItem;
 class CConsoleMainMenu;
 class CONSOURCES_API CConsolePopupMenu: public CConsoleWindow
 {
@@ -128,7 +127,7 @@ protected:
 
 	CConsoleMenuItemList m_MenuItemList;
 	CConsoleMenuItemList::Iterator m_MenuCurrent;
-	CAbstractConsoleMenuNavigationCallback* m_Callback;
+	CCppObjectPtr<CAbstractConsoleMenuNavigationCallback> m_Callback;
 
 	void DoMenuItem(CConsoleMenuItem* pMenuItem);
 

@@ -28,13 +28,9 @@
 #define SHIFTED 0x8000
 //#define __DEBUG1__
 
-static void __stdcall TDeleteFunc_Empty( ConstPointer data, Pointer context )
-{
-}
-
 static INT_PTR CALLBACK DialogWndProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	CWin* win = NULL;
+	CWin* win = nullptr;
 
 	switch (uMsg)
 	{
@@ -66,7 +62,7 @@ static INT_PTR CALLBACK DialogWndProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
 static LRESULT CALLBACK CommonWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	CWin* win = NULL;
+	CWin* win = nullptr;
 
 	switch (message)
 	{
@@ -105,7 +101,7 @@ static LRESULT CALLBACK CommonWndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 static LRESULT CALLBACK MDIChildWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	CWin* win = NULL;
+	CWin* win = nullptr;
 
 	switch (message)
 	{
@@ -141,7 +137,7 @@ static LRESULT CALLBACK MDIChildWndProc(HWND hWnd, UINT message, WPARAM wParam, 
 	return 0;
 }
 
-static WNDPROC prevMDIClientWndProc = NULL;
+static WNDPROC prevMDIClientWndProc = nullptr;
 
 static LRESULT CALLBACK MDIClientWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -212,7 +208,7 @@ static LRESULT CALLBACK MDIClientWndProc(HWND hWnd, UINT message, WPARAM wParam,
 // CWin
 //***********************************************************
 AFX_MSGMAP* CWin::GetMessageMap() { return &_messagemap; }
-AFX_MSGMAP CWin::_messagemap = { NULL, &_message_entries[0] };
+AFX_MSGMAP CWin::_messagemap = { nullptr, &_message_entries[0] };
 
 AFX_MSGMAP_ENTRY CWin::_message_entries[] = {
 	ON_WM_ERASEBKGND()
@@ -228,7 +224,7 @@ AFX_MSGMAP_ENTRY CWin::_message_entries[] = {
 END_MESSAGE_MAP()
 
 CWin::CWin(TWindowType wndwtype, LPCTSTR name): 
-	m_hwnd(NULL), 
+	m_hwnd(nullptr), 
 	m_wndwtype(wndwtype), 
 	m_name(__FILE__LINE__ name),
 	m_createvisible(TRUE),
@@ -236,7 +232,7 @@ CWin::CWin(TWindowType wndwtype, LPCTSTR name):
 {}
 
 CWin::CWin(TWindowType wndwtype, ConstRef(CStringBuffer) name): 
-	m_hwnd(NULL), 
+	m_hwnd(nullptr), 
 	m_wndwtype(wndwtype), 
 	m_name(name),
 	m_createvisible(TRUE),
@@ -273,11 +269,11 @@ BOOL CWin::RegisterClass(WNDCLASSEX& wcex)
 	wcex.cbWndExtra		= 0;
 	wcex.hInstance		= theGuiApp->get_GuiInstance();
 	wcex.lpszClassName	= _T("CWINDOWS");
-	wcex.hIcon			= NULL;
-	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
+	wcex.hIcon			= nullptr;
+	wcex.hCursor		= LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
-	wcex.lpszMenuName	= NULL;
-	wcex.hIconSm		= NULL;
+	wcex.lpszMenuName	= nullptr;
+	wcex.hIconSm		= nullptr;
 
 	if ( !PreRegisterClass(wcex) )
 		return FALSE;
@@ -307,12 +303,12 @@ BOOL CWin::Create(HWND parent, UINT childId)
 	cs.hInstance = wcex.hInstance;
 	cs.hMenu = (HMENU)childId;
 	cs.hwndParent = parent;
-	cs.cy = (parent == NULL)?CW_USEDEFAULT:10;
-	cs.cx = (parent == NULL)?CW_USEDEFAULT:10;
-	cs.y = (parent == NULL)?CW_USEDEFAULT:0;
-	cs.x = (parent == NULL)?CW_USEDEFAULT:0;
-	cs.style = (parent == NULL)?(WS_OVERLAPPEDWINDOW):(WS_CHILD);
-	cs.lpszName = NULL;
+	cs.cy = (parent == nullptr)?CW_USEDEFAULT:10;
+	cs.cx = (parent == nullptr)?CW_USEDEFAULT:10;
+	cs.y = (parent == nullptr)?CW_USEDEFAULT:0;
+	cs.x = (parent == nullptr)?CW_USEDEFAULT:0;
+	cs.style = (parent == nullptr)?(WS_OVERLAPPEDWINDOW):(WS_CHILD);
+	cs.lpszName = nullptr;
 	cs.lpszClass = wcex.lpszClassName;
 	cs.dwExStyle = 0;
 
@@ -336,7 +332,7 @@ BOOL CWin::Create(HWND parent, UINT childId)
 	if ( CastDynamicPtr(CControl, this) )
 		CastDynamicPtr(CControl, this)->Update(TRUE);
 	else
-		InvalidateRect(NULL, FALSE);
+		InvalidateRect(nullptr, FALSE);
 	if ( cs.style & WS_VSCROLL )
 		::ShowScrollBar(m_hwnd, SB_VERT, FALSE);
 	if ( cs.style & WS_HSCROLL )
@@ -381,23 +377,23 @@ CWin* CWin::get_parent()
 		default:
 			break;
 		}
-		return NULL;
+		return nullptr;
 	}
 	if ( m_wndwtype == TMDIChildWindow )
 	{
 		p = ::GetParent(p);
 		if ( !p ) 
-			return NULL;
+			return nullptr;
 	}
 	return CastAnyPtr(CWin, ::GetWindowLongPtr(p, GWLP_USERDATA));
 }
 
 CWin* CWin::set_parent(CWin* pParent)
 {
-	HWND prev = ::SetParent(m_hwnd, pParent?(pParent->get_handle()):NULL);
+	HWND prev = ::SetParent(m_hwnd, pParent?(pParent->get_handle()):nullptr);
 
 	if ( !prev )
-		return NULL;
+		return nullptr;
 	return CastAnyPtr(CWin, ::GetWindowLongPtr(prev, GWLP_USERDATA));
 }
 
@@ -426,7 +422,7 @@ CWin* CWin::get_frame()
 		default:
 			break;
 		}
-		return NULL;
+		return nullptr;
 	}
 	if ( m_wndwtype == TMDIChildWindow )
 		p = ::GetParent(p);
@@ -456,7 +452,7 @@ CWin* CWin::get_frame()
 		}
 		p = ::GetParent(p);
 	}
-	return NULL;
+	return nullptr;
 }
 
 CWin* CWin::get_mdiChild()
@@ -480,7 +476,7 @@ CWin* CWin::get_mdiChild()
 		}
 		p = ::GetParent(p);
 	}
-	return NULL;
+	return nullptr;
 
 }
 
@@ -489,7 +485,7 @@ CWin* CWin::get_childbyID(UINT commandcode)
 	HWND hChild = ::GetDlgItem(m_hwnd, commandcode);
 
 	if ( !hChild )
-		return NULL;
+		return nullptr;
 	return CastAnyPtr(CWin, ::GetWindowLongPtr(hChild, GWLP_USERDATA));
 }
 
@@ -498,7 +494,7 @@ CWin* CWin::get_firstchild()
 	HWND hChild = ::GetWindow(m_hwnd, GW_CHILD);
 
 	if ( !hChild )
-		return NULL;
+		return nullptr;
 	return CastAnyPtr(CWin, ::GetWindowLongPtr(hChild, GWLP_USERDATA));
 }
 
@@ -507,7 +503,7 @@ CWin* CWin::get_siblingByCmd(UINT uCmd)
 	HWND hChild = ::GetWindow(m_hwnd, uCmd);
 
 	if ( !hChild )
-		return NULL;
+		return nullptr;
 	return CastAnyPtr(CWin, ::GetWindowLongPtr(hChild, GWLP_USERDATA));
 }
 
@@ -518,9 +514,9 @@ CWin* CWin::get_childFromPt(POINT pt)
 	HWND hChild = ::ChildWindowFromPoint(m_hwnd, pt);
 
 	if ( !hChild )
-		return NULL;
+		return nullptr;
 	if ( hChild == m_hwnd )
-		return NULL;
+		return nullptr;
 	return CastAnyPtr(CWin, ::GetWindowLongPtr(hChild, GWLP_USERDATA));
 }
 
@@ -562,7 +558,7 @@ bool CWin::set_focus()
 #endif
 
 	CWin* p = this;
-	CWin* frame = NULL;
+	CWin* frame = nullptr;
 
 	while ( p )
 	{
@@ -576,14 +572,14 @@ bool CWin::set_focus()
 		}
 		p = p->get_parent();
 	}
-	assert(frame != NULL);
+	assert(frame != nullptr);
 	switch ( frame->get_windowtype() )
 	{
 	case TFrameWindow:
 		{
 			CFrameWnd* fwin = CastDynamicPtr(CFrameWnd, frame);
 
-			assert(fwin !=  NULL);
+			assert(fwin !=  nullptr);
 			fwin->set_focuswindow(this);
 		}
 		break;
@@ -591,7 +587,7 @@ bool CWin::set_focus()
 		{
 			CMDIChild* cwin = CastDynamicPtr(CMDIChild, get_mdiChild());
 
-			assert(cwin !=  NULL);
+			assert(cwin !=  nullptr);
 			cwin->set_focuswindow(this);
 		}
 		break;
@@ -609,7 +605,7 @@ CWin* CWin::get_focus()
 	HWND f = ::GetFocus();
 
 	if ( !f )
-		return NULL;
+		return nullptr;
 	return CastAnyPtr(CWin, ::GetWindowLongPtr(f, GWLP_USERDATA));
 }
 
@@ -652,7 +648,7 @@ static BOOL CALLBACK EnumChildProc_CWin_set_Visible(HWND hwnd, LPARAM lParam)
 	TEnumChildProcCWinsetVisibleParam* pParam = (TEnumChildProcCWinsetVisibleParam*)lParam;
 
 	if ( ::GetParent(hwnd) == pParam->parent )
-		::SetWindowPos(hwnd, NULL, 0, 0, 0, 0, pParam->flags);
+		::SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, pParam->flags);
 	return TRUE;
 }
 
@@ -667,7 +663,7 @@ BOOL CWin::set_Visible(BOOL visible, BOOL updateChildren)
 	{
 		flags |= SWP_SHOWWINDOW;
 
-		if ( !(::SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, flags)) )
+		if ( !(::SetWindowPos(m_hwnd, nullptr, 0, 0, 0, 0, flags)) )
 			return FALSE;
 
 		if ( updateChildren )
@@ -688,7 +684,7 @@ BOOL CWin::set_Visible(BOOL visible, BOOL updateChildren)
 			::EnumChildWindows(m_hwnd, EnumChildProc_CWin_set_Visible, (LPARAM)(&param));
 		}
 
-		if ( !(::SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, flags)) )
+		if ( !(::SetWindowPos(m_hwnd, nullptr, 0, 0, 0, 0, flags)) )
 			return FALSE;
 	}
 	return TRUE;
@@ -747,7 +743,7 @@ Gdiplus::Font* CWin::get_Font(CStringLiteral _suffix, CStringLiteral _wndwclass)
 	name.AppendString(_suffix);
 	if ( theGuiApp->get_FontManager()->has_Font(name) )
 		return theGuiApp->get_FontManager()->get_Font(name);
-	return theGuiApp->get_FontManager()->get_Font(NULL);
+	return theGuiApp->get_FontManager()->get_Font(nullptr);
 }
 
 Gdiplus::Brush* CWin::get_Brush(CStringLiteral _suffix, CStringLiteral _wndwclass, ConstRef(Gdiplus::Color) _default)
@@ -824,15 +820,15 @@ AFX_MSGMAP_ENTRY* CWin::_hasWindowMessage(UINT code)
 	AFX_MSGMAP* map;
 	AFX_MSGMAP_ENTRY* map_entry;
 
-	for ( map = GetMessageMap(); map != NULL; map = map->baseMap )
+	for ( map = GetMessageMap(); map != nullptr; map = map->baseMap )
 	{
-		for ( map_entry = map->entries; map_entry->msg_Func != NULL; ++map_entry )
+		for ( map_entry = map->entries; map_entry->msg_Func != nullptr; ++map_entry )
 		{
 			if ( (map_entry->msg_Type == WM_MESSAGE_TYPE) && (map_entry->msg_ID == code) )
 				return map_entry;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 LRESULT CWin::OnWindowMessage(UINT message, WPARAM wParam, LPARAM lParam)
@@ -849,16 +845,16 @@ AFX_MSGMAP_ENTRY* CWin::_hasCommandMessage(UINT code)
 	AFX_MSGMAP* map;
 	AFX_MSGMAP_ENTRY* map_entry;
 
-	for ( map = GetMessageMap(); map != NULL; map = map->baseMap )
+	for ( map = GetMessageMap(); map != nullptr; map = map->baseMap )
 	{
-		for ( map_entry = map->entries; map_entry->msg_Func != NULL; ++map_entry )
+		for ( map_entry = map->entries; map_entry->msg_Func != nullptr; ++map_entry )
 		{
 			if ( (map_entry->msg_Type == WM_COMMAND_TYPE) && (map_entry->msg_ID == WM_COMMAND)
 				&& (map_entry->msg_Code <= code) && (map_entry->msg_CodeEnd >= code) )
 				return map_entry;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 LRESULT CWin::OnCommandMessage(WPARAM wParam, LPARAM lParam)
@@ -876,16 +872,16 @@ AFX_MSGMAP_ENTRY* CWin::_hasNotifyMessage(UINT code)
 	AFX_MSGMAP* map;
 	AFX_MSGMAP_ENTRY* map_entry;
 
-	for ( map = GetMessageMap(); map != NULL; map = map->baseMap )
+	for ( map = GetMessageMap(); map != nullptr; map = map->baseMap )
 	{
-		for ( map_entry = map->entries; map_entry->msg_Func != NULL; ++map_entry )
+		for ( map_entry = map->entries; map_entry->msg_Func != nullptr; ++map_entry )
 		{
 			if ( (map_entry->msg_Type == WM_NOTIFY_TYPE) && (map_entry->msg_ID == WM_NOTIFY)
 				&& (map_entry->msg_Code <= code) && (map_entry->msg_CodeEnd >= code) )
 				return map_entry;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 LRESULT CWin::SendNotifyMessage(UINT code, LPARAM param)
@@ -989,7 +985,7 @@ static struct _tagSysCommands
 	{ SC_SIZE, _T("SC_SIZE") },
 	{ SC_TASKLIST, _T("SC_TASKLIST") },
 	{ SC_VSCROLL, _T("SC_VSCROLL") },
-	{ 0, NULL }
+	{ 0, nullptr }
 };
 #endif
 
@@ -1005,7 +1001,7 @@ LRESULT CWin::OnSysCommand(WPARAM wParam, LPARAM lParam)
 			break;
 		++ix;
 	}
-	if ( vSysCommands[ix].text == NULL )
+	if ( vSysCommands[ix].text == nullptr )
 		theGuiApp->DebugString("%ls OnSysCommand %d: wParam=0x%x, xPos=0x%x, yPos=0x%x\n", get_name().GetString(), debugID, 
 		    wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 	else
@@ -1047,9 +1043,9 @@ LRESULT CWin::OnSetFocus(WPARAM wParam, LPARAM lParam)
 {
 #ifdef __DEBUG1__
 	int debugID = theGuiApp->get_DebugID();
-	CWin* pWin = (wParam == 0)?NULL:(CWin*)(::GetWindowLongPtr((HWND)wParam, GWLP_USERDATA));
+	CWin* pWin = (wParam == 0)?nullptr:(CWin*)(::GetWindowLongPtr((HWND)wParam, GWLP_USERDATA));
 	theGuiApp->DebugString("%ls OnSetFocus %d: wParam=%ls\n", get_name().GetString(), debugID, 
-		pWin?(pWin->get_name().GetString()):_T("NULL"));
+		pWin?(pWin->get_name().GetString()):_T("nullptr"));
 #endif
 	return 0;
 }
@@ -1058,9 +1054,9 @@ LRESULT CWin::OnKillFocus(WPARAM wParam, LPARAM lParam)
 {
 #ifdef __DEBUG1__
 	int debugID = theGuiApp->get_DebugID();
-	CWin* pWin = (wParam == 0)?NULL:(CWin*)(::GetWindowLongPtr((HWND)wParam, GWLP_USERDATA));
+	CWin* pWin = (wParam == 0)?nullptr:(CWin*)(::GetWindowLongPtr((HWND)wParam, GWLP_USERDATA));
 	theGuiApp->DebugString("%ls OnKillFocus %d: wParam=%ls\n", get_name().GetString(), debugID, 
-		pWin?(pWin->get_name().GetString()):_T("NULL"));
+		pWin?(pWin->get_name().GetString()):_T("nullptr"));
 #endif
 	return 0;
 }
@@ -1112,9 +1108,9 @@ LRESULT CWin::OnMouseActivate(WPARAM wParam, LPARAM lParam)
 
 #ifdef __DEBUG1__
 	int debugID = theGuiApp->get_DebugID();
-	CWin* pWin = (wParam == 0)?NULL:(CWin*)(::GetWindowLongPtr((HWND)wParam, GWLP_USERDATA));
+	CWin* pWin = (wParam == 0)?nullptr:(CWin*)(::GetWindowLongPtr((HWND)wParam, GWLP_USERDATA));
 	theGuiApp->DebugString("%ls OnMouseActivate %d: wParam=%ls, LOWORD(lParam)=%s, HIWORD(lParam)=0x%x, ret=%d\n", get_name().GetString(), debugID, 
-		pWin?(pWin->get_name().GetString()):_T("NULL"), vNCHitTestCodes[LOWORD(lParam)+2], HIWORD(lParam), ret);
+		pWin?(pWin->get_name().GetString()):_T("nullptr"), vNCHitTestCodes[LOWORD(lParam)+2], HIWORD(lParam), ret);
 #endif
 	return ret;
 }
@@ -1130,13 +1126,13 @@ END_MESSAGE_MAP()
 
 CPopup::CPopup(LPCTSTR name): 
     CWin(TPopupWindow, name),
-	m_panel(NULL)
+	m_panel(nullptr)
 {
 }
 
 CPopup::CPopup(ConstRef(CStringBuffer) name): 
     CWin(TPopupWindow, name),
-	m_panel(NULL)
+	m_panel(nullptr)
 {
 }
 
@@ -1275,12 +1271,12 @@ CFrameWnd::CFrameWnd(LPCTSTR name):
 	m_dockingenabled(FALSE),
 	m_menuloop(FALSE),
 	m_cmdcode(1000),
-	m_panel(NULL),
-	m_focuswindow(NULL),
-	m_toolbar(NULL),
-	m_statusbar(NULL),
-	m_menubar(NULL),
-	m_dockinfo(NULL)
+	m_panel(nullptr),
+	m_focuswindow(nullptr),
+	m_toolbar(nullptr),
+	m_statusbar(nullptr),
+	m_menubar(nullptr),
+	m_dockinfo(nullptr)
 {}
 
 CFrameWnd::CFrameWnd(ConstRef(CStringBuffer) name): 
@@ -1294,12 +1290,12 @@ CFrameWnd::CFrameWnd(ConstRef(CStringBuffer) name):
 	m_dockingenabled(FALSE),
 	m_menuloop(FALSE),
 	m_cmdcode(1000),
-	m_panel(NULL),
-	m_focuswindow(NULL),
-	m_toolbar(NULL),
-	m_statusbar(NULL),
-	m_menubar(NULL),
-	m_dockinfo(NULL)
+	m_panel(nullptr),
+	m_focuswindow(nullptr),
+	m_toolbar(nullptr),
+	m_statusbar(nullptr),
+	m_menubar(nullptr),
+	m_dockinfo(nullptr)
 {}
 
 CFrameWnd::~CFrameWnd()
@@ -1368,7 +1364,7 @@ static BOOL CALLBACK EnumChildProc_CFrameWnd_CloseAll(HWND hwnd, LPARAM lParam)
 void CFrameWnd::DestroyChildren(void)
 {
 	::EnumChildWindows(m_panel->get_handle(), EnumChildProc_CFrameWnd_CloseAll, (LPARAM)(m_panel->get_handle()));
-	m_focuswindow = NULL;
+	m_focuswindow = nullptr;
 }
 
 void CFrameWnd::AutoSize(void)
@@ -1543,7 +1539,7 @@ void CFrameWnd::update_toolbar()
 		UINT cmds[] = { IDM_UNDO, IDM_REDO, IDM_CUT, IDM_COPY, IDM_DELETE, IDM_PASTE };
 
 		for ( int ix = 0; ix < (sizeof(cmds)/sizeof(UINT)); ++ix )
-			m_toolbar->set_ChildEnabled(cmds[ix], (m_focuswindow != NULL) && (m_focuswindow->SendMessage(WM_COMMAND, MAKEWPARAM(cmds[ix], 2), 0)));
+			m_toolbar->set_ChildEnabled(cmds[ix], (m_focuswindow != nullptr) && (m_focuswindow->SendMessage(WM_COMMAND, MAKEWPARAM(cmds[ix], 2), 0)));
 	}
 }
 
@@ -1569,10 +1565,10 @@ LRESULT CFrameWnd::OnActivate(WPARAM wParam, LPARAM lParam)
 {
 #ifdef __DEBUG1__
 	int debugID = theGuiApp->get_DebugID();
-	CWin* pWin = (lParam == 0)?NULL:(CWin*)(::GetWindowLongPtr((HWND)lParam, GWLP_USERDATA));
+	CWin* pWin = (lParam == 0)?nullptr:(CWin*)(::GetWindowLongPtr((HWND)lParam, GWLP_USERDATA));
 	theGuiApp->DebugString("%ls OnActivate %d: %s, %s, lParam=%ls\n", get_name().GetString(), debugID, 
 		LOWORD(wParam)?"activated":"deactivated", HIWORD(wParam)?"minimized":"not minimized",
-		pWin?(pWin->get_name().GetString()):_T("NULL"));
+		pWin?(pWin->get_name().GetString()):_T("nullptr"));
 #endif
 	if ( HIWORD(wParam) )
 	{
@@ -1591,7 +1587,7 @@ LRESULT CFrameWnd::OnNcActivate(WPARAM wParam, LPARAM lParam)
 {
 #ifdef __DEBUG1__
 	int debugID = theGuiApp->get_DebugID();
-	CWin* pWin = NULL;
+	CWin* pWin = nullptr;
 
 	if ( ::IsWindow((HWND)lParam) )
 		pWin = (CWin*)(::GetWindowLongPtr((HWND)lParam, GWLP_USERDATA));
@@ -1794,7 +1790,7 @@ LRESULT CFrameWnd::OnInitMenuPopup(WPARAM wParam, LPARAM lParam)
 		CControl* pCtrl = pMenu->get_menuItem(cmds[ix]);
 
 		if ( pCtrl )
-			pCtrl->set_Enabled((m_focuswindow != NULL) && (m_focuswindow->SendMessage(WM_COMMAND, MAKEWPARAM(cmds[ix], 2), 0)));
+			pCtrl->set_Enabled((m_focuswindow != nullptr) && (m_focuswindow->SendMessage(WM_COMMAND, MAKEWPARAM(cmds[ix], 2), 0)));
 	}
 	return 0;
 }
@@ -1922,14 +1918,14 @@ CMDIFrame::CMDIFrame(LPCTSTR name):
 	m_dockingenabled(FALSE),
 	m_menuloop(FALSE),
 	m_cmdcode(1000),
-	m_pCurrentChild(NULL),
+	m_pCurrentChild(nullptr),
 	m_childmaximized(FALSE),
 	m_childcnt(0),
-	m_clientHWnd(NULL),
-	m_toolbar(NULL),
-	m_statusbar(NULL),
-	m_menubar(NULL),
-	m_dockinfo(NULL)
+	m_clientHWnd(nullptr),
+	m_toolbar(nullptr),
+	m_statusbar(nullptr),
+	m_menubar(nullptr),
+	m_dockinfo(nullptr)
 {
 }
 
@@ -1941,14 +1937,14 @@ CMDIFrame::CMDIFrame(ConstRef(CStringBuffer) name):
 	m_dockingenabled(FALSE),
 	m_menuloop(FALSE),
 	m_cmdcode(1000),
-	m_pCurrentChild(NULL),
+	m_pCurrentChild(nullptr),
 	m_childmaximized(FALSE),
 	m_childcnt(0),
-	m_clientHWnd(NULL),
-	m_toolbar(NULL),
-	m_statusbar(NULL),
-	m_menubar(NULL),
-	m_dockinfo(NULL)
+	m_clientHWnd(nullptr),
+	m_toolbar(nullptr),
+	m_statusbar(nullptr),
+	m_menubar(nullptr),
+	m_dockinfo(nullptr)
 {
 }
 
@@ -2114,18 +2110,18 @@ CWin* CMDIFrame::get_activeChild(BOOL* bMaximized)
 
 	activeChild = (HWND)(::SendMessage(m_clientHWnd, WM_MDIGETACTIVE, 0, (LPARAM)bMaximized));
 	if ( !activeChild )
-		return NULL;
+		return nullptr;
 	return (CWin*)(::GetWindowLongPtr(activeChild, GWLP_USERDATA));
 }
 
 LRESULT CMDIFrame::OnActivate(WPARAM wParam, LPARAM lParam)
 {
 #ifdef __DEBUG1__
-	CWin* pWin = (lParam == 0)?NULL:(CWin*)(::GetWindowLongPtr((HWND)lParam, GWLP_USERDATA));
+	CWin* pWin = (lParam == 0)?nullptr:(CWin*)(::GetWindowLongPtr((HWND)lParam, GWLP_USERDATA));
 	int debugID = theGuiApp->get_DebugID();
 	theGuiApp->DebugString("%ls OnActivate %d: %s, %s, lParam=%ls\n", get_name().GetString(), debugID, 
 		LOWORD(wParam)?"activated":"deactivated", HIWORD(wParam)?"minimized":"not minimized",
-		pWin?(pWin->get_name().GetString()):_T("NULL"));
+		pWin?(pWin->get_name().GetString()):_T("nullptr"));
 #endif
 	return 0;
 }
@@ -2134,7 +2130,7 @@ LRESULT CMDIFrame::OnNcActivate(WPARAM wParam, LPARAM lParam)
 {
 #ifdef __DEBUG1__
 	int debugID = theGuiApp->get_DebugID();
-	CWin* pWin = NULL;
+	CWin* pWin = nullptr;
 
 	if ( ::IsWindow((HWND)lParam) )
 		pWin = (CWin*)(::GetWindowLongPtr((HWND)lParam, GWLP_USERDATA));
@@ -2308,7 +2304,7 @@ LRESULT CMDIFrame::OnChildStatus(WPARAM wParam, LPARAM lParam)
 			m_childmaximized = FALSE;
 			m_menubar->set_MDIMenubar(FALSE);
 		}
-		m_pCurrentChild = NULL;
+		m_pCurrentChild = nullptr;
 		break;
 	default:
 		break;
@@ -2377,12 +2373,12 @@ LRESULT CMDIFrame::OnCreate(WPARAM wParam, LPARAM lParam)
 
 	CLIENTCREATESTRUCT ccs; 
  
-	ccs.hWindowMenu = NULL;
+	ccs.hWindowMenu = nullptr;
 	ccs.idFirstChild = IDM_WINDOWCHILD; 
  
-	m_clientHWnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, _T("MDICLIENT"), (LPCTSTR) NULL, 
+	m_clientHWnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, _T("MDICLIENT"), (LPCTSTR) nullptr, 
 		WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | MDIS_ALLCHILDSTYLES, 
-		0, 0, 0, 0, m_hwnd, (HMENU) NULL, theGuiApp->get_GuiInstance(), (LPSTR) &ccs); 
+		0, 0, 0, 0, m_hwnd, (HMENU) nullptr, theGuiApp->get_GuiInstance(), (LPSTR) &ccs); 
  
 	if ( !m_clientHWnd )
 		return -1;
@@ -2537,7 +2533,7 @@ LRESULT CMDIFrame::OnNotifySelectionChanged(WPARAM wParam, LPARAM lParam)
 {
 	Ptr(NotifyMessage) phdr = CastAnyPtr(NotifyMessage, lParam);
 	CWin* pWin = CastAnyPtr(CWin, ::GetWindowLongPtr(phdr->hdr.hwndFrom, GWLP_USERDATA));
-	CWin* pFocusWin = NULL;
+	CWin* pFocusWin = nullptr;
 	CMDIChild* pclient = CastDynamicPtr(CMDIChild, get_activeChild());
 
 	if ( pclient )
@@ -2551,7 +2547,7 @@ LRESULT CMDIFrame::OnNotifySelectionChanged(WPARAM wParam, LPARAM lParam)
 	UINT cmds[] = { IDM_UNDO, IDM_REDO, IDM_CUT, IDM_COPY, IDM_DELETE, IDM_PASTE };
 
 	for ( int ix = 0; ix < (sizeof(cmds)/sizeof(UINT)); ++ix )
-		m_toolbar->set_ChildEnabled(cmds[ix], (pFocusWin != NULL) && (pFocusWin->SendMessage(WM_COMMAND, MAKEWPARAM(cmds[ix], 2), 0)));
+		m_toolbar->set_ChildEnabled(cmds[ix], (pFocusWin != nullptr) && (pFocusWin->SendMessage(WM_COMMAND, MAKEWPARAM(cmds[ix], 2), 0)));
 	return 0;
 }
 
@@ -2614,8 +2610,8 @@ CMDIChild::CMDIChild(LPCTSTR name):
 	m_clienthScrollEnabled(FALSE),
 	m_menuloop(FALSE),
 	m_sizestatus(SIZE_RESTORED),
-	m_panel(NULL),
-	m_focuswindow(NULL)
+	m_panel(nullptr),
+	m_focuswindow(nullptr)
 {
 }
 
@@ -2626,8 +2622,8 @@ CMDIChild::CMDIChild(ConstRef(CStringBuffer) name):
 	m_clienthScrollEnabled(FALSE),
 	m_menuloop(FALSE),
 	m_sizestatus(SIZE_RESTORED),
-	m_panel(NULL),
-	m_focuswindow(NULL)
+	m_panel(nullptr),
+	m_focuswindow(nullptr)
 {
 }
 
@@ -2659,11 +2655,11 @@ BOOL CMDIChild::RegisterClass(WNDCLASSEX& wcex)
 	wcex.cbWndExtra		= 0;
 	wcex.hInstance		= theGuiApp->get_GuiInstance();
 	wcex.lpszClassName	= _T("CWINDOWS");
-	wcex.hIcon			= NULL;
-	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground	= NULL; // (HBRUSH)(COLOR_WINDOW+1);
-	wcex.lpszMenuName	= NULL;
-	wcex.hIconSm		= NULL;
+	wcex.hIcon			= nullptr;
+	wcex.hCursor		= LoadCursor(nullptr, IDC_ARROW);
+	wcex.hbrBackground	= nullptr; // (HBRUSH)(COLOR_WINDOW+1);
+	wcex.lpszMenuName	= nullptr;
+	wcex.hIconSm		= nullptr;
 
 	if ( !PreRegisterClass(wcex) )
 		return FALSE;
@@ -2718,7 +2714,7 @@ BOOL CMDIChild::Create(HWND parent)
 
 	if (!m_hwnd)
 		return FALSE;
-	SetWindowPos(NULL, SWP_FRAMECHANGED);
+	SetWindowPos(nullptr, SWP_FRAMECHANGED);
 
 	if ( isMaximized )
 		::SendMessage(parent, WM_MDIMAXIMIZE, (WPARAM)m_hwnd, NULL);
@@ -2737,7 +2733,7 @@ static BOOL CALLBACK EnumChildProc_CMDIChild_DestroyChildren(HWND hwnd, LPARAM l
 void CMDIChild::DestroyChildren(void)
 {
 	::EnumChildWindows(m_panel->get_handle(), EnumChildProc_CMDIChild_DestroyChildren, (LPARAM)(m_panel->get_handle()));
-	m_focuswindow = NULL;
+	m_focuswindow = nullptr;
 }
 
 void CMDIChild::AutoSize(void)
@@ -2769,7 +2765,7 @@ LRESULT CMDIChild::OnInitMenuPopup(WPARAM wParam, LPARAM lParam)
 		CControl* pCtrl = pMenu->get_menuItem(cmds[ix]);
 
 		if ( pCtrl )
-			pCtrl->set_Enabled((m_focuswindow != NULL) && (m_focuswindow->SendMessage(WM_COMMAND, MAKEWPARAM(cmds[ix], 2), 0)));
+			pCtrl->set_Enabled((m_focuswindow != nullptr) && (m_focuswindow->SendMessage(WM_COMMAND, MAKEWPARAM(cmds[ix], 2), 0)));
 	}
 	return 0;
 }
@@ -2812,11 +2808,11 @@ LRESULT CMDIChild::OnChildActivate(WPARAM wParam, LPARAM lParam)
 LRESULT CMDIChild::OnMDIActivate(WPARAM wParam, LPARAM lParam)
 {
 #ifdef __DEBUG1__
-	CWin* pActivated = (lParam == 0)?NULL:(CWin*)(::GetWindowLongPtr((HWND)lParam, GWLP_USERDATA));
-	CWin* pDeactivated = (wParam == 0)?NULL:(CWin*)(::GetWindowLongPtr((HWND)wParam, GWLP_USERDATA));
+	CWin* pActivated = (lParam == 0)?nullptr:(CWin*)(::GetWindowLongPtr((HWND)lParam, GWLP_USERDATA));
+	CWin* pDeactivated = (wParam == 0)?nullptr:(CWin*)(::GetWindowLongPtr((HWND)wParam, GWLP_USERDATA));
 	int debugID = theGuiApp->get_DebugID();
 	theGuiApp->DebugString("Before %ls OnMDIActivate %d: Activated=%ls, Deactivated=%ls\n", get_name().GetString(), debugID, 
-		pActivated?(pActivated->get_name().GetString()):_T("NULL"), pDeactivated?(pDeactivated->get_name().GetString()):_T("NULL"));
+		pActivated?(pActivated->get_name().GetString()):_T("nullptr"), pDeactivated?(pDeactivated->get_name().GetString()):_T("nullptr"));
 #endif
 	if ( m_hwnd == (HWND)lParam )
 	{
@@ -2839,7 +2835,7 @@ LRESULT CMDIChild::OnNcActivate(WPARAM wParam, LPARAM lParam)
 {
 #ifdef __DEBUG1__
 	int debugID = theGuiApp->get_DebugID();
-	CWin* pWin = NULL;
+	CWin* pWin = nullptr;
 
 	if ( ::IsWindow((HWND)lParam) )
 		pWin = (CWin*)(::GetWindowLongPtr((HWND)lParam, GWLP_USERDATA));
@@ -2954,7 +2950,7 @@ void CMDIChild::set_focuswindow(CWin* win)
 		UINT cmds[] = { IDM_UNDO, IDM_REDO, IDM_CUT, IDM_COPY, IDM_DELETE, IDM_PASTE };
 
 		for ( int ix = 0; ix < (sizeof(cmds)/sizeof(UINT)); ++ix )
-			pToolbar->set_ChildEnabled(cmds[ix], (m_focuswindow != NULL) && (m_focuswindow->SendMessage(WM_COMMAND, MAKEWPARAM(cmds[ix], 2), 0)));
+			pToolbar->set_ChildEnabled(cmds[ix], (m_focuswindow != nullptr) && (m_focuswindow->SendMessage(WM_COMMAND, MAKEWPARAM(cmds[ix], 2), 0)));
 	}
 }
 
@@ -2963,23 +2959,6 @@ void CMDIChild::set_focuswindow(CWin* win)
 //***********************************************************
 BEGIN_MESSAGE_MAP(CWin, CDialog)
 END_MESSAGE_MAP()
-
-static void __stdcall TDeleteFunc_DialogControls( ConstPointer data, Pointer context )
-{
-	Ptr(CDialog::TDialogControl) pDC = CastAnyPtr(CDialog::TDialogControl, CastMutable(Pointer, data));
-
-	pDC->m_classname.Clear();
-	delete pDC->pControl;
-}
-
-static sword __stdcall TSearchAndSortFunc_DialogControls( ConstPointer ArrayItem, ConstPointer DataItem )
-{
-	Ptr(CDialog::TDialogControl) pDCArray = CastAnyPtr(CDialog::TDialogControl, CastMutable(Pointer, ArrayItem));
-	Ptr(CDialog::TDialogControl) pDCData = CastAnyPtr(CDialog::TDialogControl, CastMutable(Pointer, DataItem));
-
-	return pDCArray->m_classname.Compare(pDCData->m_classname, 0, CStringLiteral::cIgnoreCase);
-
-}
 
 CDialog::TDialogControls CDialog::m_DialogControls(__FILE__LINE__ 64, 64);
 
@@ -3003,7 +2982,7 @@ CDialog::~CDialog()
 
 INT_PTR CDialog::DoModal()
 {
-	return ::DialogBoxParam(theGuiApp->get_GuiInstance(), m_resID, m_pParent?(m_pParent->get_handle()):NULL, DialogWndProc, (LPARAM)this);
+	return ::DialogBoxParam(theGuiApp->get_GuiInstance(), m_resID, m_pParent?(m_pParent->get_handle()):nullptr, DialogWndProc, (LPARAM)this);
 }
 
 void CDialog::CenterWindow()
@@ -3011,7 +2990,7 @@ void CDialog::CenterWindow()
 	HWND hwndOwner; 
 	RECT rc, rcDlg, rcOwner;
 
-    if ((hwndOwner = ::GetParent(m_hwnd)) == NULL) 
+    if ((hwndOwner = ::GetParent(m_hwnd)) == nullptr) 
     {
         hwndOwner = ::GetDesktopWindow(); 
     }
@@ -3053,7 +3032,7 @@ CControl* CDialog::GetDialogControl(LPCTSTR className)
 
 	if (m_DialogControls.MatchSorted(it, &item))
 		return (*it)->pControl;
-	return NULL;
+	return nullptr;
 }
 
 void CDialog::RemoveDialogControls()
@@ -3079,8 +3058,8 @@ CControl::CControl(LPCTSTR name):
 	m_updateRectsRequested(FALSE),
 	m_vScrollEnabled(FALSE),
 	m_hScrollEnabled(FALSE),
-	m_hUserVScroll(NULL),
-	m_hUserHScroll(NULL),
+	m_hUserVScroll(nullptr),
+	m_hUserHScroll(nullptr),
 	m_hScrollVisible(FALSE),
 	m_vScrollVisible(FALSE),
 	m_insideHScroll(FALSE),
@@ -3106,8 +3085,8 @@ CControl::CControl(ConstRef(CStringBuffer) name):
 	m_updateRectsRequested(FALSE),
 	m_vScrollEnabled(FALSE),
 	m_hScrollEnabled(FALSE),
-	m_hUserVScroll(NULL),
-	m_hUserHScroll(NULL),
+	m_hUserVScroll(nullptr),
+	m_hUserHScroll(nullptr),
 	m_hScrollVisible(FALSE),
 	m_vScrollVisible(FALSE),
 	m_insideHScroll(FALSE),
@@ -3142,9 +3121,9 @@ BOOL CControl::PreCreate(CREATESTRUCT& cs)
 
 	if ( m_hasborder ) 
 		styles |= WS_BORDER;
-	if ( m_vScrollEnabled && (m_hUserVScroll == NULL) )
+	if ( m_vScrollEnabled && (m_hUserVScroll == nullptr) )
 		styles |= WS_VSCROLL;
-	if ( m_hScrollEnabled && (m_hUserHScroll == NULL) )
+	if ( m_hScrollEnabled && (m_hUserHScroll == nullptr) )
 		styles |= WS_HSCROLL;
 	cs.style = styles;
 	return TRUE;
@@ -3189,7 +3168,7 @@ void CControl::get_BrushKeys(Ref(CDataVectorT<CStringBuffer>) _keys)
 	AFX_MSGMAP_ENTRY* map_entry;
 	bool bFound = false;
 
-	for ( map_entry = CControl::_messagemap.entries; map_entry->msg_Func != NULL; ++map_entry )
+	for ( map_entry = CControl::_messagemap.entries; map_entry->msg_Func != nullptr; ++map_entry )
 	{
 		if ( (map_entry->msg_Type == WM_MESSAGE_TYPE) && (map_entry->msg_ID == WM_PAINT) )
 		{
@@ -3274,7 +3253,7 @@ BOOL CControl::Update(BOOL updateRects)
 		}
 		else
 			m_updateRects = updateRects;
-		if ( !InvalidateRect(NULL, FALSE) )
+		if ( !InvalidateRect(nullptr, FALSE) )
 			return FALSE;
 		if ( !UpdateWindow() )
 			return FALSE;
@@ -3727,22 +3706,6 @@ static BOOL CALLBACK EnumChildProc_CControl_OnSize(HWND hwnd, LPARAM lParam)
 			param->children->Append(child);
 	}
 	return TRUE;
-}
-
-static sword __stdcall TSearchAndSortFunc_OnSize( ConstPointer ArrayItem, ConstPointer DataItem )
-{
-	CControl* elem1 = CastAnyPtr(CControl, CastMutable(Pointer, ArrayItem));
-	CControl* elem2 = CastAnyPtr(CControl, CastMutable(Pointer, DataItem));
-
-	if ( elem1->get_LayoutX() < elem2->get_LayoutX() )
-		return -1;
-	if ( elem1->get_LayoutX() > elem2->get_LayoutX() )
-		return 1;
-	if ( elem1->get_LayoutY() < elem2->get_LayoutY() )
-		return -1;
-	if ( elem1->get_LayoutY() > elem2->get_LayoutY() )
-		return 1;
-	return 0;
 }
 
 LRESULT CControl::OnSize(WPARAM wParam, LPARAM lParam)
@@ -4325,7 +4288,7 @@ LRESULT CToolbar::OnPaint(WPARAM wParam, LPARAM lParam)
 //***********************************************************
 // CStatusbar
 //***********************************************************
-static HHOOK hKeyboardProc_StatusInfo = NULL;
+static HHOOK hKeyboardProc_StatusInfo = nullptr;
 
 static LRESULT CALLBACK KeyboardProc_StatusInfo(int code, WPARAM wParam, LPARAM lParam)
 {
@@ -4497,7 +4460,7 @@ UINT CStatusbar::add_item(TStatusStyle style, UINT width, ConstRef(CStringBuffer
 	switch ( style )
 	{
 	case TStatusStyleKeyboardStatus:
-		hKeyboardProc_StatusInfo = ::SetWindowsHookEx(WH_KEYBOARD, KeyboardProc_StatusInfo, NULL, ::GetCurrentThreadId());
+		hKeyboardProc_StatusInfo = ::SetWindowsHookEx(WH_KEYBOARD, KeyboardProc_StatusInfo, nullptr, ::GetCurrentThreadId());
 		break;
 	case TStatusStyleClock:
 		StartTimer(1000, 1000);
@@ -4617,10 +4580,10 @@ CPopupMenu::CPopupMenu(LPCTSTR name):
 	m_menutype(TMenuTypeUser),
 	m_fixeditemcnt(0),
 	m_itemcnt(0),
-	m_pMenubar(NULL),
-	m_pTrackWindow(NULL),
+	m_pMenubar(nullptr),
+	m_pTrackWindow(nullptr),
 	m_hasFirstAutoSize(FALSE),
-	m_pCurrentMenuItem(NULL),
+	m_pCurrentMenuItem(nullptr),
 	m_hasCaptureReleaseExpected(FALSE)
 {
 }
@@ -4630,10 +4593,10 @@ CPopupMenu::CPopupMenu(ConstRef(CStringBuffer) name):
 	m_menutype(TMenuTypeUser),
 	m_fixeditemcnt(0),
 	m_itemcnt(0),
-	m_pMenubar(NULL),
-	m_pTrackWindow(NULL),
+	m_pMenubar(nullptr),
+	m_pTrackWindow(nullptr),
 	m_hasFirstAutoSize(FALSE),
-	m_pCurrentMenuItem(NULL),
+	m_pCurrentMenuItem(nullptr),
 	m_hasCaptureReleaseExpected(FALSE)
 {
 }
@@ -4672,7 +4635,7 @@ typedef struct _tagEnumChildProcFindMnemonicParam
 	CControl* pControl;
 
 	_tagEnumChildProcFindMnemonicParam(HWND _parent, UINT _vkey):
-	    parent(_parent), vkey(_vkey), pControl(NULL) {}
+	    parent(_parent), vkey(_vkey), pControl(nullptr) {}
 
 } TEnumChildProcFindMnemonicParam;
 
@@ -4847,7 +4810,7 @@ void CPopupMenu::Reset()
 	{
 		set_hovered(false);
 		set_clicked(false);
-		m_pCurrentMenuItem = NULL;
+		m_pCurrentMenuItem = nullptr;
 	}
 	set_Visible(FALSE);
 }
@@ -4857,7 +4820,7 @@ bool CPopupMenu::TestMnemonic(UINT vKey)
 	TEnumChildProcFindMnemonicParam param(m_panel->get_handle(), vKey);
 
 	::EnumChildWindows(m_panel->get_handle(), EnumChildProc_FindMnemonic, (LPARAM)(&param));
-	return param.pControl != NULL;
+	return param.pControl != nullptr;
 }
 
 CControl* CPopupMenu::get_menuItem(UINT commandCode)
@@ -4865,7 +4828,7 @@ CControl* CPopupMenu::get_menuItem(UINT commandCode)
 	CWin* pCtrl = m_panel->get_childbyID(commandCode);
 
 	if ( !pCtrl )
-		return NULL;
+		return nullptr;
 	return CastDynamicPtr(CControl, pCtrl);
 }
 
@@ -5063,7 +5026,7 @@ LRESULT CPopupMenu::OnMouseMove(WPARAM wParam, LPARAM lParam)
 					return 0;
 				}
 			}
-			m_pCurrentMenuItem = NULL;
+			m_pCurrentMenuItem = nullptr;
 		}
 		if ( !m_pCurrentMenuItem )
 		{
@@ -5368,28 +5331,28 @@ END_MESSAGE_MAP()
 CMenubar::CMenubar(LPCTSTR name): 
 	CControl(name), 
 	m_menus(__FILE__LINE__ 32, 32),
-	m_pCurrentMenu(NULL),
-	m_pCurrentMenuBarItem(NULL),
+	m_pCurrentMenu(nullptr),
+	m_pCurrentMenuBarItem(nullptr),
 	m_hasCaptureReleaseExpected(FALSE),
 	m_hasLoopNoticed(FALSE),
 	m_isMDI(FALSE),
 	m_MDIButtonMode(0),
 	m_CurrentMDIButton(-1),
-	m_pMDIChild(NULL)
+	m_pMDIChild(nullptr)
 {
 }
 
 CMenubar::CMenubar(ConstRef(CStringBuffer) name): 
 	CControl(name), 
 	m_menus(__FILE__LINE__ 32, 32),
-	m_pCurrentMenu(NULL),
-	m_pCurrentMenuBarItem(NULL),
+	m_pCurrentMenu(nullptr),
+	m_pCurrentMenuBarItem(nullptr),
 	m_hasCaptureReleaseExpected(FALSE),
 	m_hasLoopNoticed(FALSE),
 	m_isMDI(FALSE),
 	m_MDIButtonMode(0),
 	m_CurrentMDIButton(-1),
-	m_pMDIChild(NULL)
+	m_pMDIChild(nullptr)
 {
 }
 
@@ -5584,13 +5547,13 @@ void CMenubar::Reset()
 	{
 		if ( m_pCurrentMenu->is_Visible() )
 			m_pCurrentMenu->Reset();
-		m_pCurrentMenu = NULL;
+		m_pCurrentMenu = nullptr;
 	}
 	if ( m_pCurrentMenuBarItem )
 	{
 		set_hovered(false);
 		set_clicked(false);
-		m_pCurrentMenuBarItem = NULL;
+		m_pCurrentMenuBarItem = nullptr;
 	}
 	if ( m_hasLoopNoticed )
 	{
@@ -5604,7 +5567,7 @@ bool CMenubar::TestMnemonic(UINT vKey)
 	TEnumChildProcFindMnemonicParam param(m_hwnd, vKey);
 
 	::EnumChildWindows(m_hwnd, EnumChildProc_FindMnemonic, (LPARAM)(&param));
-	return param.pControl != NULL;
+	return param.pControl != nullptr;
 }
 
 void CMenubar::set_Image(int imageIndex, UINT commandCode)
@@ -5658,7 +5621,7 @@ LRESULT CMenubar::OpenPopupMenu(CControl* pMenuItem)
 	theGuiApp->DebugString("%ls Before OpenPopupMenu %d\n", get_name().GetString(), debugID);
 #endif
 	m_pCurrentMenuBarItem = pMenuItem;
-	m_pCurrentMenu = NULL;
+	m_pCurrentMenu = nullptr;
 
 	int ix = m_pCurrentMenuBarItem->get_childID() - 1000;
 
@@ -5724,7 +5687,7 @@ void CMenubar::set_MDIMenubar(BOOL b, CMDIChild* pChild)
 		m_isMDI = FALSE;
 		m_CurrentMDIButton = -1;
 		m_MDIButtonMode = 0;
-		m_pMDIChild = NULL;
+		m_pMDIChild = nullptr;
 
 		CWin* pWin = get_firstchild();
 
@@ -5873,7 +5836,7 @@ LRESULT CMenubar::OnNotifyButtonMove(WPARAM wParam, LPARAM lParam)
 	set_focus();
 	set_Capture(TRUE);
 	m_hasCaptureReleaseExpected = FALSE;
-	m_pCurrentMenu = NULL;
+	m_pCurrentMenu = nullptr;
 
 	if ( !m_hasLoopNoticed )
 	{
@@ -5966,7 +5929,7 @@ LRESULT CMenubar::OnLButtonUp(WPARAM wParam, LPARAM lParam)
 					int ix = inx_Menu(m_pCurrentMenu);
 
 					m_pCurrentMenu->Reset();
-					m_pCurrentMenu = NULL;
+					m_pCurrentMenu = nullptr;
 					if ( ix == ((m_pCurrentMenuBarItem->get_childID()) - 1000) )
 						return 0;
 				}
@@ -5974,7 +5937,7 @@ LRESULT CMenubar::OnLButtonUp(WPARAM wParam, LPARAM lParam)
 				return 0;
 			}
 			set_hovered(false);
-			m_pCurrentMenuBarItem = NULL;
+			m_pCurrentMenuBarItem = nullptr;
 		}
 		if ( !m_pCurrentMenuBarItem )
 		{
@@ -6027,7 +5990,7 @@ LRESULT CMenubar::OnMouseMove(WPARAM wParam, LPARAM lParam)
 			if ( ::PtInRect(&r, pt) )
 			{
 				if ( m_pCurrentMenu && (!(m_pCurrentMenu->is_Visible())) )
-					m_pCurrentMenu = NULL;
+					m_pCurrentMenu = nullptr;
 				set_hovered(true);
 				return 0;
 			}
@@ -6040,7 +6003,7 @@ LRESULT CMenubar::OnMouseMove(WPARAM wParam, LPARAM lParam)
 					set_hovered(false);
 					m_pCurrentMenuBarItem = pCtrl;
 					if ( m_pCurrentMenu && (!(m_pCurrentMenu->is_Visible())) )
-						m_pCurrentMenu = NULL;
+						m_pCurrentMenu = nullptr;
 					if ( m_pCurrentMenu )
 					{
 						m_pCurrentMenu->Reset();
@@ -6059,7 +6022,7 @@ LRESULT CMenubar::OnMouseMove(WPARAM wParam, LPARAM lParam)
 					set_hovered(false);
 					m_pCurrentMenuBarItem = pCtrl;
 					if ( m_pCurrentMenu && (!(m_pCurrentMenu->is_Visible())) )
-						m_pCurrentMenu = NULL;
+						m_pCurrentMenu = nullptr;
 					if ( m_pCurrentMenu )
 					{
 						m_pCurrentMenu->Reset();
@@ -6069,7 +6032,7 @@ LRESULT CMenubar::OnMouseMove(WPARAM wParam, LPARAM lParam)
 					return 0;
 				}
 			}
-			m_pCurrentMenuBarItem = NULL;
+			m_pCurrentMenuBarItem = nullptr;
 		}
 		if ( !m_pCurrentMenuBarItem )
 		{
@@ -6083,7 +6046,7 @@ LRESULT CMenubar::OnMouseMove(WPARAM wParam, LPARAM lParam)
 				}
 				m_pCurrentMenuBarItem = pCtrl;
 				if ( m_pCurrentMenu && (!(m_pCurrentMenu->is_Visible())) )
-					m_pCurrentMenu = NULL;
+					m_pCurrentMenu = nullptr;
 				if ( m_pCurrentMenu )
 				{
 					int ix = inx_Menu(m_pCurrentMenu);
@@ -6349,11 +6312,11 @@ LRESULT CMenubar::OnKeyDown(WPARAM wParam, LPARAM lParam)
 			{
 				m_pCurrentMenu->Reset();
 				set_focus();
-				m_pCurrentMenu = NULL;
+				m_pCurrentMenu = nullptr;
 				set_hovered(true);
 				break;
 			}
-			m_pCurrentMenu = NULL;
+			m_pCurrentMenu = nullptr;
 		}
 #ifdef __DEBUG1__
 	theGuiApp->DebugString("%ls OnKeyDown %d, VK_ESCAPE.2, m_pCurrentMenuBarItem=%x, m_pCurrentMenu=%x\n", get_name().GetString(), debugID, m_pCurrentMenuBarItem, m_pCurrentMenu);
@@ -6361,7 +6324,7 @@ LRESULT CMenubar::OnKeyDown(WPARAM wParam, LPARAM lParam)
 		if ( m_pCurrentMenuBarItem )
 		{
 			set_hovered(false);
-			m_pCurrentMenuBarItem = NULL;
+			m_pCurrentMenuBarItem = nullptr;
 		}
 		set_Capture(FALSE);
 		if ( m_hasLoopNoticed )
@@ -6635,16 +6598,16 @@ LRESULT CStatic::OnPaint(WPARAM wParam, LPARAM lParam)
 	Gdiplus::Bitmap bitmap(clientRect.right, clientRect.bottom);
 	Gdiplus::Graphics bitmapgraphics(&bitmap);
 
-	Gdiplus::Bitmap* pIcon = NULL;
-	Gdiplus::Font* pFont = NULL;
-	Gdiplus::Brush* pBrushBackground = NULL;
-	Gdiplus::Brush* pBrushForeground = NULL;
-	Gdiplus::Brush* pBrushHover = NULL;
+	Gdiplus::Bitmap* pIcon = nullptr;
+	Gdiplus::Font* pFont = nullptr;
+	Gdiplus::Brush* pBrushBackground = nullptr;
+	Gdiplus::Brush* pBrushForeground = nullptr;
+	Gdiplus::Brush* pBrushHover = nullptr;
 
 	pIcon = m_iconN.get_bitmap();
-	if ( (!(is_Enabled())) && (m_iconD.get_bitmap() != NULL) )
+	if ( (!(is_Enabled())) && (m_iconD.get_bitmap() != nullptr) )
 		pIcon = m_iconD.get_bitmap();
-	else if ( (m_hovered || m_clicked) && (m_iconH.get_bitmap() != NULL) )
+	else if ( (m_hovered || m_clicked) && (m_iconH.get_bitmap() != nullptr) )
 		pIcon = m_iconH.get_bitmap();
 
 	if ( !(is_Enabled()) )
@@ -7475,14 +7438,14 @@ END_MESSAGE_MAP()
 CPictureBox::CPictureBox(LPCTSTR name): 
 	CControl(name),
 	m_filename(),
-	m_picture(NULL)
+	m_picture(nullptr)
 {
 }
 
 CPictureBox::CPictureBox(ConstRef(CStringBuffer) name): 
 	CControl(name),
 	m_filename(),
-	m_picture(NULL)
+	m_picture(nullptr)
 {
 }
 
@@ -7615,9 +7578,9 @@ END_MESSAGE_MAP()
 CSplitter::CSplitter(LPCTSTR name): 
 	CControl(name),
 	m_direction(TDirectionHorizontal),
-	m_cursor(NULL),
-	m_firstControl(NULL),
-	m_secondControl(NULL)
+	m_cursor(nullptr),
+	m_firstControl(nullptr),
+	m_secondControl(nullptr)
 {
 	m_mouseLastPos.x = 0;
 	m_mouseLastPos.y = 0;
@@ -7626,9 +7589,9 @@ CSplitter::CSplitter(LPCTSTR name):
 CSplitter::CSplitter(ConstRef(CStringBuffer) name): 
 	CControl(name),
 	m_direction(TDirectionHorizontal),
-	m_cursor(NULL),
-	m_firstControl(NULL),
-	m_secondControl(NULL)
+	m_cursor(nullptr),
+	m_firstControl(nullptr),
+	m_secondControl(nullptr)
 {
 	m_mouseLastPos.x = 0;
 	m_mouseLastPos.y = 0;
@@ -7644,10 +7607,10 @@ void CSplitter::set_Direction(TDirection dir)
 	switch ( m_direction )
 	{
 	case TDirectionHorizontal:
-		m_cursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENS));
+		m_cursor = LoadCursor(nullptr, MAKEINTRESOURCE(IDC_SIZENS));
 		break;
 	case TDirectionVertical:
-		m_cursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZEWE));
+		m_cursor = LoadCursor(nullptr, MAKEINTRESOURCE(IDC_SIZEWE));
 		break;
 	}
 }
@@ -7655,7 +7618,7 @@ void CSplitter::set_Direction(TDirection dir)
 BOOL CSplitter::PreRegisterClass(WNDCLASSEX& cls)
 {
 	cls.style			= CS_HREDRAW | CS_VREDRAW;
-	cls.hCursor         = NULL;
+	cls.hCursor         = nullptr;
 	cls.lpszClassName	= _T("CSPLITTER");
 	return TRUE;
 }
@@ -7750,7 +7713,7 @@ END_MESSAGE_MAP()
 CScrollbar::CScrollbar(LPCTSTR name): 
 	CControl(name),
 	m_direction(TDirectionHorizontal),
-	m_ScrollWindow(NULL),
+	m_ScrollWindow(nullptr),
 	m_iRect(0),
 	m_EnableArrows(0),
 	m_Minimum(0),
@@ -7776,7 +7739,7 @@ CScrollbar::CScrollbar(LPCTSTR name):
 CScrollbar::CScrollbar(ConstRef(CStringBuffer) name): 
 	CControl(name),
 	m_direction(TDirectionHorizontal),
-	m_ScrollWindow(NULL),
+	m_ScrollWindow(nullptr),
 	m_iRect(0),
 	m_EnableArrows(0),
 	m_Minimum(0),
@@ -7887,8 +7850,8 @@ LRESULT CScrollbar::OnPaint(WPARAM wParam, LPARAM lParam)
 	Gdiplus::Graphics bitmapgraphics(&bitmap);
 	Gdiplus::Brush* workspaceBrush = get_Brush(_T(".Color.Workspace"), _T("Scrollbar"), Gdiplus::Color::Gray);
 	Gdiplus::Brush* thumbBrush = get_Brush(_T(".Color.Thumb"), _T("Scrollbar"), Gdiplus::Color::DarkGray);
-	Gdiplus::Bitmap* pBottomLeftArrow = NULL;
-	Gdiplus::Bitmap* pTopRightArrow = NULL;
+	Gdiplus::Bitmap* pBottomLeftArrow = nullptr;
+	Gdiplus::Bitmap* pTopRightArrow = nullptr;
 	Gdiplus::Pen blackpen(Gdiplus::Color::Black);
 	Gdiplus::RectF borderRectF;
 	double pos = (Cast(double, m_Position) - Cast(double, m_Minimum)) / (Cast(double, m_Maximum) - Cast(double, m_Minimum));

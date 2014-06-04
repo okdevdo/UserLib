@@ -84,28 +84,20 @@ static void _TestEnCryptFilter()
 	CFilePath fsrc(__FILE__LINE__ ENCRYPT_SRCFILE);
 	CFilePath fdest(__FILE__LINE__ ENCRYPT_DESTFILE);
 
-	CSecurityFile* pInputFile = OK_NEW_OPERATOR CSecurityFile(fsrc);
-	CFilterInput* pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
-	CSecurityFile* pOutputFile = OK_NEW_OPERATOR CSecurityFile;
+	CCppObjectPtr<CSecurityFile> pInputFile = OK_NEW_OPERATOR CSecurityFile(fsrc);
+	CCppObjectPtr<CFilterInput> pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
+	CCppObjectPtr<CSecurityFile> pOutputFile = OK_NEW_OPERATOR CSecurityFile;
 
 	if (CDirectoryIterator::FileExists(fdest))
 		CDirectoryIterator::RemoveFile(fdest);
 	pOutputFile->Create(fdest, false, CFile::BinaryFile_NoEncoding);
 
-	CFilterOutput* pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
-
-	CWinCryptEncryptFilter* pEncryptFilter = OK_NEW_OPERATOR CWinCryptEncryptFilter(pTestInput, pTestOutput);
+	CCppObjectPtr<CFilterOutput> pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
+	CCppObjectPtr<CWinCryptEncryptFilter> pEncryptFilter = OK_NEW_OPERATOR CWinCryptEncryptFilter(pTestInput, pTestOutput);
 
 	pEncryptFilter->open();
 	pEncryptFilter->do_filter();
 	pEncryptFilter->close();
-
-	pEncryptFilter->release();
-	pTestOutput->release();
-	pTestInput->release();
-	pOutputFile->release();
-	pInputFile->release();
-
 }
 
 static void _TestEnCryptFilter2()
@@ -113,30 +105,22 @@ static void _TestEnCryptFilter2()
 	CFilePath fsrc(__FILE__LINE__ ENCRYPT_SRCFILE);
 	CFilePath fdest(__FILE__LINE__ ENCRYPT_DESTFILE);
 
-	CSecurityFile* pInputFile = OK_NEW_OPERATOR CSecurityFile(fsrc);
-	CFilterInput* pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
-	CSecurityFile* pOutputFile = OK_NEW_OPERATOR CSecurityFile;
+	CCppObjectPtr<CSecurityFile> pInputFile = OK_NEW_OPERATOR CSecurityFile(fsrc);
+	CCppObjectPtr<CFilterInput> pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
+	CCppObjectPtr<CSecurityFile> pOutputFile = OK_NEW_OPERATOR CSecurityFile;
 
 	if (CDirectoryIterator::FileExists(fdest))
 		CDirectoryIterator::RemoveFile(fdest);
 	pOutputFile->Create(fdest, false, CFile::BinaryFile_NoEncoding);
 
-	CFilterOutput* pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
-
-	CWinCryptEncryptFilter* pEncryptFilter = OK_NEW_OPERATOR CWinCryptEncryptFilter(pTestInput, pTestOutput);
+	CCppObjectPtr<CFilterOutput> pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
+	CCppObjectPtr<CWinCryptEncryptFilter> pEncryptFilter = OK_NEW_OPERATOR CWinCryptEncryptFilter(pTestInput, pTestOutput);
 
 	pEncryptFilter->set_Password(ENCRYPT_PASSWD);
 
 	pEncryptFilter->open();
 	pEncryptFilter->do_filter();
 	pEncryptFilter->close();
-
-	pEncryptFilter->release();
-	pTestOutput->release();
-	pTestInput->release();
-	pOutputFile->release();
-	pInputFile->release();
-
 }
 
 static void _TestEnCryptFilter3()
@@ -144,17 +128,16 @@ static void _TestEnCryptFilter3()
 	CFilePath fsrc(__FILE__LINE__ ENCRYPT_SRCFILE);
 	CFilePath fdest(__FILE__LINE__ ENCRYPT_DESTFILE);
 
-	CSecurityFile* pInputFile = OK_NEW_OPERATOR CSecurityFile(fsrc);
-	CFilterInput* pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
-	CSecurityFile* pOutputFile = OK_NEW_OPERATOR CSecurityFile;
+	CCppObjectPtr<CSecurityFile> pInputFile = OK_NEW_OPERATOR CSecurityFile(fsrc);
+	CCppObjectPtr<CFilterInput> pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
+	CCppObjectPtr<CSecurityFile> pOutputFile = OK_NEW_OPERATOR CSecurityFile;
 
 	if (CDirectoryIterator::FileExists(fdest))
 		CDirectoryIterator::RemoveFile(fdest);
 	pOutputFile->Create(fdest, false, CFile::BinaryFile_NoEncoding);
 
-	CFilterOutput* pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
-
-	CWinCryptEncryptFilter* pEncryptFilter = OK_NEW_OPERATOR CWinCryptEncryptFilter(pTestInput, pTestOutput);
+	CCppObjectPtr<CFilterOutput> pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
+	CCppObjectPtr<CWinCryptEncryptFilter> pEncryptFilter = OK_NEW_OPERATOR CWinCryptEncryptFilter(pTestInput, pTestOutput);
 
 	pEncryptFilter->set_Algorithm(1);
 	pEncryptFilter->set_Password(ENCRYPT_PASSWD);
@@ -162,24 +145,16 @@ static void _TestEnCryptFilter3()
 	pEncryptFilter->open();
 	pEncryptFilter->do_filter();
 	pEncryptFilter->close();
-
-	pEncryptFilter->release();
-	pTestOutput->release();
-	pTestInput->release();
-	pOutputFile->release();
-	pInputFile->release();
-
 }
 
 static void _TestEnCryptFilter4(Ref(CByteLinkedBuffer) buf)
 {
 	CFilePath fsrc(__FILE__LINE__ ENCRYPT_SRCFILE);
 
-	CSecurityFile* pInputFile = OK_NEW_OPERATOR CSecurityFile(fsrc);
-	CFilterInput* pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
-	CFilterOutput* pTestOutput = OK_NEW_OPERATOR CTestFilterOutput(buf);
-
-	CWinCryptEncryptFilter* pEncryptFilter = OK_NEW_OPERATOR CWinCryptEncryptFilter(pTestInput, pTestOutput);
+	CCppObjectPtr<CSecurityFile> pInputFile = OK_NEW_OPERATOR CSecurityFile(fsrc);
+	CCppObjectPtr<CFilterInput> pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
+	CCppObjectPtr<CFilterOutput> pTestOutput = OK_NEW_OPERATOR CTestFilterOutput(buf);
+	CCppObjectPtr<CWinCryptEncryptFilter> pEncryptFilter = OK_NEW_OPERATOR CWinCryptEncryptFilter(pTestInput, pTestOutput);
 
 	pEncryptFilter->set_Algorithm(1);
 	pEncryptFilter->set_Password(ENCRYPT_PASSWD);
@@ -187,12 +162,6 @@ static void _TestEnCryptFilter4(Ref(CByteLinkedBuffer) buf)
 	pEncryptFilter->open();
 	pEncryptFilter->do_filter();
 	pEncryptFilter->close();
-
-	pEncryptFilter->release();
-	pTestOutput->release();
-	pTestInput->release();
-	pInputFile->release();
-
 }
 
 static void _TestEnCryptFilter5()
@@ -200,17 +169,16 @@ static void _TestEnCryptFilter5()
 	CFilePath fsrc(__FILE__LINE__ ENCRYPT_SRCFILE);
 	CFilePath fdest(__FILE__LINE__ ENCRYPT_DESTFILE);
 
-	CSecurityFile* pInputFile = OK_NEW_OPERATOR CSecurityFile(fsrc);
-	CFilterInput* pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
-	CSecurityFile* pOutputFile = OK_NEW_OPERATOR CSecurityFile;
+	CCppObjectPtr<CSecurityFile> pInputFile = OK_NEW_OPERATOR CSecurityFile(fsrc);
+	CCppObjectPtr<CFilterInput> pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
+	CCppObjectPtr<CSecurityFile> pOutputFile = OK_NEW_OPERATOR CSecurityFile;
 
 	if (CDirectoryIterator::FileExists(fdest))
 		CDirectoryIterator::RemoveFile(fdest);
 	pOutputFile->Create(fdest, false, CFile::BinaryFile_NoEncoding);
 
-	CFilterOutput* pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
-
-	CWinCryptEncryptFilter* pEncryptFilter = OK_NEW_OPERATOR CWinCryptEncryptFilter(pTestInput, pTestOutput);
+	CCppObjectPtr<CFilterOutput> pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
+	CCppObjectPtr<CWinCryptEncryptFilter> pEncryptFilter = OK_NEW_OPERATOR CWinCryptEncryptFilter(pTestInput, pTestOutput);
 
 	pEncryptFilter->set_Algorithm(2);
 	pEncryptFilter->set_Password(ENCRYPT_PASSWD);
@@ -218,13 +186,6 @@ static void _TestEnCryptFilter5()
 	pEncryptFilter->open();
 	pEncryptFilter->do_filter();
 	pEncryptFilter->close();
-
-	pEncryptFilter->release();
-	pTestOutput->release();
-	pTestInput->release();
-	pOutputFile->release();
-	pInputFile->release();
-
 }
 
 static void _TestEnCryptFilter6()
@@ -232,17 +193,16 @@ static void _TestEnCryptFilter6()
 	CFilePath fsrc(__FILE__LINE__ ENCRYPT_SRCFILE);
 	CFilePath fdest(__FILE__LINE__ ENCRYPT_DESTFILE);
 
-	CSecurityFile* pInputFile = OK_NEW_OPERATOR CSecurityFile(fsrc);
-	CFilterInput* pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
-	CSecurityFile* pOutputFile = OK_NEW_OPERATOR CSecurityFile;
+	CCppObjectPtr<CSecurityFile> pInputFile = OK_NEW_OPERATOR CSecurityFile(fsrc);
+	CCppObjectPtr<CFilterInput> pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
+	CCppObjectPtr<CSecurityFile> pOutputFile = OK_NEW_OPERATOR CSecurityFile;
 
 	if (CDirectoryIterator::FileExists(fdest))
 		CDirectoryIterator::RemoveFile(fdest);
 	pOutputFile->Create(fdest, false, CFile::BinaryFile_NoEncoding);
 
-	CFilterOutput* pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
-
-	CWinCryptEncryptFilter* pEncryptFilter = OK_NEW_OPERATOR CWinCryptEncryptFilter(pTestInput, pTestOutput);
+	CCppObjectPtr<CFilterOutput> pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
+	CCppObjectPtr<CWinCryptEncryptFilter> pEncryptFilter = OK_NEW_OPERATOR CWinCryptEncryptFilter(pTestInput, pTestOutput);
 
 	pEncryptFilter->set_Algorithm(3);
 	pEncryptFilter->set_Password(ENCRYPT_PASSWD);
@@ -250,13 +210,6 @@ static void _TestEnCryptFilter6()
 	pEncryptFilter->open();
 	pEncryptFilter->do_filter();
 	pEncryptFilter->close();
-
-	pEncryptFilter->release();
-	pTestOutput->release();
-	pTestInput->release();
-	pOutputFile->release();
-	pInputFile->release();
-
 }
 
 static void callfc(CConstPointer f1, CConstPointer f2)
@@ -293,27 +246,20 @@ static void _TestDeCryptFilter()
 	CFilePath fin(__FILE__LINE__ ENCRYPT_DESTFILE);
 	CFilePath fout(__FILE__LINE__ ENCRYPT_SRCFILE1);
 
-	CSecurityFile* pInputFile = OK_NEW_OPERATOR CSecurityFile(fin);
-	CFilterInput* pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
-	CSecurityFile* pOutputFile = OK_NEW_OPERATOR CSecurityFile;
+	CCppObjectPtr<CSecurityFile> pInputFile = OK_NEW_OPERATOR CSecurityFile(fin);
+	CCppObjectPtr<CFilterInput> pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
+	CCppObjectPtr<CSecurityFile> pOutputFile = OK_NEW_OPERATOR CSecurityFile;
 
 	if (CDirectoryIterator::FileExists(fout))
 		CDirectoryIterator::RemoveFile(fout);
 	pOutputFile->Create(fout, true, CFile::ISO_8859_1_Encoding);
 
-	CFilterOutput* pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
-
-	CWinCryptDecryptFilter* pDecryptFilter = OK_NEW_OPERATOR CWinCryptDecryptFilter(pTestInput, pTestOutput);
+	CCppObjectPtr<CFilterOutput> pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
+	CCppObjectPtr<CWinCryptDecryptFilter> pDecryptFilter = OK_NEW_OPERATOR CWinCryptDecryptFilter(pTestInput, pTestOutput);
 
 	pDecryptFilter->open();
 	pDecryptFilter->do_filter();
 	pDecryptFilter->close();
-
-	pDecryptFilter->release();
-	pTestOutput->release();
-	pTestInput->release();
-	pOutputFile->release();
-	pInputFile->release();
 
 	callfc(ENCRYPT_SRCFILE, ENCRYPT_SRCFILE1);
 }
@@ -323,29 +269,22 @@ static void _TestDeCryptFilter2()
 	CFilePath fin(__FILE__LINE__ ENCRYPT_DESTFILE);
 	CFilePath fout(__FILE__LINE__ ENCRYPT_SRCFILE1);
 
-	CSecurityFile* pInputFile = OK_NEW_OPERATOR CSecurityFile(fin);
-	CFilterInput* pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
-	CSecurityFile* pOutputFile = OK_NEW_OPERATOR CSecurityFile;
+	CCppObjectPtr<CSecurityFile> pInputFile = OK_NEW_OPERATOR CSecurityFile(fin);
+	CCppObjectPtr<CFilterInput> pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
+	CCppObjectPtr<CSecurityFile> pOutputFile = OK_NEW_OPERATOR CSecurityFile;
 
 	if (CDirectoryIterator::FileExists(fout))
 		CDirectoryIterator::RemoveFile(fout);
 	pOutputFile->Create(fout, true, CFile::ISO_8859_1_Encoding);
 
-	CFilterOutput* pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
-
-	CWinCryptDecryptFilter* pDecryptFilter = OK_NEW_OPERATOR CWinCryptDecryptFilter(pTestInput, pTestOutput);
+	CCppObjectPtr<CFilterOutput> pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
+	CCppObjectPtr<CWinCryptDecryptFilter> pDecryptFilter = OK_NEW_OPERATOR CWinCryptDecryptFilter(pTestInput, pTestOutput);
 
 	pDecryptFilter->set_Password(ENCRYPT_PASSWD);
 
 	pDecryptFilter->open();
 	pDecryptFilter->do_filter();
 	pDecryptFilter->close();
-
-	pDecryptFilter->release();
-	pTestOutput->release();
-	pTestInput->release();
-	pOutputFile->release();
-	pInputFile->release();
 
 	callfc(ENCRYPT_SRCFILE, ENCRYPT_SRCFILE1);
 }
@@ -355,17 +294,16 @@ static void _TestDeCryptFilter3()
 	CFilePath fin(__FILE__LINE__ ENCRYPT_DESTFILE);
 	CFilePath fout(__FILE__LINE__ ENCRYPT_SRCFILE1);
 
-	CSecurityFile* pInputFile = OK_NEW_OPERATOR CSecurityFile(fin);
-	CFilterInput* pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
-	CSecurityFile* pOutputFile = OK_NEW_OPERATOR CSecurityFile;
+	CCppObjectPtr<CSecurityFile> pInputFile = OK_NEW_OPERATOR CSecurityFile(fin);
+	CCppObjectPtr<CFilterInput> pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
+	CCppObjectPtr<CSecurityFile> pOutputFile = OK_NEW_OPERATOR CSecurityFile;
 
 	if (CDirectoryIterator::FileExists(fout))
 		CDirectoryIterator::RemoveFile(fout);
 	pOutputFile->Create(fout, true, CFile::ISO_8859_1_Encoding);
 
-	CFilterOutput* pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
-
-	CWinCryptDecryptFilter* pDecryptFilter = OK_NEW_OPERATOR CWinCryptDecryptFilter(pTestInput, pTestOutput);
+	CCppObjectPtr<CFilterOutput> pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
+	CCppObjectPtr<CWinCryptDecryptFilter> pDecryptFilter = OK_NEW_OPERATOR CWinCryptDecryptFilter(pTestInput, pTestOutput);
 
 	pDecryptFilter->set_Algorithm(1);
 	pDecryptFilter->set_Password(ENCRYPT_PASSWD);
@@ -373,12 +311,6 @@ static void _TestDeCryptFilter3()
 	pDecryptFilter->open();
 	pDecryptFilter->do_filter();
 	pDecryptFilter->close();
-
-	pDecryptFilter->release();
-	pTestOutput->release();
-	pTestInput->release();
-	pOutputFile->release();
-	pInputFile->release();
 
 	callfc(ENCRYPT_SRCFILE, ENCRYPT_SRCFILE1);
 }
@@ -387,16 +319,15 @@ static void _TestDeCryptFilter4(Ref(CByteLinkedBuffer) buf)
 {
 	CFilePath fout(__FILE__LINE__ ENCRYPT_SRCFILE1);
 
-	CFilterInput* pTestInput = OK_NEW_OPERATOR CTestFilterInput(buf);
-	CSecurityFile* pOutputFile = OK_NEW_OPERATOR CSecurityFile;
+	CCppObjectPtr<CFilterInput> pTestInput = OK_NEW_OPERATOR CTestFilterInput(buf);
+	CCppObjectPtr<CSecurityFile> pOutputFile = OK_NEW_OPERATOR CSecurityFile;
 
 	if (CDirectoryIterator::FileExists(fout))
 		CDirectoryIterator::RemoveFile(fout);
 	pOutputFile->Create(fout, true, CFile::ISO_8859_1_Encoding);
 
-	CFilterOutput* pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
-
-	CWinCryptDecryptFilter* pDecryptFilter = OK_NEW_OPERATOR CWinCryptDecryptFilter(pTestInput, pTestOutput);
+	CCppObjectPtr<CFilterOutput> pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
+	CCppObjectPtr<CWinCryptDecryptFilter> pDecryptFilter = OK_NEW_OPERATOR CWinCryptDecryptFilter(pTestInput, pTestOutput);
 
 	pDecryptFilter->set_Algorithm(1);
 	pDecryptFilter->set_Password(ENCRYPT_PASSWD);
@@ -404,11 +335,6 @@ static void _TestDeCryptFilter4(Ref(CByteLinkedBuffer) buf)
 	pDecryptFilter->open();
 	pDecryptFilter->do_filter();
 	pDecryptFilter->close();
-
-	pDecryptFilter->release();
-	pTestOutput->release();
-	pTestInput->release();
-	pOutputFile->release();
 
 	callfc(ENCRYPT_SRCFILE, ENCRYPT_SRCFILE1);
 }
@@ -418,17 +344,16 @@ static void _TestDeCryptFilter5()
 	CFilePath fin(__FILE__LINE__ ENCRYPT_DESTFILE);
 	CFilePath fout(__FILE__LINE__ ENCRYPT_SRCFILE1);
 
-	CSecurityFile* pInputFile = OK_NEW_OPERATOR CSecurityFile(fin);
-	CFilterInput* pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
-	CSecurityFile* pOutputFile = OK_NEW_OPERATOR CSecurityFile;
+	CCppObjectPtr<CSecurityFile> pInputFile = OK_NEW_OPERATOR CSecurityFile(fin);
+	CCppObjectPtr<CFilterInput> pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
+	CCppObjectPtr<CSecurityFile> pOutputFile = OK_NEW_OPERATOR CSecurityFile;
 
 	if (CDirectoryIterator::FileExists(fout))
 		CDirectoryIterator::RemoveFile(fout);
 	pOutputFile->Create(fout, true, CFile::ISO_8859_1_Encoding);
 
-	CFilterOutput* pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
-
-	CWinCryptDecryptFilter* pDecryptFilter = OK_NEW_OPERATOR CWinCryptDecryptFilter(pTestInput, pTestOutput);
+	CCppObjectPtr<CFilterOutput> pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
+	CCppObjectPtr<CWinCryptDecryptFilter> pDecryptFilter = OK_NEW_OPERATOR CWinCryptDecryptFilter(pTestInput, pTestOutput);
 
 	pDecryptFilter->set_Algorithm(2);
 	pDecryptFilter->set_Password(ENCRYPT_PASSWD);
@@ -436,12 +361,6 @@ static void _TestDeCryptFilter5()
 	pDecryptFilter->open();
 	pDecryptFilter->do_filter();
 	pDecryptFilter->close();
-
-	pDecryptFilter->release();
-	pTestOutput->release();
-	pTestInput->release();
-	pOutputFile->release();
-	pInputFile->release();
 
 	callfc(ENCRYPT_SRCFILE, ENCRYPT_SRCFILE1);
 }
@@ -451,17 +370,16 @@ static void _TestDeCryptFilter6()
 	CFilePath fin(__FILE__LINE__ ENCRYPT_DESTFILE);
 	CFilePath fout(__FILE__LINE__ ENCRYPT_SRCFILE1);
 
-	CSecurityFile* pInputFile = OK_NEW_OPERATOR CSecurityFile(fin);
-	CFilterInput* pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
-	CSecurityFile* pOutputFile = OK_NEW_OPERATOR CSecurityFile;
+	CCppObjectPtr<CSecurityFile> pInputFile = OK_NEW_OPERATOR CSecurityFile(fin);
+	CCppObjectPtr<CFilterInput> pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
+	CCppObjectPtr<CSecurityFile> pOutputFile = OK_NEW_OPERATOR CSecurityFile;
 
 	if (CDirectoryIterator::FileExists(fout))
 		CDirectoryIterator::RemoveFile(fout);
 	pOutputFile->Create(fout, true, CFile::ISO_8859_1_Encoding);
 
-	CFilterOutput* pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
-
-	CWinCryptDecryptFilter* pDecryptFilter = OK_NEW_OPERATOR CWinCryptDecryptFilter(pTestInput, pTestOutput);
+	CCppObjectPtr<CFilterOutput> pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
+	CCppObjectPtr<CWinCryptDecryptFilter> pDecryptFilter = OK_NEW_OPERATOR CWinCryptDecryptFilter(pTestInput, pTestOutput);
 
 	pDecryptFilter->set_Algorithm(3);
 	pDecryptFilter->set_Password(ENCRYPT_PASSWD);
@@ -469,12 +387,6 @@ static void _TestDeCryptFilter6()
 	pDecryptFilter->open();
 	pDecryptFilter->do_filter();
 	pDecryptFilter->close();
-
-	pDecryptFilter->release();
-	pTestOutput->release();
-	pTestInput->release();
-	pOutputFile->release();
-	pInputFile->release();
 
 	callfc(ENCRYPT_SRCFILE, ENCRYPT_SRCFILE1);
 }
@@ -485,13 +397,13 @@ static void _TestDeCryptFilter6()
 static void _TestFilterThreadedPipe()
 {
 	CDataVectorT<CStringBuffer> _output(__FILE__LINE__ 16, 16);
-	CSecurityFile* pInputFile = OK_NEW_OPERATOR CSecurityFile(CFilePath(__FILE__LINE__ _T("aspell.lst.gz")));
-	CFileFilterInput* pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
-	CStringVectorFilterOutput* pTestOutput = OK_NEW_OPERATOR CStringVectorFilterOutput(_output);
-	CFilterThreadedPipeConnector* pConnector = OK_NEW_OPERATOR CFilterThreadedPipeConnector();
-	CGZipDeCompressFilter* pDeCompressFilter = OK_NEW_OPERATOR CGZipDeCompressFilter(pTestInput, pConnector);
-	CLineReadFilter* pLineReadFilter = OK_NEW_OPERATOR CLineReadFilter(pConnector, pTestOutput, CLineReadFilter::UnixLineEnd);
-	CFilterThreadedPipe* pPipe = OK_NEW_OPERATOR CFilterThreadedPipe(pDeCompressFilter, pLineReadFilter);
+	CCppObjectPtr<CSecurityFile> pInputFile = OK_NEW_OPERATOR CSecurityFile(CFilePath(__FILE__LINE__ _T("aspell.lst.gz")));
+	CCppObjectPtr<CFileFilterInput> pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
+	CCppObjectPtr<CStringVectorFilterOutput> pTestOutput = OK_NEW_OPERATOR CStringVectorFilterOutput(_output);
+	CCppObjectPtr<CFilterThreadedPipeConnector> pConnector = OK_NEW_OPERATOR CFilterThreadedPipeConnector();
+	CCppObjectPtr<CGZipDeCompressFilter> pDeCompressFilter = OK_NEW_OPERATOR CGZipDeCompressFilter(pTestInput, pConnector);
+	CCppObjectPtr<CLineReadFilter> pLineReadFilter = OK_NEW_OPERATOR CLineReadFilter(pConnector, pTestOutput, CLineReadFilter::UnixLineEnd);
+	CCppObjectPtr<CFilterThreadedPipe> pPipe = OK_NEW_OPERATOR CFilterThreadedPipe(pDeCompressFilter, pLineReadFilter);
 
 	pPipe->do_pipe();
 
@@ -505,17 +417,6 @@ static void _TestFilterThreadedPipe()
 		++ix;
 	}
 	COUT << _T("#LineCount=") << ix << endl;
-
-	pPipe->release();
-	pLineReadFilter->release();
-	pDeCompressFilter->release();
-	pConnector->release();
-
-	pTestInput->release();
-	pTestOutput->release();
-
-	pInputFile->release();
-
 }
 
 static void _TestFilterPipe()
@@ -545,169 +446,115 @@ static void _TestFilterPipe()
 
 static void _TestFilter()
 {
-	CSecurityFile* pInputFile = OK_NEW_OPERATOR CSecurityFile(CFilePath(__FILE__LINE__ _T("aspell.lst.gz")));
+	CCppObjectPtr<CSecurityFile> pInputFile = OK_NEW_OPERATOR CSecurityFile(CFilePath(__FILE__LINE__ _T("aspell.lst.gz")));
 
 	CWinDirectoryIterator::UnlinkFile(CFilePath(__FILE__LINE__ _T("aspell.lst")));
 
-	CSecurityFile* pOutputFile = OK_NEW_OPERATOR CSecurityFile();
+	CCppObjectPtr<CSecurityFile> pOutputFile = OK_NEW_OPERATOR CSecurityFile();
 
 	pOutputFile->Create(CFilePath(__FILE__LINE__ _T("aspell.lst")), true, CFile::ISO_8859_1_Encoding);
 
-	CFileFilterInput* pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
-	CFileFilterOutput* pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
-	CGZipDeCompressFilter* pFilter = OK_NEW_OPERATOR CGZipDeCompressFilter(pTestInput, pTestOutput);
+	CCppObjectPtr<CFileFilterInput> pTestInput = OK_NEW_OPERATOR CFileFilterInput(pInputFile);
+	CCppObjectPtr<CFileFilterOutput> pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(pOutputFile);
+	CCppObjectPtr<CGZipDeCompressFilter> pFilter = OK_NEW_OPERATOR CGZipDeCompressFilter(pTestInput, pTestOutput);
 
 	pFilter->open();
 	pFilter->do_filter();
 	pFilter->close();
-
-	pFilter->release();
-	pTestInput->release();
-	pTestOutput->release();
-
-	pInputFile->release();
-	pOutputFile->release();
-
 }
 
 static void _TestFileFilter()
 {
-	CFileFilterInput* pTestInput1 = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("XTest.exe")));
-	CFileFilterOutput* pTestOutput1 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.bz2")));
-
-	CBZip2CompressFilter* pFilter1 = OK_NEW_OPERATOR CBZip2CompressFilter(pTestInput1, pTestOutput1);
+	CCppObjectPtr<CFileFilterInput> pTestInput1 = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("XTest.exe")));
+	CCppObjectPtr<CFileFilterOutput> pTestOutput1 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.bz2")));
+	CCppObjectPtr<CBZip2CompressFilter> pFilter1 = OK_NEW_OPERATOR CBZip2CompressFilter(pTestInput1, pTestOutput1);
 
 	pFilter1->open();
 	pFilter1->do_filter();
 	pFilter1->close();
 
-	CFileFilterInput* pTestInput2 = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("XTest.bz2")));
-	CFileFilterOutput* pTestOutput2 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.ex1")));
-
-	CBZip2DeCompressFilter* pFilter2 = OK_NEW_OPERATOR CBZip2DeCompressFilter(pTestInput2, pTestOutput2);
+	CCppObjectPtr<CFileFilterInput> pTestInput2 = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("XTest.bz2")));
+	CCppObjectPtr<CFileFilterOutput> pTestOutput2 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.ex1")));
+	CCppObjectPtr<CBZip2DeCompressFilter> pFilter2 = OK_NEW_OPERATOR CBZip2DeCompressFilter(pTestInput2, pTestOutput2);
 
 	pFilter2->open();
 	pFilter2->do_filter();
 	pFilter2->close();
 
-	CFileFilterOutput* pTestOutput3 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.z")));
-
-	CZLibCompressFilter* pFilter3 = OK_NEW_OPERATOR CZLibCompressFilter(pTestInput1, pTestOutput3);
+	CCppObjectPtr<CFileFilterOutput> pTestOutput3 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.z")));
+	CCppObjectPtr<CZLibCompressFilter> pFilter3 = OK_NEW_OPERATOR CZLibCompressFilter(pTestInput1, pTestOutput3);
 
 	pFilter3->open();
 	pFilter3->do_filter();
 	pFilter3->close();
 
-	CFileFilterInput* pTestInput4 = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("XTest.z")));
-	CFileFilterOutput* pTestOutput4 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.ex2")));
-
-	CZLibDeCompressFilter* pFilter4 = OK_NEW_OPERATOR CZLibDeCompressFilter(pTestInput4, pTestOutput4);
+	CCppObjectPtr<CFileFilterInput> pTestInput4 = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("XTest.z")));
+	CCppObjectPtr<CFileFilterOutput> pTestOutput4 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.ex2")));
+	CCppObjectPtr<CZLibDeCompressFilter> pFilter4 = OK_NEW_OPERATOR CZLibDeCompressFilter(pTestInput4, pTestOutput4);
 
 	pFilter4->open();
 	pFilter4->do_filter();
 	pFilter4->close();
 
-	CFileFilterOutput* pTestOutput5 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.gz")));
-
-	CGZipCompressFilter* pFilter5 = OK_NEW_OPERATOR CGZipCompressFilter(pTestInput1, pTestOutput5);
+	CCppObjectPtr<CFileFilterOutput> pTestOutput5 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.gz")));
+	CCppObjectPtr<CGZipCompressFilter> pFilter5 = OK_NEW_OPERATOR CGZipCompressFilter(pTestInput1, pTestOutput5);
 
 	pFilter5->open();
 	pFilter5->do_filter();
 	pFilter5->close();
 
-	CFileFilterInput* pTestInput6 = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("XTest.gz")));
-	CFileFilterOutput* pTestOutput6 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.ex3")));
-
-	CGZipDeCompressFilter* pFilter6 = OK_NEW_OPERATOR CGZipDeCompressFilter(pTestInput6, pTestOutput6);
+	CCppObjectPtr<CFileFilterInput> pTestInput6 = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("XTest.gz")));
+	CCppObjectPtr<CFileFilterOutput> pTestOutput6 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.ex3")));
+	CCppObjectPtr<CGZipDeCompressFilter> pFilter6 = OK_NEW_OPERATOR CGZipDeCompressFilter(pTestInput6, pTestOutput6);
 
 	pFilter6->open();
 	pFilter6->do_filter();
 	pFilter6->close();
 
-	CFileFilterOutput* pTestOutput7 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.lzma")));
-
-	CLZMACompressFilter* pFilter7 = OK_NEW_OPERATOR CLZMACompressFilter(pTestInput1, pTestOutput7);
+	CCppObjectPtr<CFileFilterOutput> pTestOutput7 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.lzma")));
+	CCppObjectPtr<CLZMACompressFilter> pFilter7 = OK_NEW_OPERATOR CLZMACompressFilter(pTestInput1, pTestOutput7);
 
 	pFilter7->open();
 	pFilter7->do_filter();
 	pFilter7->close();
 
-	CFileFilterInput* pTestInput8 = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("XTest.lzma")));
-	CFileFilterOutput* pTestOutput8 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.ex4")));
-
-	CLZMADeCompressFilter* pFilter8 = OK_NEW_OPERATOR CLZMADeCompressFilter(pTestInput8, pTestOutput8);
+	CCppObjectPtr<CFileFilterInput> pTestInput8 = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("XTest.lzma")));
+	CCppObjectPtr<CFileFilterOutput> pTestOutput8 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.ex4")));
+	CCppObjectPtr<CLZMADeCompressFilter> pFilter8 = OK_NEW_OPERATOR CLZMADeCompressFilter(pTestInput8, pTestOutput8);
 
 	pFilter8->open();
 	pFilter8->do_filter();
 	pFilter8->close();
 
-	CFileFilterOutput* pTestOutput9 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.xz")));
-
-	CXZCompressFilter* pFilter9 = OK_NEW_OPERATOR CXZCompressFilter(pTestInput1, pTestOutput9);
+	CCppObjectPtr<CFileFilterOutput> pTestOutput9 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.xz")));
+	CCppObjectPtr<CXZCompressFilter> pFilter9 = OK_NEW_OPERATOR CXZCompressFilter(pTestInput1, pTestOutput9);
 
 	pFilter9->open();
 	pFilter9->do_filter();
 	pFilter9->close();
 
-	CFileFilterInput* pTestInput10 = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("XTest.xz")));
-	CFileFilterOutput* pTestOutput10 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.ex5")));
-
-	CXZDeCompressFilter* pFilter10 = OK_NEW_OPERATOR CXZDeCompressFilter(pTestInput10, pTestOutput10);
+	CCppObjectPtr<CFileFilterInput> pTestInput10 = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("XTest.xz")));
+	CCppObjectPtr<CFileFilterOutput> pTestOutput10 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.ex5")));
+	CCppObjectPtr<CXZDeCompressFilter> pFilter10 = OK_NEW_OPERATOR CXZDeCompressFilter(pTestInput10, pTestOutput10);
 
 	pFilter10->open();
 	pFilter10->do_filter();
 	pFilter10->close();
 
-	CFileFilterOutput* pTestOutput11 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.zip")));
-
-	CZipCompressFilter* pFilter11 = OK_NEW_OPERATOR CZipCompressFilter(pTestInput1, pTestOutput11);
+	CCppObjectPtr<CFileFilterOutput> pTestOutput11 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.zip")));
+	CCppObjectPtr<CZipCompressFilter> pFilter11 = OK_NEW_OPERATOR CZipCompressFilter(pTestInput1, pTestOutput11);
 
 	pFilter11->open();
 	pFilter11->do_filter();
 	pFilter11->close();
 
-	CFileFilterInput* pTestInput12 = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("XTest.zip")));
-	CFileFilterOutput* pTestOutput12 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.ex6")));
-
-	CZipDeCompressFilter* pFilter12 = OK_NEW_OPERATOR CZipDeCompressFilter(pTestInput12, pTestOutput12);
+	CCppObjectPtr<CFileFilterInput> pTestInput12 = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("XTest.zip")));
+	CCppObjectPtr<CFileFilterOutput> pTestOutput12 = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("XTest.ex6")));
+	CCppObjectPtr<CZipDeCompressFilter> pFilter12 = OK_NEW_OPERATOR CZipDeCompressFilter(pTestInput12, pTestOutput12);
 
 	pFilter12->open();
 	pFilter12->do_filter();
 	pFilter12->close();
-
-	pFilter1->release();
-	pFilter2->release();
-	pFilter3->release();
-	pFilter4->release();
-	pFilter5->release();
-	pFilter6->release();
-	pFilter7->release();
-	pFilter8->release();
-	pFilter9->release();
-	pFilter10->release();
-	pFilter11->release();
-	pFilter12->release();
-
-	pTestInput1->release();
-	pTestInput2->release();
-	pTestInput4->release();
-	pTestInput6->release();
-	pTestInput8->release();
-	pTestInput10->release();
-	pTestInput12->release();
-
-	pTestOutput1->release();
-	pTestOutput2->release();
-	pTestOutput3->release();
-	pTestOutput4->release();
-	pTestOutput5->release();
-	pTestOutput6->release();
-	pTestOutput7->release();
-	pTestOutput8->release();
-	pTestOutput9->release();
-	pTestOutput10->release();
-	pTestOutput11->release();
-	pTestOutput12->release();
 
 	callfc(_T("XTest.exe"), _T("XTest.ex1"));
 	callfc(_T("XTest.exe"), _T("XTest.ex2"));
@@ -723,26 +570,20 @@ static void _TestArchive()
 
 	CDirectoryIterator::GetCurrentDirectory(curDir);
 
-	CFileFilterInput* pTestInput = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("libagg2-2.5-2.tar.xz")));
-	CFileFilterOutput* pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("libagg2-2.5-2.tar")));
-
-	CXZDeCompressFilter* pFilter = OK_NEW_OPERATOR CXZDeCompressFilter(pTestInput, pTestOutput);
+	CCppObjectPtr<CFileFilterInput> pTestInput = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("libagg2-2.5-2.tar.xz")));
+	CCppObjectPtr<CFileFilterOutput> pTestOutput = OK_NEW_OPERATOR CFileFilterOutput(CFilePath(__FILE__LINE__ _T("libagg2-2.5-2.tar")));
+	CCppObjectPtr<CXZDeCompressFilter> pFilter = OK_NEW_OPERATOR CXZDeCompressFilter(pTestInput, pTestOutput);
 
 	pFilter->open();
 	pFilter->do_filter();
 	pFilter->close();
 
-	pFilter->release();
-	pTestInput->release();
-	pTestOutput->release();
-
 	if (CDirectoryIterator::DirectoryExists(CFilePath(__FILE__LINE__ _T("usr"))) >= 0)
 		CDirectoryIterator::RemoveDirectory(CFilePath(__FILE__LINE__ _T("usr")));
 
-	CSecurityFile* pArchiveFile = OK_NEW_OPERATOR CSecurityFile(CFilePath(__FILE__LINE__ _T("libagg2-2.5-2.tar")));
-
+	CCppObjectPtr<CSecurityFile> pArchiveFile = OK_NEW_OPERATOR CSecurityFile(CFilePath(__FILE__LINE__ _T("libagg2-2.5-2.tar")));
 	CTarArchive tarArchive(pArchiveFile);
-	CArchiveIterator *tarIt = tarArchive.begin();
+	CCppObjectPtr<CArchiveIterator> tarIt = tarArchive.begin();
 
 	while ( tarIt->Next() )
 	{
@@ -768,24 +609,18 @@ static void _TestArchive()
 				tarIt->GetProperty(_T("FILETIME"), vfiletime, isNull);
 				tarIt->GetProperty(_T("FILEMODE"), vfilemode, isNull);
 
-				CSecurityFile* ofile = OK_NEW_OPERATOR CSecurityFile();
+				CCppObjectPtr<CSecurityFile> ofile = OK_NEW_OPERATOR CSecurityFile();
 
 				ofile->Create(fpath, false, CFile::BinaryFile_NoEncoding, Cast(mode_t, vfilemode));
 
-				CArchiveFile* afile = tarIt->GetFile();
-				CFileFilterInput* pInput = OK_NEW_OPERATOR CFileFilterInput(afile);
-				CFileFilterOutput* pOutput = OK_NEW_OPERATOR CFileFilterOutput(ofile);
-				CCopyFilter* pFilter = OK_NEW_OPERATOR CCopyFilter(pInput, pOutput);
+				CCppObjectPtr<CArchiveFile> afile = tarIt->GetFile();
+				CCppObjectPtr<CFileFilterInput> pInput = OK_NEW_OPERATOR CFileFilterInput(afile);
+				CCppObjectPtr<CFileFilterOutput> pOutput = OK_NEW_OPERATOR CFileFilterOutput(ofile);
+				CCppObjectPtr<CFilter> pFilter = OK_NEW_OPERATOR CCopyFilter(pInput, pOutput);
 
 				pFilter->open();
 				pFilter->do_filter();
 				pFilter->close();
-
-				pFilter->release();
-				pInput->release();
-				pOutput->release();
-				afile->release();
-				ofile->release();
 
 #ifdef OK_SYS_WINDOWS
 				CDateTime ftime(Cast(time_t, vfiletime));
@@ -838,39 +673,32 @@ static void _TestArchive()
 			break;
 		}
 	}
-	tarIt->release();
-	pArchiveFile->release();
-
 }
 
 static void _TestLineCopyFilter()
 {
 #ifdef OK_SYS_WINDOWS
-	CFileFilterInput* pTestInput1 = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("c:\\cygwin\\etc\\setup\\installed.db")));
+	CCppObjectPtr<CFileFilterInput> pTestInput1 = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("c:\\cygwin\\etc\\setup\\installed.db")));
 #endif
 #ifdef OK_SYS_UNIX
-	CFileFilterInput* pTestInput1 = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("/etc/setup/installed.db")));
+	CCppObjectPtr<CFileFilterInput> pTestInput1 = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ _T("/etc/setup/installed.db")));
 #endif
-	CStdOutFilterOutput* pTestOutput1 = OK_NEW_OPERATOR CStdOutFilterOutput(true);
+	CCppObjectPtr<CFilterOutput> pTestOutput1 = OK_NEW_OPERATOR CStdOutFilterOutput(true);
 
-	CLineReadFilter* pFilter1 = OK_NEW_OPERATOR CLineReadFilter(pTestInput1, pTestOutput1, CLineReadFilter::UnixLineEnd);
+	CCppObjectPtr<CFilter> pFilter1 = OK_NEW_OPERATOR CLineReadFilter(pTestInput1, pTestOutput1, CLineReadFilter::UnixLineEnd);
 
 	pFilter1->open();
 	pFilter1->do_filter();
 	pFilter1->close();
-
-	pTestInput1->release();
-	pTestOutput1->release();
-	pFilter1->release();
 }
 
 static void _TestZipArchive()
 {
 	CFilePath curDir(__FILE__LINE__ _T("UserLib"));
-	CSecurityFile* pArchiveFile = OK_NEW_OPERATOR CSecurityFile(CFilePath(__FILE__LINE__ _T("UserLib.zip")));
+	CCppObjectPtr<CSecurityFile> pArchiveFile = OK_NEW_OPERATOR CSecurityFile(CFilePath(__FILE__LINE__ _T("UserLib.zip")));
 
 	CZipArchive zipArchive(pArchiveFile);
-	CArchiveIterator *zipIt = zipArchive.begin();
+	CCppObjectPtr<CArchiveIterator> zipIt = zipArchive.begin();
 
 	if (CDirectoryIterator::DirectoryExists(curDir) >= 0)
 		CDirectoryIterator::RemoveDirectory(curDir);
@@ -907,10 +735,10 @@ static void _TestZipArchive()
 
 				CDateTime plastmodfiletime(Cast(time_t, lastmodfiletime));
 
-				CArchiveFile* afile = zipIt->GetFile();
-				CFileFilterInput* pInput = OK_NEW_OPERATOR CFileFilterInput(afile);
-				CFileFilterOutput* pOutput = OK_NEW_OPERATOR CFileFilterOutput(fpath);
-				CZipDeCompressFilter* pFilter = OK_NEW_OPERATOR CZipDeCompressFilter(pInput, pOutput);
+				CCppObjectPtr<CArchiveFile> afile = zipIt->GetFile();
+				CCppObjectPtr<CFileFilterInput> pInput = OK_NEW_OPERATOR CFileFilterInput(afile);
+				CCppObjectPtr<CFileFilterOutput> pOutput = OK_NEW_OPERATOR CFileFilterOutput(fpath);
+				CCppObjectPtr<CZipDeCompressFilter> pFilter = OK_NEW_OPERATOR CZipDeCompressFilter(pInput, pOutput);
 
 				pFilter->open();
 				pFilter->do_filter();
@@ -922,11 +750,6 @@ static void _TestZipArchive()
 					COUT << tmp << _T(" uncompressedsize mismatch") << endl;
 
 				CWinDirectoryIterator::WriteFileTimes(fpath, plastmodfiletime, plastmodfiletime, plastmodfiletime);
-
-				pFilter->release();
-				pInput->release();
-				pOutput->release();
-				afile->release();
 			}
 			break;
 		case CArchiveIterator::ARCHIVE_FILE_DIRECTORY:
@@ -944,8 +767,6 @@ static void _TestZipArchive()
 			break;
 		}
 	}
-	zipIt->release();
-	pArchiveFile->release();
 }
 
 
@@ -1009,7 +830,7 @@ static void _TestZipArchive1()
 {
 	CDirectoryIterator::SetCurrentDirectory(CFilePath(__FILE__LINE__ _T("UserLibTest")));
 
-	CSecurityFile* pArchiveFile = OK_NEW_OPERATOR CSecurityFile();
+	CCppObjectPtr<CSecurityFile> pArchiveFile = OK_NEW_OPERATOR CSecurityFile();
 	CFilePath fpath(__FILE__LINE__ _T("UserLibTest1.zip"));
 
 	if (CDirectoryIterator::FileExists(fpath))
@@ -1083,7 +904,6 @@ static void _TestZipArchive1()
 		++itP;
 	}
 	zipArchive.AddClose();
-	pArchiveFile->release();
 }
 
 void TestFileFilter()

@@ -23,17 +23,17 @@
 #include "MD5.H"
 
 CMD5Buffer::CMD5Buffer(void):
-    _hexBuffer(), _md5Data(NULL)
+    _hexBuffer(), _md5Data(nullptr)
 {
 }
 
 CMD5Buffer::CMD5Buffer(ConstRef(CStringBuffer) _hexData):
-    _hexBuffer(_hexData), _md5Data(NULL)
+    _hexBuffer(_hexData), _md5Data(nullptr)
 {
 }
 
 CMD5Buffer::CMD5Buffer(Ptr(CFile) _file):
-    _hexBuffer(), _md5Data(NULL)
+    _hexBuffer(), _md5Data(nullptr)
 {
 	CByteBuffer buf(__FILE__LINE__ 16384);
 
@@ -48,7 +48,7 @@ CMD5Buffer::CMD5Buffer(Ptr(CFile) _file):
 }
 
 CMD5Buffer::CMD5Buffer(ConstRef(CMD5Buffer) _copy):
-    _hexBuffer(_copy._hexBuffer), _md5Data(NULL)
+    _hexBuffer(_copy._hexBuffer), _md5Data(nullptr)
 {
 }
 
@@ -56,14 +56,14 @@ CMD5Buffer::~CMD5Buffer(void)
 {
 	if ( NotPtrCheck(_md5Data) )
 		TFfree(_md5Data);
-	_md5Data = NULL;
+	_md5Data = nullptr;
 }
 
 void CMD5Buffer::operator = (ConstRef(CStringBuffer) _copy)
 {
 	if ( NotPtrCheck(_md5Data) )
 		TFfree(_md5Data);
-	_md5Data = NULL;
+	_md5Data = nullptr;
 	_hexBuffer = _copy;
 }
 
@@ -71,7 +71,7 @@ void CMD5Buffer::operator = (ConstRef(CMD5Buffer) _copy)
 {
 	if ( NotPtrCheck(_md5Data) )
 		TFfree(_md5Data);
-	_md5Data = NULL;
+	_md5Data = nullptr;
 	_hexBuffer = _copy._hexBuffer;
 }
 
@@ -102,5 +102,5 @@ void CMD5Buffer::Finish()
 	_hexBuffer.convertToHex(digest);
 
 	TFfree(_md5Data);
-	_md5Data = NULL;
+	_md5Data = nullptr;
 }

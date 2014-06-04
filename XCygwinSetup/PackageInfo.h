@@ -57,8 +57,8 @@ public:
 private:
 	CFilePath _rootPath;
 	CPackageVersion _vendorVersion;
-	Ptr(CInstallPackageInfo) _binaryPackage;
-	Ptr(CInstallPackageInfo) _sourcePackage;
+	CCppObjectPtr<CInstallPackageInfo> _binaryPackage;
+	CCppObjectPtr<CInstallPackageInfo> _sourcePackage;
 	bool _testVersion;
 };
 
@@ -174,6 +174,4 @@ private:
 	CRequiredByList _requiredBy;
 };
 
-sword __stdcall PackageInfoSearchAndSortFunc( ConstPointer pa, ConstPointer pb);
 sword __stdcall PackageInfoMatchFunc( ConstPointer pa, ConstPointer pb);
-void __stdcall PackageInfoDeleteFunc( ConstPointer data, Pointer context );

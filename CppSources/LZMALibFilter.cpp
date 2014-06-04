@@ -28,7 +28,7 @@
 #define BUFSIZE 16384
 
 CLZMALibCompressFilter::CLZMALibCompressFilter(Ptr(CAbstractFilterInput) input, Ptr(CAbstractFilterOutput) output) :
-	CFilter(input, output), m_stream(NULL) {}
+	CFilter(input, output), m_stream(nullptr) {}
 CLZMALibCompressFilter::~CLZMALibCompressFilter(){}
 
 dword CLZMALibCompressFilter::do_filter()
@@ -37,7 +37,7 @@ dword CLZMALibCompressFilter::do_filter()
 	CByteBuffer inbuf(__FILE__LINE__ BUFSIZE);
 	CByteBuffer outbuf(__FILE__LINE__ BUFSIZE);
 
-	CastAnyPtr(lzma_stream, m_stream)->next_in = NULL;
+	CastAnyPtr(lzma_stream, m_stream)->next_in = nullptr;
 	CastAnyPtr(lzma_stream, m_stream)->avail_in = 0;
 	CastAnyPtr(lzma_stream, m_stream)->next_out = outbuf.get_Buffer();
 	CastAnyPtr(lzma_stream, m_stream)->avail_out = outbuf.get_BufferSize();
@@ -100,7 +100,7 @@ void CLZMALibCompressFilter::close()
 }
 
 CLZMALibDeCompressFilter::CLZMALibDeCompressFilter(Ptr(CAbstractFilterInput) input, Ptr(CAbstractFilterOutput) output) :
-	CFilter(input, output), m_stream(NULL) {}
+	CFilter(input, output), m_stream(nullptr) {}
 CLZMALibDeCompressFilter::~CLZMALibDeCompressFilter() {}
 
 dword CLZMALibDeCompressFilter::do_filter()
@@ -109,7 +109,7 @@ dword CLZMALibDeCompressFilter::do_filter()
 	CByteBuffer inbuf(__FILE__LINE__ BUFSIZE);
 	CByteBuffer outbuf(__FILE__LINE__ BUFSIZE);
 
-	CastAnyPtr(lzma_stream, m_stream)->next_in = NULL;
+	CastAnyPtr(lzma_stream, m_stream)->next_in = nullptr;
 	CastAnyPtr(lzma_stream, m_stream)->avail_in = 0;
 	CastAnyPtr(lzma_stream, m_stream)->next_out = outbuf.get_Buffer();
 	CastAnyPtr(lzma_stream, m_stream)->avail_out = outbuf.get_BufferSize();

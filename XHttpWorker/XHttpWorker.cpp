@@ -25,10 +25,6 @@
 #include "ServiceApplication.h"
 #include "EventLogger.h"
 
-void __stdcall VectorEmptyDeleteFunc(ConstPointer data, Pointer context)
-{
-}
-
 class XHttpWorkerApplication : public CServiceApplication
 {
 public:

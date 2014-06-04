@@ -193,7 +193,7 @@ public:
 	public:
 		bool operator()(ConstPtr(TCallback) r1, ConstPtr(TCallback) r2) const
 		{
-			return r1->callback != r2->callback;
+			return r1->callback == r2->callback;
 		}
 	};
 

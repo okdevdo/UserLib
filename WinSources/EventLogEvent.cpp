@@ -103,7 +103,7 @@ static void InsertValues(Ref(CStringBuffer) text, DWORD dwPropCount, PEVT_VARIAN
 		case EvtVarTypeBinary:
 			break;
 		case EvtVarTypeGuid:
-			if (NULL != pProp[i].GuidVal)
+			if (nullptr != pProp[i].GuidVal)
 			{
 				TCHAR wsGuid[50];
 
@@ -134,7 +134,7 @@ static void InsertValues(Ref(CStringBuffer) text, DWORD dwPropCount, PEVT_VARIAN
 			break;
 		case EvtVarTypeSid:
 			{
-				LPTSTR pwsSid = NULL;
+				LPTSTR pwsSid = nullptr;
 
 				if (ConvertSidToStringSid(pProp[i].SidVal, &pwsSid))
 				{
@@ -159,10 +159,10 @@ static void InsertValues(Ref(CStringBuffer) text, DWORD dwPropCount, PEVT_VARIAN
 static CStringBuffer GetResourceString(LPCTSTR resourceName, DWORD cEventID)
 {
 	CStringBuffer result;
-	HMODULE hResources = NULL;
+	HMODULE hResources = nullptr;
 
-	hResources = LoadLibraryEx(resourceName, NULL, LOAD_LIBRARY_AS_IMAGE_RESOURCE | LOAD_LIBRARY_AS_DATAFILE);
-	if (NULL == hResources)
+	hResources = LoadLibraryEx(resourceName, nullptr, LOAD_LIBRARY_AS_IMAGE_RESOURCE | LOAD_LIBRARY_AS_DATAFILE);
+	if (nullptr == hResources)
 		ThrowDefaultException(__FILE__LINE__ _T("GetResourceString"));
 
 	HRSRC hRes = FindResource(hResources, MAKEINTRESOURCE(1), RT_MESSAGETABLE);
@@ -213,10 +213,10 @@ static CStringBuffer GetResourceString(LPCTSTR resourceName, DWORD cEventID)
 static CStringBuffer GetMessageString(LPCTSTR provider, DWORD cEventID, DWORD dwPropCount, PEVT_VARIANT pProp)
 {
 	CStringBuffer result;
-	EVT_HANDLE hMetadata = NULL;
-	PEVT_VARIANT pMessageFile = NULL;
-	LPTSTR pBuffer = NULL;
-	LPTSTR pTemp = NULL;
+	EVT_HANDLE hMetadata = nullptr;
+	PEVT_VARIANT pMessageFile = nullptr;
+	LPTSTR pBuffer = nullptr;
+	LPTSTR pTemp = nullptr;
 	DWORD dwBufferSize = 0;
 	DWORD dwBufferUsed = 0;
 	DWORD status = 0;
@@ -224,19 +224,19 @@ static CStringBuffer GetMessageString(LPCTSTR provider, DWORD cEventID, DWORD dw
 	WORD state = 0;
 
 	// Get the handle to the provider's metadata that contains the message strings.
-	hMetadata = EvtOpenPublisherMetadata(NULL, provider, NULL, 0 //MAKELCID(MAKELANGID(LANG_GERMAN, SUBLANG_GERMAN), 0)
+	hMetadata = EvtOpenPublisherMetadata(nullptr, provider, nullptr, 0 //MAKELCID(MAKELANGID(LANG_GERMAN, SUBLANG_GERMAN), 0)
 		, 0);
-	if (NULL == hMetadata)
+	if (nullptr == hMetadata)
 		ThrowDefaultException(__FILE__LINE__ _T("GetMessageString"), provider);
 
 	dwBufferSize = 0;
 	dwBufferUsed = 0;
-	pBuffer = NULL;
+	pBuffer = nullptr;
 	eventID = cEventID;
 	state = 0;
 	while (true)
 	{
-		if (!EvtFormatMessage(hMetadata, NULL, eventID, dwPropCount, pProp, EvtFormatMessageId, dwBufferSize, pBuffer, &dwBufferUsed))
+		if (!EvtFormatMessage(hMetadata, nullptr, eventID, dwPropCount, pProp, EvtFormatMessageId, dwBufferSize, pBuffer, &dwBufferUsed))
 		{
 			switch (status = GetLastError())
 			{
@@ -246,7 +246,7 @@ static CStringBuffer GetMessageString(LPCTSTR provider, DWORD cEventID, DWORD dw
 				{
 					pTemp = (LPTSTR)TFrealloc(pBuffer, dwBufferSize * sizeof(TCHAR));
 					pBuffer = pTemp;
-					pTemp = NULL;
+					pTemp = nullptr;
 				}
 				else
 					pBuffer = (LPTSTR)TFalloc(dwBufferSize * sizeof(TCHAR));
@@ -322,9 +322,9 @@ _exit:
 		}
 	}
 	EvtClose(hMetadata);
-	if (pMessageFile == NULL)
+	if (pMessageFile == nullptr)
 		return result;
-	if (pMessageFile->StringVal == NULL)
+	if (pMessageFile->StringVal == nullptr)
 	{
 		TFfree(pMessageFile);
 		return result;
@@ -381,7 +381,7 @@ _userUse(SidTypeUnknown),
 _message(),
 _messageID(0),
 _userDataCount(0),
-_userData(NULL)
+_userData(nullptr)
 {
 }
 
@@ -403,22 +403,22 @@ CStringBuffer CEventLogEvent::get_userUseString() const
 BOOLEAN CEventLogEvent::Load(EVT_HANDLE hEvent, Ptr(CEventLogProviders) pProviders)
 {
 	DWORD status = ERROR_SUCCESS;
-	EVT_HANDLE hContext = NULL;
-	EVT_HANDLE hContext2 = NULL;
+	EVT_HANDLE hContext = nullptr;
+	EVT_HANDLE hContext2 = nullptr;
 	DWORD dwBufferSize = 0;
 	DWORD dwBufferUsed = 0;
 	DWORD dwPropertyCount = 0;
-	PEVT_VARIANT pRenderedValues = NULL;
-	PEVT_VARIANT pRenderedValues2 = NULL;
-	LPTSTR pwsMessage = NULL;
+	PEVT_VARIANT pRenderedValues = nullptr;
+	PEVT_VARIANT pRenderedValues2 = nullptr;
+	LPTSTR pwsMessage = nullptr;
 	ULONGLONG ullTimeStamp = 0;
 	ULONGLONG ullNanoseconds = 0;
 	SYSTEMTIME st;
 	FILETIME ft;
-	Ptr(CEventLogProvider) pProvider = NULL;
+	Ptr(CEventLogProvider) pProvider = nullptr;
 
-	hContext = EvtCreateRenderContext(0, NULL, EvtRenderContextSystem);
-	if (NULL == hContext)
+	hContext = EvtCreateRenderContext(0, nullptr, EvtRenderContextSystem);
+	if (nullptr == hContext)
 		ThrowDefaultException(__FILE__LINE__ _T("CEventLogEvent::Load"));
 
 	// When you render the user data or system section of the event, you must specify
@@ -448,7 +448,7 @@ BOOLEAN CEventLogEvent::Load(EVT_HANDLE hEvent, Ptr(CEventLogProviders) pProvide
 	if (!pProvider)
 		_tprintf(_T("CEventLogEvent::Load: pProvider is null (name = %s).\n"), _providerName);
 
-	if (NULL != pRenderedValues[EvtSystemProviderGuid].GuidVal)
+	if (nullptr != pRenderedValues[EvtSystemProviderGuid].GuidVal)
 	{
 		TCHAR wsGuid[50];
 
@@ -568,7 +568,7 @@ BOOLEAN CEventLogEvent::Load(EVT_HANDLE hEvent, Ptr(CEventLogProviders) pProvide
 
 	if (EvtVarTypeNull != pRenderedValues[EvtSystemUserID].Type)
 	{
-		LPTSTR pwsSid = NULL;
+		LPTSTR pwsSid = nullptr;
 
 		if (ConvertSidToStringSid(pRenderedValues[EvtSystemUserID].SidVal, &pwsSid))
 		{
@@ -584,13 +584,13 @@ BOOLEAN CEventLogEvent::Load(EVT_HANDLE hEvent, Ptr(CEventLogProviders) pProvide
 		CStringBuffer _userDomain;
 		SID_NAME_USE _userUse;
 
-		LookupAccountSid(NULL, (PSID)(pRenderedValues[EvtSystemUserID].SidVal), NULL, &cchName, NULL, &cchReferencedDomainName, &_userUse);
+		LookupAccountSid(nullptr, (PSID)(pRenderedValues[EvtSystemUserID].SidVal), nullptr, &cchName, nullptr, &cchReferencedDomainName, &_userUse);
 		if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
 		{
 			LPWSTR pName = (LPWSTR)TFalloc(cchName * sizeof(wchar_t));
 			LPWSTR pReferencedDomainName = (LPWSTR)TFalloc(cchReferencedDomainName * sizeof(wchar_t));
 
-			if (LookupAccountSid(NULL, (PSID)(pRenderedValues[EvtSystemUserID].SidVal), pName, &cchName, pReferencedDomainName, &cchReferencedDomainName, &_userUse))
+			if (LookupAccountSid(nullptr, (PSID)(pRenderedValues[EvtSystemUserID].SidVal), pName, &cchName, pReferencedDomainName, &cchReferencedDomainName, &_userUse))
 			{
 				_userAccount.SetString(__FILE__LINE__ pName);
 				_userDomain.SetString(__FILE__LINE__ pReferencedDomainName);
@@ -609,8 +609,8 @@ BOOLEAN CEventLogEvent::Load(EVT_HANDLE hEvent, Ptr(CEventLogProviders) pProvide
 	dwBufferUsed = 0;
 	dwPropertyCount = 0;
 
-	hContext = EvtCreateRenderContext(0, NULL, EvtRenderContextUser);
-	if (NULL == hContext)
+	hContext = EvtCreateRenderContext(0, nullptr, EvtRenderContextUser);
+	if (nullptr == hContext)
 		ThrowDefaultException(__FILE__LINE__ _T("CEventLogEvent::Load"));
 
 	// When you render the user data or system section of the event, you must specify
@@ -668,28 +668,6 @@ BOOLEAN CEventLogEvent::Load(EVT_HANDLE hEvent, Ptr(CEventLogProviders) pProvide
 }
 
 //================== CEventLogEvents =========================================
-static void __stdcall CEventLogEventsDeleteFunc(ConstPointer data, Pointer context)
-{
-	CEventLogEvent* pInfo = CastAnyPtr(CEventLogEvent, CastMutable(Pointer, data));
-
-	pInfo->release();
-}
-
-static sword __stdcall CEventLogEventsSearchAndSortFunc(ConstPointer pa, ConstPointer pb)
-{
-	CEventLogEvent* ppa = CastAnyPtr(CEventLogEvent, CastMutable(Pointer, pa));
-	CEventLogEvent* ppb = CastAnyPtr(CEventLogEvent, CastMutable(Pointer, pb));
-	sqword vdiff;
-
-	vdiff = ppa->get_eventRecordID() - ppb->get_eventRecordID();
-	if (vdiff < 0)
-		return -1;
-	if (vdiff > 0)
-		return 1;
-	return 0;
-}
-
-
 CEventLogEvents::CEventLogEvents(DECL_FILE_LINE0):
 	super(ARGS_FILE_LINE 256, 1024)
 {
@@ -703,12 +681,12 @@ BOOLEAN CEventLogEvents::Load(ConstRef(CStringBuffer) channelPath, Ptr(CEventLog
 	if (channelPath.IsEmpty())
 		return FALSE;
 
-	EVT_HANDLE hEvents = NULL;
-	EVT_HANDLE hEvent = NULL;
+	EVT_HANDLE hEvents = nullptr;
+	EVT_HANDLE hEvent = nullptr;
 	DWORD cReturned = 0;
 	DWORD status = ERROR_SUCCESS;
 
-	if (NULL == (hEvents = EvtQuery(NULL, channelPath.GetString(), _T("*"), EvtQueryChannelPath | EvtQueryReverseDirection)))
+	if (nullptr == (hEvents = EvtQuery(nullptr, channelPath.GetString(), _T("*"), EvtQueryChannelPath | EvtQueryReverseDirection)))
 		ThrowDefaultException(__FILE__LINE__ _T("CEventLogEvents::_load"), channelPath.GetString());
 
 	while (true)
@@ -732,11 +710,11 @@ BOOLEAN CEventLogEvents::Load(ConstRef(CStringBuffer) channelPath, Ptr(CEventLog
 		{
 			if (eventInfo)
 				eventInfo->release();
-			eventInfo = NULL;
+			eventInfo = nullptr;
 			_tprintf(_T("%s\n"), ex->GetExceptionMessage().GetString());
 		}
 		EvtClose(hEvent);
-		hEvent = NULL;
+		hEvent = nullptr;
 	}
 	return TRUE;
 }
@@ -751,5 +729,5 @@ Ptr(CEventLogEvent) CEventLogEvents::FindSorted(DWORD64 eventRecordID)
 
 	if (super::MatchSorted(it, &toFind))
 		return *it;
-	return NULL;
+	return nullptr;
 }

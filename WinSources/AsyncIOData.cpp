@@ -27,7 +27,7 @@ CAsyncIOData::CAsyncIOData(void):
 	m_bytestransferred(0),
 	m_buffer(),
 	m_errorcode(0),
-	m_callback(NULL)
+	m_callback(nullptr)
 {
 	s_memset(&m_overlapped, 0, sizeof(OVERLAPPED));
 }

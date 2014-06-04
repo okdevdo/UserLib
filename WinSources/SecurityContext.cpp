@@ -25,19 +25,19 @@
 
 IMPL_WINEXCEPTION(CSecurityContextException, CWinException)
 
-CSecurityContext* CSecurityContext::m_instance = NULL;
+CSecurityContext* CSecurityContext::m_instance = nullptr;
 
 CSecurityContext::CSecurityContext(void):
     hToken(INVALID_HANDLE_VALUE),
-	pEveryoneSID(NULL),
-	pAdminSID(NULL),
-	pNullSID(NULL),
-	cr_ownerSID(NULL),
-	cr_groupSID(NULL),
-	ownerSID(NULL),
-	ownerPtr(NULL),
-	primaryGroupSID(NULL),
-	primaryGroupPtr(NULL)
+	pEveryoneSID(nullptr),
+	pAdminSID(nullptr),
+	pNullSID(nullptr),
+	cr_ownerSID(nullptr),
+	cr_groupSID(nullptr),
+	ownerSID(nullptr),
+	ownerPtr(nullptr),
+	primaryGroupSID(nullptr),
+	primaryGroupPtr(nullptr)
 {
 }
 
@@ -61,7 +61,7 @@ void CSecurityContext::free_instance()
 		return;
 	m_instance->Cleanup();
 	delete m_instance;
-	m_instance = NULL;
+	m_instance = nullptr;
 }
 
 void CSecurityContext::Initialize()
@@ -76,7 +76,7 @@ void CSecurityContext::Initialize()
 		if ( !SetPrivilege(hToken, SE_RESTORE_NAME, TRUE) )
 			SetPrivilege(hToken, SE_BACKUP_NAME, FALSE);
 	}
-	if ( (!GetTokenInformation(hToken, TokenUser, NULL, 0, &size)) && (GetLastError() != ERROR_INSUFFICIENT_BUFFER) )
+	if ( (!GetTokenInformation(hToken, TokenUser, nullptr, 0, &size)) && (GetLastError() != ERROR_INSUFFICIENT_BUFFER) )
 		throw OK_NEW_OPERATOR CSecurityContextException(__FILE__LINE__ _T("%s Exception"), _T("CSecurityContext::Initialize"), CWinException::WinExtError);
 	if ( PtrCheck(ownerPtr = LocalAlloc(LPTR, size)) )
 		throw OK_NEW_OPERATOR CSecurityContextException(__FILE__LINE__ _T("%s Exception"), _T("CSecurityContext::Initialize"), CWinException::WinExtError);
@@ -86,7 +86,7 @@ void CSecurityContext::Initialize()
 	to.Owner = ownerSID;
 	if ( !SetTokenInformation(hToken, TokenOwner, &to, sizeof(to)) )
 		throw OK_NEW_OPERATOR CSecurityContextException(__FILE__LINE__ _T("%s Exception"), _T("CSecurityContext::Initialize"), CWinException::WinExtError);
-	if ( (!GetTokenInformation(hToken, TokenPrimaryGroup, NULL, 0, &size)) && (GetLastError() != ERROR_INSUFFICIENT_BUFFER) )
+	if ( (!GetTokenInformation(hToken, TokenPrimaryGroup, nullptr, 0, &size)) && (GetLastError() != ERROR_INSUFFICIENT_BUFFER) )
 		throw OK_NEW_OPERATOR CSecurityContextException(__FILE__LINE__ _T("%s Exception"), _T("CSecurityContext::Initialize"), CWinException::WinExtError);
 	if ( PtrCheck(primaryGroupPtr = LocalAlloc(LPTR, size)) )
 		throw OK_NEW_OPERATOR CSecurityContextException(__FILE__LINE__ _T("%s Exception"), _T("CSecurityContext::Initialize"), CWinException::WinExtError);
@@ -129,7 +129,7 @@ BOOL CSecurityContext::SetPrivilege(
 	LUID luid;
 
 	if ( !LookupPrivilegeValue( 
-		NULL,            // lookup privilege on local system
+		nullptr,            // lookup privilege on local system
 		lpszPrivilege,   // privilege to lookup 
 		&luid ) )        // receives LUID of privilege
 		throw OK_NEW_OPERATOR CSecurityContextException(__FILE__LINE__ _T("%s Exception"), _T("CSecurityContext::SetPrivilege"), CWinException::WinExtError);
@@ -148,8 +148,8 @@ BOOL CSecurityContext::SetPrivilege(
 		FALSE,                      // BOOL DisableAllPrivileges,
 		&tp,                        // PTOKEN_PRIVILEGES NewState,
 		sizeof(TOKEN_PRIVILEGES),   // DWORD BufferLength,
-		(PTOKEN_PRIVILEGES) NULL,   // PTOKEN_PRIVILEGES PreviousState,
-		(PDWORD) NULL) )            // PDWORD ReturnLength
+		(PTOKEN_PRIVILEGES) nullptr,   // PTOKEN_PRIVILEGES PreviousState,
+		(PDWORD) nullptr) )            // PDWORD ReturnLength
 		throw OK_NEW_OPERATOR CSecurityContextException(__FILE__LINE__ _T("%s Exception"), _T("CSecurityContext::SetPrivilege"), CWinException::WinExtError);
 
 	if (GetLastError() == ERROR_NOT_ALL_ASSIGNED)
@@ -161,25 +161,25 @@ void CSecurityContext::Cleanup()
 {
 	if (cr_groupSID) 
 		FreeSid(cr_groupSID);
-	cr_groupSID = NULL;
+	cr_groupSID = nullptr;
 	if (cr_ownerSID) 
 		FreeSid(cr_ownerSID);
-	cr_ownerSID = NULL;
+	cr_ownerSID = nullptr;
 	if (pNullSID) 
 		FreeSid(pNullSID);
-	pNullSID = NULL;
+	pNullSID = nullptr;
 	if (pAdminSID) 
 		FreeSid(pAdminSID);
-	pAdminSID = NULL;
+	pAdminSID = nullptr;
 	if (pEveryoneSID) 
 		FreeSid(pEveryoneSID);
-	pEveryoneSID = NULL;
+	pEveryoneSID = nullptr;
 	if (primaryGroupPtr) 
 		LocalFree(primaryGroupPtr);
-	primaryGroupPtr = NULL;
+	primaryGroupPtr = nullptr;
 	if (ownerPtr) 
 		LocalFree(ownerPtr);
-	ownerPtr = NULL;
+	ownerPtr = nullptr;
 	if ( hToken != INVALID_HANDLE_VALUE )
 		CloseHandle(hToken);
 	hToken = INVALID_HANDLE_VALUE;
@@ -246,11 +246,11 @@ void CSecurityContext::GetFileSecurity(mode_t mode, Ref(SECURITY_ATTRIBUTES) sa)
 	ea[2].Trustee.ptstrName  = (LPTSTR) primaryGroupSID;
 
 	sa.nLength = sizeof (SECURITY_ATTRIBUTES);
-	sa.lpSecurityDescriptor = NULL;
+	sa.lpSecurityDescriptor = nullptr;
 	sa.bInheritHandle = FALSE;
 
-	pACL = NULL;
-	dwRes = SetEntriesInAcl(3, ea, NULL, &pACL);
+	pACL = nullptr;
+	dwRes = SetEntriesInAcl(3, ea, nullptr, &pACL);
 	if (ERROR_SUCCESS != dwRes) 
 		throw OK_NEW_OPERATOR CSecurityContextException(__FILE__LINE__ _T("%s Exception"), _T("CSecurityContext::GetFileSecurity"), CWinException::WinExtError);
 	if ( PtrCheck(pSD = CastAnyPtr(SECURITY_DESCRIPTOR, LocalAlloc(LPTR, SECURITY_DESCRIPTOR_MIN_LENGTH))) )
@@ -350,11 +350,11 @@ void CSecurityContext::GetDirectorySecurity(mode_t mode, Ref(SECURITY_ATTRIBUTES
 	ea[4].Trustee.ptstrName  = (LPTSTR) cr_groupSID;
 
 	sa.nLength = sizeof (SECURITY_ATTRIBUTES);
-	sa.lpSecurityDescriptor = NULL;
+	sa.lpSecurityDescriptor = nullptr;
 	sa.bInheritHandle = FALSE;
 
-	pACL = NULL;
-	dwRes = SetEntriesInAcl(5, ea, NULL, &pACL);
+	pACL = nullptr;
+	dwRes = SetEntriesInAcl(5, ea, nullptr, &pACL);
 	if (ERROR_SUCCESS != dwRes) 
 		throw OK_NEW_OPERATOR CSecurityContextException(__FILE__LINE__ _T("%s Exception"), _T("CSecurityContext::GetFileSecurity"), CWinException::WinExtError);
 	if ( PtrCheck(pSD = CastAnyPtr(SECURITY_DESCRIPTOR, LocalAlloc(LPTR, SECURITY_DESCRIPTOR_MIN_LENGTH))) )
@@ -370,7 +370,7 @@ void CSecurityContext::FreeSecurity(SECURITY_ATTRIBUTES sa)
 {
 	BOOL bDaclPresent;
 	BOOL bDaclDefaulted;
-	PACL pDacl = NULL;
+	PACL pDacl = nullptr;
 
 	if ( PtrCheck(sa.lpSecurityDescriptor) )
 		return;

@@ -31,10 +31,6 @@
 #endif
 #endif
 
-void __stdcall VectorEmptyDeleteFunc(ConstPointer data, Pointer context)
-{
-}
-
 class TCheckDataItem: public CCppObject
 {
 public:
@@ -289,9 +285,9 @@ public:
 			{
 				CDataVectorT<CStringBuffer> loutput(__FILE__LINE__ 16, 16);
 				CDataVectorT<CStringBuffer>::Iterator it1;
-				Ptr(CFilterOutput) pFilterOutput = OK_NEW_OPERATOR CStringVectorFilterOutput(loutput);
-				Ptr(CFilterInput) pFilterInput = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ *it));
-				Ptr(CFilter) pFilter = OK_NEW_OPERATOR CLineReadFilter(pFilterInput, pFilterOutput);
+				CCppObjectPtr<CFilterOutput> pFilterOutput = OK_NEW_OPERATOR CStringVectorFilterOutput(loutput);
+				CCppObjectPtr<CFilterInput> pFilterInput = OK_NEW_OPERATOR CFileFilterInput(CFilePath(__FILE__LINE__ *it));
+				CCppObjectPtr<CFilter> pFilter = OK_NEW_OPERATOR CLineReadFilter(pFilterInput, pFilterOutput);
 
 				try
 				{
@@ -304,19 +300,15 @@ public:
 					pFilter->close();
 					CERR << ex->GetExceptionMessage() << endl;
 				}
-				pFilter->release();
-				pFilterInput->release();
-				pFilterOutput->release();
-
 				it1 = loutput.Begin();
 				while (it1)
 				{
 					CStringBuffer tmp(*it1);
 					CStringConstIterator it2(tmp);
-					CPointer fname = NULL;
+					CPointer fname = nullptr;
 					WULong fnsize = 0;
 					WChar vChar = 0;
-					CPointer fsum = NULL;
+					CPointer fsum = nullptr;
 					WULong fssize = 0;
 
 					it2.EatWord(fsum, fssize);

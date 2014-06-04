@@ -24,7 +24,7 @@
  */
 #pragma once
 
-#define MAX_FORMATTEXT 4096L
+#define MAX_FORMATTEXT 65536L
 
 #include "CppSources.h"
 

@@ -26,47 +26,45 @@
 CConsoleTabPageControl::CConsoleTabPageControl(CConstPointer name, CConsole* pConsole):
     CConsoleControl(name, pConsole),
 	m_ControlList(__FILE__LINE__0),
-	m_FocusControl(NULL),
+	m_FocusControl(nullptr),
 	m_FocusControlBorderIn(PosInNone),
 	m_FocusControlLastMousePosition(),
-	m_pLayout(NULL)
+	m_pLayout()
 {
 }
 
 CConsoleTabPageControl::CConsoleTabPageControl(CConstPointer name, CConstPointer title, CConsole* pConsole):
     CConsoleControl(name, title, pConsole),
 	m_ControlList(__FILE__LINE__0),
-	m_FocusControl(NULL),
+	m_FocusControl(nullptr),
 	m_FocusControlBorderIn(PosInNone),
 	m_FocusControlLastMousePosition(),
-	m_pLayout(NULL)
+	m_pLayout()
 {
 }
 
 CConsoleTabPageControl::CConsoleTabPageControl(CAbstractConsoleControlCallback* callback, CConstPointer name, CConstPointer title, CConsole* pConsole):
     CConsoleControl(callback, name, title, pConsole),
 	m_ControlList(__FILE__LINE__0),
-	m_FocusControl(NULL),
+	m_FocusControl(nullptr),
 	m_FocusControlBorderIn(PosInNone),
 	m_FocusControlLastMousePosition(),
-	m_pLayout(NULL)
+	m_pLayout()
 {
 }
 
 CConsoleTabPageControl::CConsoleTabPageControl(word taborder, CAbstractConsoleControlCallback* callback, CConstPointer name, CConstPointer title, CConsole* pConsole):
     CConsoleControl(taborder, callback, name, title, pConsole),
 	m_ControlList(__FILE__LINE__0),
-	m_FocusControl(NULL),
+	m_FocusControl(nullptr),
 	m_FocusControlBorderIn(PosInNone),
 	m_FocusControlLastMousePosition(),
-	m_pLayout(NULL)
+	m_pLayout()
 {
 }
 
 CConsoleTabPageControl::~CConsoleTabPageControl(void)
 {
-	if ( m_pLayout )
-		m_pLayout->release();
 }
 
 void CConsoleTabPageControl::AddControl(CConsoleControl* pControl, COORD pos, COORD size)
@@ -84,18 +82,18 @@ CConsoleControl* CConsoleTabPageControl::GetControl(CConstPointer name)
 {
 	ControlData data;
 
-	data.control = OK_NEW_OPERATOR CConsoleControl(name, NULL);
+	data.control = OK_NEW_OPERATOR CConsoleControl(name, nullptr);
 	ControlDataList::Iterator it = m_ControlList.FindSorted(&data);
 
 	if (m_ControlList.MatchSorted(it, &data))
 		return (*it)->control;
-	return NULL;
+	return nullptr;
 }
 
 CConsoleControl* CConsoleTabPageControl::GetNextTabOrder(bool bnext)
 {
 	if ( !m_FocusControl )
-		return NULL;
+		return nullptr;
 
 	ControlDataList::Iterator it;
 	ControlData* pData;
@@ -104,7 +102,7 @@ CConsoleControl* CConsoleTabPageControl::GetNextTabOrder(bool bnext)
 
 	if ( bnext )
 	{
-		CConsoleControl* pCtrlNext = NULL;
+		CConsoleControl* pCtrlNext = nullptr;
 		word nexttaborder = USHRT_MAX;
 
 		it = m_ControlList.Begin();
@@ -141,7 +139,7 @@ CConsoleControl* CConsoleTabPageControl::GetNextTabOrder(bool bnext)
 	}
 	else
 	{
-		CConsoleControl* pCtrlPrev = NULL;
+		CConsoleControl* pCtrlPrev = nullptr;
 		word prevtaborder = 0;
 
 		it = m_ControlList.Begin();
@@ -182,7 +180,7 @@ CConsoleControl* CConsoleTabPageControl::GetFirstTabOrder()
 {
 	ControlDataList::Iterator it = m_ControlList.Begin();
 	ControlData* pData;
-	CConsoleControl* focusCtrl = NULL;
+	CConsoleControl* focusCtrl = nullptr;
 	word taborder = USHRT_MAX;
 
 	while ( it )
