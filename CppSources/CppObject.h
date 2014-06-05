@@ -25,6 +25,7 @@
 #pragma once
 
 #include "CppSources.h"
+#include <type_traits>
 
 class CPPSOURCES_API CCppObject
 {
@@ -228,13 +229,13 @@ __inline bool operator == (ConstRef(CCppObjectPtr<cppobj>) a, ConstRef(CCppObjec
 }
 
 template <typename cppobj>
-__inline bool operator == (ConstRef(CCppObjectPtr<cppobj>) a, ConstRef(nullptr_t) b)
+__inline bool operator == (ConstRef(CCppObjectPtr<cppobj>) a, std::nullptr_t b)
 {
 	return a.get() == nullptr;
 }
 
 template <typename cppobj>
-__inline bool operator == (ConstRef(nullptr_t) a, ConstRef(CCppObjectPtr<cppobj>) b)
+__inline bool operator == (std::nullptr_t a, ConstRef(CCppObjectPtr<cppobj>) b)
 {
 	return nullptr == b.get();
 }
@@ -246,13 +247,13 @@ __inline bool operator != (ConstRef(CCppObjectPtr<cppobj>) a, ConstRef(CCppObjec
 }
 
 template <typename cppobj>
-__inline bool operator != (ConstRef(CCppObjectPtr<cppobj>) a, ConstRef(nullptr_t) b)
+__inline bool operator != (ConstRef(CCppObjectPtr<cppobj>) a, std::nullptr_t b)
 {
 	return a.get() != nullptr;
 }
 
 template <typename cppobj>
-__inline bool operator != (ConstRef(nullptr_t) a, ConstRef(CCppObjectPtr<cppobj>) b)
+__inline bool operator != (std::nullptr_t a, ConstRef(CCppObjectPtr<cppobj>) b)
 {
 	return nullptr != b.get();
 }

@@ -474,7 +474,7 @@ void CConsoleFileDialog::Initialize2(COORD _size)
 void CConsoleFileDialog::DrawFileDialog(bool highlightFirst)
 {
 	CConsoleDirListControl* pList = 
-		CastDynamic(CConsoleDirListControl*, GetControl(_T("DirList")));
+		CastDynamicPtr(CConsoleDirListControl, GetControl(_T("DirList")));
 
 	if ( pList )
 	{
@@ -488,7 +488,7 @@ void CConsoleFileDialog::DrawFileDialog(bool highlightFirst)
 	}
 
 	CConsoleLabelControl* pLabel = 
-		CastDynamic(CConsoleLabelControl*, GetControl(_T("PathLabel")));
+		CastDynamicPtr(CConsoleLabelControl, GetControl(_T("PathLabel")));
 
 	if ( pLabel )
 	{
@@ -509,7 +509,7 @@ void CConsoleFileDialog::DrawFileDialog(bool highlightFirst)
 	}
 
 	CConsoleFileListControl* pFileList = 
-		CastDynamic(CConsoleFileListControl*, GetControl(_T("FileList")));
+		CastDynamicPtr(CConsoleFileListControl, GetControl(_T("FileList")));
 
 	if ( pFileList )
 	{
@@ -521,7 +521,7 @@ void CConsoleFileDialog::DrawFileDialog(bool highlightFirst)
 	if ( m_FileDialogMode == FileDialogModeOpenFile )
 	{
 		CConsoleTextControl* pFileNameControl = 
-			CastDynamic(CConsoleTextControl*, GetControl(_T("FileNameText")));
+			CastDynamicPtr(CConsoleTextControl, GetControl(_T("FileNameText")));
 
 		if ( pFileNameControl && pFileList )
 		{
@@ -534,7 +534,7 @@ void CConsoleFileDialog::DrawFileDialog(bool highlightFirst)
 
 void CConsoleFileDialog::DirListCallback(CConsoleControl* pControl, DWORD command)
 {
-	CConsoleDirListControl* pList = CastDynamic(CConsoleDirListControl*, pControl);
+	CConsoleDirListControl* pList = CastDynamicPtr(CConsoleDirListControl, pControl);
 
 	if ( pList )
 	{
@@ -563,7 +563,7 @@ void CConsoleFileDialog::DirListCallback(CConsoleControl* pControl, DWORD comman
 
 void CConsoleFileDialog::FileListCallback(CConsoleControl* pControl, DWORD command)
 {
-	CConsoleFileListControl* pList = CastDynamic(CConsoleFileListControl*, pControl);
+	CConsoleFileListControl* pList = CastDynamicPtr(CConsoleFileListControl, pControl);
 
 	if ( pList )
 	{
@@ -573,7 +573,7 @@ void CConsoleFileDialog::FileListCallback(CConsoleControl* pControl, DWORD comma
 			if ( m_FileDialogMode == FileDialogModeOpenFile )
 			{
 				CConsoleTextControl* pFileNameControl = 
-					CastDynamic(CConsoleTextControl*, GetControl(_T("FileNameText")));
+					CastDynamicPtr(CConsoleTextControl, GetControl(_T("FileNameText")));
 
 				if ( pFileNameControl )
 				{
@@ -603,7 +603,7 @@ void CConsoleFileDialog::FileNameCallback(CConsoleControl* pControl, DWORD comma
 
 void CConsoleFileDialog::WildCardCallback(CConsoleControl* pControl, DWORD command)
 {
-	CConsoleComboControl* pComboControl = CastDynamic(CConsoleComboControl*, pControl);
+	CConsoleComboControl* pComboControl = CastDynamicPtr(CConsoleComboControl, pControl);
 
 	if ( !pComboControl )
 		return;
@@ -670,7 +670,7 @@ void CConsoleFileDialog::LoadConfiguration()
 #ifdef OK_SYS_UNIX
 	CStringBuffer path(__FILE__LINE__ _T("/"));
 #endif
-	CConsoleComboControl* pControl = CastDynamic(CConsoleComboControl*, 
+	CConsoleComboControl* pControl = CastDynamicPtr(CConsoleComboControl, 
     	GetControl(_T("WildCardText")));
 
 	if ( (pControl != nullptr) && (!(pControl->GetCurrentComboItem().IsEmpty())) )

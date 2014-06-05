@@ -21,7 +21,7 @@
 #pragma once
 
 #define _CRT_RAND_S
-#include "PDEFS.H"
+#include "pdefs.h"
 
 #include "CppObject.h"
 #include "StringLiteral.h"

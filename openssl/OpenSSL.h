@@ -21,7 +21,7 @@
 #ifndef __OPENSSL_H__
 #define __OPENSSL_H__
 
-#include "PDEFS.H"
+#include "pdefs.h"
 
 // Generic helper definitions for shared library support
 #if defined(OK_COMP_MSC) || defined(__CYGWIN__)

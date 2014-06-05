@@ -314,7 +314,7 @@ void CThread::StopAll()
 
 	if ( gThreadList.Count() > 0 )
 	{
-		CDataDoubleLinkedListT<CThread>::Iterator it = gThreadList.Begin();
+		gThreadList_t::Iterator it = gThreadList.Begin();
 
 		while ( it )
 		{
@@ -336,12 +336,11 @@ void CThread::JoinAll()
 		while ( it )
 		{
 			CThread* pThread = *it;
-			dword result = E_JOINTIMEDOUT;
 
 			_lock.unlock();
 			try
 			{
-				result = pThread->Join(100);
+				pThread->Join(100);
 			}
 			catch ( CThreadException* ex )
 			{
@@ -421,13 +420,8 @@ CPooledThread::~CPooledThread()
 
 void CPooledThread::AddTask(CAbstractThreadCallback* pCallback)
 {
-	if (PtrCheck(pCallback))
-		DebugBreak();
-	assert(NotPtrCheck(pCallback));
 	m_condition.lock();
 	m_TaskQueue.Append(pCallback);
-	assert(m_TaskQueue.Count() > 0);
-	assert(*(m_TaskQueue.Last()) == pCallback);
 	m_condition.unlock();
 	m_condition.wake();
 }
@@ -698,12 +692,13 @@ void CThreadPool::JoinAll()
 	CScopedLock _lock;
 	CDataDoubleLinkedListT<CPooledThread>::Iterator it;
 	CPooledThread* pThread;
+	dword result;
 
 	it = m_Threads.Begin();
 	while ( it )
 	{
 		pThread = *it;
-		dword result = CThread::E_JOINTIMEDOUT;
+		result = CThread::E_JOINTIMEDOUT;
 
 		_lock.unlock();
 		try

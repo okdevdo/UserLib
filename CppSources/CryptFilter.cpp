@@ -20,7 +20,7 @@
 ******************************************************************************/
 #include "CPPS_PCH.H"
 #include "CryptFilter.h"
-#include "CIPHER.H"
+#include "cipher.h"
 
 IMPL_EXCEPTION(CCryptException, CBaseException)
 

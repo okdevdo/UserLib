@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "PDEFS.H"
+#include "pdefs.h"
 
 #include "CppObject.h"
 #include "StringLiteral.h"

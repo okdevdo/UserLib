@@ -158,8 +158,39 @@ static void TestSpecialDESImport(void)
 }
 #endif
 
+class X: public CCppObject
+{
+public:
+	X() : m_name() {}
+	X(CConstPointer name) : m_name(__FILE__LINE__ name) {}
+	X(ConstRef(CStringBuffer) name) : m_name(name) {}
+	ConstRef(CStringBuffer) get_Name() const { return m_name; }
+
+protected:
+	CStringBuffer m_name;
+};
+
 static void TestSpecial(void)
 {
+	auto f = [](ConstPtr(X) pA, ConstPtr(X) pB) -> bool { return pA->get_Name().LT(pB->get_Name()); };
+	auto e = [](ConstPtr(X) pA, ConstPtr(X) pB) -> bool { return pA->get_Name().EQ(pB->get_Name()); };
+	typedef CDataVectorT<X, decltype(f)> TXVector;
+	TXVector dv(__FILE__LINE__ 16, 16, f, CCppObjectReleaseFunctor<X>());
+	TXVector::Iterator it;
+	X toFind(_T("ToFind"));
+
+	dv.Append(new X(_T("Eins")));
+	dv.Append(new X(_T("Zwei")));
+	dv.Append(new X(_T("ToFind")));
+	dv.Append(new X(_T("Vier")));
+	it = dv.Find<decltype(e)>(&toFind, e);
+	assert(it);
+	assert((*it)->get_Name().EQ(CStringLiteral(_T("ToFind"))));
+
+	dv.Sort();
+	it = dv.FindSorted(&toFind);
+	assert(dv.MatchSorted(it, &toFind));
+	assert((*it)->get_Name().EQ(CStringLiteral(_T("ToFind"))));
 }
 
 static Ptr(CFile) _TestFile = nullptr;

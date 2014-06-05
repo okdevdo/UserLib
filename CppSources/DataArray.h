@@ -120,7 +120,7 @@ public:
 			Ptr(Item) p = *it;
 
 			p->addRef();
-			InsertSorted(p);
+			Append(p);
 			++it;
 		}
 	}
@@ -185,13 +185,13 @@ public:
 		return ArrayForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD);
 	}
 	template <typename D> // CCppObjectEqualFunctor<Item>
-	Iterator Find(ConstPtr(Item) data, RefRef(D) rD = D()) const
+	Iterator Find(ConstPtr(Item) data, RefRef(D) rD = D())
 	{
 		Iterator it = ArrayFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD);
 		return it;
 	}
 	template <typename D> // CCppObjectEqualFunctor<Item>
-	Iterator Find(ConstPtr(Item) data, Ref(D) rD) const
+	Iterator Find(ConstPtr(Item) data, Ref(D) rD)
 	{
 		Iterator it = ArrayFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD);
 		return it;
@@ -217,6 +217,17 @@ public:
 			return false;
 		return true;
 	}
+	template <typename D> // CCppObjectLessFunctor<Item>
+	bool MatchSorted(Iterator it, ConstPtr(Item) data, RefRef(D) rD = D())
+	{
+		if (!it)
+			return false;
+		if (PtrCheck(*it))
+			return false;
+		if (TCppObjectSearchAndSortUserFunc<Item, D>(*it, data, &rD) != 0)
+			return false;
+		return true;
+	}
 	Iterator FindSorted(ConstPtr(Item) data)
 	{
 		Iterator it;
@@ -232,7 +243,15 @@ public:
 		it = ArrayFindSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
 		return it;
 	}
-	Iterator UpperBound(ConstPtr(Item) data) const
+	template <typename D> // CCppObjectLessFunctor<Item>
+	Iterator FindSorted(ConstPtr(Item) data, RefRef(D) rD = D())
+	{
+		Iterator it;
+
+		it = ArrayFindSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
+		return it;
+	}
+	Iterator UpperBound(ConstPtr(Item) data)
 	{
 		Iterator it;
 
@@ -240,14 +259,22 @@ public:
 		return it;
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator UpperBound(ConstPtr(Item) data, Ref(D) rD) const
+	Iterator UpperBound(ConstPtr(Item) data, Ref(D) rD)
 	{
 		Iterator it;
 
 		it = ArrayUpperBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
 		return it;
 	}
-	Iterator LowerBound(ConstPtr(Item) data) const
+	template <typename D> // CCppObjectLessFunctor<Item>
+	Iterator UpperBound(ConstPtr(Item) data, RefRef(D) rD = D())
+	{
+		Iterator it;
+
+		it = ArrayUpperBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
+		return it;
+	}
+	Iterator LowerBound(ConstPtr(Item) data)
 	{
 		Iterator it;
 
@@ -255,7 +282,15 @@ public:
 		return it;
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator LowerBound(ConstPtr(Item) data, Ref(D) rD) const
+	Iterator LowerBound(ConstPtr(Item) data, Ref(D) rD)
+	{
+		Iterator it;
+
+		it = ArrayLowerBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
+		return it;
+	}
+	template <typename D> // CCppObjectLessFunctor<Item>
+	Iterator LowerBound(ConstPtr(Item) data, RefRef(D) rD = D())
 	{
 		Iterator it;
 
@@ -267,11 +302,16 @@ public:
 		ArraySort(_liste, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser, Castword(mode));
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
-	void Sort(Ref(D) rD, TSortMode mode = HeapSortMode) const
+	void Sort(Ref(D) rD, TSortMode mode = HeapSortMode)
 	{
 		ArraySort(_liste, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD, Castword(mode));
 	}
-	Iterator Append(ConstPtr(Item) data) const 
+	template <typename D> // CCppObjectLessFunctor<Item>
+	void Sort(RefRef(D) rD, TSortMode mode = HeapSortMode)
+	{
+		ArraySort(_liste, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD, Castword(mode));
+	}
+	Iterator Append(ConstPtr(Item) data) const
 	{ 
 		Iterator it = ArrayAppend(_liste, data); 
 		return it; 
@@ -296,6 +336,11 @@ public:
 		ArrayRemove(node, &TCppObjectReleaseFunc<Item, Deleter>, &_deleter);
 	}
 	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void Remove(Iterator node, Ref(D) rD)
+	{
+		ArrayRemove(node, &TCppObjectReleaseFunc<Item, D>, &rD);
+	}
+	template <typename D> // CCppObjectReleaseFunctor<Item>
 	void Remove(Iterator node, RefRef(D) rD = D())
 	{
 		ArrayRemove(node, &TCppObjectReleaseFunc<Item, D>, &rD);
@@ -305,7 +350,12 @@ public:
 		return ArrayInsertSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser);
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator InsertSorted(ConstPtr(Item) data, RefRef(D) rD = D()) const
+	Iterator InsertSorted(ConstPtr(Item) data, Ref(D) rD)
+	{
+		return ArrayInsertSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
+	}
+	template <typename D> // CCppObjectLessFunctor<Item>
+	Iterator InsertSorted(ConstPtr(Item) data, RefRef(D) rD = D())
 	{
 		return ArrayInsertSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
 	}
@@ -314,11 +364,16 @@ public:
 		return ArrayRemoveSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser, &TCppObjectReleaseFunc<Item, Deleter>, &_deleter);
 	}
 	template <typename D, typename E> // CCppObjectLessFunctor<Item>, CCppObjectReleaseFunctor<Item>
-	bool RemoveSorted(ConstPtr(Item) data, RefRef(D) rD = D(), RefRef(E) rE = E()) const
+	bool RemoveSorted(ConstPtr(Item) data, Ref(D) rD, Ref(E) rE)
 	{
 		return ArrayRemoveSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD, &TCppObjectReleaseFunc<Item, E>, &rE);
 	}
-	Ptr(Item) GetData(Iterator node) const 
+	template <typename D, typename E> // CCppObjectLessFunctor<Item>, CCppObjectReleaseFunctor<Item>
+	bool RemoveSorted(ConstPtr(Item) data, RefRef(D) rD = D(), RefRef(E) rE = E())
+	{
+		return ArrayRemoveSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD, &TCppObjectReleaseFunc<Item, E>, &rE);
+	}
+	Ptr(Item) GetData(Iterator node) const
 	{ 
 		return CastAnyPtr(Item, ArrayGetData(node)); 
 	}
@@ -329,6 +384,28 @@ public:
 		if (NotPtrCheck(p) && (p != data))
 		{
 			_deleter(CastMutablePtr(Item, p));
+			ArraySetData(node, data);
+		}
+	}
+	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void SetData(Iterator node, Ptr(Item) data, Ref(D) rD)
+	{
+		ConstPtr(Item) p = GetData(node);
+
+		if (NotPtrCheck(p) && (p != data))
+		{
+			rD(CastMutablePtr(Item, p));
+			ArraySetData(node, data);
+		}
+	}
+	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void SetData(Iterator node, Ptr(Item) data, RefRef(D) rD = D())
+	{
+		ConstPtr(Item) p = GetData(node);
+
+		if (NotPtrCheck(p) && (p != data))
+		{
+			rD(CastMutablePtr(Item, p));
 			ArraySetData(node, data);
 		}
 	}

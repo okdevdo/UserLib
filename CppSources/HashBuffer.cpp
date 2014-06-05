@@ -21,7 +21,7 @@
 #include "CPPS_PCH.H"
 #include "HashBuffer.h"
 #include "File.h"
-#include "HASH.H"
+#include "hash.h"
 
 CDataVectorT<CStringBuffer> CHashBuffer::_algos(__FILE__LINE__ 16, 16);
 

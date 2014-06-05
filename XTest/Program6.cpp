@@ -394,7 +394,7 @@ public:
 		m_pDialog->Initialize2(size);
 
 		CConsoleComboControl* pComboControl = 
-			CastDynamic(CConsoleComboControl*, m_pDialog->GetControl(_T("WildCardText")));
+			CastDynamicPtr(CConsoleComboControl, m_pDialog->GetControl(_T("WildCardText")));
 		if ( pComboControl )
 		{
 			pComboControl->AddComboItem(CStringBuffer(__FILE__LINE__ _T("*.*")));
@@ -405,13 +405,13 @@ public:
 		}
 
 		CConsoleButtonControl* pButtonControl = 
-			CastDynamic(CConsoleButtonControl*, m_pDialog->GetControl(_T("OKButton")));
+			CastDynamicPtr(CConsoleButtonControl, m_pDialog->GetControl(_T("OKButton")));
 		if ( pButtonControl )
 			pButtonControl->SetCallback(
 			    OK_NEW_OPERATOR CConsoleControlCallback<CTestConsole>(this, &CTestConsole::TextDateiOeffnenOKButton));
 
 		pButtonControl = 
-			CastDynamic(CConsoleButtonControl*, m_pDialog->GetControl(_T("CancelButton")));
+			CastDynamicPtr(CConsoleButtonControl, m_pDialog->GetControl(_T("CancelButton")));
 		if ( pButtonControl )
 			pButtonControl->SetCallback(
 			    OK_NEW_OPERATOR CConsoleControlCallback<CTestConsole>(this, &CTestConsole::TextDateiOeffnenCancelButton));
@@ -425,13 +425,13 @@ public:
 			CFilePath path;
 
 			CConsoleFileListControl* pFileListControl = 
-				CastDynamic(CConsoleFileListControl*, m_pDialog->GetControl(_T("FileList")));
+				CastDynamicPtr(CConsoleFileListControl, m_pDialog->GetControl(_T("FileList")));
 
 			if ( pFileListControl )
 				path = pFileListControl->GetPath();
 
 			CConsoleTextControl* pFileText = 
-				CastDynamic(CConsoleTextControl*,  m_pDialog->GetControl(_T("FileNameText")));
+				CastDynamicPtr(CConsoleTextControl,  m_pDialog->GetControl(_T("FileNameText")));
 
 			if ( pFileText )
 				path.set_Filename(pFileText->GetText());

@@ -349,14 +349,14 @@ bool CConsole::DispatchMouseEvent(ConstRef(MOUSE_EVENT_RECORD) mouseEvent)
 
 			if ( m_ModalDialogs.Count() > 0 )
 			{
-				CConsoleDialog* pDialog = CastDynamic(CConsoleDialog*, *(m_ModalDialogs.Begin()));
+				CConsoleDialog* pDialog = CastDynamicPtr(CConsoleDialog, *(m_ModalDialogs.Begin()));
 
 				return pDialog->MouseEventProc(mouseEvent);
 			}
 
 			if ( m_PopupMenus.Count() > 0 )
 			{
-				CConsolePopupMenu* pPopupMenu = CastDynamic(CConsolePopupMenu*, *(m_PopupMenus.Begin()));
+				CConsolePopupMenu* pPopupMenu = CastDynamicPtr(CConsolePopupMenu, *(m_PopupMenus.Begin()));
 				bool hasFired = false;
 
 				if ( NotPtrCheck(pPopupMenu) && (pPopupMenu->IsPosInClientRect(mouseEvent.dwMousePosition) 
@@ -402,7 +402,7 @@ bool CConsole::DispatchMouseEvent(ConstRef(MOUSE_EVENT_RECORD) mouseEvent)
 
 			if ( m_ModalDialogs.Count() > 0 )
 			{
-				CConsoleDialog* pDialog = CastDynamic(CConsoleDialog*, *(m_ModalDialogs.Begin()));
+				CConsoleDialog* pDialog = CastDynamicPtr(CConsoleDialog, *(m_ModalDialogs.Begin()));
 
 				return pDialog->MouseEventProc(mouseEvent);
 			}
@@ -424,7 +424,7 @@ bool CConsole::DispatchMouseEvent(ConstRef(MOUSE_EVENT_RECORD) mouseEvent)
 
 			if ( m_ModalDialogs.Count() > 0 )
 			{
-				CConsoleDialog* pDialog = CastDynamic(CConsoleDialog*, *(m_ModalDialogs.Begin()));
+				CConsoleDialog* pDialog = CastDynamicPtr(CConsoleDialog, *(m_ModalDialogs.Begin()));
 
 				return pDialog->MouseEventProc(mouseEvent);
 			}
@@ -446,7 +446,7 @@ bool CConsole::DispatchMouseEvent(ConstRef(MOUSE_EVENT_RECORD) mouseEvent)
 
 			if ( m_ModalDialogs.Count() > 0 )
 			{
-				CConsoleDialog* pDialog = CastDynamic(CConsoleDialog*, *(m_ModalDialogs.Begin()));
+				CConsoleDialog* pDialog = CastDynamicPtr(CConsoleDialog, *(m_ModalDialogs.Begin()));
 
 				return pDialog->MouseEventProc(mouseEvent);
 			}
@@ -467,7 +467,7 @@ bool CConsole::DispatchMouseEvent(ConstRef(MOUSE_EVENT_RECORD) mouseEvent)
 
 			if ( m_ModalDialogs.Count() > 0 )
 			{
-				CConsoleDialog* pDialog = CastDynamic(CConsoleDialog*, *(m_ModalDialogs.Begin()));
+				CConsoleDialog* pDialog = CastDynamicPtr(CConsoleDialog, *(m_ModalDialogs.Begin()));
 
 				return pDialog->MouseEventProc(mouseEvent);
 			}
@@ -536,7 +536,7 @@ bool CConsole::DispatchKeyEvent(ConstRef(KEY_EVENT_RECORD) keyEvent)
 
 	if ( m_ModalDialogs.Count() > 0 )
 	{
-		CConsoleDialog* pDialog = CastDynamic(CConsoleDialog*, *(m_ModalDialogs.Begin()));
+		CConsoleDialog* pDialog = CastDynamicPtr(CConsoleDialog, *(m_ModalDialogs.Begin()));
 
 		if ( keyEvent.bKeyDown 
 			&& ((keyEvent.dwControlKeyState & CConsoleWindow::KeyStateAllExceptCtrlMask) == 0)
@@ -699,7 +699,7 @@ bool CConsole::DispatchKeyEvent(int keyEvent)
 
 	if ( m_ModalDialogs.Count() > 0 )
 	{
-		CConsoleDialog* pDialog = CastDynamic(CConsoleDialog*, *(m_ModalDialogs.Begin()));
+		CConsoleDialog* pDialog = CastDynamicPtr(CConsoleDialog, *(m_ModalDialogs.Begin()));
 
 		if ( vKey == KEY_F(4) )
 		{
@@ -790,7 +790,7 @@ void CConsole::CreateConsoleWindow(CConsoleWindow* pWindow)
 	}
 	else
 	{
-		CConsoleDialog* pDialog = CastDynamic(CConsoleDialog*, *(m_ModalDialogs.Begin()));
+		CConsoleDialog* pDialog = CastDynamicPtr(CConsoleDialog, *(m_ModalDialogs.Begin()));
 
 		pDialog->SetFocus(false);
 	}
@@ -864,7 +864,7 @@ CConsolePopupMenu* CConsole::GetCurrentConsolePopupMenu()
 {
 	if ( m_PopupMenus.Count() == 0 )
 		return nullptr;
-	return CastDynamic(CConsolePopupMenu*, *(m_PopupMenus.Begin()));
+	return CastDynamicPtr(CConsolePopupMenu, *(m_PopupMenus.Begin()));
 }
 
 void CConsole::CloseConsolePopupMenu()
@@ -889,7 +889,7 @@ void CConsole::CreateConsoleModalDialog(CConsoleDialog* pDialog, COORD size)
 	}
 	else
 	{
-		CConsoleDialog* pDialog = CastDynamic(CConsoleDialog*, *(m_ModalDialogs.Begin()));
+		CConsoleDialog* pDialog = CastDynamicPtr(CConsoleDialog, *(m_ModalDialogs.Begin()));
 
 		pDialog->SetFocus(false);
 	}
@@ -919,7 +919,7 @@ CConsoleDialog* CConsole::GetCurrentConsoleModalDialog()
 {
 	if ( m_ModalDialogs.Count() > 0 )
 	{
-		CConsoleDialog* pDialog = CastDynamic(CConsoleDialog*, *(m_ModalDialogs.Begin()));
+		CConsoleDialog* pDialog = CastDynamicPtr(CConsoleDialog, *(m_ModalDialogs.Begin()));
 
 		return pDialog;
 	}
@@ -935,7 +935,7 @@ void CConsole::CloseConsoleModalDialog(CConsoleWindow* pWindow)
 
 		if ( it )
 		{
-			CConsoleDialog* pDialog = CastDynamic(CConsoleDialog*, *it);
+			CConsoleDialog* pDialog = CastDynamicPtr(CConsoleDialog, *it);
 
 			pDialog->SetFocus(false);
 			m_ModalDialogs.Remove(it);
@@ -956,7 +956,7 @@ void CConsole::CloseConsoleModalDialog(CConsoleWindow* pWindow)
 	}
 	else
 	{
-		CConsoleDialog* pDialog = CastDynamic(CConsoleDialog*, *(m_ModalDialogs.Begin()));
+		CConsoleDialog* pDialog = CastDynamicPtr(CConsoleDialog, *(m_ModalDialogs.Begin()));
 
 		pDialog->SetFocus(true);
 	}

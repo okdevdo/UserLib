@@ -27,7 +27,7 @@
 
 #include "targetver.h"
 
-#include "PDEFS.H"
+#include "pdefs.h"
 
 #include "CppObject.h"
 #include "StringLiteral.h"

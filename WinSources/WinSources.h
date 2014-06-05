@@ -21,7 +21,7 @@
 #ifndef __WINSOURCES_H__
 #define __WINSOURCES_H__
 
-#include "PDEFS.H"
+#include "pdefs.h"
 
 // Generic helper definitions for shared library support
 #if defined(OK_COMP_MSC) || defined(__CYGWIN__)
@@ -56,8 +56,8 @@
   #define WINSOURCES_LOCAL
 #endif // DLL_EXPORT
 
-#include "TFMEM.H"
-#include "STRUTIL.H"
+#include "tfmem.h"
+#include "strutil.h"
 
 #include "CppObject.h"
 #include "StringLiteral.h"

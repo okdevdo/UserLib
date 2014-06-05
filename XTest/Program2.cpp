@@ -19,7 +19,7 @@
 
 ******************************************************************************/
 #include "Program.h"
-#include "STRUTIL.H"
+#include "strutil.h"
 
 static const char* strtoll_cnvt = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 

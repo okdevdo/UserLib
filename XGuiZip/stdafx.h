@@ -62,7 +62,7 @@ inline void Convert2Rect(RECT* pRect, Gdiplus::RectF* pRectf)
 	pRect->bottom = (LONG)(floor(pRectf->Y + pRectf->Height + 0.5));
 }
 
-#include "PDEFS.H"
+#include "pdefs.h"
 
 #include "CppObject.h"
 #include "StringLiteral.h"

@@ -1,7 +1,7 @@
 includedir = $(prefix)/include/UserLib/CryptSources
 lib_LTLIBRARIES = libCryptSources.la
-libCryptSources_la_SOURCES = AES.C BLOWFISH.C CBC.C CFB.C CTR.C DES.C MD2.C MD4.C MD5.C OFB.C SHA1.C SHA256.C SHA512.C TWOFISH.C XTS.C 
-include_HEADERS = CIPHER.H DES.H HASH.H TWOFISH.H
+libCryptSources_la_SOURCES = aes.c blowfish.c cbc.c cfb.c ctr.c des.c md2.c md4.c md5.c ofb.c sha1.c sha256.c sha512.c twofish.c xts.c 
+include_HEADERS = cipher.h hash.h
 
 libCryptSources_la_LDFLAGS = -no-undefined -version-info 1
 libCryptSources_la_LIBADD = 

@@ -116,7 +116,7 @@ void CConsoleComboControl::DropDownListCallback(CConsoleControl* pControl, DWORD
 	if ( !m_Console )
 		return;
 
-	CConsoleListControl* pListControl = CastDynamic(CConsoleListControl*, pControl);
+	CConsoleListControl* pListControl = CastDynamicPtr(CConsoleListControl, pControl);
 
 	if ( !pListControl )
 		return;

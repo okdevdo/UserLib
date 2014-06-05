@@ -4,9 +4,8 @@
 AC_PREREQ(2.68)
 AC_INIT(UserLib, 1.0.3, okdev10@arcor.de)
 AC_CONFIG_SRCDIR([CSources/PDEFS.H])
-AM_INIT_AUTOMAKE([1.12 no-define foreign -Wall -Werror subdir-objects])
-AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_HEADERS([config.h])
 
 AC_CANONICAL_HOST
 
@@ -44,16 +43,20 @@ AM_CONDITIONAL([COND_CYGWIN], [test x$want_cygwin = xyes])
 AM_CONDITIONAL([COND_CYGWIN64], [test x$want_cygwin64 = xyes])
 
 # Checks for programs.
-AC_PROG_CXX
-AC_PROG_CC
+AM_INIT_AUTOMAKE([1.12 no-define foreign -Wall -Werror subdir-objects])
 AM_PROG_AR
+
+LT_PREREQ([2.2])
+LT_INIT
+LT_LANG([Windows Resource])
+LT_LANG([C])
+LT_LANG([C++])
+
 CFLAGS=
 CPPFLAGS=
 CXXFLAGS=
-AC_PROG_MAKE_SET
 
 # Checks for libraries.
-LT_INIT
 AC_CHECK_LIB(pthread, [pthread_mutex_init])
 
 # Checks for header files.
@@ -87,19 +90,42 @@ AC_DEFUN([COMPILE_STDCXX_0X], [
   [AC_LANG_SAVE
   AC_LANG_CPLUSPLUS
   AC_TRY_COMPILE([
-  template <typename T>
+  
+	#include <type_traits>
+
+    template <typename T>
     struct check 
     {
       static_assert(sizeof(int) <= sizeof(T), "not big enough");
     };
+	
+    template <typename T>
+    class smart_ptr
+	{
+	typedef T value_type;
+	public:
+		smart_ptr(value_type* p): _p(p) {}
+		const value_type* get() const { return _p; }
+	protected:
+		value_type* _p;
+	};
+	
+	template <typename T> 
+	bool operator == (const smart_ptr<T> &pA, std::nullptr_t pB) { return pA.get() == nullptr; };
 
     typedef check<check<bool>> right_angle_brackets;
 
     int a;
+	int *p = nullptr;
+	auto q = smart_ptr<int>(nullptr);
     decltype(a) b;
 
     typedef check<int> check_type;
     check_type c{};
+	
+	bool bp = (p == nullptr);
+	bool bq = (q == nullptr);
+	
     check_type&& cr = static_cast<check_type&&>(c);
 
     ],,
@@ -114,19 +140,42 @@ AC_DEFUN([COMPILE_STDCXX_0X], [
   ac_save_CXXFLAGS="$CXXFLAGS"
   CXXFLAGS="$CXXFLAGS -std=c++0x"
   AC_TRY_COMPILE([
-  template <typename T>
-    struct check
+  
+	#include <type_traits>
+
+    template <typename T>
+    struct check 
     {
       static_assert(sizeof(int) <= sizeof(T), "not big enough");
     };
+	
+    template <typename T>
+    class smart_ptr
+	{
+	typedef T value_type;
+	public:
+		smart_ptr(value_type* p): _p(p) {}
+		const value_type* get() const { return _p; }
+	protected:
+		value_type* _p;
+	};
+	
+	template <typename T> 
+	bool operator == (const smart_ptr<T> &pA, std::nullptr_t pB) { return pA.get() == nullptr; };
 
     typedef check<check<bool>> right_angle_brackets;
 
     int a;
+	int *p = nullptr;
+	auto q = smart_ptr<int>(nullptr);
     decltype(a) b;
 
     typedef check<int> check_type;
     check_type c{};
+	
+	bool bp = (p == nullptr);
+	bool bq = (q == nullptr);
+	
     check_type&& cr = static_cast<check_type&&>(c);
 	
 	],,
@@ -142,19 +191,42 @@ AC_DEFUN([COMPILE_STDCXX_0X], [
   ac_save_CXXFLAGS="$CXXFLAGS"
   CXXFLAGS="$CXXFLAGS -std=gnu++0x"
   AC_TRY_COMPILE([
-  template <typename T>
+  
+	#include <type_traits>
+
+    template <typename T>
     struct check 
     {
       static_assert(sizeof(int) <= sizeof(T), "not big enough");
     };
+	
+    template <typename T>
+    class smart_ptr
+	{
+	typedef T value_type;
+	public:
+		smart_ptr(value_type* p): _p(p) {}
+		const value_type* get() const { return _p; }
+	protected:
+		value_type* _p;
+	};
+	
+	template <typename T> 
+	bool operator == (const smart_ptr<T> &pA, std::nullptr_t pB) { return pA.get() == nullptr; };
 
     typedef check<check<bool>> right_angle_brackets;
 
     int a;
+	int *p = nullptr;
+	auto q = smart_ptr<int>(nullptr);
     decltype(a) b;
 
     typedef check<int> check_type;
     check_type c{};
+	
+	bool bp = (p == nullptr);
+	bool bq = (q == nullptr);
+	
     check_type&& cr = static_cast<check_type&&>(c);
 	
 	],,
@@ -177,19 +249,42 @@ AC_DEFUN([COMPILE_STDCXX_11], [
   [AC_LANG_SAVE
   AC_LANG_CPLUSPLUS
   AC_TRY_COMPILE([
-  template <typename T>
-    struct check final
+  
+	#include <type_traits>
+
+    template <typename T>
+    struct check 
     {
       static_assert(sizeof(int) <= sizeof(T), "not big enough");
     };
+	
+    template <typename T>
+    class smart_ptr
+	{
+	typedef T value_type;
+	public:
+		smart_ptr(value_type* p): _p(p) {}
+		const value_type* get() const { return _p; }
+	protected:
+		value_type* _p;
+	};
+	
+	template <typename T> 
+	bool operator == (const smart_ptr<T> &pA, std::nullptr_t pB) { return pA.get() == nullptr; };
 
     typedef check<check<bool>> right_angle_brackets;
 
     int a;
+	int *p = nullptr;
+	auto q = smart_ptr<int>(nullptr);
     decltype(a) b;
 
     typedef check<int> check_type;
     check_type c{};
+	
+	bool bp = (p == nullptr);
+	bool bq = (q == nullptr);
+	
     check_type&& cr = static_cast<check_type&&>(c);
 	
 	],,
@@ -204,19 +299,42 @@ AC_DEFUN([COMPILE_STDCXX_11], [
   ac_save_CXXFLAGS="$CXXFLAGS"
   CXXFLAGS="$CXXFLAGS -std=c++11"
   AC_TRY_COMPILE([
-  template <typename T>
-    struct check final
+  
+	#include <type_traits>
+
+    template <typename T>
+    struct check 
     {
       static_assert(sizeof(int) <= sizeof(T), "not big enough");
     };
+	
+    template <typename T>
+    class smart_ptr
+	{
+	typedef T value_type;
+	public:
+		smart_ptr(value_type* p): _p(p) {}
+		const value_type* get() const { return _p; }
+	protected:
+		value_type* _p;
+	};
+	
+	template <typename T> 
+	bool operator == (const smart_ptr<T> &pA, std::nullptr_t pB) { return pA.get() == nullptr; };
 
     typedef check<check<bool>> right_angle_brackets;
 
     int a;
+	int *p = nullptr;
+	auto q = smart_ptr<int>(nullptr);
     decltype(a) b;
 
     typedef check<int> check_type;
     check_type c{};
+	
+	bool bp = (p == nullptr);
+	bool bq = (q == nullptr);
+	
     check_type&& cr = static_cast<check_type&&>(c);
 	
 	],,
@@ -232,19 +350,42 @@ AC_DEFUN([COMPILE_STDCXX_11], [
   ac_save_CXXFLAGS="$CXXFLAGS"
   CXXFLAGS="$CXXFLAGS -std=gnu++11"
   AC_TRY_COMPILE([
-  template <typename T>
-    struct check final
+  
+	#include <type_traits>
+
+    template <typename T>
+    struct check 
     {
       static_assert(sizeof(int) <= sizeof(T), "not big enough");
     };
+	
+    template <typename T>
+    class smart_ptr
+	{
+	typedef T value_type;
+	public:
+		smart_ptr(value_type* p): _p(p) {}
+		const value_type* get() const { return _p; }
+	protected:
+		value_type* _p;
+	};
+	
+	template <typename T> 
+	bool operator == (const smart_ptr<T> &pA, std::nullptr_t pB) { return pA.get() == nullptr; };
 
     typedef check<check<bool>> right_angle_brackets;
 
     int a;
+	int *p = nullptr;
+	auto q = smart_ptr<int>(nullptr);
     decltype(a) b;
 
     typedef check<int> check_type;
     check_type c{};
+	
+	bool bp = (p == nullptr);
+	bool bq = (q == nullptr);
+	
     check_type&& cr = static_cast<check_type&&>(c);
 	
 	],,

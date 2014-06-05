@@ -120,7 +120,7 @@ public:
 			Ptr(Item) p = *it;
 
 			p->addRef();
-			InsertSorted(p);
+			Append(p);
 			++it;
 		}
 	}
@@ -185,13 +185,13 @@ public:
 		return VectorForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD);
 	}
 	template <typename D> // CCppObjectEqualFunctor<Item>
-	Iterator Find(ConstPtr(Item) data, RefRef(D) rD = D()) const
+	Iterator Find(ConstPtr(Item) data, RefRef(D) rD = D())
 	{
 		Iterator it = VectorFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD);
 		return it;
 	}
 	template <typename D> // CCppObjectEqualFunctor<Item>
-	Iterator Find(ConstPtr(Item) data, Ref(D) rD) const
+	Iterator Find(ConstPtr(Item) data, Ref(D) rD)
 	{
 		Iterator it = VectorFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD);
 		return it;
@@ -217,6 +217,17 @@ public:
 			return false;
 		return true;
 	}
+	template <typename D> // CCppObjectLessFunctor<Item>
+	bool MatchSorted(Iterator it, ConstPtr(Item) data, RefRef(D) rD = D())
+	{
+		if (!it)
+			return false;
+		if (PtrCheck(*it))
+			return false;
+		if (TCppObjectSearchAndSortUserFunc<Item, D>(*it, data, &rD) != 0)
+			return false;
+		return true;
+	}
 	Iterator FindSorted(ConstPtr(Item) data)
 	{
 		Iterator it;
@@ -232,7 +243,15 @@ public:
 		it = VectorFindSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
 		return it;
 	}
-	Iterator UpperBound(ConstPtr(Item) data) const
+	template <typename D> // CCppObjectLessFunctor<Item>
+	Iterator FindSorted(ConstPtr(Item) data, RefRef(D) rD = D())
+	{
+		Iterator it;
+
+		it = VectorFindSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
+		return it;
+	}
+	Iterator UpperBound(ConstPtr(Item) data)
 	{
 		Iterator it;
 
@@ -240,14 +259,22 @@ public:
 		return it;
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator UpperBound(ConstPtr(Item) data, Ref(D) rD) const
+	Iterator UpperBound(ConstPtr(Item) data, Ref(D) rD)
 	{
 		Iterator it;
 
 		it = VectorUpperBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
 		return it;
 	}
-	Iterator LowerBound(ConstPtr(Item) data) const
+	template <typename D> // CCppObjectLessFunctor<Item>
+	Iterator UpperBound(ConstPtr(Item) data, RefRef(D) rD = D())
+	{
+		Iterator it;
+
+		it = VectorUpperBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
+		return it;
+	}
+	Iterator LowerBound(ConstPtr(Item) data)
 	{
 		Iterator it;
 
@@ -255,7 +282,15 @@ public:
 		return it;
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator LowerBound(ConstPtr(Item) data, Ref(D) rD) const
+	Iterator LowerBound(ConstPtr(Item) data, Ref(D) rD)
+	{
+		Iterator it;
+
+		it = VectorLowerBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
+		return it;
+	}
+	template <typename D> // CCppObjectLessFunctor<Item>
+	Iterator LowerBound(ConstPtr(Item) data, RefRef(D) rD = D())
 	{
 		Iterator it;
 
@@ -267,7 +302,12 @@ public:
 		VectorSort(_liste, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser, Castword(mode));
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
-	void Sort(Ref(D) rD, TSortMode mode = HeapSortMode) const
+	void Sort(Ref(D) rD, TSortMode mode = HeapSortMode)
+	{
+		VectorSort(_liste, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD, Castword(mode));
+	}
+	template <typename D> // CCppObjectLessFunctor<Item>
+	void Sort(RefRef(D) rD, TSortMode mode = HeapSortMode)
 	{
 		VectorSort(_liste, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD, Castword(mode));
 	}
@@ -310,7 +350,12 @@ public:
 		return VectorInsertSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser);
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator InsertSorted(ConstPtr(Item) data, RefRef(D) rD = D()) const
+	Iterator InsertSorted(ConstPtr(Item) data, RefRef(D) rD = D())
+	{
+		return VectorInsertSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
+	}
+	template <typename D> // CCppObjectLessFunctor<Item>
+	Iterator InsertSorted(ConstPtr(Item) data, Ref(D) rD)
 	{
 		return VectorInsertSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
 	}
@@ -319,7 +364,12 @@ public:
 		return VectorRemoveSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser, &TCppObjectReleaseFunc<Item, Deleter>, &_deleter);
 	}
 	template <typename D, typename E> // CCppObjectLessFunctor<Item>, CCppObjectReleaseFunctor<Item>
-	bool RemoveSorted(ConstPtr(Item) data, RefRef(D) rD = D(), RefRef(E) rE = E()) const
+	bool RemoveSorted(ConstPtr(Item) data, RefRef(D) rD = D(), RefRef(E) rE = E())
+	{
+		return VectorRemoveSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD, &TCppObjectReleaseFunc<Item, E>, &rE);
+	}
+	template <typename D, typename E> // CCppObjectLessFunctor<Item>, CCppObjectReleaseFunctor<Item>
+	bool RemoveSorted(ConstPtr(Item) data, Ref(D) rD, Ref(E) rE)
 	{
 		return VectorRemoveSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD, &TCppObjectReleaseFunc<Item, E>, &rE);
 	}
@@ -334,7 +384,29 @@ public:
 		if (NotPtrCheck(p) && (p != data))
 		{
 			_deleter(CastMutablePtr(Item, p));
-			VectorSetData(node, data); 
+			VectorSetData(node, data);
+		}
+	}
+	template <typename D>
+	void SetData(Iterator node, Ptr(Item) data, RefRef(D) rD = D())
+	{
+		ConstPtr(Item) p = GetData(node);
+
+		if (NotPtrCheck(p) && (p != data))
+		{
+			rD(CastMutablePtr(Item, p));
+			VectorSetData(node, data);
+		}
+	}
+	template <typename D>
+	void SetData(Iterator node, Ptr(Item) data, Ref(D) rD)
+	{
+		ConstPtr(Item) p = GetData(node);
+
+		if (NotPtrCheck(p) && (p != data))
+		{
+			rD(CastMutablePtr(Item, p));
+			VectorSetData(node, data);
 		}
 	}
 
@@ -594,8 +666,15 @@ public:
 
 		Iterator& operator++() { _result = VectorNext(_result); return *this; }
 		Iterator& operator--() { _result = VectorPrev(_result); return *this; }
-		dword operator*() { return CastAny(dword, VectorGetData(_result)); }
-
+		dword operator*()
+		{
+#ifdef OK_CPU_32BIT
+			return CastAny(dword, VectorGetData(_result));
+#endif
+#ifdef OK_CPU_64BIT
+			return Castdword(CastAny(qword, VectorGetData(_result)));
+#endif
+		}
 		operator bool() { return !LPtrCheck(_result); }
 		operator LSearchResultType() { return _result; }
 
@@ -636,7 +715,14 @@ public:
 	void Remove(Iterator node) const { VectorRemove(node, CDataVectorT_dword_DeleteFunc, NULL); }
 	Iterator InsertSorted(dword data) const { Iterator it = VectorInsertSorted(_liste, CastAny(Pointer, data), CDataVectorT_dword_SearchAndSortUserFunc, NULL); return it; }
 	bool RemoveSorted(dword data) const { return VectorRemoveSorted(_liste, CastAny(Pointer, data), CDataVectorT_dword_SearchAndSortUserFunc, NULL, CDataVectorT_dword_DeleteFunc, NULL); }
-	CStringBuffer GetData(Iterator node) const { CastAny(dword, VectorGetData(node)); }
+	dword GetData(Iterator node) const {
+#ifdef OK_CPU_32BIT
+		return CastAny(dword, VectorGetData(node));
+#endif
+#ifdef OK_CPU_64BIT
+		return Castdword(CastAny(qword, VectorGetData(node)));
+#endif
+	}
 	void SetData(Iterator node, dword data) const
 	{
 		VectorSetData(node, CastAny(Pointer, data));
@@ -666,8 +752,15 @@ public:
 
 		Iterator& operator++() { _result = VectorNext(_result); return *this; }
 		Iterator& operator--() { _result = VectorPrev(_result); return *this; }
-		sdword operator*() { return CastAny(sdword, VectorGetData(_result)); }
-
+		sdword operator*() 
+		{ 
+#ifdef OK_CPU_32BIT
+		return CastAny(sdword, VectorGetData(_result));
+#endif
+#ifdef OK_CPU_64BIT
+		return Castsdword(CastAny(sqword, VectorGetData(_result)));
+#endif
+		}
 		operator bool() { return !LPtrCheck(_result); }
 		operator LSearchResultType() { return _result; }
 
@@ -708,7 +801,15 @@ public:
 	void Remove(Iterator node) const { VectorRemove(node, CDataVectorT_dword_DeleteFunc, NULL); }
 	Iterator InsertSorted(sdword data) const { Iterator it = VectorInsertSorted(_liste, CastAny(Pointer, data), CDataVectorT_dword_SearchAndSortUserFunc, NULL); return it; }
 	bool RemoveSorted(sdword data) const { return VectorRemoveSorted(_liste, CastAny(Pointer, data), CDataVectorT_dword_SearchAndSortUserFunc, NULL, CDataVectorT_dword_DeleteFunc, NULL); }
-	CStringBuffer GetData(Iterator node) const { CastAny(sdword, VectorGetData(node)); }
+	sdword GetData(Iterator node) const 
+	{ 
+#ifdef OK_CPU_32BIT
+		return CastAny(sdword, VectorGetData(node));
+#endif
+#ifdef OK_CPU_64BIT
+		return Castsdword(CastAny(sqword, VectorGetData(node)));
+#endif
+	}
 	void SetData(Iterator node, sdword data) const
 	{
 		VectorSetData(node, CastAny(Pointer, data));
