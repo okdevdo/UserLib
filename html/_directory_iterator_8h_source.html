@@ -154,102 +154,101 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> RenameDirectory(ConstRef(<a class="code" href="class_c_file_path.html">CFilePath</a>) basepath, ConstRef(CStringBuffer) oldname, ConstRef(CStringBuffer) newname);</div>
 <div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> MoveFile(ConstRef(<a class="code" href="class_c_file_path.html">CFilePath</a>) from, ConstRef(<a class="code" href="class_c_file_path.html">CFilePath</a>) to);</div>
 <div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> CopyFile(ConstRef(<a class="code" href="class_c_file_path.html">CFilePath</a>) from, ConstRef(<a class="code" href="class_c_file_path.html">CFilePath</a>) to);</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    <span class="keyword">static</span> mbchar DefaultPathSeparatorChar();</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;    <span class="keyword">static</span> CConstPointer DefaultPathSeparatorString();</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    <span class="keyword">static</span> mbchar WinPathSeparatorChar();</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;    <span class="keyword">static</span> CConstPointer WinPathSeparatorString();</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    <span class="keyword">static</span> mbchar UnixPathSeparatorChar();</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;    <span class="keyword">static</span> CConstPointer UnixPathSeparatorString();</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;    <span class="keywordtype">void</span> Open(ConstRef(<a class="code" href="class_c_file_path.html">CFilePath</a>) path);</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;    <span class="keywordtype">void</span> Next();</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    <span class="keywordtype">void</span> Close();</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;</div>
-<div class="line"><a name="l00262"></a><span class="lineno"><a class="line" href="class_c_directory_iterator.html#a6592f903ed9b89c17461413fdd1b909b">  262</a></span>&#160;    __inline <span class="keyword">operator</span> bool()<span class="keyword"> const </span></div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="keyword">    </span>{ </div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="preprocessor">#ifdef OK_SYS_WINDOWS</span></div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;        <span class="keywordflow">return</span> _hFileFind != -1L;</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;<span class="preprocessor">#ifdef OK_SYS_UNIX</span></div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;        <span class="keywordflow">return</span> NotPtrCheck(_hFileFind);</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;    }</div>
-<div class="line"><a name="l00275"></a><span class="lineno"><a class="line" href="class_c_directory_iterator.html#a2b8d742ae1a3a25e84d0580ba7e97485">  275</a></span>&#160;    __inline Ref(<a class="code" href="class_c_directory_iterator.html">CDirectoryIterator</a>) operator++() </div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;    { </div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;        Next(); </div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;        <span class="keywordflow">return</span> *<span class="keyword">this</span>; </div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    }</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;    WBool is_Archive();</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    WBool is_Hidden();</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;    WBool is_ReadOnly();</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    WBool is_SubDir();</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    WBool is_System();</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;    </div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;    CDateTime get_CreateTime();</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    CDateTime get_LastAccessTime();</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    CDateTime get_LastWriteTime();</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;    sqword get_FileSize();</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;    CStringBuffer get_Name();</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;    CStringBuffer get_Path();</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;    mbchar PathSeparatorChar();</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    CConstPointer PathSeparatorString();</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;    <a class="code" href="class_c_file_path.html">CFilePath</a> _filePath;</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;<span class="preprocessor">#ifdef OK_COMP_GNUC</span></div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;<span class="preprocessor">#ifdef OK_SYS_WINDOWS32</span></div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;    intptr_t _hFileFind;</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;<span class="preprocessor">#if __MINGW32_MAJOR_VERSION &lt; 4</span></div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;<span class="preprocessor">#ifdef _UNICODE</span></div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;    __wfinddata64_t _tFileFind;</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;    __finddata64_t _tFileFind;</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;<span class="preprocessor">#ifdef _UNICODE</span></div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;    _wfinddata64_t _tFileFind;</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;    _finddata64_t _tFileFind;</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    <span class="keyword">static</span> mbchar DefaultPathSeparatorChar();</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    <span class="keyword">static</span> CConstPointer DefaultPathSeparatorString();</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    <span class="keyword">static</span> mbchar WinPathSeparatorChar();</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    <span class="keyword">static</span> CConstPointer WinPathSeparatorString();</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    <span class="keyword">static</span> mbchar UnixPathSeparatorChar();</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;    <span class="keyword">static</span> CConstPointer UnixPathSeparatorString();</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;    <span class="keywordtype">void</span> Open(ConstRef(<a class="code" href="class_c_file_path.html">CFilePath</a>) path);</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    <span class="keywordtype">void</span> Next();</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    <span class="keywordtype">void</span> Close();</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;</div>
+<div class="line"><a name="l00261"></a><span class="lineno"><a class="line" href="class_c_directory_iterator.html#a6592f903ed9b89c17461413fdd1b909b">  261</a></span>&#160;    __inline <span class="keyword">operator</span> bool()<span class="keyword"> const </span></div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;<span class="keyword">    </span>{ </div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="preprocessor">#ifdef OK_SYS_WINDOWS</span></div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;        <span class="keywordflow">return</span> _hFileFind != -1L;</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;<span class="preprocessor">#ifdef OK_SYS_UNIX</span></div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;        <span class="keywordflow">return</span> NotPtrCheck(_hFileFind);</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;    }</div>
+<div class="line"><a name="l00274"></a><span class="lineno"><a class="line" href="class_c_directory_iterator.html#a2b8d742ae1a3a25e84d0580ba7e97485">  274</a></span>&#160;    __inline Ref(<a class="code" href="class_c_directory_iterator.html">CDirectoryIterator</a>) operator++() </div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    { </div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;        Next(); </div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;        <span class="keywordflow">return</span> *<span class="keyword">this</span>; </div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;    }</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    WBool is_Archive();</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    WBool is_Hidden();</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    WBool is_ReadOnly();</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;    WBool is_SubDir();</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;    WBool is_System();</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    </div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;    CDateTime get_CreateTime();</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    CDateTime get_LastAccessTime();</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    CDateTime get_LastWriteTime();</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    sqword get_FileSize();</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    CStringBuffer get_Name();</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;    CStringBuffer get_Path();</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;    mbchar PathSeparatorChar();</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;    CConstPointer PathSeparatorString();</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;    <a class="code" href="class_c_file_path.html">CFilePath</a> _filePath;</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;<span class="preprocessor">#ifdef OK_COMP_GNUC</span></div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;<span class="preprocessor">#ifdef OK_SYS_WINDOWS32</span></div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;    intptr_t _hFileFind;</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;<span class="preprocessor">#if __MINGW32_MAJOR_VERSION &lt; 4</span></div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;<span class="preprocessor">#ifdef _UNICODE</span></div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;    __wfinddata64_t _tFileFind;</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;    __finddata64_t _tFileFind;</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;<span class="preprocessor">#ifdef _UNICODE</span></div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;    _wfinddata64_t _tFileFind;</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;    _finddata64_t _tFileFind;</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;<span class="preprocessor">#endif  </span></div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;<span class="preprocessor">#ifdef OK_SYS_WINDOWS64</span></div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;    intptr_t _hFileFind;</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;<span class="preprocessor">#ifdef _UNICODE</span></div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;    _wfinddata64_t _tFileFind;</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;    _finddata64_t _tFileFind;</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;<span class="preprocessor">#endif  </span></div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;<span class="preprocessor">#ifdef OK_SYS_UNIX</span></div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;    DIR *_hFileFind;</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;    <span class="keyword">struct </span>dirent *_tFileFind;</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;    <span class="keyword">struct </span>stat _tStatus;</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;    <span class="keywordtype">bool</span> _bStatus;</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;    dword _tAccess;</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;    <span class="keywordtype">bool</span> _bAccess;</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;    CStringBuffer _sFilter;</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;    </div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;    <span class="keywordtype">void</span> _load_status();</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;    <span class="keywordtype">void</span> _test_access();</div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;<span class="preprocessor">#endif  </span></div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;<span class="preprocessor">#ifdef OK_SYS_WINDOWS64</span></div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;    intptr_t _hFileFind;</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;<span class="preprocessor">#ifdef _UNICODE</span></div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;    _wfinddata64_t _tFileFind;</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;    _finddata64_t _tFileFind;</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;<span class="preprocessor">#endif  </span></div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;<span class="preprocessor">#ifdef OK_SYS_UNIX</span></div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;    DIR *_hFileFind;</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;    <span class="keyword">struct </span>dirent *_tFileFind;</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;    <span class="keyword">struct </span>stat _tStatus;</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;    <span class="keywordtype">bool</span> _bStatus;</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;    dword _tAccess;</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;    <span class="keywordtype">bool</span> _bAccess;</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;    CStringBuffer _sFilter;</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;    </div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;    <span class="keywordtype">void</span> _load_status();</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;    <span class="keywordtype">void</span> _test_access();</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;<span class="preprocessor">#ifdef OK_COMP_MSC</span></div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;    intptr_t _hFileFind;</div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;    _tfinddata64_t _tFileFind;</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;    CStringBuffer _get_Path();</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;    <span class="keyword">static</span> CConstPointer _sWinPathSeparator;</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;    <span class="keyword">static</span> CConstPointer _sUnixPathSeparator;</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;};</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;DECL_EXCEPTION(CPPSOURCES_API, CDirectoryIteratorException, CBaseException)</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;<span class="preprocessor">#ifdef OK_COMP_MSC</span></div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;    intptr_t _hFileFind;</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;    _tfinddata64_t _tFileFind;</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;    CStringBuffer _get_Path();</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;    <span class="keyword">static</span> CConstPointer _sWinPathSeparator;</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;    <span class="keyword">static</span> CConstPointer _sUnixPathSeparator;</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;};</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;DECL_EXCEPTION(CPPSOURCES_API, CDirectoryIteratorException, CBaseException)</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;</div>
 <div class="ttc" id="class_c_directory_iterator_html"><div class="ttname"><a href="class_c_directory_iterator.html">CDirectoryIterator</a></div><div class="ttdoc">Class to traverse a file system directory. </div><div class="ttdef"><b>Definition:</b> DirectoryIterator.h:51</div></div>
 <div class="ttc" id="_file_path_8h_html"><div class="ttname"><a href="_file_path_8h.html">FilePath.h</a></div><div class="ttdoc">Handles file paths. </div></div>
 <div class="ttc" id="ok_date_time_8h_html"><div class="ttname"><a href="ok_date_time_8h.html">okDateTime.h</a></div><div class="ttdoc">Date and time class definition. </div></div>
@@ -259,7 +258,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 27 2014 10:57:42 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 5 2014 14:37:52 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

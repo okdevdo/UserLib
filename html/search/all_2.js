@@ -45,7 +45,6 @@ var searchData=
   ['coptioncallback',['COptionCallback',['../class_c_option_callback.html',1,'COptionCallback&lt; C &gt;'],['../class_c_option_callback.html#ab7a83fa5b0df2f8939678918d9eb4885',1,'COptionCallback::COptionCallback(C *pObject, Callback method)'],['../class_c_option_callback.html#a46776f78b982a7fe278d57a8818d540c',1,'COptionCallback::COptionCallback(const COptionCallback &amp;cb)']]],
   ['copyfile',['CopyFile',['../class_c_directory_iterator.html#a15444a977b9ee33436cfc4bdbc9abd18',1,'CDirectoryIterator']]],
   ['count',['Count',['../class_c_map_configuration.html#a3265faef0383accbd61db8cbffd488fd',1,'CMapConfiguration']]],
-  ['cppdatastructures_2eh',['CppDataStructures.h',['../_cpp_data_structures_8h.html',1,'']]],
   ['cppobject_2eh',['CppObject.h',['../_cpp_object_8h.html',1,'']]],
   ['crc32value_2eh',['CRC32Value.h',['../_c_r_c32_value_8h.html',1,'']]],
   ['create',['Create',['../class_c_file.html#a5275a153f49b6c80408e530b357c074d',1,'CFile::Create()'],['../class_c_disk_file.html#a6d56bceded151ff7bbc9df3e01aee94c',1,'CDiskFile::Create()'],['../class_c_stream_file.html#ac62188a70d0d8d6bc15090773b519345',1,'CStreamFile::Create()']]],

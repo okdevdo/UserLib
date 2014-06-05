@@ -349,169 +349,171 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;</div>
 <div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;<span class="preprocessor">#define Ptr(type)               type *</span></div>
 <div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="preprocessor">#define Ref(type)               type&amp;</span></div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="preprocessor">#define ConstPtr(type)          const type *</span></div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;<span class="preprocessor">#define ConstRef(type)          const type&amp;</span></div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;<span class="preprocessor">#define PtrPtr(type)            type **</span></div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;<span class="preprocessor">#if defined(__cplusplus)</span></div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    <span class="comment">// Integrals</span></div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="preprocessor">    #define Cast(type,v)                (static_cast&lt;type&gt;(v))</span></div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;<span class="preprocessor">    #define CastAny(type,v)             (reinterpret_cast&lt;type&gt;(v))</span></div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;<span class="preprocessor">    #define CastMutable(type,v)         (const_cast&lt;type&gt;(v))</span></div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="preprocessor">    #define CastDynamic(type,p)         (dynamic_cast&lt;type&gt;(p))</span></div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    <span class="comment">// Pointers</span></div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;<span class="preprocessor">    #define CastAnyPtr(type,p)          (reinterpret_cast&lt;Ptr(type)&gt;(p))</span></div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;<span class="preprocessor">    #define CastAnyConstPtr(type,p)     (reinterpret_cast&lt;ConstPtr(type)&gt;(p))</span></div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;<span class="preprocessor">    #define CastMutablePtr(type,p)      (const_cast&lt;Ptr(type)&gt;(p))</span></div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;<span class="preprocessor">    #define CastStaticPtr(type,p)       (static_cast&lt;Ptr(type)&gt;(p))</span></div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;<span class="preprocessor">    #define CastDynamicPtr(type,p)      (dynamic_cast&lt;Ptr(type)&gt;(p))</span></div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    <span class="comment">// Integrals</span></div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;<span class="preprocessor">    #define Cast(type,v)                ((type)(v))</span></div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;<span class="preprocessor">    #define CastAny(type,v)             ((type)(v))</span></div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;<span class="preprocessor">    #define CastMutable(type,v)         ((type)(v))</span></div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;<span class="preprocessor">    #define CastDynamic(type,v)         ((type)(v))</span></div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;    <span class="comment">// Pointers</span></div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;<span class="preprocessor">    #define CastAnyPtr(type,p)          ((Ptr(type))(p))</span></div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;<span class="preprocessor">    #define CastAnyConstPtr(type,p)     ((ConstPtr(type))(p))</span></div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;<span class="preprocessor">    #define CastMutablePtr(type,p)      ((Ptr(type))(p))</span></div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;<span class="preprocessor">    #define CastStaticPtr(type,p)       ((Ptr(type))(p))</span></div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;<span class="preprocessor">    #define CastDynamicPtr(type,p)      ((Ptr(type))(p))</span></div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;<span class="preprocessor">#define Castbyte(v)             Cast(byte,v)</span></div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;<span class="preprocessor">#define Castsbyte(v)            Cast(sbyte,v)</span></div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;<span class="preprocessor">#define Castchar(v)             Cast(mbchar,v)</span></div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;<span class="preprocessor">#define Castword(v)             Cast(word,v)</span></div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;<span class="preprocessor">#define Castsword(v)            Cast(sword,v)</span></div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;<span class="preprocessor">#define Castdword(v)            Cast(dword,v)</span></div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;<span class="preprocessor">#define Castsdword(v)           Cast(sdword,v)</span></div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;<span class="preprocessor">#define Castqword(v)            Cast(qword,v)</span></div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="preprocessor">#define Castsqword(v)           Cast(sqword,v)</span></div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;<span class="preprocessor">#define CastPointer(p)          CastAnyPtr(void,(p))</span></div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;<span class="preprocessor">#define CastConstPointer(p)     CastAnyConstPtr(void,(p))</span></div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;<span class="preprocessor">#define CastBPointer(p)         CastAnyPtr(byte,(p))</span></div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;<span class="preprocessor">#define CastBConstPointer(p)    CastAnyConstPtr(byte,(p))</span></div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;<span class="preprocessor">#define CastCPointer(p)         CastAnyPtr(mbchar,(p))</span></div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;<span class="preprocessor">#define CastCConstPointer(p)    CastAnyConstPtr(mbchar,(p))</span></div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;<span class="preprocessor">#define CastWPointer(p)         CastAnyPtr(word,(p))</span></div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;<span class="preprocessor">#define CastWConstPointer(p)    CastAnyConstPtr(word,(p))</span></div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;<span class="preprocessor">#define CastSWPointer(p)        CastAnyPtr(sword,(p))</span></div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;<span class="preprocessor">#define CastSWConstPointer(p)   CastAnyConstPtr(sword,(p))</span></div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;<span class="preprocessor">#define CastDWPointer(p)        CastAnyPtr(dword,(p))</span></div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;<span class="preprocessor">#define CastDWConstPointer(p)   CastAnyConstPtr(dword,(p))</span></div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;<span class="preprocessor">#define CastSDWPointer(p)       CastAnyPtr(sdword,(p))</span></div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;<span class="preprocessor">#define CastSDWConstPointer(p)  CastAnyConstPtr(sdword,(p))</span></div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;<span class="preprocessor">#define CastQWPointer(p)        CastAnyPtr(qword,(p))</span></div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;<span class="preprocessor">#define CastQWConstPointer(p)   CastAnyConstPtr(qword,(p))</span></div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;<span class="preprocessor">#define CastSQWPointer(p)       CastAnyPtr(sqword,(p))</span></div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;<span class="preprocessor">#define CastSQWConstPointer(p)  CastAnyConstPtr(sqword,(p))</span></div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;<span class="comment">/* definitions of toolbox shortcuts */</span></div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;<span class="preprocessor">#define PtrCheck(p)             (!(p))</span></div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;<span class="preprocessor">#define NotPtrCheck(p)          (!!(p))</span></div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;<span class="preprocessor">#define PtrCheck(p)             (NULL==(p))</span></div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;<span class="preprocessor">#define NotPtrCheck(p)          (NULL!=(p))</span></div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;<span class="preprocessor">#define DerefPtr(type,p)                (*CastAnyPtr(type,p))</span></div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;<span class="preprocessor">#define DerefAnyPtr(type,p)             (*CastAnyPtr(type,p))</span></div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;<span class="preprocessor">#define DerefStaticPtr(type,p)          (*CastStaticPtr(type,p))</span></div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;<span class="preprocessor">#define DerefDynamicPtr(type,p)         (*CastDynamicPtr(type,p))</span></div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;<span class="preprocessor">#define DerefCPointer(p)                DerefPtr(mbchar,p)</span></div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;<span class="preprocessor">#define DerefCString(p,ix)              (*(CastCPointer(p)+ix))</span></div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;<span class="preprocessor">#define DerefSCPointer(p)               (*CastSCPointer(p))</span></div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;<span class="preprocessor">#define DerefWPointer(p)                (*CastWPointer(p))</span></div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;<span class="preprocessor">#define DerefSWPointer(p)               (*CastSWPointer(p))</span></div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;<span class="preprocessor">#define DerefDWPointer(p)               (*CastDWPointer(p))</span></div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;<span class="preprocessor">#define DerefSDWPointer(p)              (*CastSDWPointer(p))</span></div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;<span class="preprocessor">#define DerefQWPointer(p)               (*CastQWPointer(p))</span></div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;<span class="preprocessor">#define DerefSQWPointer(p)              (*CastSQWPointer(p))</span></div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;<span class="preprocessor">#define StrEmpty(p)             ( PtrCheck(p) || (0 == DerefCPointer(p)) )</span></div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;<span class="preprocessor">#define NotStrEmpty(p)          (!(StrEmpty(p)))</span></div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;<span class="preprocessor">#define ConstStrEmpty(p)        ( PtrCheck(p) || (0 == DerefCPointer(CastMutablePtr(mbchar, p))) )</span></div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;<span class="preprocessor">#define NotConstStrEmpty(p)     (!(ConstStrEmpty(p)))</span></div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;<span class="preprocessor">#define _Lownibble(x)           ((x) &amp; 0x0F)</span></div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;<span class="preprocessor">#define _Highnibble(x)          _Lownibble((x) &gt;&gt; 4)</span></div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;<span class="preprocessor">#define _Lowbyte(x)             ((x) &amp; 0x00FF)</span></div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;<span class="preprocessor">#define _Highbyte(x)            _Lowbyte((x) &gt;&gt; 8)</span></div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;<span class="preprocessor">#define SET_LOWBYTE(a,b)        a = ((((word)(a)) &amp; 0xFF00) | ((word)(_Lowbyte(b))))</span></div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;<span class="preprocessor">#define SET_HIGHBYTE(a,b)       a = ((((word)_Lowbyte(b)) &lt;&lt; 8) | (((word)(a)) &amp; 0x00FF))</span></div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;<span class="preprocessor">#define _Word(a,b)             ((word)(((word)(((word)_Lowbyte(b)) &lt;&lt; 8)) | ((word)_Lowbyte(a))))</span></div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;<span class="preprocessor">#define _Lowword(x)             ((x) &amp; 0xFFFF)</span></div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;<span class="preprocessor">#define _Highword(x)            _Lowword((x) &gt;&gt; 16)</span></div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;<span class="preprocessor">#define SET_LOWWORD(a,b)        a = ((((dword)(a)) &amp; 0xFFFF0000) | ((dword)(_Lowword(b))))</span></div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;<span class="preprocessor">#define SET_HIGHWORD(a,b)       a = ((((dword)_Lowword(b)) &lt;&lt; 16) | ((dword)(_Lowword(a))))</span></div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;<span class="preprocessor">#define _DWord(a,b)             ((dword)(((dword)(((dword)_Lowword(b)) &lt;&lt; 16)) | ((dword)_Lowword(a))))</span></div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;<span class="preprocessor">#define _Lowdword(x)            ((x) &amp; 0xFFFFFFFF)</span></div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;<span class="preprocessor">#define _Highdword(x)           _Lowdword((x) &gt;&gt; 32)</span></div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;<span class="preprocessor">#define SET_LOWDWORD(a,b)       a = ((((qword)(a)) &amp; 0xFFFFFFFF00000000) | ((qword)(_Lowdword(b))))</span></div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;<span class="preprocessor">#define SET_HIGHDWORD(a,b)      a = ((((qword)_Lowdword(b)) &lt;&lt; 32) | ((qword)(_Lowdword(a))))</span></div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;<span class="preprocessor">#define _QWord(a,b)             ((qword)(((qword)(((qword)_Lowdword(b)) &lt;&lt; 32)) | ((qword)_Lowdword(a))))</span></div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;<span class="comment">// Logical operators</span></div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;<span class="preprocessor">#define BitNot(b)           (~(b))</span></div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;<span class="preprocessor">#define SetBitN(a,x)        ((a) | (1 &lt;&lt; (x)))</span></div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;<span class="preprocessor">#define SetBit(a,x)         ((a) | (x))</span></div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;<span class="preprocessor">#define GetBitN(a,x)        ((a) &amp; (1 &lt;&lt; (x)))</span></div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;<span class="preprocessor">#define GetBit(a,x)         ((a) &amp; (x))</span></div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;<span class="preprocessor">#define DelBitN(a,x)        ((a) &amp; BitNot(1 &lt;&lt; (x)))</span></div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;<span class="preprocessor">#define DelBit(a,x)         ((a) &amp; BitNot(x))</span></div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;<span class="preprocessor">#define FlipBitN(a,x)       (DelBitN(a,x) | BitNot(GetBitN(a,x)))</span></div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;<span class="preprocessor">#define FlipBit(a,x)        (DelBit(a,x) | BitNot(GetBit(a,x)))</span></div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;<span class="preprocessor">#define TestBit(a,x)        ((x) == ((a) &amp; (x)))</span></div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;<span class="preprocessor">#define TestBitN(a,x)       ((1 &lt;&lt; (x)) == ((a) &amp; (1 &lt;&lt; (x))))</span></div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;<span class="preprocessor">#define Test(a,x)           (0 != ((a) &amp; (x)))</span></div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;<span class="preprocessor">#define BitOr(b1,b2)        SetBit((b1),(b2))</span></div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;<span class="preprocessor">#define BitAnd(b1,b2)       GetBit((b1),(b2))</span></div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;<span class="preprocessor">#define BitXor(b1,b2)       BitAnd(BitOr((b1),BitNot((b2))),BitOr(BitNot((b1)),(b2)))</span></div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;<span class="preprocessor">#define BITNOT(v)           (v) = BitNot(v)</span></div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="preprocessor">#define RefRef(type)            type&amp;&amp;</span></div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;<span class="preprocessor">#define ConstPtr(type)          const type *</span></div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;<span class="preprocessor">#define ConstRef(type)          const type&amp;</span></div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;<span class="preprocessor">#define ConstRefRef(type)       const type&amp;&amp;</span></div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;<span class="preprocessor">#define PtrPtr(type)            type **</span></div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="preprocessor">#if defined(__cplusplus)</span></div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    <span class="comment">// Integrals</span></div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;<span class="preprocessor">    #define Cast(type,v)                (static_cast&lt;type&gt;(v))</span></div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="preprocessor">    #define CastAny(type,v)             (reinterpret_cast&lt;type&gt;(v))</span></div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="preprocessor">    #define CastMutable(type,v)         (const_cast&lt;type&gt;(v))</span></div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;<span class="preprocessor">    #define CastDynamic(type,p)         (dynamic_cast&lt;type&gt;(p))</span></div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    <span class="comment">// Pointers</span></div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;<span class="preprocessor">    #define CastAnyPtr(type,p)          (reinterpret_cast&lt;Ptr(type)&gt;(p))</span></div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;<span class="preprocessor">    #define CastAnyConstPtr(type,p)     (reinterpret_cast&lt;ConstPtr(type)&gt;(p))</span></div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;<span class="preprocessor">    #define CastMutablePtr(type,p)      (const_cast&lt;Ptr(type)&gt;(p))</span></div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;<span class="preprocessor">    #define CastStaticPtr(type,p)       (static_cast&lt;Ptr(type)&gt;(p))</span></div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;<span class="preprocessor">    #define CastDynamicPtr(type,p)      (dynamic_cast&lt;Ptr(type)&gt;(p))</span></div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;    <span class="comment">// Integrals</span></div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;<span class="preprocessor">    #define Cast(type,v)                ((type)(v))</span></div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;<span class="preprocessor">    #define CastAny(type,v)             ((type)(v))</span></div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;<span class="preprocessor">    #define CastMutable(type,v)         ((type)(v))</span></div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;<span class="preprocessor">    #define CastDynamic(type,v)         ((type)(v))</span></div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;    <span class="comment">// Pointers</span></div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;<span class="preprocessor">    #define CastAnyPtr(type,p)          ((Ptr(type))(p))</span></div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;<span class="preprocessor">    #define CastAnyConstPtr(type,p)     ((ConstPtr(type))(p))</span></div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;<span class="preprocessor">    #define CastMutablePtr(type,p)      ((Ptr(type))(p))</span></div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;<span class="preprocessor">    #define CastStaticPtr(type,p)       ((Ptr(type))(p))</span></div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;<span class="preprocessor">    #define CastDynamicPtr(type,p)      ((Ptr(type))(p))</span></div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;<span class="preprocessor">#define Castbyte(v)             Cast(byte,v)</span></div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;<span class="preprocessor">#define Castsbyte(v)            Cast(sbyte,v)</span></div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;<span class="preprocessor">#define Castchar(v)             Cast(mbchar,v)</span></div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;<span class="preprocessor">#define Castword(v)             Cast(word,v)</span></div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;<span class="preprocessor">#define Castsword(v)            Cast(sword,v)</span></div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;<span class="preprocessor">#define Castdword(v)            Cast(dword,v)</span></div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="preprocessor">#define Castsdword(v)           Cast(sdword,v)</span></div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;<span class="preprocessor">#define Castqword(v)            Cast(qword,v)</span></div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;<span class="preprocessor">#define Castsqword(v)           Cast(sqword,v)</span></div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;<span class="preprocessor">#define CastPointer(p)          CastAnyPtr(void,(p))</span></div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;<span class="preprocessor">#define CastConstPointer(p)     CastAnyConstPtr(void,(p))</span></div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;<span class="preprocessor">#define CastBPointer(p)         CastAnyPtr(byte,(p))</span></div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;<span class="preprocessor">#define CastBConstPointer(p)    CastAnyConstPtr(byte,(p))</span></div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;<span class="preprocessor">#define CastCPointer(p)         CastAnyPtr(mbchar,(p))</span></div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;<span class="preprocessor">#define CastCConstPointer(p)    CastAnyConstPtr(mbchar,(p))</span></div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;<span class="preprocessor">#define CastWPointer(p)         CastAnyPtr(word,(p))</span></div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;<span class="preprocessor">#define CastWConstPointer(p)    CastAnyConstPtr(word,(p))</span></div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;<span class="preprocessor">#define CastSWPointer(p)        CastAnyPtr(sword,(p))</span></div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;<span class="preprocessor">#define CastSWConstPointer(p)   CastAnyConstPtr(sword,(p))</span></div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;<span class="preprocessor">#define CastDWPointer(p)        CastAnyPtr(dword,(p))</span></div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;<span class="preprocessor">#define CastDWConstPointer(p)   CastAnyConstPtr(dword,(p))</span></div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;<span class="preprocessor">#define CastSDWPointer(p)       CastAnyPtr(sdword,(p))</span></div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;<span class="preprocessor">#define CastSDWConstPointer(p)  CastAnyConstPtr(sdword,(p))</span></div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;<span class="preprocessor">#define CastQWPointer(p)        CastAnyPtr(qword,(p))</span></div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;<span class="preprocessor">#define CastQWConstPointer(p)   CastAnyConstPtr(qword,(p))</span></div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;<span class="preprocessor">#define CastSQWPointer(p)       CastAnyPtr(sqword,(p))</span></div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;<span class="preprocessor">#define CastSQWConstPointer(p)  CastAnyConstPtr(sqword,(p))</span></div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;<span class="comment">/* definitions of toolbox shortcuts */</span></div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;<span class="preprocessor">#define PtrCheck(p)             (nullptr == (p))</span></div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;<span class="preprocessor">#define NotPtrCheck(p)          (nullptr != (p))</span></div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;<span class="preprocessor">#define PtrCheck(p)             (NULL==(p))</span></div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;<span class="preprocessor">#define NotPtrCheck(p)          (NULL!=(p))</span></div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;<span class="preprocessor">#define DerefPtr(type,p)                (*CastAnyPtr(type,p))</span></div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;<span class="preprocessor">#define DerefAnyPtr(type,p)             (*CastAnyPtr(type,p))</span></div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;<span class="preprocessor">#define DerefStaticPtr(type,p)          (*CastStaticPtr(type,p))</span></div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;<span class="preprocessor">#define DerefDynamicPtr(type,p)         (*CastDynamicPtr(type,p))</span></div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;<span class="preprocessor">#define DerefCPointer(p)                DerefPtr(mbchar,p)</span></div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;<span class="preprocessor">#define DerefCString(p,ix)              (*(CastCPointer(p)+ix))</span></div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;<span class="preprocessor">#define DerefSCPointer(p)               (*CastSCPointer(p))</span></div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;<span class="preprocessor">#define DerefWPointer(p)                (*CastWPointer(p))</span></div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;<span class="preprocessor">#define DerefSWPointer(p)               (*CastSWPointer(p))</span></div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;<span class="preprocessor">#define DerefDWPointer(p)               (*CastDWPointer(p))</span></div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;<span class="preprocessor">#define DerefSDWPointer(p)              (*CastSDWPointer(p))</span></div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;<span class="preprocessor">#define DerefQWPointer(p)               (*CastQWPointer(p))</span></div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;<span class="preprocessor">#define DerefSQWPointer(p)              (*CastSQWPointer(p))</span></div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;<span class="preprocessor">#define StrEmpty(p)             ( PtrCheck(p) || (0 == DerefCPointer(p)) )</span></div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;<span class="preprocessor">#define NotStrEmpty(p)          (!(StrEmpty(p)))</span></div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;<span class="preprocessor">#define ConstStrEmpty(p)        ( PtrCheck(p) || (0 == DerefCPointer(CastMutablePtr(mbchar, p))) )</span></div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;<span class="preprocessor">#define NotConstStrEmpty(p)     (!(ConstStrEmpty(p)))</span></div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;<span class="preprocessor">#define _Lownibble(x)           ((x) &amp; 0x0F)</span></div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;<span class="preprocessor">#define _Highnibble(x)          _Lownibble((x) &gt;&gt; 4)</span></div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;<span class="preprocessor">#define _Lowbyte(x)             ((x) &amp; 0x00FF)</span></div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;<span class="preprocessor">#define _Highbyte(x)            _Lowbyte((x) &gt;&gt; 8)</span></div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;<span class="preprocessor">#define SET_LOWBYTE(a,b)        a = ((((word)(a)) &amp; 0xFF00) | ((word)(_Lowbyte(b))))</span></div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;<span class="preprocessor">#define SET_HIGHBYTE(a,b)       a = ((((word)_Lowbyte(b)) &lt;&lt; 8) | (((word)(a)) &amp; 0x00FF))</span></div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;<span class="preprocessor">#define _Word(a,b)             ((word)(((word)(((word)_Lowbyte(b)) &lt;&lt; 8)) | ((word)_Lowbyte(a))))</span></div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;<span class="preprocessor">#define _Lowword(x)             ((x) &amp; 0xFFFF)</span></div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;<span class="preprocessor">#define _Highword(x)            _Lowword((x) &gt;&gt; 16)</span></div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;<span class="preprocessor">#define SET_LOWWORD(a,b)        a = ((((dword)(a)) &amp; 0xFFFF0000) | ((dword)(_Lowword(b))))</span></div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;<span class="preprocessor">#define SET_HIGHWORD(a,b)       a = ((((dword)_Lowword(b)) &lt;&lt; 16) | ((dword)(_Lowword(a))))</span></div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;<span class="preprocessor">#define _DWord(a,b)             ((dword)(((dword)(((dword)_Lowword(b)) &lt;&lt; 16)) | ((dword)_Lowword(a))))</span></div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;<span class="preprocessor">#define _Lowdword(x)            ((x) &amp; 0xFFFFFFFF)</span></div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;<span class="preprocessor">#define _Highdword(x)           _Lowdword((x) &gt;&gt; 32)</span></div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;<span class="preprocessor">#define SET_LOWDWORD(a,b)       a = ((((qword)(a)) &amp; 0xFFFFFFFF00000000) | ((qword)(_Lowdword(b))))</span></div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;<span class="preprocessor">#define SET_HIGHDWORD(a,b)      a = ((((qword)_Lowdword(b)) &lt;&lt; 32) | ((qword)(_Lowdword(a))))</span></div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;<span class="preprocessor">#define _QWord(a,b)             ((qword)(((qword)(((qword)_Lowdword(b)) &lt;&lt; 32)) | ((qword)_Lowdword(a))))</span></div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;<span class="comment">// Logical operators</span></div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;<span class="preprocessor">#define BitNot(b)           (~(b))</span></div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;<span class="preprocessor">#define SetBitN(a,x)        ((a) | (1 &lt;&lt; (x)))</span></div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;<span class="preprocessor">#define SetBit(a,x)         ((a) | (x))</span></div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;<span class="preprocessor">#define GetBitN(a,x)        ((a) &amp; (1 &lt;&lt; (x)))</span></div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;<span class="preprocessor">#define GetBit(a,x)         ((a) &amp; (x))</span></div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;<span class="preprocessor">#define DelBitN(a,x)        ((a) &amp; BitNot(1 &lt;&lt; (x)))</span></div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;<span class="preprocessor">#define DelBit(a,x)         ((a) &amp; BitNot(x))</span></div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;<span class="preprocessor">#define FlipBitN(a,x)       (DelBitN(a,x) | BitNot(GetBitN(a,x)))</span></div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;<span class="preprocessor">#define FlipBit(a,x)        (DelBit(a,x) | BitNot(GetBit(a,x)))</span></div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;<span class="preprocessor">#define TestBit(a,x)        ((x) == ((a) &amp; (x)))</span></div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;<span class="preprocessor">#define TestBitN(a,x)       ((1 &lt;&lt; (x)) == ((a) &amp; (1 &lt;&lt; (x))))</span></div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;<span class="preprocessor">#define Test(a,x)           (0 != ((a) &amp; (x)))</span></div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;<span class="preprocessor">#define BitOr(b1,b2)        SetBit((b1),(b2))</span></div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;<span class="preprocessor">#define BitAnd(b1,b2)       GetBit((b1),(b2))</span></div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;<span class="preprocessor">#define BitXor(b1,b2)       BitAnd(BitOr((b1),BitNot((b2))),BitOr(BitNot((b1)),(b2)))</span></div>
 <div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;<span class="preprocessor">#define SETBIT(v,bim)       (v) |= (bim)</span></div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;<span class="preprocessor">#define SETBITN(v,bitn)     (v) |= (1&lt;&lt;(bitn))</span></div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;<span class="preprocessor">#define GETBIT(v,bim)       (v) &amp;= (bim)</span></div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;<span class="preprocessor">#define GETBITN(v,bitn)     (v) &amp;= (1&lt;&lt;(bitn))</span></div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;<span class="preprocessor">#define DELBIT(v,bim)       (v) &amp;= BitNot(bim)</span></div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;<span class="preprocessor">#define DELBITN(v,bitn)     (v) &amp;= BitNot(1&lt;&lt;(bitn))</span></div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;<span class="preprocessor">#define FLIPBIT(v,bim)      (v) = FlipBit((v),(bim))</span></div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;<span class="preprocessor">#define FLIPBITN(v,bitn)    (v) = FlipBitN((v),(bitn))</span></div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;<span class="preprocessor">#define BITOR(v,bim)        SETBIT((v),(bim))</span></div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;<span class="preprocessor">#define BITAND(v,bim)       GETBIT((v),(bim))</span></div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;<span class="preprocessor">#define BITXOR(v,bim)       (v) = BitXor((v),(bim))</span></div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;<span class="preprocessor">#include &lt;limits.h&gt;</span></div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;<span class="preprocessor">#define CALC_BITS(type)     (sizeof(type) * CHAR_BIT)</span></div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;<span class="preprocessor">#define _mskGENERIC(size)   ((((1UL &lt;&lt; ((size)-1U))-1UL) &lt;&lt; 1U)+1UL)</span></div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;<span class="preprocessor">#define mskGENERIC(type)    Cast(type,_mskGENERIC(CALC_BITS(type)))</span></div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;<span class="preprocessor">#define mskBYTE             mskGENERIC(byte)</span></div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;<span class="preprocessor">#define mskWORD             mskGENERIC(word)</span></div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;<span class="preprocessor">#define mskDWORD            mskGENERIC(dword)</span></div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;<span class="preprocessor">#define mskQWORD            mskGENERIC(qword)</span></div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;<span class="preprocessor">#define mskSIZE_T           mskGENERIC(size_t)</span></div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;<span class="preprocessor">#define mskPOINTER          mskGENERIC(Pointer)</span></div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;<span class="preprocessor">#define CALC_MEMSIZE(n,c)   (((n) % (c))?(((n) + (c)) / (c)):((n) / (c)))</span></div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;<span class="preprocessor">#define CALC_MEMTYPE(n,type)    (((n) % CALC_BITS(type))?(((n) + CALC_BITS(type)) / CALC_BITS(type)):((n) / CALC_BITS(type)))</span></div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;<span class="comment">/* definitions of toolbox common macros */</span></div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;<span class="preprocessor">#define Min(a,b)                (((a)&lt;(b))?(a):(b))</span></div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;<span class="preprocessor">#define Max(a,b)                (((a)&gt;(b))?(a):(b))</span></div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;<span class="comment">/* end of pdeftype.h */</span></div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;<span class="preprocessor">#define BITNOT(v)           (v) = BitNot(v)</span></div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;<span class="preprocessor">#define SETBIT(v,bim)       (v) |= (bim)</span></div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;<span class="preprocessor">#define SETBITN(v,bitn)     (v) |= (1&lt;&lt;(bitn))</span></div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;<span class="preprocessor">#define GETBIT(v,bim)       (v) &amp;= (bim)</span></div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;<span class="preprocessor">#define GETBITN(v,bitn)     (v) &amp;= (1&lt;&lt;(bitn))</span></div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;<span class="preprocessor">#define DELBIT(v,bim)       (v) &amp;= BitNot(bim)</span></div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;<span class="preprocessor">#define DELBITN(v,bitn)     (v) &amp;= BitNot(1&lt;&lt;(bitn))</span></div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;<span class="preprocessor">#define FLIPBIT(v,bim)      (v) = FlipBit((v),(bim))</span></div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;<span class="preprocessor">#define FLIPBITN(v,bitn)    (v) = FlipBitN((v),(bitn))</span></div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;<span class="preprocessor">#define BITOR(v,bim)        SETBIT((v),(bim))</span></div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;<span class="preprocessor">#define BITAND(v,bim)       GETBIT((v),(bim))</span></div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;<span class="preprocessor">#define BITXOR(v,bim)       (v) = BitXor((v),(bim))</span></div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;<span class="preprocessor">#include &lt;limits.h&gt;</span></div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;<span class="preprocessor">#define CALC_BITS(type)     (sizeof(type) * CHAR_BIT)</span></div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;<span class="preprocessor">#define _mskGENERIC(size)   ((((1UL &lt;&lt; ((size)-1U))-1UL) &lt;&lt; 1U)+1UL)</span></div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;<span class="preprocessor">#define mskGENERIC(type)    Cast(type,_mskGENERIC(CALC_BITS(type)))</span></div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;<span class="preprocessor">#define mskBYTE             mskGENERIC(byte)</span></div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;<span class="preprocessor">#define mskWORD             mskGENERIC(word)</span></div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;<span class="preprocessor">#define mskDWORD            mskGENERIC(dword)</span></div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;<span class="preprocessor">#define mskQWORD            mskGENERIC(qword)</span></div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;<span class="preprocessor">#define mskSIZE_T           mskGENERIC(size_t)</span></div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;<span class="preprocessor">#define mskPOINTER          mskGENERIC(Pointer)</span></div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;<span class="preprocessor">#define CALC_MEMSIZE(n,c)   (((n) % (c))?(((n) + (c)) / (c)):((n) / (c)))</span></div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;<span class="preprocessor">#define CALC_MEMTYPE(n,type)    (((n) % CALC_BITS(type))?(((n) + CALC_BITS(type)) / CALC_BITS(type)):((n) / CALC_BITS(type)))</span></div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;<span class="comment">/* definitions of toolbox common macros */</span></div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;<span class="preprocessor">#define Min(a,b)                (((a)&lt;(b))?(a):(b))</span></div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;<span class="preprocessor">#define Max(a,b)                (((a)&gt;(b))?(a):(b))</span></div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;<span class="comment">/* end of pdeftype.h */</span></div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 27 2014 10:57:42 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jun 4 2014 16:28:47 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

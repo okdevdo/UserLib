@@ -195,119 +195,129 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00496"></a><span class="lineno"><a class="line" href="class_c_map_configuration.html">  496</a></span>&#160;<span class="keyword">class </span>CPPSOURCES_API <a class="code" href="class_c_map_configuration.html">CMapConfiguration</a>: <span class="keyword">public</span> <a class="code" href="class_c_abstract_configuration.html">CAbstractConfiguration</a></div>
 <div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;{</div>
 <div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">struct </span>tagMapItem</div>
+<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;    <span class="keyword">class </span>MapItem: <span class="keyword">public</span> CCppObject</div>
 <div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;    {</div>
-<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;        CStringBuffer _name;</div>
-<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;        CStringBuffer _value;</div>
-<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;    } MapItem;</div>
-<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;</div>
-<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;    <span class="keyword">typedef</span> CDataSAVLBinaryTreeT&lt;MapItem&gt; MapItems;</div>
+<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;    <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;        MapItem(RefRef(CStringBuffer) n) : _name(n), _value() {}</div>
+<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;        MapItem(ConstRef(CStringBuffer) n, ConstRef(CStringBuffer)v) : _name(n), _value(v) {}</div>
+<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;        MapItem(RefRef(CStringBuffer) n, ConstRef(CStringBuffer)v) : _name(n), _value(v) {}</div>
+<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;        <span class="keyword">virtual</span> ~MapItem() {}</div>
 <div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;</div>
-<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;    <a class="code" href="class_c_map_configuration.html">CMapConfiguration</a>(DECL_FILE_LINE0);</div>
-<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;    <a class="code" href="class_c_map_configuration.html">CMapConfiguration</a>(DECL_FILE_LINE ConstRef(CStringLiteral) _prefix, WBool _iswritable = <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="class_c_map_configuration.html">CMapConfiguration</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;</div>
-<div class="line"><a name="l00536"></a><span class="lineno"><a class="line" href="class_c_map_configuration.html#a3265faef0383accbd61db8cbffd488fd">  536</a></span>&#160;    __inline TListCnt <a class="code" href="class_c_map_configuration.html#a3265faef0383accbd61db8cbffd488fd">Count</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_mapItems.Count(); }</div>
-<div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160;</div>
-<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a9e7f38802e585336371a0d93c7fb765d">Enumerate</a>(ConstRef(CStringLiteral) _prefix, Ref(Keys) _keys);</div>
-<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a248be1d0ba05d8ef65303b8cd7411ed4">GetRawValue</a>(ConstRef(CStringLiteral) _name, Ref(CStringBuffer) _value);</div>
-<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a4a25fe73a787c2c143684e5f95e6b6a5">SetRawValue</a>(ConstRef(CStringLiteral) _name, ConstRef(CStringBuffer) _value);</div>
-<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;</div>
-<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;    WBool AddValue(ConstRef(CStringLiteral) _name, ConstRef(CStringBuffer) _value);</div>
-<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;</div>
-<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;    MapItems m_mapItems;</div>
-<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;};</div>
-<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;</div>
-<div class="line"><a name="l00579"></a><span class="lineno"><a class="line" href="class_c_file_configuration.html">  579</a></span>&#160;<span class="keyword">class </span>CPPSOURCES_API <a class="code" href="class_c_file_configuration.html">CFileConfiguration</a>: <span class="keyword">public</span> <a class="code" href="class_c_map_configuration.html">CMapConfiguration</a></div>
-<div class="line"><a name="l00580"></a><span class="lineno">  580</span>&#160;{</div>
-<div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;    <a class="code" href="class_c_file_configuration.html">CFileConfiguration</a>(DECL_FILE_LINE0);</div>
-<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;    <a class="code" href="class_c_file_configuration.html">CFileConfiguration</a>(DECL_FILE_LINE ConstRef(<a class="code" href="class_c_file_path.html">CFilePath</a>) _path, WBool bWritable = <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="class_c_file_configuration.html">CFileConfiguration</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;</div>
-<div class="line"><a name="l00611"></a><span class="lineno"><a class="line" href="class_c_file_configuration.html#abfb98457fbb1048e35352170b8b407cc">  611</a></span>&#160;    __inline ConstRef(<a class="code" href="class_c_file_path.html">CFilePath</a>) get_path()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_path; }</div>
-<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;</div>
-<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;    WBool LoadConfig();</div>
-<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;    WBool SaveConfig();</div>
-<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;</div>
-<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;    <a class="code" href="class_c_file_path.html">CFilePath</a> m_path;</div>
-<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;};</div>
-<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;</div>
-<div class="line"><a name="l00624"></a><span class="lineno"><a class="line" href="class_c_system_configuration.html">  624</a></span>&#160;<span class="keyword">class </span>CPPSOURCES_API <a class="code" href="class_c_system_configuration.html">CSystemConfiguration</a>: <span class="keyword">public</span> <a class="code" href="class_c_abstract_configuration.html">CAbstractConfiguration</a></div>
-<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;{</div>
-<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;    <a class="code" href="class_c_system_configuration.html">CSystemConfiguration</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="class_c_system_configuration.html">CSystemConfiguration</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;</div>
-<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a9e7f38802e585336371a0d93c7fb765d">Enumerate</a>(ConstRef(CStringLiteral) _prefix, Ref(Keys) _keys);</div>
-<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a248be1d0ba05d8ef65303b8cd7411ed4">GetRawValue</a>(ConstRef(CStringLiteral) _name, Ref(CStringBuffer) _value);</div>
-<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a4a25fe73a787c2c143684e5f95e6b6a5">SetRawValue</a>(ConstRef(CStringLiteral) _name, ConstRef(CStringBuffer) _value);</div>
-<div class="line"><a name="l00670"></a><span class="lineno">  670</span>&#160;};</div>
-<div class="line"><a name="l00671"></a><span class="lineno">  671</span>&#160;</div>
-<div class="line"><a name="l00676"></a><span class="lineno"><a class="line" href="class_c_application_configuration.html">  676</a></span>&#160;<span class="keyword">class </span>CPPSOURCES_API <a class="code" href="class_c_application_configuration.html">CApplicationConfiguration</a>: <span class="keyword">public</span> <a class="code" href="class_c_abstract_configuration.html">CAbstractConfiguration</a></div>
-<div class="line"><a name="l00677"></a><span class="lineno">  677</span>&#160;{</div>
-<div class="line"><a name="l00678"></a><span class="lineno">  678</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00684"></a><span class="lineno">  684</span>&#160;    <a class="code" href="class_c_application_configuration.html">CApplicationConfiguration</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00692"></a><span class="lineno">  692</span>&#160;    <a class="code" href="class_c_application_configuration.html">CApplicationConfiguration</a>(CConstPointer _path);</div>
-<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;    <a class="code" href="class_c_application_configuration.html">CApplicationConfiguration</a>(ConstRef(<a class="code" href="class_c_file_path.html">CFilePath</a>) _path);</div>
-<div class="line"><a name="l00706"></a><span class="lineno">  706</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="class_c_application_configuration.html">CApplicationConfiguration</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00707"></a><span class="lineno">  707</span>&#160;</div>
-<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a9e7f38802e585336371a0d93c7fb765d">Enumerate</a>(ConstRef(CStringLiteral) _prefix, Ref(Keys) _keys);</div>
-<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a248be1d0ba05d8ef65303b8cd7411ed4">GetRawValue</a>(ConstRef(CStringLiteral) _name, Ref(CStringBuffer) _value);</div>
-<div class="line"><a name="l00737"></a><span class="lineno">  737</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a4a25fe73a787c2c143684e5f95e6b6a5">SetRawValue</a>(ConstRef(CStringLiteral) _name, ConstRef(CStringBuffer) _value);</div>
-<div class="line"><a name="l00738"></a><span class="lineno">  738</span>&#160;</div>
-<div class="line"><a name="l00739"></a><span class="lineno">  739</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00740"></a><span class="lineno">  740</span>&#160;    <a class="code" href="class_c_file_path.html">CFilePath</a> m_path;</div>
-<div class="line"><a name="l00741"></a><span class="lineno">  741</span>&#160;};</div>
-<div class="line"><a name="l00742"></a><span class="lineno">  742</span>&#160;</div>
-<div class="line"><a name="l00747"></a><span class="lineno"><a class="line" href="class_c_configuration_list.html">  747</a></span>&#160;<span class="keyword">class </span>CPPSOURCES_API <a class="code" href="class_c_configuration_list.html">CConfigurationList</a>: <span class="keyword">public</span> <a class="code" href="class_c_abstract_configuration.html">CAbstractConfiguration</a></div>
-<div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160;{</div>
-<div class="line"><a name="l00749"></a><span class="lineno">  749</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160;    <span class="keyword">typedef</span> CDataDoubleLinkedListT&lt;CAbstractConfiguration&gt; ConfigList;</div>
-<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;    <span class="keyword">typedef</span> ConfigList::Iterator Iterator;</div>
+<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;        __inline ConstRef(CStringBuffer) get_Name()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _name; }</div>
+<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;        __inline ConstRef(CStringBuffer) get_Value()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _value; }</div>
+<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;</div>
+<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;    <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;        CStringBuffer _name;</div>
+<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;        CStringBuffer _value;</div>
+<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;    };</div>
+<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;</div>
+<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;    <span class="keyword">typedef</span> CDataAVLBinaryTreeT&lt;MapItem, CStringByNameIgnoreCaseLessFunctor&lt;MapItem&gt; &gt; MapItems;</div>
+<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;</div>
+<div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;    <a class="code" href="class_c_map_configuration.html">CMapConfiguration</a>(DECL_FILE_LINE0);</div>
+<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;    <a class="code" href="class_c_map_configuration.html">CMapConfiguration</a>(DECL_FILE_LINE ConstRef(CStringLiteral) _prefix, WBool _iswritable = <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="class_c_map_configuration.html">CMapConfiguration</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;</div>
+<div class="line"><a name="l00546"></a><span class="lineno"><a class="line" href="class_c_map_configuration.html#a3265faef0383accbd61db8cbffd488fd">  546</a></span>&#160;    __inline TListCnt <a class="code" href="class_c_map_configuration.html#a3265faef0383accbd61db8cbffd488fd">Count</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_mapItems.Count(); }</div>
+<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;</div>
+<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a9e7f38802e585336371a0d93c7fb765d">Enumerate</a>(ConstRef(CStringLiteral) _prefix, Ref(Keys) _keys);</div>
+<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a248be1d0ba05d8ef65303b8cd7411ed4">GetRawValue</a>(ConstRef(CStringLiteral) _name, Ref(CStringBuffer) _value);</div>
+<div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a4a25fe73a787c2c143684e5f95e6b6a5">SetRawValue</a>(ConstRef(CStringLiteral) _name, ConstRef(CStringBuffer) _value);</div>
+<div class="line"><a name="l00578"></a><span class="lineno">  578</span>&#160;</div>
+<div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00580"></a><span class="lineno">  580</span>&#160;    WBool AddValue(ConstRef(CStringLiteral) _name, ConstRef(CStringBuffer) _value);</div>
+<div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;</div>
+<div class="line"><a name="l00582"></a><span class="lineno">  582</span>&#160;    MapItems m_mapItems;</div>
+<div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160;};</div>
+<div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160;</div>
+<div class="line"><a name="l00589"></a><span class="lineno"><a class="line" href="class_c_file_configuration.html">  589</a></span>&#160;<span class="keyword">class </span>CPPSOURCES_API <a class="code" href="class_c_file_configuration.html">CFileConfiguration</a>: <span class="keyword">public</span> <a class="code" href="class_c_map_configuration.html">CMapConfiguration</a></div>
+<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;{</div>
+<div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;    <a class="code" href="class_c_file_configuration.html">CFileConfiguration</a>(DECL_FILE_LINE0);</div>
+<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;    <a class="code" href="class_c_file_configuration.html">CFileConfiguration</a>(DECL_FILE_LINE ConstRef(<a class="code" href="class_c_file_path.html">CFilePath</a>) _path, WBool bWritable = <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="class_c_file_configuration.html">CFileConfiguration</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;</div>
+<div class="line"><a name="l00621"></a><span class="lineno"><a class="line" href="class_c_file_configuration.html#abfb98457fbb1048e35352170b8b407cc">  621</a></span>&#160;    __inline ConstRef(<a class="code" href="class_c_file_path.html">CFilePath</a>) get_path()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_path; }</div>
+<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;</div>
+<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;    WBool LoadConfig();</div>
+<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;    WBool SaveConfig();</div>
+<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;</div>
+<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;    <a class="code" href="class_c_file_path.html">CFilePath</a> m_path;</div>
+<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;};</div>
+<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;</div>
+<div class="line"><a name="l00634"></a><span class="lineno"><a class="line" href="class_c_system_configuration.html">  634</a></span>&#160;<span class="keyword">class </span>CPPSOURCES_API <a class="code" href="class_c_system_configuration.html">CSystemConfiguration</a>: <span class="keyword">public</span> <a class="code" href="class_c_abstract_configuration.html">CAbstractConfiguration</a></div>
+<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;{</div>
+<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;    <a class="code" href="class_c_system_configuration.html">CSystemConfiguration</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="class_c_system_configuration.html">CSystemConfiguration</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;</div>
+<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a9e7f38802e585336371a0d93c7fb765d">Enumerate</a>(ConstRef(CStringLiteral) _prefix, Ref(Keys) _keys);</div>
+<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a248be1d0ba05d8ef65303b8cd7411ed4">GetRawValue</a>(ConstRef(CStringLiteral) _name, Ref(CStringBuffer) _value);</div>
+<div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a4a25fe73a787c2c143684e5f95e6b6a5">SetRawValue</a>(ConstRef(CStringLiteral) _name, ConstRef(CStringBuffer) _value);</div>
+<div class="line"><a name="l00680"></a><span class="lineno">  680</span>&#160;};</div>
+<div class="line"><a name="l00681"></a><span class="lineno">  681</span>&#160;</div>
+<div class="line"><a name="l00686"></a><span class="lineno"><a class="line" href="class_c_application_configuration.html">  686</a></span>&#160;<span class="keyword">class </span>CPPSOURCES_API <a class="code" href="class_c_application_configuration.html">CApplicationConfiguration</a>: <span class="keyword">public</span> <a class="code" href="class_c_abstract_configuration.html">CAbstractConfiguration</a></div>
+<div class="line"><a name="l00687"></a><span class="lineno">  687</span>&#160;{</div>
+<div class="line"><a name="l00688"></a><span class="lineno">  688</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00694"></a><span class="lineno">  694</span>&#160;    <a class="code" href="class_c_application_configuration.html">CApplicationConfiguration</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;    <a class="code" href="class_c_application_configuration.html">CApplicationConfiguration</a>(CConstPointer _path);</div>
+<div class="line"><a name="l00710"></a><span class="lineno">  710</span>&#160;    <a class="code" href="class_c_application_configuration.html">CApplicationConfiguration</a>(ConstRef(<a class="code" href="class_c_file_path.html">CFilePath</a>) _path);</div>
+<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="class_c_application_configuration.html">CApplicationConfiguration</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;</div>
+<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a9e7f38802e585336371a0d93c7fb765d">Enumerate</a>(ConstRef(CStringLiteral) _prefix, Ref(Keys) _keys);</div>
+<div class="line"><a name="l00737"></a><span class="lineno">  737</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a248be1d0ba05d8ef65303b8cd7411ed4">GetRawValue</a>(ConstRef(CStringLiteral) _name, Ref(CStringBuffer) _value);</div>
+<div class="line"><a name="l00747"></a><span class="lineno">  747</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a4a25fe73a787c2c143684e5f95e6b6a5">SetRawValue</a>(ConstRef(CStringLiteral) _name, ConstRef(CStringBuffer) _value);</div>
+<div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160;</div>
+<div class="line"><a name="l00749"></a><span class="lineno">  749</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160;    <a class="code" href="class_c_file_path.html">CFilePath</a> m_path;</div>
+<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;};</div>
 <div class="line"><a name="l00752"></a><span class="lineno">  752</span>&#160;</div>
-<div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160;    <a class="code" href="class_c_configuration_list.html">CConfigurationList</a>(DECL_FILE_LINE0);</div>
-<div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="class_c_configuration_list.html">CConfigurationList</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160;</div>
-<div class="line"><a name="l00764"></a><span class="lineno"><a class="line" href="class_c_configuration_list.html#aa748852f2752dad30a26141f1c943b60">  764</a></span>&#160;    __inline <span class="keywordtype">void</span> <a class="code" href="class_c_configuration_list.html#aa748852f2752dad30a26141f1c943b60">Add</a>(<a class="code" href="class_c_abstract_configuration.html">CAbstractConfiguration</a>* pConfig) { m_configList.Append(pConfig); }</div>
-<div class="line"><a name="l00772"></a><span class="lineno"><a class="line" href="class_c_configuration_list.html#a5e566e7208fc797cf9ad9db82b732df5">  772</a></span>&#160;    __inline Iterator <a class="code" href="class_c_configuration_list.html#a5e566e7208fc797cf9ad9db82b732df5">Begin</a>() { <span class="keywordflow">return</span> m_configList.Begin(); }</div>
-<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;    <span class="keywordtype">void</span> Remove(Iterator it);</div>
-<div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;</div>
-<div class="line"><a name="l00792"></a><span class="lineno">  792</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a9e7f38802e585336371a0d93c7fb765d">Enumerate</a>(ConstRef(CStringLiteral) _prefix, Ref(Keys) _keys);</div>
-<div class="line"><a name="l00802"></a><span class="lineno">  802</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a248be1d0ba05d8ef65303b8cd7411ed4">GetRawValue</a>(ConstRef(CStringLiteral) _name, Ref(CStringBuffer) _value);</div>
-<div class="line"><a name="l00812"></a><span class="lineno">  812</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a4a25fe73a787c2c143684e5f95e6b6a5">SetRawValue</a>(ConstRef(CStringLiteral) _name, ConstRef(CStringBuffer) _value);</div>
-<div class="line"><a name="l00813"></a><span class="lineno">  813</span>&#160;</div>
-<div class="line"><a name="l00814"></a><span class="lineno">  814</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00815"></a><span class="lineno">  815</span>&#160;    ConfigList m_configList;</div>
-<div class="line"><a name="l00816"></a><span class="lineno">  816</span>&#160;};</div>
-<div class="line"><a name="l00817"></a><span class="lineno">  817</span>&#160;</div>
-<div class="line"><a name="l00818"></a><span class="lineno">  818</span>&#160;</div>
+<div class="line"><a name="l00757"></a><span class="lineno"><a class="line" href="class_c_configuration_list.html">  757</a></span>&#160;<span class="keyword">class </span>CPPSOURCES_API <a class="code" href="class_c_configuration_list.html">CConfigurationList</a>: <span class="keyword">public</span> <a class="code" href="class_c_abstract_configuration.html">CAbstractConfiguration</a></div>
+<div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160;{</div>
+<div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;    <span class="keyword">typedef</span> CDataDoubleLinkedListT&lt;CAbstractConfiguration&gt; ConfigList;</div>
+<div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;    <span class="keyword">typedef</span> ConfigList::Iterator Iterator;</div>
+<div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;</div>
+<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;    <a class="code" href="class_c_configuration_list.html">CConfigurationList</a>(DECL_FILE_LINE0);</div>
+<div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="class_c_configuration_list.html">CConfigurationList</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;</div>
+<div class="line"><a name="l00774"></a><span class="lineno"><a class="line" href="class_c_configuration_list.html#aa748852f2752dad30a26141f1c943b60">  774</a></span>&#160;    __inline <span class="keywordtype">void</span> <a class="code" href="class_c_configuration_list.html#aa748852f2752dad30a26141f1c943b60">Add</a>(<a class="code" href="class_c_abstract_configuration.html">CAbstractConfiguration</a>* pConfig) { m_configList.Append(pConfig); }</div>
+<div class="line"><a name="l00782"></a><span class="lineno"><a class="line" href="class_c_configuration_list.html#a5e566e7208fc797cf9ad9db82b732df5">  782</a></span>&#160;    __inline Iterator <a class="code" href="class_c_configuration_list.html#a5e566e7208fc797cf9ad9db82b732df5">Begin</a>() { <span class="keywordflow">return</span> m_configList.Begin(); }</div>
+<div class="line"><a name="l00791"></a><span class="lineno">  791</span>&#160;    <span class="keywordtype">void</span> Remove(Iterator it);</div>
+<div class="line"><a name="l00792"></a><span class="lineno">  792</span>&#160;</div>
+<div class="line"><a name="l00802"></a><span class="lineno">  802</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a9e7f38802e585336371a0d93c7fb765d">Enumerate</a>(ConstRef(CStringLiteral) _prefix, Ref(Keys) _keys);</div>
+<div class="line"><a name="l00812"></a><span class="lineno">  812</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a248be1d0ba05d8ef65303b8cd7411ed4">GetRawValue</a>(ConstRef(CStringLiteral) _name, Ref(CStringBuffer) _value);</div>
+<div class="line"><a name="l00822"></a><span class="lineno">  822</span>&#160;    <span class="keyword">virtual</span> WBool <a class="code" href="class_c_abstract_configuration.html#a4a25fe73a787c2c143684e5f95e6b6a5">SetRawValue</a>(ConstRef(CStringLiteral) _name, ConstRef(CStringBuffer) _value);</div>
+<div class="line"><a name="l00823"></a><span class="lineno">  823</span>&#160;</div>
+<div class="line"><a name="l00824"></a><span class="lineno">  824</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00825"></a><span class="lineno">  825</span>&#160;    ConfigList m_configList;</div>
+<div class="line"><a name="l00826"></a><span class="lineno">  826</span>&#160;};</div>
+<div class="line"><a name="l00827"></a><span class="lineno">  827</span>&#160;</div>
+<div class="line"><a name="l00828"></a><span class="lineno">  828</span>&#160;</div>
 <div class="ttc" id="_data_vector_8h_html"><div class="ttname"><a href="_data_vector_8h.html">DataVector.h</a></div><div class="ttdoc">Vector (variable size linear buffer) data structure. </div></div>
 <div class="ttc" id="class_c_abstract_configuration_html_a479887c9067ac15150a1ee02615ec3a9"><div class="ttname"><a href="class_c_abstract_configuration.html#a479887c9067ac15150a1ee02615ec3a9">CAbstractConfiguration::IsModified</a></div><div class="ttdeci">__inline unsigned char IsModified() const </div><div class="ttdoc">Getter flag modified. </div><div class="ttdef"><b>Definition:</b> Configuration.h:80</div></div>
-<div class="ttc" id="class_c_map_configuration_html_a3265faef0383accbd61db8cbffd488fd"><div class="ttname"><a href="class_c_map_configuration.html#a3265faef0383accbd61db8cbffd488fd">CMapConfiguration::Count</a></div><div class="ttdeci">__inline TListCnt Count() const </div><div class="ttdoc">Number of stored property values. </div><div class="ttdef"><b>Definition:</b> Configuration.h:536</div></div>
+<div class="ttc" id="class_c_map_configuration_html_a3265faef0383accbd61db8cbffd488fd"><div class="ttname"><a href="class_c_map_configuration.html#a3265faef0383accbd61db8cbffd488fd">CMapConfiguration::Count</a></div><div class="ttdeci">__inline TListCnt Count() const </div><div class="ttdoc">Number of stored property values. </div><div class="ttdef"><b>Definition:</b> Configuration.h:546</div></div>
 <div class="ttc" id="class_c_abstract_configuration_html_a69081f8c7ecd86cbddbac42ae9dbf1db"><div class="ttname"><a href="class_c_abstract_configuration.html#a69081f8c7ecd86cbddbac42ae9dbf1db">CAbstractConfiguration::IsWritable</a></div><div class="ttdeci">__inline unsigned char IsWritable() const </div><div class="ttdoc">Getter flag writeable. </div><div class="ttdef"><b>Definition:</b> Configuration.h:72</div></div>
 <div class="ttc" id="class_c_abstract_configuration_html"><div class="ttname"><a href="class_c_abstract_configuration.html">CAbstractConfiguration</a></div><div class="ttdoc">Base class of all configuration classes. </div><div class="ttdef"><b>Definition:</b> Configuration.h:37</div></div>
 <div class="ttc" id="class_c_abstract_configuration_html_a9e7f38802e585336371a0d93c7fb765d"><div class="ttname"><a href="class_c_abstract_configuration.html#a9e7f38802e585336371a0d93c7fb765d">CAbstractConfiguration::Enumerate</a></div><div class="ttdeci">virtual unsigned char Enumerate(const CStringLiteral &amp;_prefix, Keys &amp;_keys)</div><div class="ttdoc">virtual overload to enumerate all keys </div></div>
 <div class="ttc" id="_file_path_8h_html"><div class="ttname"><a href="_file_path_8h.html">FilePath.h</a></div><div class="ttdoc">Handles file paths. </div></div>
 <div class="ttc" id="_data_double_linked_list_8h_html"><div class="ttname"><a href="_data_double_linked_list_8h.html">DataDoubleLinkedList.h</a></div><div class="ttdoc">Double linked list data structure. </div></div>
 <div class="ttc" id="class_c_abstract_configuration_html_a4a25fe73a787c2c143684e5f95e6b6a5"><div class="ttname"><a href="class_c_abstract_configuration.html#a4a25fe73a787c2c143684e5f95e6b6a5">CAbstractConfiguration::SetRawValue</a></div><div class="ttdeci">virtual unsigned char SetRawValue(const CStringLiteral &amp;_name, const CStringBuffer &amp;_value)</div><div class="ttdoc">virtual overload of a setter of raw property data </div></div>
-<div class="ttc" id="class_c_configuration_list_html"><div class="ttname"><a href="class_c_configuration_list.html">CConfigurationList</a></div><div class="ttdoc">List of configuration objects, but with a configuration object interface, thus traversing the list to...</div><div class="ttdef"><b>Definition:</b> Configuration.h:747</div></div>
-<div class="ttc" id="class_c_application_configuration_html"><div class="ttname"><a href="class_c_application_configuration.html">CApplicationConfiguration</a></div><div class="ttdoc">Implements access to application infos. </div><div class="ttdef"><b>Definition:</b> Configuration.h:676</div></div>
-<div class="ttc" id="class_c_configuration_list_html_a5e566e7208fc797cf9ad9db82b732df5"><div class="ttname"><a href="class_c_configuration_list.html#a5e566e7208fc797cf9ad9db82b732df5">CConfigurationList::Begin</a></div><div class="ttdeci">__inline Iterator Begin()</div><div class="ttdoc">Getter Iterator. </div><div class="ttdef"><b>Definition:</b> Configuration.h:772</div></div>
+<div class="ttc" id="class_c_configuration_list_html"><div class="ttname"><a href="class_c_configuration_list.html">CConfigurationList</a></div><div class="ttdoc">List of configuration objects, but with a configuration object interface, thus traversing the list to...</div><div class="ttdef"><b>Definition:</b> Configuration.h:757</div></div>
+<div class="ttc" id="class_c_application_configuration_html"><div class="ttname"><a href="class_c_application_configuration.html">CApplicationConfiguration</a></div><div class="ttdoc">Implements access to application infos. </div><div class="ttdef"><b>Definition:</b> Configuration.h:686</div></div>
+<div class="ttc" id="class_c_configuration_list_html_a5e566e7208fc797cf9ad9db82b732df5"><div class="ttname"><a href="class_c_configuration_list.html#a5e566e7208fc797cf9ad9db82b732df5">CConfigurationList::Begin</a></div><div class="ttdeci">__inline Iterator Begin()</div><div class="ttdoc">Getter Iterator. </div><div class="ttdef"><b>Definition:</b> Configuration.h:782</div></div>
 <div class="ttc" id="class_c_file_path_html"><div class="ttname"><a href="class_c_file_path.html">CFilePath</a></div><div class="ttdoc">Handles file paths. </div><div class="ttdef"><b>Definition:</b> FilePath.h:44</div></div>
-<div class="ttc" id="class_c_system_configuration_html"><div class="ttname"><a href="class_c_system_configuration.html">CSystemConfiguration</a></div><div class="ttdoc">Implements access to the environment of the program. </div><div class="ttdef"><b>Definition:</b> Configuration.h:624</div></div>
-<div class="ttc" id="class_c_configuration_list_html_aa748852f2752dad30a26141f1c943b60"><div class="ttname"><a href="class_c_configuration_list.html#aa748852f2752dad30a26141f1c943b60">CConfigurationList::Add</a></div><div class="ttdeci">__inline void Add(CAbstractConfiguration *pConfig)</div><div class="ttdoc">Append a configuration object to the list of configuration objects. </div><div class="ttdef"><b>Definition:</b> Configuration.h:764</div></div>
+<div class="ttc" id="class_c_system_configuration_html"><div class="ttname"><a href="class_c_system_configuration.html">CSystemConfiguration</a></div><div class="ttdoc">Implements access to the environment of the program. </div><div class="ttdef"><b>Definition:</b> Configuration.h:634</div></div>
+<div class="ttc" id="class_c_configuration_list_html_aa748852f2752dad30a26141f1c943b60"><div class="ttname"><a href="class_c_configuration_list.html#aa748852f2752dad30a26141f1c943b60">CConfigurationList::Add</a></div><div class="ttdeci">__inline void Add(CAbstractConfiguration *pConfig)</div><div class="ttdoc">Append a configuration object to the list of configuration objects. </div><div class="ttdef"><b>Definition:</b> Configuration.h:774</div></div>
 <div class="ttc" id="class_c_abstract_configuration_html_a248be1d0ba05d8ef65303b8cd7411ed4"><div class="ttname"><a href="class_c_abstract_configuration.html#a248be1d0ba05d8ef65303b8cd7411ed4">CAbstractConfiguration::GetRawValue</a></div><div class="ttdeci">virtual unsigned char GetRawValue(const CStringLiteral &amp;_name, CStringBuffer &amp;_value)</div><div class="ttdoc">virtual overload of a getter of raw property data </div></div>
 <div class="ttc" id="class_c_map_configuration_html"><div class="ttname"><a href="class_c_map_configuration.html">CMapConfiguration</a></div><div class="ttdoc">Stores configuration items in a binary tree. </div><div class="ttdef"><b>Definition:</b> Configuration.h:496</div></div>
-<div class="ttc" id="class_c_file_configuration_html"><div class="ttname"><a href="class_c_file_configuration.html">CFileConfiguration</a></div><div class="ttdoc">Based on CMapConfiguration. Fills the tree from a file. </div><div class="ttdef"><b>Definition:</b> Configuration.h:579</div></div>
+<div class="ttc" id="class_c_file_configuration_html"><div class="ttname"><a href="class_c_file_configuration.html">CFileConfiguration</a></div><div class="ttdoc">Based on CMapConfiguration. Fills the tree from a file. </div><div class="ttdef"><b>Definition:</b> Configuration.h:589</div></div>
 <div class="ttc" id="_data_binary_tree_8h_html"><div class="ttname"><a href="_data_binary_tree_8h.html">DataBinaryTree.h</a></div><div class="ttdoc">AVL and RB binary tree data structure. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 27 2014 10:57:41 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 5 2014 14:37:52 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

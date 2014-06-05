@@ -125,107 +125,79 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">typedef</span> sword ( __stdcall *TSearchAndSortFunc)( ConstPointer ArrayItem, ConstPointer DataItem );</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">typedef</span> sword ( __stdcall *TSearchAndSortUserFunc)( ConstPointer ArrayItem, ConstPointer DataItem, ConstPointer Context );</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">typedef</span> sword ( __stdcall *TSearchAndSortUserFunc)( ConstPointer ArrayItem, ConstPointer DataItem, Pointer Context );</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#define UTLPTR_INSERTMODE 0</span></div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#define UTLPTR_SEARCHMODE 1</span></div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#define UTLPTR_MATCHMODE 2</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;CSOURCES_API sword __stdcall v_binsert( Array, ConstPointer, WPointer, TSearchAndSortFunc );</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;CSOURCES_API sword __stdcall v_linsert( Array, ConstPointer, WPointer, TSearchAndSortFunc );</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;CSOURCES_API sword __stdcall v_insert( Array, sword, ConstPointer, WPointer );</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;CSOURCES_API sword __stdcall v_ninsert( Array, sword, Array, word, WPointer );</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;CSOURCES_API sword __stdcall v_bdelete( Array, ConstPointer, WPointer, TSearchAndSortFunc );</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;CSOURCES_API sword __stdcall v_ldelete( Array, ConstPointer, WPointer, TSearchAndSortFunc );</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;CSOURCES_API sword __stdcall v_delete( Array, sword, WPointer );</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;CSOURCES_API sword __stdcall v_ndelete( Array, sword, word, WPointer );</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;CSOURCES_API sword __stdcall v_bsearch( Array, ConstPointer, word, TSearchAndSortFunc, sword );</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;CSOURCES_API sword __stdcall v_lsearch( Array, ConstPointer, word, TSearchAndSortFunc, sword );</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall v_heapsort( Array _heap, word cnt, TSearchAndSortFunc _cmp );</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall v_uheapsort( Array _heap, word cnt, TSearchAndSortUserFunc _cmp, ConstPointer user );</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall v_quicksort( Array _heap, word cnt, TSearchAndSortFunc _cmp );</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall v_uquicksort( Array _heap, word cnt, TSearchAndSortUserFunc _cmp, ConstPointer user );</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;CSOURCES_API sdword __stdcall _lv_binsert( Array, ConstPointer, DWPointer, TSearchAndSortFunc );</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;CSOURCES_API sdword __stdcall _lv_linsert( Array, ConstPointer, DWPointer, TSearchAndSortFunc );</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;CSOURCES_API sdword __stdcall _lv_insert( Array, sdword, ConstPointer, DWPointer );</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;CSOURCES_API sdword __stdcall _lv_ninsert( Array, sdword, Array, dword, DWPointer );</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;CSOURCES_API sdword __stdcall _lv_bdelete( Array, ConstPointer, DWPointer, TSearchAndSortFunc );</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;CSOURCES_API sdword __stdcall _lv_ldelete( Array, ConstPointer, DWPointer, TSearchAndSortFunc );</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;CSOURCES_API sdword __stdcall _lv_delete( Array, sdword, DWPointer );</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;CSOURCES_API sdword __stdcall _lv_ndelete( Array, sdword, dword, DWPointer );</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;CSOURCES_API sdword __stdcall _lv_bsearch( Array, ConstPointer, dword, TSearchAndSortFunc, sword );</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;CSOURCES_API sdword __stdcall _lv_lsearch( Array, ConstPointer, dword, TSearchAndSortFunc, sword );</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;CSOURCES_API sdword __stdcall _lv_ulsearch( Array, ConstPointer, dword, TSearchAndSortUserFunc, ConstPointer, sword );</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall _lv_heapsort( Array _heap, dword cnt, TSearchAndSortFunc _cmp );</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall _lv_uheapsort( Array _heap, dword cnt, TSearchAndSortUserFunc _cmp, ConstPointer user );</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall _lv_quicksort( Array _heap, dword cnt, TSearchAndSortFunc _cmp );</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall _lv_uquicksort( Array _heap, dword cnt, TSearchAndSortUserFunc _cmp, ConstPointer user );</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;CSOURCES_API sword __stdcall s_binsert( Pointer, dword, ConstPointer, WPointer, TSearchAndSortFunc );</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;CSOURCES_API sword __stdcall s_linsert( Pointer, dword, ConstPointer, WPointer, TSearchAndSortFunc );</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;CSOURCES_API sword __stdcall s_insert( Pointer, dword, sword, ConstPointer, WPointer );</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;CSOURCES_API sword __stdcall s_ninsert( Pointer, dword, sword, ConstPointer, word, WPointer );</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;CSOURCES_API sword __stdcall s_bdelete( Pointer, dword, ConstPointer, WPointer, TSearchAndSortFunc );</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;CSOURCES_API sword __stdcall s_ldelete( Pointer, dword, ConstPointer, WPointer, TSearchAndSortFunc );</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;CSOURCES_API sword __stdcall s_delete( Pointer, dword, sword, WPointer );</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;CSOURCES_API sword __stdcall s_ndelete( Pointer, dword, sword, word, WPointer );</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;CSOURCES_API sword __stdcall s_ubsearch( Pointer, dword, ConstPointer, word, TSearchAndSortUserFunc, ConstPointer, sword );</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;CSOURCES_API sword __stdcall s_bsearch( Pointer, dword, ConstPointer, word, TSearchAndSortFunc, sword );</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;CSOURCES_API sword __stdcall s_lsearch( Pointer, dword, ConstPointer, word, TSearchAndSortFunc, sword );</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall s_heapsort( Pointer _heap, dword _size, word cnt, TSearchAndSortFunc _cmp );</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall s_uheapsort( Pointer _heap, dword _size, word cnt, TSearchAndSortUserFunc _cmp, ConstPointer user );</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;CSOURCES_API sdword __stdcall _ls_binsert( Pointer, dword, ConstPointer, DWPointer, TSearchAndSortFunc );</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;CSOURCES_API sdword __stdcall _ls_linsert( Pointer, dword, ConstPointer, DWPointer, TSearchAndSortFunc );</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;CSOURCES_API sdword __stdcall _ls_insert( Pointer, dword, sdword, ConstPointer, DWPointer );</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;CSOURCES_API sdword __stdcall _ls_ninsert( Pointer, dword, sdword, ConstPointer, dword, DWPointer );</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;CSOURCES_API sdword __stdcall _ls_bdelete( Pointer, dword, ConstPointer, DWPointer, TSearchAndSortFunc );</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;CSOURCES_API sdword __stdcall _ls_ldelete( Pointer, dword, ConstPointer, DWPointer, TSearchAndSortFunc );</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;CSOURCES_API sdword __stdcall _ls_delete( Pointer, dword, sdword, DWPointer );</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;CSOURCES_API sdword __stdcall _ls_ndelete( Pointer, dword, sdword, dword, DWPointer );</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;CSOURCES_API sdword __stdcall _ls_bsearch( Pointer, dword, ConstPointer, dword, TSearchAndSortFunc, sword );</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;CSOURCES_API sdword __stdcall _ls_ubsearch( Pointer, dword, ConstPointer, dword, TSearchAndSortUserFunc, ConstPointer, sword );</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;CSOURCES_API sdword __stdcall _ls_lsearch( Pointer, dword, ConstPointer, dword, TSearchAndSortFunc, sword );</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;CSOURCES_API sdword __stdcall _ls_ulsearch( Pointer, dword, ConstPointer, dword, TSearchAndSortUserFunc, ConstPointer, sword );</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall _ls_heapsort( Pointer _heap, dword _size, dword cnt, TSearchAndSortFunc _cmp );</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall _ls_uheapsort( Pointer _heap, dword _size, dword cnt, TSearchAndSortUserFunc _cmp, ConstPointer user );</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall _ls_quicksort( Pointer _heap, dword _size, dword cnt, TSearchAndSortFunc _cmp );</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall _ls_uquicksort( Pointer _heap, dword _size, dword cnt, TSearchAndSortUserFunc _cmp, ConstPointer user );</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;CSOURCES_API sword __stdcall v_searchptr( Array, Pointer, word );</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;CSOURCES_API sdword __stdcall _lv_searchptr( Array, Pointer, dword );</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="preprocessor">#define _l_ptradd(pp,offset) ((Pointer)(((unsigned char *)(pp)) + (offset)))</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="preprocessor">#define _fl_ptradd _l_ptradd</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="preprocessor">#define c_ptrdiff(pa,pb) ((ptrdiff_t)(((unsigned char *)(pa)) - ((unsigned char *)(pb))))</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="preprocessor">#define _fc_ptrdiff c_ptrdiff</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="preprocessor">#ifdef __DEBUG_TEST_MEMORY__</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="preprocessor">    #define l_ptradd(p,o)   PtrTest( (p), (o) )</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="preprocessor">    #define l_ptradd _l_ptradd</span></div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;CSOURCES_API <span class="keywordtype">int</span> __stdcall c_betwptr( CPointer, CPointer, CPointer );</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="preprocessor">#define NULDIVEXC(z,n,e)    (n)?((z)/(n)):(e)</span></div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="preprocessor">#define v_ptrdiff(pa,pb)    c_ptrdiff( (CPointer)(pa), (CPointer)(pb) )</span></div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="preprocessor">#define v_betwptr(pa,pb,pc) c_betwptr( (CPointer)(pa), (CPointer)(pb), (CPointer)(pc) )</span></div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall v_swapbytes( Pointer p1, Pointer p2, word size );</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall _lv_swapbytes( Pointer p1, Pointer p2, dword size );</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;}</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="comment">/* end of UTLPTR.H */</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;CSOURCES_API sdword __stdcall _lv_binsert(Array, ConstPointer, DWPointer, TSearchAndSortFunc);</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;CSOURCES_API sdword __stdcall _lv_ubinsert(Array, ConstPointer, DWPointer, TSearchAndSortUserFunc, Pointer context);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;CSOURCES_API sdword __stdcall _lv_linsert(Array, ConstPointer, DWPointer, TSearchAndSortFunc);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;CSOURCES_API sdword __stdcall _lv_insert( Array, sdword, ConstPointer, DWPointer );</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;CSOURCES_API sdword __stdcall _lv_ninsert( Array, sdword, Array, dword, DWPointer );</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;CSOURCES_API sdword __stdcall _lv_bdelete( Array, ConstPointer, DWPointer, TSearchAndSortFunc );</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;CSOURCES_API sdword __stdcall _lv_ldelete( Array, ConstPointer, DWPointer, TSearchAndSortFunc );</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;CSOURCES_API sdword __stdcall _lv_delete( Array, sdword, DWPointer );</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;CSOURCES_API sdword __stdcall _lv_ndelete( Array, sdword, dword, DWPointer );</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;CSOURCES_API sdword __stdcall _lv_bsearch( Array, ConstPointer, dword, TSearchAndSortFunc, sword );</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;CSOURCES_API sdword __stdcall _lv_ubsearch(Array, ConstPointer, dword, TSearchAndSortUserFunc, Pointer, sword);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;CSOURCES_API sdword __stdcall _lv_lsearch( Array, ConstPointer, dword, TSearchAndSortFunc, sword );</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;CSOURCES_API sdword __stdcall _lv_ulsearch( Array, ConstPointer, dword, TSearchAndSortUserFunc, Pointer, sword );</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall _lv_heapsort( Array _heap, dword cnt, TSearchAndSortFunc _cmp );</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall _lv_uheapsort( Array _heap, dword cnt, TSearchAndSortUserFunc _cmp, Pointer user );</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall _lv_quicksort( Array _heap, dword cnt, TSearchAndSortFunc _cmp );</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall _lv_uquicksort( Array _heap, dword cnt, TSearchAndSortUserFunc _cmp, Pointer user );</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;CSOURCES_API sdword __stdcall _ls_binsert( Pointer, dword, ConstPointer, DWPointer, TSearchAndSortFunc );</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;CSOURCES_API sdword __stdcall _ls_linsert( Pointer, dword, ConstPointer, DWPointer, TSearchAndSortFunc );</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;CSOURCES_API sdword __stdcall _ls_insert( Pointer, dword, sdword, ConstPointer, DWPointer );</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;CSOURCES_API sdword __stdcall _ls_ninsert( Pointer, dword, sdword, ConstPointer, dword, DWPointer );</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;CSOURCES_API sdword __stdcall _ls_bdelete( Pointer, dword, ConstPointer, DWPointer, TSearchAndSortFunc );</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;CSOURCES_API sdword __stdcall _ls_ldelete( Pointer, dword, ConstPointer, DWPointer, TSearchAndSortFunc );</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;CSOURCES_API sdword __stdcall _ls_delete( Pointer, dword, sdword, DWPointer );</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;CSOURCES_API sdword __stdcall _ls_ndelete( Pointer, dword, sdword, dword, DWPointer );</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;CSOURCES_API sdword __stdcall _ls_bsearch( Pointer, dword, ConstPointer, dword, TSearchAndSortFunc, sword );</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;CSOURCES_API sdword __stdcall _ls_ubsearch( Pointer, dword, ConstPointer, dword, TSearchAndSortUserFunc, Pointer, sword );</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;CSOURCES_API sdword __stdcall _ls_lsearch( Pointer, dword, ConstPointer, dword, TSearchAndSortFunc, sword );</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;CSOURCES_API sdword __stdcall _ls_ulsearch( Pointer, dword, ConstPointer, dword, TSearchAndSortUserFunc, Pointer, sword );</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall _ls_heapsort( Pointer _heap, dword _size, dword cnt, TSearchAndSortFunc _cmp );</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall _ls_uheapsort( Pointer _heap, dword _size, dword cnt, TSearchAndSortUserFunc _cmp, Pointer user );</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall _ls_quicksort( Pointer _heap, dword _size, dword cnt, TSearchAndSortFunc _cmp );</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall _ls_uquicksort( Pointer _heap, dword _size, dword cnt, TSearchAndSortUserFunc _cmp, Pointer user );</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;CSOURCES_API sdword __stdcall _lv_searchptr( Array, Pointer, dword );</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="preprocessor">#define _l_ptradd(pp,offset) ((Pointer)(((unsigned char *)(pp)) + (offset)))</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="preprocessor">#define _fl_ptradd _l_ptradd</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="preprocessor">#define c_ptrdiff(pa,pb) ((ptrdiff_t)(((unsigned char *)(pa)) - ((unsigned char *)(pb))))</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">#define _fc_ptrdiff c_ptrdiff</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="preprocessor">#ifdef __DEBUG_TEST_MEMORY__</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor">    #define l_ptradd(p,o)   PtrTest( (p), (o) )</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="preprocessor">    #define l_ptradd _l_ptradd</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;CSOURCES_API <span class="keywordtype">int</span> __stdcall c_betwptr( CPointer, CPointer, CPointer );</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="preprocessor">#define NULDIVEXC(z,n,e)    (n)?((z)/(n)):(e)</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="preprocessor">#define v_ptrdiff(pa,pb)    c_ptrdiff( (CPointer)(pa), (CPointer)(pb) )</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="preprocessor">#define v_betwptr(pa,pb,pc) c_betwptr( (CPointer)(pa), (CPointer)(pb), (CPointer)(pc) )</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall _lv_swapbytes( Pointer p1, Pointer p2, dword size );</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;CSOURCES_API <span class="keywordtype">void</span> __stdcall v_swapbytes( Pointer p1, Pointer p2, word size );</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment">/* end of UTLPTR.H */</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 27 2014 10:57:42 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jun 4 2014 16:28:47 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

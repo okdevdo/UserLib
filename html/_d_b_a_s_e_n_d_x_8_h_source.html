@@ -168,14 +168,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;errno_t __stdcall FBTreeNext(LSearchResultType node, Ptr(LSearchResultType) result);</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;errno_t __stdcall FBTreePrev(LSearchResultType node, Ptr(LSearchResultType) result);</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;errno_t __stdcall FBTreeLast(Pointer liste, Ptr(LSearchResultType) result);</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;errno_t __stdcall FBTreeFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) result);</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;errno_t __stdcall FBTreeUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) result);</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;errno_t __stdcall FBTreeLowerBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) result);</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;errno_t __stdcall FBTreeInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(LSearchResultType) result);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;errno_t __stdcall FBTreeRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, ConstPointer context, Ptr(<span class="keywordtype">bool</span>));</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;errno_t __stdcall FBTreeFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context, Ptr(LSearchResultType) result);</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;errno_t __stdcall FBTreeUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context, Ptr(LSearchResultType) result);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;errno_t __stdcall FBTreeLowerBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context, Ptr(LSearchResultType) result);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;errno_t __stdcall FBTreeInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context, Ptr(LSearchResultType) result);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;errno_t __stdcall FBTreeRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context, Ptr(<span class="keywordtype">bool</span>));</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;Pointer __stdcall FBTreeGetData(LSearchResultType node);</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="keywordtype">void</span> __stdcall FBTreeSetData(LSearchResultType node, ConstPointer data);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="keywordtype">void</span> __stdcall FBTreeSortedTester(Pointer liste, TSearchAndSortUserFunc sortFunc, ConstPointer context);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="keywordtype">void</span> __stdcall FBTreeSortedTester(Pointer liste, TSearchAndSortUserFunc sortFunc, Pointer context);</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="keywordtype">void</span> __stdcall FBTreeBeginBatch(Pointer liste);</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;errno_t __stdcall FBTreeEndBatch(Pointer liste);</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
@@ -188,7 +188,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 27 2014 10:57:42 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jun 4 2014 16:28:46 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

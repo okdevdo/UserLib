@@ -160,36 +160,46 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> RightMouseDownMove(COORD mousePos, DWORD controlKeyState);</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">struct </span>__tagControlData</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keyword">class </span>ControlData: <span class="keyword">public</span> CCppObject</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    {</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        COORD pos;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        COORD size;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        CConsoleControl* control;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    } ControlData;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keyword">typedef</span> CDataSDoubleLinkedListT&lt;ControlData&gt; ControlDataList;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    CConsoleControl* GetNextTabOrder(<span class="keywordtype">bool</span> bnext = <span class="keyword">true</span>);</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    CConsoleControl* GetFirstTabOrder();</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    ControlDataList m_ControlList;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    CConsoleControl* m_FocusControl;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    PosIn m_FocusControlBorderIn;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    COORD m_FocusControlLastMousePosition;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    Ptr(CConsoleLayout) m_pLayout;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;private:</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    CConsoleTabPageControl(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    CConsoleTabPageControl(ConstRef(CConsoleTabPageControl));</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;};</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        COORD pos;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        COORD size;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        CCppObjectPtr&lt;CConsoleControl&gt; control;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    };</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keyword">class </span>ControlDataLessFunctor</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    {</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        <span class="keywordtype">bool</span> operator()(ConstPtr(ControlData) ppa, ConstPtr(ControlData) ppd)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="keyword">        </span>{</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;            <span class="keywordflow">return</span> ppa-&gt;control-&gt;GetName().LT(ppd-&gt;control-&gt;GetName());</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        }</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    };</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keyword">typedef</span> CDataDoubleLinkedListT&lt;ControlData, ControlDataLessFunctor&gt; ControlDataList;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    CConsoleControl* GetNextTabOrder(<span class="keywordtype">bool</span> bnext = <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    CConsoleControl* GetFirstTabOrder();</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    ControlDataList m_ControlList;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    CConsoleControl* m_FocusControl;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    PosIn m_FocusControlBorderIn;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    COORD m_FocusControlLastMousePosition;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    CCppObjectPtr&lt;CConsoleLayout&gt; m_pLayout;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    CConsoleTabPageControl(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    CConsoleTabPageControl(ConstRef(CConsoleTabPageControl));</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;};</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
 <div class="ttc" id="_data_double_linked_list_8h_html"><div class="ttname"><a href="_data_double_linked_list_8h.html">DataDoubleLinkedList.h</a></div><div class="ttdoc">Double linked list data structure. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 27 2014 10:57:41 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 5 2014 14:37:52 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>

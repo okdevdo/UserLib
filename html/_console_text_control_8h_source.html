@@ -195,11 +195,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    sdword m_TextLineLenMax;</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keywordtype">bool</span> *m_TextLineAlloc;</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="keywordtype">bool</span> m_SelectionMode;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    Ptr(CConsoleUndoGroup) m_UndoGroup;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    CCppObjectPtr&lt;CConsoleUndoGroup&gt; m_UndoGroup;</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keywordtype">bool</span> m_MultiLine;</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    sdword m_MaxChars;</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;private:</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="keyword">private</span>:</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    CConsoleTextControl();</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    CConsoleTextControl(ConstRef(CConsoleTextControl));</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;};</div>
@@ -208,7 +208,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 27 2014 10:57:41 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 5 2014 14:37:52 for UserLib by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.7
 </small></address>
