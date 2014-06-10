@@ -278,7 +278,7 @@ COption* CApplication::findOption(COption* pOption)
 {
 	COptionVector::Iterator it = m_Options.FindSorted(pOption);
 
-	if (m_Options.MatchSorted(it, pOption))
+	if (it)
 		return *it;
 	return nullptr;
 }

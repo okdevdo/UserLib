@@ -153,7 +153,7 @@ void CPackageInfo::AddRequiredBy(CPackageInfo* pInfo)
 {
 	CRequiredByList::Iterator it = _requiredBy.FindSorted(pInfo);
 
-	if (!(_requiredBy.MatchSorted(it, pInfo)))
+	if (!it)
 		_requiredBy.InsertSorted(pInfo);
 }
 

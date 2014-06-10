@@ -45,12 +45,12 @@ void TestHTTP1Internal(CStringLiteral url)
 	if ( !(typeText.IsEmpty()) )
 		COUT << _T("typeText = ") << typeText << endl;
 
-	CHttpClient::ResponseDataList::iterator it = client.get_ResponseDataBegin();
+	CHttpClient::TResponseDataItems::Iterator it = client.get_ResponseDataBegin();
 
 	while ( *it )
 	{
-		CStringBuffer key = (*it)->item.Key;
-		CStringBuffer value = (*it)->item.Value;
+		CStringBuffer key = (*it)->Key;
+		CStringBuffer value = (*it)->Value;
 
 		if ( (!(key.IsEmpty())) && (!(value.IsEmpty())) )
 			COUT << key << _T(" = ") << value << endl;

@@ -70,16 +70,30 @@ private:
 template <typename c>
 class OPENSSL_API CHashList
 {
+	typedef CDataHashLinkedListT<c, COpenSSLClassHashFunctor> THashList;
 public:
-	CHashList() : _list(250) {}
+	CHashList() : _list(__FILE__LINE__ 250, COpenSSLClassHashFunctor(250)) {}
 	~CHashList() {}
 
-	void insert(Ptr(c) v) { _list.insert(v); }
-	Ptr(c) search(qword k) { return _list.search(k); }
-	void remove(qword k) { _list.remove(k); }
+	void insert(Ptr(c) v) 
+	{ 
+		_list.InsertSorted(v); 
+	}
+	Ptr(c) search(Ptr(c) k)
+	{
+		THashList::Iterator it = _list.FindSorted(k);
+
+		if (it)
+			return (*it);
+		return nullptr; 
+	}
+	void remove(Ptr(c) k)
+	{ 
+		_list.RemoveSorted(k); 
+	}
 
 protected:
-	CHashLinkedListPT<c, qword, HashFunctorDigit64> _list;
+	THashList _list;
 };
 
 class OPENSSL_API CENGINE : public COpenSSLClass

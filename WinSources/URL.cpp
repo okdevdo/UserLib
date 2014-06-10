@@ -87,7 +87,7 @@ void CUrl::clear()
 	_protocol.Clear();
 	_server.Clear();
 	_resource.Clear();
-	_queries.clear();
+	_queries.Clear();
 	_fragment.Clear();
 }
 
@@ -102,9 +102,9 @@ CStringBuffer CUrl::get_Url() const
 		sResult.AppendString(_server);
 	}
 	sResult.AppendString(_resource);
-	if (_queries.count() > 0)
+	if (_queries.Count() > 0)
 	{
-		QueryDataList::iterator it(_queries.begin());
+		QueryDataList::Iterator it = _queries.Begin();
 		bool bFirst = true;
 
 		sResult.AppendString(_T("?"));
@@ -114,9 +114,9 @@ CStringBuffer CUrl::get_Url() const
 				bFirst = false;
 			else
 				sResult.AppendString(_T("&"));
-			sResult.AppendString((*it)->item.Key);
+			sResult.AppendString((*it)->Key);
 			sResult.AppendString(_T("="));
-			sResult.AppendString((*it)->item.Value);
+			sResult.AppendString((*it)->Value);
 			++it;
 		}
 	}

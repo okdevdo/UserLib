@@ -42,7 +42,7 @@ public:
 		Iterator& operator--() { _result = DoubleLinkedListPrev(_result); return *this; }
 		Ptr(Item) operator*() { return CastAnyPtr(Item, DoubleLinkedListGetData(_result)); }
 
-		operator bool() { return !LPtrCheck(_result); }
+		operator bool() { return NotPtrCheck(_Lnode(_result)) && NotPtrCheck(DoubleLinkedListGetData(_result)); }
 		operator LSearchResultType() { return _result; }
 
 		bool operator == (Iterator other) { return LCompareEqual(_result, other._result); }
@@ -119,6 +119,20 @@ public:
 			++it;
 		}
 	}
+	void Clear()
+	{
+		DoubleLinkedListClear(_liste, &TCppObjectReleaseFunc<Item, Deleter>, &_deleter);
+	}
+	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void Clear(RefRef(D) rD = D())
+	{
+		DoubleLinkedListClear(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
+	}
+	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void Clear(Ref(D) rD)
+	{
+		DoubleLinkedListClear(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
+	}
 	void Close()
 	{
 		if (!_liste)
@@ -190,38 +204,6 @@ public:
 	{
 		Iterator it = DoubleLinkedListFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD);
 		return it;
-	}
-	bool MatchSorted(Iterator it, ConstPtr(Item) data)
-	{
-		if (!it)
-			return false;
-		if (PtrCheck(*it))
-			return false;
-		if (TCppObjectSearchAndSortUserFunc<Item, Lesser>(*it, data, &_lesser) != 0)
-			return false;
-		return true;
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
-	bool MatchSorted(Iterator it, ConstPtr(Item) data, Ref(D) rD)
-	{
-		if (!it)
-			return false;
-		if (PtrCheck(*it))
-			return false;
-		if (TCppObjectSearchAndSortUserFunc<Item, D>(*it, data, &rD) != 0)
-			return false;
-		return true;
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
-	bool MatchSorted(Iterator it, ConstPtr(Item) data, RefRef(D) rD = D())
-	{
-		if (!it)
-			return false;
-		if (PtrCheck(*it))
-			return false;
-		if (TCppObjectSearchAndSortUserFunc<Item, D>(*it, data, &rD) != 0)
-			return false;
-		return true;
 	}
 	Iterator FindSorted(ConstPtr(Item) data)
 	{

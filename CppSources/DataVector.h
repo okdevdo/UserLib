@@ -47,7 +47,7 @@ public:
 		Iterator& operator--() { _result = VectorPrev(_result); return *this; }
 		Ptr(Item) operator*() { return CastAnyPtr(Item, VectorGetData(_result)); }
 
-		operator bool() { return !LPtrCheck(_result); }
+		operator bool() { return NotPtrCheck(_Lnode(_result)) && (_Loffset(_result) >= 0) && NotPtrCheck(VectorGetData(_result)); }
 		operator LSearchResultType() { return _result; }
 
 		bool operator == (Iterator other) { return LCompareEqual(_result, other._result); }
@@ -106,9 +106,13 @@ public:
 		_liste = VectorOpen(ARGS_FILE_LINE cnt, exp); 
 		return _liste != NULL; 
 	}
-	TListCnt Count() const 
-	{ 
-		return (PtrCheck(_liste) ? 0 : VectorCount(_liste)); 
+	TListCnt Count() const
+	{
+		return (PtrCheck(_liste) ? 0 : VectorCount(_liste));
+	}
+	TListCnt Maximum() const
+	{
+		return (PtrCheck(_liste) ? 0 : VectorMaximum(_liste));
 	}
 	void Copy(ConstRef(CDataVectorT) copy)
 	{
@@ -123,6 +127,20 @@ public:
 			Append(p);
 			++it;
 		}
+	}
+	void Clear()
+	{
+		VectorClear(_liste, &TCppObjectReleaseFunc<Item, Deleter>, &_deleter);
+	}
+	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void Clear(RefRef(D) rD = D())
+	{
+		VectorClear(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
+	}
+	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void Clear(Ref(D) rD)
+	{
+		VectorClear(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
 	}
 	void Close()
 	{
@@ -195,38 +213,6 @@ public:
 	{
 		Iterator it = VectorFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD);
 		return it;
-	}
-	bool MatchSorted(Iterator it, ConstPtr(Item) data)
-	{
-		if (!it)
-			return false;
-		if (PtrCheck(*it))
-			return false;
-		if (TCppObjectSearchAndSortUserFunc<Item, Lesser>(*it, data, &_lesser) != 0)
-			return false;
-		return true;
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
-	bool MatchSorted(Iterator it, ConstPtr(Item) data, Ref(D) rD)
-	{
-		if (!it)
-			return false;
-		if (PtrCheck(*it))
-			return false;
-		if (TCppObjectSearchAndSortUserFunc<Item, D>(*it, data, &rD) != 0)
-			return false;
-		return true;
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
-	bool MatchSorted(Iterator it, ConstPtr(Item) data, RefRef(D) rD = D())
-	{
-		if (!it)
-			return false;
-		if (PtrCheck(*it))
-			return false;
-		if (TCppObjectSearchAndSortUserFunc<Item, D>(*it, data, &rD) != 0)
-			return false;
-		return true;
 	}
 	Iterator FindSorted(ConstPtr(Item) data)
 	{

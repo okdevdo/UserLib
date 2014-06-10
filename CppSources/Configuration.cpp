@@ -789,7 +789,7 @@ WBool CMapConfiguration::GetRawValue(ConstRef(CStringLiteral) _name, Ref(CString
 	MapItem item(CStringBuffer(__FILE__LINE__ _name));
 	MapItems::Iterator it = m_mapItems.FindSorted(&item);
 
-	if (!(m_mapItems.MatchSorted(it, &item)))
+	if (!it)
 		return false;
 	_value = (*it)->get_Value();
 	return true;
@@ -803,7 +803,7 @@ WBool CMapConfiguration::SetRawValue(ConstRef(CStringLiteral) _name, ConstRef(CS
 	Ptr(MapItem) item = OK_NEW_OPERATOR MapItem(CStringBuffer(__FILE__LINE__ _name), _value);
 	MapItems::Iterator it = m_mapItems.FindSorted(item);
 
-	if (!(m_mapItems.MatchSorted(it, item)))
+	if (!it)
 	{
 		if (_value.IsEmpty())
 		{
@@ -849,7 +849,7 @@ WBool CMapConfiguration::AddValue(ConstRef(CStringLiteral) _name, ConstRef(CStri
 	Ptr(MapItem) item = OK_NEW_OPERATOR MapItem(tmp, _value);
 	MapItems::Iterator it = m_mapItems.FindSorted(item);
 
-	if (!(m_mapItems.MatchSorted(it, item)))
+	if (!it)
 	{
 		m_mapItems.InsertSorted(item);
 		return true;

@@ -139,7 +139,7 @@ private:
  *  \class CArchiveProperty
  *  \brief To extract arbitrary data from an archive, this class is defined.
  */
-class CPPSOURCES_API CArchiveProperty
+class CPPSOURCES_API CArchiveProperty: public CCppObject
 {
 public:
     /**
@@ -148,16 +148,24 @@ public:
 	 *  \details Initializes the object.
 	 */
 	CArchiveProperty(): m_name(), m_value(0), m_isNull(true) {}
-    /**
-	 *  \brief Constructor
-	 *  
-	 *  \param [in] name name of the property
-	 *  \param [in] value value of the property
-	 *  
-	 *  \details Initializes the object.
-	 */
-	CArchiveProperty(CStringLiteral name, sqword value): m_name(name), m_value(value), m_isNull(false) {}
-    /**
+	/**
+	*  \brief Constructor
+	*
+	*  \param [in] name name of the property
+	*
+	*  \details Initializes the object.
+	*/
+	CArchiveProperty(CStringLiteral name) : m_name(name), m_value(0), m_isNull(true) {}
+	/**
+	*  \brief Constructor
+	*
+	*  \param [in] name name of the property
+	*  \param [in] value value of the property
+	*
+	*  \details Initializes the object.
+	*/
+	CArchiveProperty(CStringLiteral name, sqword value) : m_name(name), m_value(value), m_isNull(false) {}
+	/**
 	 *  \brief Copy constructor
 	 *  
 	 *  \param [in] copy object to be copied
@@ -165,6 +173,10 @@ public:
 	 *  \details Initializes the object.
 	 */
 	CArchiveProperty(ConstRef(CArchiveProperty) copy): m_name(copy.m_name), m_value(copy.m_value), m_isNull(copy.m_isNull) {}
+	/**
+	 *  \brief Destructor
+	 */
+	virtual ~CArchiveProperty() {}
 
 	/**
 	 *  \brief Assignment operator
@@ -183,7 +195,7 @@ public:
 	 *  
 	 *  \details Getter name of the property.
 	 */
-	__inline CStringLiteral key() const { return m_name; }
+	__inline CStringLiteral name() const { return m_name; }
 	/**
 	 *  \brief Getter value of the property
 	 *  
@@ -254,7 +266,32 @@ public:
 	void ClearProperties();
 
 protected:
-	CHashLinkedListT<CArchiveProperty, CStringLiteral, HashFunctorString> m_properties;
+	class TArchivePropertyHashFunctor
+	{
+	public:
+		TArchivePropertyHashFunctor(sdword cnt) : hs(cnt) {}
+
+		sdword operator()(ConstPtr(CArchiveProperty) p) const
+		{
+			return hs(p->name());
+		}
+
+	protected:
+		HashFunctorString hs;
+	};
+
+	class TArchivePropertyLessFunctor
+	{
+	public:
+		bool operator()(ConstPtr(CArchiveProperty) p1, ConstPtr(CArchiveProperty) p2) const
+		{
+			return p1->name().LT(p2->name());
+		}
+	};
+
+	typedef CDataHashLinkedListT<CArchiveProperty, TArchivePropertyHashFunctor, TArchivePropertyLessFunctor> TArchiveProperties;
+
+	TArchiveProperties m_properties;
 
 private:
 	CArchiveProperties(ConstRef(CArchiveProperties));

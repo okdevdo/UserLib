@@ -85,7 +85,7 @@ void CPackageInfoBTreeFilterOutput::write(Ref(CByteBuffer) outputbuf)
 			m_search.SetPackageName(tmp);
 			CPackageInfoBTree::Iterator itP = m_btree.FindSorted(&m_search);
 
-			if (m_btree.MatchSorted(itP, &m_search))
+			if (itP)
 				m_current = *itP;
 			else
 			{

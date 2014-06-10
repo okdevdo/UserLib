@@ -185,7 +185,7 @@ void CHtmlPage::ReplaceImages()
 					ServerItems::Iterator itS = _serverItems.FindSorted(&serverItem);
 					ServerItem* pServerItem = nullptr;
 
-					if (_serverItems.MatchSorted(itS, &serverItem))
+					if (itS)
 						pServerItem = (*itS);
 					else
 					{
@@ -202,7 +202,7 @@ void CHtmlPage::ReplaceImages()
 						ResourceItems::Iterator itR = pServerItem->_items.FindSorted(&resourceItem);
 						ResourceItem* pResourceItem = nullptr;
 
-						if (pServerItem->_items.MatchSorted(itR, &resourceItem))
+						if (itR)
 							pResourceItem = *itR;
 						else
 						{
@@ -424,12 +424,12 @@ bool CHtmlPage::GetAssocPath(ConstRef(CStringBuffer) url, Ref(CFilePath) path)
 	ServerItem sItem(vUrl.get_Server());
 	ServerItems::Iterator itS = _serverItems.FindSorted(&sItem);
 
-	if (_serverItems.MatchSorted(itS, &sItem))
+	if (itS)
 	{
 		ResourceItem rItem(vUrl.get_Resource());
 		ResourceItems::Iterator itR = (*itS)->_items.FindSorted(&rItem);
 
-		if ((*itS)->_items.MatchSorted(itR, &rItem))
+		if (itR)
 		{
 			path = (*itR)->_filePath;
 			(*itR)->_updated = true;

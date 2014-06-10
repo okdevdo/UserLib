@@ -1163,7 +1163,7 @@ void CServiceManager::Open(CConstPointer name, CService** pItem)
 	Ptr(CService) pSearchData = OK_NEW_OPERATOR CService(CStringBuffer(__FILE__LINE__ name));
 	CServices::Iterator it = _Services.FindSorted(pSearchData);
 
-	if (_Services.MatchSorted(it, pSearchData))
+	if (it)
 	{
 		*pItem = *it;
 		(*pItem)->Open();

@@ -34,9 +34,9 @@ static void TestFile()
 
 	Ptr(CFile) f = OK_NEW_OPERATOR CStreamFile;
 	CFile::TFileSize fsz;
-	CFilePath fname(__FILE__LINE__ _T("Test.dat"));
-	CFilePath fname1(__FILE__LINE__ _T("Test1.dat"));
-	CFilePath fname2(__FILE__LINE__ _T("Test2.dat"));
+	CFilePath fname(__FILE__LINE__ _T("TestFile.dat"));
+	CFilePath fname1(__FILE__LINE__ _T("TestFil1.dat"));
+	CFilePath fname2(__FILE__LINE__ _T("TestFil2.dat"));
 	CStringBuffer s(__FILE__LINE__ _T("Testdaten"));
 
 	try
@@ -56,7 +56,7 @@ static void TestFile()
 	catch (CBaseException* ex)
 	{
 		CERR << ex->GetExceptionMessage() << endl;
-		WriteErrorTestFile(1, _T("%s"), ex->GetExceptionMessage().GetString());
+		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("%s"), ex->GetExceptionMessage().GetString());
 	}
 	WriteSuccessTestFile(1);
 
@@ -70,13 +70,13 @@ static void TestFile()
 			WriteTestFile(2, _T("Directory-Eintrag fuer '%s' existiert."), fname.get_Path().GetString(), fsz);
 			WriteTestFile(2, _T("Directory-Eintrag fuer '%s' weist %lld bytes aus."), it.get_Name().GetString(), it.get_FileSize());
 			if (Castsqword(fsz) != it.get_FileSize())
-				WriteErrorTestFile(2, _T("Sizes differ: FileSize=%lld, DirEntry=%lld"), fsz, it.get_FileSize());
+				WriteErrorTestFile(__FILE__, __LINE__, 2, _T("Sizes differ: FileSize=%lld, DirEntry=%lld"), fsz, it.get_FileSize());
 		}
 	}
 	catch (CBaseException* ex)
 	{
 		CERR << ex->GetExceptionMessage() << endl;
-		WriteErrorTestFile(2, _T("%s"), ex->GetExceptionMessage().GetString());
+		WriteErrorTestFile(__FILE__, __LINE__, 2, _T("%s"), ex->GetExceptionMessage().GetString());
 	}
 	WriteSuccessTestFile(2);
 
@@ -100,12 +100,12 @@ static void TestFile()
 			(c != _T('ü'))
 #endif
 			|| (s.Compare(CStringLiteral(fbuf)) != 0))
-			WriteErrorTestFile(3, _T("Content differs."));
+			WriteErrorTestFile(__FILE__, __LINE__, 3, _T("Content differs."));
 	}
 	catch (CBaseException* ex)
 	{
 		CERR << ex->GetExceptionMessage() << endl;
-		WriteErrorTestFile(3, _T("%s"), ex->GetExceptionMessage().GetString());
+		WriteErrorTestFile(__FILE__, __LINE__, 3, _T("%s"), ex->GetExceptionMessage().GetString());
 	}
 	TFfree(fbuf);
 	f->release();
@@ -124,7 +124,7 @@ static void TestFile()
 	catch (CBaseException* ex)
 	{
 		CERR << ex->GetExceptionMessage() << endl;
-		WriteErrorTestFile(4, _T("%s"), ex->GetExceptionMessage().GetString());
+		WriteErrorTestFile(__FILE__, __LINE__, 4, _T("%s"), ex->GetExceptionMessage().GetString());
 	}
 	WriteSuccessTestFile(4);
 
@@ -145,12 +145,12 @@ static void TestFile()
 		WriteTestFile(5, _T("Aus File '%s' wurden %ld bytes gelesen. Buffer=%s"), fname2.get_Path().GetString(), sbuf.GetLength(), sbuf.GetString());
 
 		if (sbuf.Compare(CStringLiteral(_T("TestTest1"))) != 0)
-			WriteErrorTestFile(5, _T("Content differs."));
+			WriteErrorTestFile(__FILE__, __LINE__, 5, _T("Content differs."));
 	}
 	catch (CBaseException* ex)
 	{
 		CERR << ex->GetExceptionMessage() << endl;
-		WriteErrorTestFile(5, _T("%s"), ex->GetExceptionMessage().GetString());
+		WriteErrorTestFile(__FILE__, __LINE__, 5, _T("%s"), ex->GetExceptionMessage().GetString());
 	}
 	d1->release();
 	d->release();
@@ -173,17 +173,17 @@ static void TestStringBuffer()
 
 	result = testScanString.ScanString(_T("%10s %d %llx %6c %lf"), vTestString, 11, &vTestZahl, &vTestZahl2, vChars, 6, &vTestZahl3);
 	if (result != Cast(sdword, testScanString.GetLength()))
-		WriteErrorTestFile(1, _T("result=%ld != testScanString.GetLength()=%ld"), result, testScanString.GetLength());
+		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("result=%ld != testScanString.GetLength()=%ld"), result, testScanString.GetLength());
 	if (s_strcmp(vTestString, _T("TestString")) != 0)
-		WriteErrorTestFile(1, _T("vTestString=%s!=TestString"), vTestString);
+		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("vTestString=%s!=TestString"), vTestString);
 	if (vTestZahl != 123456)
-		WriteErrorTestFile(1, _T("vTestZahl=%d!=123456"), vTestZahl);
+		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("vTestZahl=%d!=123456"), vTestZahl);
 	if (vTestZahl2 != 0xA67C)
-		WriteErrorTestFile(1, _T("vTestZahl2=%lld!=0xA67C"), vTestZahl2);
+		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("vTestZahl2=%lld!=0xA67C"), vTestZahl2);
 	if (s_strncmp(vChars, _T("chchch"), 6) != 0)
-		WriteErrorTestFile(1, _T("Chars=%c%c%c%c%c%c!=chchch"), (int)(vChars[0]), (int)(vChars[1]), (int)(vChars[2]), (int)(vChars[3]), (int)(vChars[4]), (int)(vChars[5]));
+		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("Chars=%c%c%c%c%c%c!=chchch"), (int)(vChars[0]), (int)(vChars[1]), (int)(vChars[2]), (int)(vChars[3]), (int)(vChars[4]), (int)(vChars[5]));
 	if (vTestZahl3 != 1.2345)
-		WriteErrorTestFile(1, _T("vTestZahl3=%f!=1.2345"), vTestZahl3);
+		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("vTestZahl3=%f!=1.2345"), vTestZahl3);
 	WriteSuccessTestFile(1);
 
 	CloseTestFile();
@@ -198,11 +198,11 @@ static void TestConfiguration()
 
 	cnt = theApp->config()->GetUserValues(_T("HttpServerService.AddUrls"), _T("XTest"), values);
 	if (cnt != 2)
-		WriteErrorTestFile(1, _T("cnt != 2"));
+		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("cnt != 2"));
 
 	cnt = theApp->config()->GetUserValues(_T("HttpServerService.LoggingFields"), _T("XTest"), values);
 	if (cnt != 27)
-		WriteErrorTestFile(1, _T("cnt != 27"));
+		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("cnt != 27"));
 	WriteSuccessTestFile(1);
 
 	CloseTestFile();
@@ -230,7 +230,7 @@ static void TestDateTime()
 	{
 		t0.GetTimeString(sBuf0);
 		t1.GetTimeString(sBuf1);
-		WriteErrorTestFile(1, _T("%s != %s"), sBuf0.GetString(), sBuf1.GetString());
+		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("%s != %s"), sBuf0.GetString(), sBuf1.GetString());
 	}
 
 	t0.Now(CDateTime::LocalTime);
@@ -242,7 +242,7 @@ static void TestDateTime()
 	{
 		t0.GetTimeString(sBuf0);
 		t1.GetTimeString(sBuf1);
-		WriteErrorTestFile(1, _T("%s != %s"), sBuf0.GetString(), sBuf1.GetString());
+		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("%s != %s"), sBuf0.GetString(), sBuf1.GetString());
 	}
 
 	WriteSuccessTestFile(1);
@@ -354,7 +354,7 @@ static void TestHashBuffer()
 		buf.Finish();
 		tmp.SetString(__FILE__LINE__ tests_md2[i].digest);
 		if (buf != tmp)
-			WriteErrorTestFile(1, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
 	}
 	WriteSuccessTestFile(1);
 
@@ -365,7 +365,7 @@ static void TestHashBuffer()
 		buf.Finish();
 		tmp.SetString(__FILE__LINE__ tests_md4[i].digest);
 		if (buf != tmp)
-			WriteErrorTestFile(2, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
+			WriteErrorTestFile(__FILE__, __LINE__, 2, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
 	}
 	WriteSuccessTestFile(2);
 
@@ -376,7 +376,7 @@ static void TestHashBuffer()
 		buf.Finish();
 		tmp.SetString(__FILE__LINE__ tests_md5[i].digest);
 		if (buf != tmp)
-			WriteErrorTestFile(3, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
+			WriteErrorTestFile(__FILE__, __LINE__, 3, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
 	}
 	WriteSuccessTestFile(3);
 
@@ -387,7 +387,7 @@ static void TestHashBuffer()
 		buf.Finish();
 		tmp.SetString(__FILE__LINE__ tests_sha1[i].digest);
 		if (buf != tmp)
-			WriteErrorTestFile(4, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
+			WriteErrorTestFile(__FILE__, __LINE__, 4, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
 	}
 	buf.Init(3);
 	for (j = 0; j < 1000000; ++j)
@@ -395,7 +395,7 @@ static void TestHashBuffer()
 	buf.Finish();
 	tmp.SetString(__FILE__LINE__ tests_sha1[i].digest);
 	if (buf != tmp)
-		WriteErrorTestFile(4, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
+		WriteErrorTestFile(__FILE__, __LINE__, 4, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
 	WriteSuccessTestFile(4);
 
 	{
@@ -410,7 +410,7 @@ static void TestHashBuffer()
 			buf1.Finish();
 			tmp.SetString(__FILE__LINE__ tests_sha1[i].digest);
 			if (buf1 != tmp)
-				WriteErrorTestFile(5, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
+				WriteErrorTestFile(__FILE__, __LINE__, 5, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
 		}
 		{
 			CByteBuffer buf2(__FILE__LINE__ CastAny(BConstPointer, "a"), 1);
@@ -421,7 +421,7 @@ static void TestHashBuffer()
 			buf1.Finish();
 			tmp.SetString(__FILE__LINE__ tests_sha1[i].digest);
 			if (buf1 != tmp)
-				WriteErrorTestFile(5, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
+				WriteErrorTestFile(__FILE__, __LINE__, 5, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
 		}
 		WriteSuccessTestFile(5);
 	}
@@ -433,7 +433,7 @@ static void TestHashBuffer()
 		buf.Finish();
 		tmp.SetString(__FILE__LINE__ tests_sha224[i].digest);
 		if (buf != tmp)
-			WriteErrorTestFile(6, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
+			WriteErrorTestFile(__FILE__, __LINE__, 6, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
 	}
 	WriteSuccessTestFile(6);
 
@@ -444,7 +444,7 @@ static void TestHashBuffer()
 		buf.Finish();
 		tmp.SetString(__FILE__LINE__ tests_sha256[i].digest);
 		if (buf != tmp)
-			WriteErrorTestFile(7, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
+			WriteErrorTestFile(__FILE__, __LINE__, 7, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
 	}
 	WriteSuccessTestFile(7);
 
@@ -455,7 +455,7 @@ static void TestHashBuffer()
 		buf.Finish();
 		tmp.SetString(__FILE__LINE__ tests_sha384[i].digest);
 		if (buf != tmp)
-			WriteErrorTestFile(8, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
+			WriteErrorTestFile(__FILE__, __LINE__, 8, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
 	}
 	WriteSuccessTestFile(8);
 
@@ -466,7 +466,7 @@ static void TestHashBuffer()
 		buf.Finish();
 		tmp.SetString(__FILE__LINE__ tests_sha512[i].digest);
 		if (buf != tmp)
-			WriteErrorTestFile(9, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
+			WriteErrorTestFile(__FILE__, __LINE__, 9, _T("Digest Mismatch: got %s, expected %s"), buf.GetHexBuffer().GetString(), tmp.GetString());
 	}
 	WriteSuccessTestFile(9);
 
@@ -558,7 +558,7 @@ static void TestAesCryptFilter(int algorithm, int testcase, ConstPtr(AES_TEST_ST
 
 		seout.convertToHex(eout);
 		sdata.convertToHex(pOutput1->get_data());
-		WriteErrorTestFile(testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata.GetString(), seout.GetString());
+		WriteErrorTestFile(__FILE__, __LINE__, testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata.GetString(), seout.GetString());
 	}
 
 	CCppObjectPtr<CByteFilterInput> pInput2 = OK_NEW_OPERATOR CByteFilterInput(eout);
@@ -579,7 +579,7 @@ static void TestAesCryptFilter(int algorithm, int testcase, ConstPtr(AES_TEST_ST
 
 		sdata1.convertToHex(data);
 		sdata2.convertToHex(pOutput2->get_data());
-		WriteErrorTestFile(testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata2.GetString(), sdata1.GetString());
+		WriteErrorTestFile(__FILE__, __LINE__, testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata2.GetString(), sdata1.GetString());
 	}
 	WriteSuccessTestFile(testcase);
 }
@@ -609,7 +609,7 @@ static void TestAesCryptFilter1(int algorithm, int testcase, ConstPtr(AES_TEST_S
 
 		seout.convertToHex(eout);
 		sdata.convertToHex(pOutput1->get_data());
-		WriteErrorTestFile(testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata.GetString(), seout.GetString());
+		WriteErrorTestFile(__FILE__, __LINE__, testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata.GetString(), seout.GetString());
 	}
 
 	CCppObjectPtr<CByteFilterInput> pInput2 = OK_NEW_OPERATOR CByteFilterInput(eout);
@@ -630,7 +630,7 @@ static void TestAesCryptFilter1(int algorithm, int testcase, ConstPtr(AES_TEST_S
 
 		sdata1.convertToHex(eout);
 		sdata2.convertToHex(pOutput2->get_data());
-		WriteErrorTestFile(testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata2.GetString(), sdata1.GetString());
+		WriteErrorTestFile(__FILE__, __LINE__, testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata2.GetString(), sdata1.GetString());
 	}
 	WriteSuccessTestFile(testcase);
 }
@@ -660,7 +660,7 @@ static void TestCryptFilter8(int algorithm, int testcase, ConstPtr(Crypt8_TEST_S
 
 		seout.convertToHex(eout);
 		sdata.convertToHex(pOutput1->get_data());
-		WriteErrorTestFile(testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata.GetString(), seout.GetString());
+		WriteErrorTestFile(__FILE__, __LINE__, testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata.GetString(), seout.GetString());
 	}
 
 	CCppObjectPtr<CByteFilterInput> pInput2 = OK_NEW_OPERATOR CByteFilterInput(eout);
@@ -681,7 +681,7 @@ static void TestCryptFilter8(int algorithm, int testcase, ConstPtr(Crypt8_TEST_S
 
 		sdata1.convertToHex(data);
 		sdata2.convertToHex(pOutput2->get_data());
-		WriteErrorTestFile(testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata2.GetString(), sdata1.GetString());
+		WriteErrorTestFile(__FILE__, __LINE__, testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata2.GetString(), sdata1.GetString());
 	}
 	WriteSuccessTestFile(testcase);
 }
@@ -709,7 +709,7 @@ static void TestTwofishCryptFilter(int algorithm, int testcase, ConstPtr(Twofish
 
 		seout.convertToHex(eout);
 		sdata.convertToHex(pOutput1->get_data());
-		WriteErrorTestFile(testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata.GetString(), seout.GetString());
+		WriteErrorTestFile(__FILE__, __LINE__, testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata.GetString(), seout.GetString());
 	}
 
 	CCppObjectPtr<CByteFilterInput> pInput2 = OK_NEW_OPERATOR CByteFilterInput(eout);
@@ -729,7 +729,7 @@ static void TestTwofishCryptFilter(int algorithm, int testcase, ConstPtr(Twofish
 
 		sdata1.convertToHex(data);
 		sdata2.convertToHex(pOutput2->get_data());
-		WriteErrorTestFile(testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata2.GetString(), sdata1.GetString());
+		WriteErrorTestFile(__FILE__, __LINE__, testcase, _T("Cipher Mismatch: got %s, expected %s"), sdata2.GetString(), sdata1.GetString());
 	}
 	WriteSuccessTestFile(testcase);
 }
@@ -1603,18 +1603,163 @@ static void TestCryptFilter()
 	CloseTestFile();
 }
 
+#if 0
+static void TestSpecialBlowfishImport(void)
+{
+	CFilePath finp(__FILE__LINE__ _T("BlowfishTestVectorRaw.txt"));
+	CFilePath foutp(__FILE__LINE__ _T("BlowfishTestVector8.rsp"));
+	CCppObjectPtr<CFile> inp = OK_NEW_OPERATOR CStreamFile(finp, true, false, CFile::BinaryFile_NoEncoding);
+	CCppObjectPtr<CFile> outp = OK_NEW_OPERATOR CStreamFile;
+	CDataVectorT<CStringBuffer> data(__FILE__LINE__ 256, 128);
+	CDataVectorT<CStringBuffer>::Iterator it;
+
+	outp->Create(foutp, false, CFile::BinaryFile_NoEncoding);
+
+	CCppObjectPtr<CFilterInput> ffinp = OK_NEW_OPERATOR CFileFilterInput(inp);
+	CCppObjectPtr<CFilterOutput> ffoutp = OK_NEW_OPERATOR CStringVectorFilterOutput(data);
+	CCppObjectPtr<CFilter> ffilter = OK_NEW_OPERATOR CLineReadFilter(ffinp, ffoutp);
+	bool bFirst = true;
+	int r = 0;
+
+	ffilter->open();
+	ffilter->do_filter();
+	ffilter->close();
+
+	it = data.Begin();
+	while (it)
+	{
+		CStringBuffer tmp(*it);
+		CStringConstIterator it1(tmp);
+		CPointer keyD;
+		WULong keyDLen;
+		CPointer ptD;
+		WULong ptDLen;
+		CPointer ctD;
+		WULong ctDLen;
+
+		if (bFirst)
+		{
+			CDateTime now(CDateTime::LocalTime);
+			CStringBuffer t;
+
+			bFirst = false;
+			++it;
+			outp->Write(_T("# TestVector for Blowfish ECB\r\n# Generated "));
+			now.GetTimeString(t);
+			t.DeleteString(19, t.GetLength() - 19);
+			outp->Write(t);
+			outp->Write(_T("\r\n"));
+			continue;
+		}
+		it1.EatWord(keyD, keyDLen);
+		it1.EatWhite();
+		it1.EatWord(ptD, ptDLen);
+		it1.EatWhite();
+		it1.EatWord(ctD, ctDLen);
+
+		outp->Write(_T("\r\nCOUNT = %d\r\n"), r);
+		outp->Write(_T("KEY = %.*s\r\n"), keyDLen, keyD);
+		outp->Write(_T("PLAINTEXT = %.*s\r\n"), ptDLen, ptD);
+		outp->Write(_T("CIPHERTEXT = %.*s\r\n"), ctDLen, ctD);
+
+		++r;
+		++it;
+	}
+	outp->Close();
+}
+#endif
+
+#if 0
+static void TestSpecialDESImport(void)
+{
+	CFilePath finp(__FILE__LINE__ _T("DESTestVectorRaw.txt"));
+	CFilePath foutp(__FILE__LINE__ _T("DESTestVector8.rsp"));
+	CCppObjectPtr<CFile> inp = OK_NEW_OPERATOR CStreamFile(finp, true, false, CFile::BinaryFile_NoEncoding);
+	CCppObjectPtr<CFile> outp = OK_NEW_OPERATOR CStreamFile;
+	CDataVectorT<CStringBuffer> data(__FILE__LINE__ 256, 128);
+	CDataVectorT<CStringBuffer>::Iterator it;
+
+	outp->Create(foutp, false, CFile::BinaryFile_NoEncoding);
+
+	CCppObjectPtr<CFilterInput> ffinp = OK_NEW_OPERATOR CFileFilterInput(inp);
+	CCppObjectPtr<CFilterOutput> ffoutp = OK_NEW_OPERATOR CStringVectorFilterOutput(data);
+	CCppObjectPtr<CFilter> ffilter = OK_NEW_OPERATOR CLineReadFilter(ffinp, ffoutp);
+	bool bFirst = true;
+	int r = 0;
+
+	ffilter->open();
+	ffilter->do_filter();
+	ffilter->close();
+
+	it = data.Begin();
+	while (it)
+	{
+		CStringBuffer tmp(*it);
+		CStringConstIterator it1(tmp);
+		CPointer keyD;
+		WULong keyDLen;
+		CPointer ptD;
+		WULong ptDLen;
+		CPointer ctD;
+		WULong ctDLen;
+
+		if (bFirst)
+		{
+			CDateTime now(CDateTime::LocalTime);
+			CStringBuffer t;
+
+			bFirst = false;
+			++it;
+			outp->Write(_T("# TestVector for DES\r\n# Generated "));
+			now.GetTimeString(t);
+			t.DeleteString(19, t.GetLength() - 19);
+			outp->Write(t);
+			outp->Write(_T("\r\n"));
+			continue;
+		}
+		it1.EatWord(keyD, keyDLen);
+		it1.EatWhite();
+		it1.EatWord(ptD, ptDLen);
+		it1.EatWhite();
+		it1.EatWord(ctD, ctDLen);
+
+		outp->Write(_T("\r\nCOUNT = %d\r\n"), r);
+		outp->Write(_T("KEY = %.*s\r\n"), keyDLen, keyD);
+		outp->Write(_T("PLAINTEXT = %.*s\r\n"), ptDLen, ptD);
+		outp->Write(_T("CIPHERTEXT = %.*s\r\n"), ctDLen, ctD);
+
+		++r;
+		++it;
+	}
+	outp->Close();
+}
+#endif
+
 void TestCppSources()
 {
-	COUT << _T("******************** TestFile *****************************\n") << endl;
+	COUT << _T("******************** TestFile *****************************") << endl;
+	COUT << _T("Writes and reads test files in the current directory.") << endl;
+	COUT << _T("Standard Test Procedure.") << endl;
 	TestFile();
-	COUT << _T("******************** TestStringBuffer ************************\n") << endl;
+	COUT << _T("******************** TestStringBuffer ************************") << endl;
+	COUT << _T("Tests CStringBuffer::ScanString.") << endl;
+	COUT << _T("Standard Test Procedure.") << endl;
 	TestStringBuffer();
-	COUT << _T("******************** TestConfiguration *********************\n") << endl;
+	COUT << _T("******************** TestConfiguration *********************") << endl;
+	COUT << _T("Tests CAbstractConfiguration::GetUserValues.") << endl;
+	COUT << _T("XTest needs a configuration file. Entries 'HttpServerService.AddUrls' and 'HttpServerService.LoggingFields' have to be defined.") << endl;
+	COUT << _T("Standard Test Procedure.") << endl;
 	TestConfiguration();
-	COUT << _T("******************** TestDateTime **************************\n") << endl;
+	COUT << _T("******************** TestDateTime **************************") << endl;
+	COUT << _T("Tests local (german) time and conversion to UTC time.") << endl;
+	COUT << _T("Standard Test Procedure.") << endl;
 	TestDateTime();
-	COUT << _T("******************** TestHashBuffer **************************\n") << endl;
+	COUT << _T("******************** TestHashBuffer **************************") << endl;
+	COUT << _T("Tests digest algorithm. Test data is hard coded.") << endl;
+	COUT << _T("Standard Test Procedure.") << endl;
 	TestHashBuffer();
-	COUT << _T("******************** TestCryptFilter **************************\n") << endl;
+	COUT << _T("******************** TestCryptFilter **************************") << endl;
+	COUT << _T("Tests cryptographic algorithms. 'AesTestVector' and 'DesTestVector' directories must be supplied. Additionally files 'BlowfishTestVector8.rsp', 'TwofishTestVector*.rsp' and 'DESTestVector8.rsp' will be used for tests") << endl;
+	COUT << _T("Standard Test Procedure.") << endl;
 	TestCryptFilter();
 }

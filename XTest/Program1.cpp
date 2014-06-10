@@ -24,6 +24,66 @@
 #include "FlagRegister.h"
 #include "DataHashtable.h"
 #include "DataGraph.h"
+#include "DataDoubleLinkedList.h"
+#include "DataArray.h"
+#include "DataBinaryTree.h"
+#include "DataBTree.h"
+#include <search.h>
+
+class TestFuncUIntLessFunctor
+{
+public:
+	bool operator()(ConstPtr(unsigned int) r1, ConstPtr(unsigned int) r2) const
+	{
+		return *r1 < *r2;
+	}
+};
+
+class TestFuncUIntHashFunctor
+{
+public:
+	TestFuncUIntHashFunctor(sdword max) : hd(max) {}
+
+	sdword operator()(ConstPtr(unsigned int) p1) const
+	{
+		return hd(*p1);
+	}
+
+private:
+	HashFunctorDigit hd;
+};
+
+typedef CDataVectorT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntVector;
+typedef CDataDoubleLinkedListT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntDoubleLinkedList;
+typedef CDataArrayT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntArray;
+typedef CDataAVLBinaryTreeT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntAVLBinaryTree;
+typedef CDataRBBinaryTreeT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntRBBinaryTree;
+typedef CDataBTreeT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntBTree;
+typedef CDataHashLinkedListT<unsigned int, TestFuncUIntHashFunctor, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntHashLinkedList;
+
+static int bsearch_cb(Pointer context, ConstPointer key, ConstPointer arrayitem)
+{
+	ConstPtr(unsigned int) pkey = CastAnyConstPtr(unsigned int, key);
+	ConstPtr(unsigned int) parrayitem = CastAnyConstPtr(unsigned int, arrayitem);
+
+	if (*pkey > *parrayitem)
+		return 1;
+	if (*pkey < *parrayitem)
+		return -1;
+	return 0;
+}
+
+static int __cdecl TestCompareSRand(const void * pA, const void * pB)
+{
+	unsigned int* piA = (unsigned int*)pA;
+	unsigned int* piB = (unsigned int*)pB;
+
+	if (*piA < *piB)
+		return -1;
+	if (*piA > *piB)
+		return 1;
+	return 0;
+}
 
 static void LoadTestData(CConstPointer _TestFunction, unsigned int *numbers, unsigned int cnt)
 {
@@ -97,112 +157,10 @@ static void LoadTestData(CConstPointer _TestFunction, unsigned int *numbers, uns
 #ifdef OK_COMP_MSC
 				errno_t err = rand_s(&number);
 				if (err != 0)
-					WriteErrorTestFile(1, _T("rand_s failed"));
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("rand_s failed"));
 				numbers[i] = number;
 #endif
 				_DataFile->Write(_T("%u\r\n"), number);
-			}
-		}
-		_DataFile->Close();
-	}
-	catch (CBaseException* ex)
-	{
-		CERR << ex->GetExceptionMessage() << endl;
-	}
-}
-
-static void LoadTestData64(CConstPointer _TestFunction, ULongPointer *numbers, unsigned int cnt)
-{
-	CCppObjectPtr<CFile> _DataFile;
-
-#ifdef OK_CPU_32BIT
-	CFilePath fname(__FILE__LINE__ _T("DataFiles"));
-#endif
-#ifdef OK_CPU_64BIT
-	CFilePath fname(__FILE__LINE__ _T("DataFiles64"));
-#endif
-
-	fname.MakeDirectory();
-
-	try
-	{
-		if (CDirectoryIterator::DirectoryExists(fname) < 0)
-			CDirectoryIterator::MakeDirectory(fname);
-	}
-	catch (CBaseException* ex)
-	{
-		CERR << ex->GetExceptionMessage() << endl;
-		return;
-	}
-
-	CStringBuffer sname(__FILE__LINE__ _TestFunction);
-	bool fExist = false;
-	ULongPointer number;
-	unsigned int i;
-#ifdef OK_COMP_GNUC
-	unsigned int j;
-#endif
-
-	for (i = 0; i < cnt; ++i)
-		numbers[i] = 0;
-	sname.AppendString(_T(".num.dat"));
-	fname.set_Filename(sname);
-	_DataFile = new CStreamFile;
-
-	try
-	{
-		fExist = CDirectoryIterator::FileExists(fname);
-		if (fExist)
-		{
-			_DataFile->Open(fname, true, false, CFile::BinaryFile_NoEncoding);
-			i = 0;
-			while (!(_DataFile->IsEOF()))
-			{
-#ifdef OK_CPU_32BIT
-				_DataFile->Read(_T("%u\r\n"), &number);
-#endif
-#ifdef OK_CPU_64BIT
-				_DataFile->Read(_T("%llu\r\n"), &number);
-#endif
-				numbers[i++] = number;
-				if (i >= cnt)
-					break;
-			}
-		}
-		else
-		{
-			_DataFile->Create(fname, false, CFile::BinaryFile_NoEncoding);
-			srand((unsigned)time(nullptr));
-			for (i = 0; i < cnt; ++i)
-			{
-#ifdef OK_COMP_GNUC
-				bool bOk = true;
-
-				number = numbers[i] = (ULongPointer)rand();
-				while (bOk)
-				{
-					bOk = false;
-					for (j = 0; j < i; ++j)
-					if (numbers[j] == number) {
-						number = numbers[i] = rand();
-						bOk = true;
-						break;
-					}
-				}
-#endif
-#ifdef OK_COMP_MSC
-				number = 0;
-				errno_t err = rand_s(CastAnyPtr(unsigned int, &number));
-				if (err != 0)
-					WriteErrorTestFile(1, _T("rand_s failed"));
-				numbers[i] = number;
-#endif
-#ifdef OK_CPU_32BIT
-				_DataFile->Write(_T("%u\r\n"), number);
-#endif
-#ifdef OK_CPU_64BIT
-				_DataFile->Write(_T("%llu\r\n"), number);
-#endif
 			}
 		}
 		_DataFile->Close();
@@ -232,21 +190,18 @@ static void TestFlagRegister()
 	CFlagRegister::value_type i = r2.findnext();
 	CFlagRegister::value_type ix = 0;
 
-	if (i != 0)
-		WriteErrorTestFile(1, _T("Start of Loop: i != 0"));
+	ASSERTTESTFILE(1, (i == 0), _T("Start of loop"));
 	while (i != CFlagRegister::notfound)
 	{
 		i = r2.findnext(true, i + 1);
 		if (i != CFlagRegister::notfound)
 		{
-			if (Castdword((i % 16)) != 0)
-				WriteErrorTestFile(1, _T("Inside Loop: (i % 16) != 0"));
-			if (Castdword((i / 16)) != Castdword(++ix))
-				WriteErrorTestFile(1, _T("Inside Loop: (i / 16) != ix"));
+			++ix;
+			ASSERTTESTFILE(1, (Castdword(i % 16) == 0), _T("Inside loop"));
+			ASSERTTESTFILE(1, (Castdword(i / 16) == Castdword(ix)), _T("Inside loop"));
 		}
 	}
-	if (ix != 63)
-		WriteErrorTestFile(1, _T("End of Loop: ix != 63"));
+	ASSERTTESTFILE(1, (ix == 63), _T("End of loop"));
 	TFfree(p1);
 	TFfree(p2);
 	WriteSuccessTestFile(1);
@@ -258,60 +213,642 @@ static void TestHashLinkedListT()
 {
 	OpenTestFile(_T("TestHashLinkedListT"));
 
-	CHashLinkedListT<Item, unsigned int, HashFunctorDigit> _st(100000);
+	TestFuncUIntHashLinkedList list(__FILE__LINE__ 100, TestFuncUIntHashFunctor(100));
+	TestFuncUIntHashLinkedList::Iterator it;
 	int i;
-	Item result;
-	unsigned int* numbers = new unsigned int[100000];
+	unsigned int numbers[120];
 
-	LoadTestData(_T("TestHashLinkedListT"), numbers, 100000);
-	for (i = 0; i < 100000; ++i)
-		_st.insert(Item(numbers[i], i));
-
-//	qsort(numbers, 100000, sizeof(unsigned int), TestCompareSRand);
-
-	for ( i = 0; i < 100000; ++i )
+	LoadTestData(_T("TestHashLinkedListT"), numbers, 120);
+	for (i = 0; i < 120; ++i)
 	{
-		result = _st.search(numbers[i]);
-		if (!(result == Item(numbers[i], i)))
-			WriteErrorTestFile(1, _T("result != Item(numbers[i], i)"));
+		it = list.InsertSorted(numbers + i);
+		ASSERTTESTFILE(1, (it), _T("Test iterator"));
+		ASSERTTESTFILE(1, (**it == numbers[i]), _T("Test iterator value"));
 	}
-	for ( i = 0; i < 100000; ++i )
-		_st.remove(numbers[i]);
-	delete[] numbers;
+	it = list.Begin();
+	i = 0;
+	while (it)
+	{
+		ASSERTTESTFILE(1, (it == list.Index(i)), _T("Test index, forward loop"));
+		++i;
+		++it;
+	}
+	ASSERTTESTFILE(1, (i == 120), _T("End of loop"));
+	it = list.Last();
+	i = 120;
+	while (it)
+	{
+		--i;
+		ASSERTTESTFILE(1, (it == list.Index(i)), _T("Test index, backward loop"));
+		--it;
+	}
+	ASSERTTESTFILE(1, (i == 0), _T("End of loop"));
+	for (i = 0; i < 120; ++i)
+	{
+		it = list.FindSorted(numbers + i);
+		ASSERTTESTFILE(1, (it), _T("Test iterator"));
+		ASSERTTESTFILE(1, (**it == numbers[i]), _T("Test iterator value"));
+	}
+	for (i = 0; i < 120; i += 2)
+		ASSERTTESTFILE(1, (list.RemoveSorted(numbers + i)), _T("Test RemoveSorted"));
+	for (i = 0; i < 120; ++i)
+	{
+		it = list.FindSorted(numbers + i);
+		if ((i % 2) == 0)
+		{
+			ASSERTTESTFILE(1, (!it), _T("Test iterator"));
+		}
+		else
+		{
+			ASSERTTESTFILE(1, (it), _T("Test iterator"));
+			ASSERTTESTFILE(1, (**it == numbers[i]), _T("Test iterator value"));
+		}
+	}
+	list.Close();
 
 	WriteSuccessTestFile(1);
 
 	CloseTestFile();
 }
 
-static void TestHashLinearExploreT()
+template <typename TListe>
+static void TestSingleKey(Ref(TListe) list, unsigned int* numbers, size_t max_n)
 {
-	OpenTestFile(_T("TestHashLinearExploreT"));
+	TListe::Iterator it;
+	TListe::Iterator it1;
+	dword i;
+	dword j;
+	dword k;
+	Ptr(unsigned int) pb;
+	Ptr(unsigned int) numbers1;
 
-	CHashLinearExploreT<Item, unsigned int, HashFunctorDigit> _st(5000);
-	int i;
-	Item result;
-	unsigned int* numbers = new unsigned int[5000];
-
-	LoadTestData(_T("TestHashLinearExploreT"), numbers, 5000);
-	for (i = 0; i < 5000; ++i)
-		_st.insert(Item(numbers[i], i));
-
-	// qsort(numbers, 5000, sizeof(unsigned int), TestCompareSRand);
-
-	for ( i = 0; i < 5000; ++i )
+	/* empty list */
+	it = list.Begin();
+	if (it)
+		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it)"));
+	it = list.Last();
+	if (it)
+		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it)"));
+	/* Append */
+	for (i = 0; i < max_n; ++i)
 	{
-		result = _st.search(numbers[i]);
-		if (!(result == Item(numbers[i], i)))
-			WriteErrorTestFile(1, _T("result != Item(numbers[i], i)"));
+		list.Append(numbers + i);
+		it = list.Begin();
+		j = 0;
+		while (it)
+		{
+			if (**it != numbers[j])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers[j]"));
+			++j;
+			++it;
+		}
+		if ((i + 1) != j)
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("((i + 1) != j)"));
+		it = list.Last();
+		j = i + 1;
+		while (it)
+		{
+			--j;
+			if (**it != numbers[j])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers[j]"));
+			--it;
+		}
+		if (j != 0)
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("j != 0"));
 	}
-	for ( i = 0; i < 5000; ++i )
-		_st.remove(numbers[i]);
-	delete[] numbers;
+	/* Remove */
+	i = 0;
+	while (list.Count() > 0)
+	{
+		list.Remove(list.Begin());
+		++i;
+		j = i;
+		it = list.Begin();
+		while (it)
+		{
+			if (**it != numbers[j])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers[j]"));
+			++j;
+			++it;
+		}
+	}
+	/* Prepend */
+	for (i = 0; i < max_n; ++i)
+	{
+		list.Prepend(numbers + i);
+		j = i + 1;
+		list.ForEach([&j, numbers](Ptr(unsigned int) p) -> bool {
+			if (*p != numbers[--j])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(*p != numbers[--j])"));
+			return true;
+		});
+		if (j != 0)
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(j != 0)"));
+		it = list.Last();
+		j = 0;
+		while (it)
+		{
+			if (**it != numbers[j])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it != numbers[j])"));
+			++j;
+			--it;
+		}
+		if (j != (i + 1))
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(j != (i + 1))"));
+	}
+	list.Clear();
+	/* InsertBefore */
+	list.Append(numbers);
+	for (i = 1; i < max_n; ++i)
+	{
+		list.InsertBefore(list.Begin(), numbers + i);
+		it = list.Begin();
+		j = i + 1;
+		while (it)
+		{
+			--j;
+			if (**it != numbers[j])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it != numbers[j])"));
+			++it;
+		}
+		if (j != 0)
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(j != 0)"));
+		it = list.Last();
+		j = 0;
+		while (it)
+		{
+			if (**it != numbers[j])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it != numbers[j])"));
+			++j;
+			--it;
+		}
+		if (j != (i + 1))
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(j != (i + 1))"));
+	}
+	list.Clear();
+	/* InsertAfter */
+	list.Append(numbers);
+	for (i = 1; i < max_n; ++i)
+	{
+		list.InsertAfter(list.Last(), numbers + i);
+		it = list.Begin();
+		j = 0;
+		while (it)
+		{
+			if (**it != numbers[j])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers[j]"));
+			++j;
+			++it;
+		}
+		if ((i + 1) != j)
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("((i + 1) != j)"));
+		it = list.Last();
+		j = i + 1;
+		while (it)
+		{
+			--j;
+			if (**it != numbers[j])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers[j]"));
+			--it;
+		}
+		if (j != 0)
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(j != 0)"));
+	}
+	list.Clear();
 
-	WriteSuccessTestFile(1);
+	/* Append + Sort */
+	numbers1 = new unsigned int[max_n];
+	for (k = 0; k < max_n; ++k)
+	{
+		for (i = 0; i < k; ++i)
+			it = list.Append(numbers + i);
 
-	CloseTestFile();
+		list.Sort();
+
+		for (i = 0; i < k; ++i)
+			numbers1[i] = numbers[i];
+		qsort(numbers1, k, sizeof(unsigned int), TestCompareSRand);
+
+		it = list.Begin();
+		i = 0;
+		while (it)
+		{
+			if (**it != numbers1[i++])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[i++]"));
+			++it;
+		}
+		if (k != i)
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(k != i)"));
+		it = list.Last();
+		i = k;
+		while (it)
+		{
+			if (**it != numbers1[--i])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[--i]"));
+			--it;
+		}
+		if (i != 0)
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(i != 0)"));
+
+		for (i = 0; i < k; ++i)
+		{
+			it = list.FindSorted(numbers + i);
+			pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb, NULL);
+			assert(NotPtrCheck(pb));
+			j = pb - numbers1;
+			while (it)
+			{
+				if (**it != numbers1[j++])
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j++]"));
+				++it;
+			}
+			if (j != k)
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(j != k)"));
+		}
+		for (i = 0; i < k; i += 2)
+			list.RemoveSorted(numbers + i);
+		for (i = 0; i < k; ++i)
+		{
+			it = list.FindSorted(numbers + i);
+			if ((i % 2) == 0)
+			{
+				if (it)
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it)"));
+			}
+			else
+			{
+				if (!it)
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(!it)"));
+				else
+				{
+					pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb, NULL);
+					assert(NotPtrCheck(pb));
+					j = pb - numbers1;
+					if (**it != numbers1[j])
+						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j]"));
+				}
+			}
+			it = list.LowerBound(numbers + i);
+			it1 = list.UpperBound(numbers + i);
+			if ((i % 2) == 0)
+			{
+				if (it != it1)
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it[%08lx:%03ld] != it1[%08lx:%03ld])"), _Lnode(Cast(LSearchResultType, it)), _Loffset(Cast(LSearchResultType, it)), _Lnode(Cast(LSearchResultType, it1)), _Loffset(Cast(LSearchResultType, it1)));
+				if (it)
+				{
+					if (**it <= numbers[i])
+						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it <= numbers[i])"));
+				}
+			}
+			else
+			{
+				if (!it)
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(!it)"));
+				if (it == it1)
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it == it1)"));
+				if (it)
+				{
+					pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb, NULL);
+					assert(NotPtrCheck(pb));
+					j = pb - numbers1;
+					if (**it != numbers1[j])
+						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j]"));
+					++it;
+					if (it != it1)
+						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it != it1)"));
+				}
+			}
+		}
+		list.Clear();
+	}
+	/* InsertSorted */
+	for (k = 0; k < max_n; ++k)
+	{
+		for (i = 0; i < k; ++i)
+			numbers1[i] = numbers[i];
+		qsort(numbers1, k, sizeof(unsigned int), TestCompareSRand);
+
+		for (i = 0; i < k; ++i)
+		{
+			it = list.InsertSorted(numbers + i);
+			if (!it)
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(!it)"));
+			else if (**it != numbers[i])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it != numbers[i])"));
+		}
+		i = 0;
+		it = list.Begin();
+		while (it)
+		{
+			if (**it != numbers1[i])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it[%08lx] != numbers1[i][%08lx])"), **it, numbers1[i]);
+			++i;
+			++it;
+		}
+		if (i != k)
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(i != k)"));
+		i = k;
+		it = list.Last();
+		while (it)
+		{
+			--i;
+			if (**it != numbers1[i])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it[%08lx] != numbers1[i][%08lx])"), **it, numbers1[i]);
+			--it;
+		}
+		if (i != 0)
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(i != 0)"));
+
+		for (i = 0; i < k; ++i)
+		{
+			it = list.FindSorted(numbers + i);
+			pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb, NULL);
+			assert(NotPtrCheck(pb));
+			j = pb - numbers1;
+			while (it)
+			{
+				if (**it != numbers1[j++])
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j++]"));
+				++it;
+			}
+			if (j != k)
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(j != k)"));
+		}
+		for (i = 0; i < k; i += 2)
+			list.RemoveSorted(numbers + i);
+		for (i = 0; i < k; ++i)
+		{
+			it = list.FindSorted(numbers + i);
+			if ((i % 2) == 0)
+			{
+				if (it)
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it)"));
+			}
+			else
+			{
+				if (!it)
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(!it)"));
+				else
+				{
+					pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb, NULL);
+					assert(NotPtrCheck(pb));
+					j = pb - numbers1;
+					if (**it != numbers1[j])
+						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j]"));
+				}
+			}
+			it = list.LowerBound(numbers + i);
+			it1 = list.UpperBound(numbers + i);
+			if ((i % 2) == 0)
+			{
+				if (it != it1)
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it[%08lx:%03ld] != it1[%08lx:%03ld])"), _Lnode(Cast(LSearchResultType, it)), _Loffset(Cast(LSearchResultType, it)), _Lnode(Cast(LSearchResultType, it1)), _Loffset(Cast(LSearchResultType, it1)));
+				if (it)
+				{
+					if (**it <= numbers[i])
+						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it <= numbers[i])"));
+				}
+			}
+			else
+			{
+				if (!it)
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(!it)"));
+				if (it == it1)
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it == it1)"));
+				if (it)
+				{
+					pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb, NULL);
+					assert(NotPtrCheck(pb));
+					j = pb - numbers1;
+					if (**it != numbers1[j])
+						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j]"));
+					++it;
+					if (it != it1)
+						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it != it1)"));
+				}
+			}
+		}
+		list.Clear();
+	}
+	delete[] numbers1;
+	list.Close();
+}
+
+template <typename TListe>
+static void TestMultipleKey(Ref(TListe) list, unsigned int* numbers, size_t max_n)
+{
+	TListe::Iterator it;
+	TListe::Iterator it1;
+	dword i;
+	dword j;
+	dword k;
+	dword l;
+	Ptr(unsigned int) pb;
+	Ptr(unsigned int) numbers1;
+
+	/* InsertSorted + multiple keys */
+	numbers1 = new unsigned int[max_n * 5];
+	for (k = 0; k < max_n; ++k)
+	{
+		for (i = 0, j = 0; i < k; ++i)
+			for (l = 0; l < 5; ++l, ++j)
+				numbers1[j] = numbers[i];
+		qsort(numbers1, k * 5, sizeof(unsigned int), TestCompareSRand);
+
+		for (i = 0, j = 0; i < k; ++i)
+			for (l = 0; l < 5; ++l, ++j)
+			{
+				it = list.InsertSorted(numbers + i);
+				if (!it)
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(!it)"));
+				else if (**it != numbers[i])
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it != numbers[i])"));
+			}
+		i = 0;
+		it = list.Begin();
+		while (it)
+		{
+			if (**it != numbers1[i])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it[%08lx] != numbers1[i][%08lx])"), **it, numbers1[i]);
+			++i;
+			++it;
+		}
+		if (i != (k * 5))
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(i != (k * 5))"));
+		i = (k * 5);
+		it = list.Last();
+		while (it)
+		{
+			--i;
+			if (**it != numbers1[i])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it[%08lx] != numbers1[i][%08lx])"), **it, numbers1[i]);
+			--it;
+		}
+		if (i != 0)
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(i != 0)"));
+
+		for (i = 0; i < k; ++i)
+		{
+			it = list.FindSorted(numbers + i);
+			pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k * 5, sizeof(unsigned int), bsearch_cb, NULL);
+			assert(NotPtrCheck(pb));
+			j = pb - numbers1;
+			while ((j > 0) && (bsearch_cb(NULL, numbers + i, numbers1 + j) == 0))
+				--j;
+			if (j > 0)
+				++j;
+			while (it)
+			{
+				if (**it != numbers1[j])
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j]"));
+				++j;
+				++it;
+			}
+			if (j != (k * 5))
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(j != (k * 5))"));
+		}
+		for (i = 0; i < k; i += 2)
+			list.RemoveSorted(numbers + i);
+		for (i = 0; i < k; ++i)
+		{
+			it = list.FindSorted(numbers + i);
+			if ((i % 2) == 0)
+			{
+				if (it)
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it)"));
+			}
+			else
+			{
+				if (!it)
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(!it)"));
+				else
+				{
+					pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k * 5, sizeof(unsigned int), bsearch_cb, NULL);
+					assert(NotPtrCheck(pb));
+					j = pb - numbers1;
+					if (**it != numbers1[j])
+						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j]"));
+				}
+			}
+			it = list.LowerBound(numbers + i);
+			it1 = list.UpperBound(numbers + i);
+			if ((i % 2) == 0)
+			{
+				if (it != it1)
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it[%08lx:%03ld] != it1[%08lx:%03ld])"), _Lnode(Cast(LSearchResultType, it)), _Loffset(Cast(LSearchResultType, it)), _Lnode(Cast(LSearchResultType, it1)), _Loffset(Cast(LSearchResultType, it1)));
+				if (it)
+				{
+					if (**it <= numbers[i])
+						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it <= numbers[i])"));
+				}
+			}
+			else
+			{
+				if (!it)
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(!it)"));
+				if (it == it1)
+					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it == it1)"));
+				if (it)
+				{
+					pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k * 5, sizeof(unsigned int), bsearch_cb, NULL);
+					assert(NotPtrCheck(pb));
+					j = pb - numbers1;
+					if (**it != numbers1[j])
+						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j]"));
+					for (l = 0; l < 5; ++l)
+						++it;
+					if (it != it1)
+						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it != it1)"));
+				}
+			}
+		}
+		list.Clear();
+	}
+	delete[] numbers1;
+	list.Close();
+}
+
+template <typename TListe>
+static void TestBinaryTree(Ref(TListe) list, unsigned int* numbers, unsigned int* numbers1, size_t max_n)
+{
+	TListe::Iterator it;
+	TListe::Iterator it1;
+	dword i;
+	dword j;
+	Ptr(unsigned int) pb;
+
+	it = list.Begin();
+	if (it)
+		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it)"));
+	it = list.Last();
+	if (it)
+		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it)"));
+	for (i = 0; i < max_n; ++i)
+	{
+		list.InsertSorted(numbers + i);
+		for (j = 0; j < (i + 1); ++j)
+			numbers1[j] = numbers[j];
+		qsort(numbers1, i + 1, sizeof(unsigned int), TestCompareSRand);
+		it = list.Begin();
+		j = 0;
+		while (it)
+		{
+			if (**it != numbers1[j++])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j++]"));
+			++it;
+		}
+		if ((i + 1) != j)
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("i != j"));
+		it = list.Last();
+		j = i + 1;
+		while (it)
+		{
+			if (**it != numbers1[--j])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[--j]"));
+			--it;
+		}
+		if (j != 0)
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("j != 0"));
+	}
+	for (i = 0; i < max_n; ++i)
+	{
+		it = list.FindSorted(numbers + i);
+		pb = (unsigned int*)bsearch_s(numbers + i, numbers1, max_n, sizeof(unsigned int), bsearch_cb, NULL);
+		assert(NotPtrCheck(pb));
+		j = pb - numbers1;
+		while (it)
+		{
+			if (**it != numbers1[j++])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j++]"));
+			++it;
+		}
+		if (j != max_n)
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(j != k)"));
+	}
+	i = 0;
+	while (list.Count() > 0)
+	{
+		list.RemoveSorted(numbers + i);
+		++i;
+		if (i > max_n)
+		{
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(i > max_n)"));
+			break;
+		}
+		for (j = i; j < max_n; ++j)
+			numbers1[j-i] = numbers[j];
+		qsort(numbers1, max_n - i, sizeof(unsigned int), TestCompareSRand);
+		j = 0;
+		it = list.Begin();
+		while (it)
+		{
+			if (**it != numbers1[j++])
+				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers[j++]"));
+			++it;
+		}
+	}
+
+	list.Close();
 }
 
 static void TestDoubleLinkedListT()
@@ -319,90 +856,13 @@ static void TestDoubleLinkedListT()
 	OpenTestFile(_T("TestDoubleLinkedListT"));
 
 	TestFuncUIntDoubleLinkedList list __FILE__LINE__0P;
-	TestFuncUIntDoubleLinkedList::Iterator it;
-	dword i;
-	dword j;
 	unsigned int numbers[120];
 
 	LoadTestData(_T("TestDoubleLinkedListT"), numbers, 120);
-	for (i = 0; i < 120; ++i)
-		list.Append(numbers + i);
-	while (list.Count() > 0)
-	{
-		list.Remove(list.Begin());
-		it = list.Begin();
-		while (it)
-		{
-			assert(*it != 0);
-			++it;
-		}
-	}
-	for (i = 0; i < 120; ++i)
-		list.Append(numbers + i);
 
-	qsort(numbers, 120, sizeof(unsigned int), TestCompareSRand);
-
-	list.Sort();
-	it = list.Begin();
-	i = 0;
-	while (it)
-	{
-		if (**it != numbers[i++])
-			WriteErrorTestFile(1, _T("**it != numbers[i++]"));
-		++it;
-	}
-	if (i != 120)
-		WriteErrorTestFile(1, _T("i != 120"));
-	it = list.Last();
-	i = 120;
-	while (it)
-	{
-		if (**it != numbers[--i])
-			WriteErrorTestFile(1, _T("**it != numbers[--i]"));
-		--it;
-	}
-	if (i != 0)
-		WriteErrorTestFile(1, _T("i != 0"));
-	for (i = 0; i < 120; ++i)
-	{
-		it = list.FindSorted(numbers + i);
-		j = i;
-		while (it)
-		{
-			if (**it != numbers[j++])
-				WriteErrorTestFile(1, _T("**it != numbers[j++]"));
-			++it;
-		}
-		if (j != 120)
-			WriteErrorTestFile(1, _T("j != 120"));
-	}
-	for (i = 0; i < 120; i += 2)
-		list.RemoveSorted(numbers + i);
-	for (i = 0; i < 120; ++i)
-	{
-		it = list.FindSorted(numbers + i);
-		if ((i % 2) == 0)
-		{
-			if (**it == numbers[i])
-				WriteErrorTestFile(1, _T("**it == numbers[i]"));
-			if (**it != numbers[i + 1])
-				WriteErrorTestFile(1, _T("**it != numbers[i + 1]"));
-		}
-		else
-		{
-			j = i;
-			while (it)
-			{
-				if (**it != numbers[j])
-					WriteErrorTestFile(1, _T("**it != numbers[j]"));
-				j += 2;
-				++it;
-			}
-			if (j != 121)
-				WriteErrorTestFile(1, _T("j != 121"));
-		}
-	}
-	list.Close();
+	TestSingleKey(list, numbers, 120);
+	list.Open(__FILE__LINE__0);
+	TestMultipleKey(list, numbers, 120);
 
 	WriteSuccessTestFile(1);
 
@@ -414,79 +874,15 @@ static void TestArrayT()
 	OpenTestFile(_T("TestArrayT"));
 
 	TestFuncUIntArray list(__FILE__LINE__ 120);
-	TestFuncUIntArray::Iterator it;
-	dword i;
-	dword j;
 	unsigned int numbers[120];
 
 	LoadTestData(_T("TestArrayT"), numbers, 120);
-	for (i = 0; i < 120; ++i)
-		list.Append(numbers + i);
 
-	qsort(numbers, 120, sizeof(unsigned int), TestCompareSRand);
+	TestSingleKey(list, numbers, 120);
 
-	list.Sort();
-	it = list.Begin();
-	i = 0;
-	while (it)
-	{
-		if (**it != numbers[i++])
-			WriteErrorTestFile(1, _T("**it != numbers[i++]"));
-		++it;
-	}
-	if (i != 120)
-		WriteErrorTestFile(1, _T("i != 120"));
-	it = list.Last();
-	i = 120;
-	while (it)
-	{
-		if (**it != numbers[--i])
-			WriteErrorTestFile(1, _T("**it != numbers[--i]"));
-		--it;
-	}
-	if (i != 0)
-		WriteErrorTestFile(1, _T("i != 0"));
-	for (i = 0; i < 120; ++i)
-	{
-		it = list.FindSorted(numbers + i);
-		j = i;
-		while (it)
-		{
-			if (**it != numbers[j++])
-				WriteErrorTestFile(1, _T("**it != numbers[j++]"));
-			++it;
-		}
-		if (j != 120)
-			WriteErrorTestFile(1, _T("j != 120"));
-	}
-	for (i = 0; i < 120; i += 2)
-		list.RemoveSorted(numbers + i);
-	for (i = 0; i < 120; ++i)
-	{
-		it = list.FindSorted(numbers + i);
-		if ((i % 2) == 0)
-		{
-			++it;
-			if (**it == numbers[i])
-				WriteErrorTestFile(1, _T("**it == numbers[i]"));
-			if (**it != numbers[i + 1])
-				WriteErrorTestFile(1, _T("**it != numbers[i + 1]"));
-		}
-		else
-		{
-			j = i;
-			while (it)
-			{
-				if (**it != numbers[j])
-					WriteErrorTestFile(1, _T("**it != numbers[j]"));
-				j += 2;
-				++it;
-			}
-			if (j != 121)
-				WriteErrorTestFile(1, _T("j != 121"));
-		}
-	}
-	list.Close();
+	TestFuncUIntArray list2(__FILE__LINE__ 600);
+
+	TestMultipleKey(list2, numbers, 120);
 
 	WriteSuccessTestFile(1);
 
@@ -498,79 +894,14 @@ static void TestVectorT()
 	OpenTestFile(_T("TestVectorT"));
 
 	TestFuncUIntVector list(__FILE__LINE__ 16, 16);
-	TestFuncUIntVector::Iterator it;
-	dword i;
-	dword j;
-	unsigned int numbers[120];
+	unsigned int numbers[256];
 
-	LoadTestData(_T("TestVectorT"), numbers, 120);
-	for (i = 0; i < 120; ++i)
-		list.Append(numbers + i);
-
-	qsort(numbers, 120, sizeof(unsigned int), TestCompareSRand);
-
-	list.Sort();
-	it = list.Begin();
-	i = 0;
-	while (it)
-	{
-		if (**it != numbers[i++])
-			WriteErrorTestFile(1, _T("**it != numbers[i++]"));
-		++it;
-	}
-	if (i != 120)
-		WriteErrorTestFile(1, _T("i != 120"));
-	it = list.Last();
-	i = 120;
-	while (it)
-	{
-		if (**it != numbers[--i])
-			WriteErrorTestFile(1, _T("**it != numbers[--i]"));
-		--it;
-	}
-	if (i != 0)
-		WriteErrorTestFile(1, _T("i != 0"));
-	for (i = 0; i < 120; ++i)
-	{
-		it = list.FindSorted(numbers + i);
-		j = i;
-		while (it)
-		{
-			if (**it != numbers[j++])
-				WriteErrorTestFile(1, _T("**it != numbers[j++]"));
-			++it;
-		}
-		if (j != 120)
-			WriteErrorTestFile(1, _T("j != 120"));
-	}
-	for (i = 0; i < 120; i += 2)
-		list.RemoveSorted(numbers + i);
-	for (i = 0; i < 120; ++i)
-	{
-		it = list.FindSorted(numbers + i);
-		if ((i % 2) == 0)
-		{
-			++it;
-			if (**it == numbers[i])
-				WriteErrorTestFile(1, _T("**it == numbers[i]"));
-			if (**it != numbers[i + 1])
-				WriteErrorTestFile(1, _T("**it != numbers[i + 1]"));
-		}
-		else
-		{
-			j = i;
-			while (it)
-			{
-				if (**it != numbers[j])
-					WriteErrorTestFile(1, _T("**it != numbers[j]"));
-				j += 2;
-				++it;
-			}
-			if (j != 121)
-				WriteErrorTestFile(1, _T("j != 121"));
-		}
-	}
+	LoadTestData(_T("TestVectorT"), numbers, 256);
 	
+	TestSingleKey(list, numbers, 256);
+	list.Open(__FILE__LINE__ 16, 16);
+	TestMultipleKey(list, numbers, 256);
+
 	WriteSuccessTestFile(1);
 
 	CloseTestFile();
@@ -581,92 +912,12 @@ static void TestAVLBinaryTreeT()
 	OpenTestFile(_T("TestAVLBinaryTreeT"));
 
 	TestFuncUIntAVLBinaryTree list __FILE__LINE__0P;
-	TestFuncUIntAVLBinaryTree::Iterator it;
-	dword i;
-	dword j;
-	unsigned int numbers[120];
+	unsigned int numbers[256];
+	unsigned int numbers1[256];
 
-	LoadTestData(_T("TestAVLBinaryTreeT"), numbers, 120);
-	qsort(numbers, 120, sizeof(unsigned int), TestCompareSRand);
+	LoadTestData(_T("TestAVLBinaryTreeT"), numbers, 256);
 
-	for (i = 0; i < 120; ++i)
-		list.InsertSorted(numbers + i);
-
-	WriteTestFile(1, _T("InsertSorted: Height of Tree = %d, Count of nodes = %d"), list.Height(), list.Count());
-	it = list.Begin();
-	i = 0;
-	while (it)
-	{
-		if (**it != numbers[i++])
-			WriteErrorTestFile(1, _T("**it != numbers[i++]"));
-		++it;
-	}
-	if (i != 120)
-		WriteErrorTestFile(1, _T("i != 120"));
-	it = list.Last();
-	i = 120;
-	while (it)
-	{
-		if (**it != numbers[--i])
-			WriteErrorTestFile(1, _T("**it != numbers[--i]"));
-		--it;
-	}
-	if (i != 0)
-		WriteErrorTestFile(1, _T("i != 0"));
-	for (i = 0; i < 120; ++i)
-	{
-		it = list.FindSorted(numbers + i);
-		j = i;
-		while (it)
-		{
-			if (**it != numbers[j++])
-				WriteErrorTestFile(1, _T("**it != numbers[j++]"));
-			++it;
-		}
-		if (j != 120)
-			WriteErrorTestFile(1, _T("j != 120"));
-	}
-	for (i = 0; i < 120; i += 2)
-	{
-		if (!list.RemoveSorted(numbers + i))
-			WriteErrorTestFile(1, _T("!RemoveSorted"));
-		if ((i % 10) == 0)
-			WriteTestFile(1, _T("RemoveSorted: Height of Tree = %d, Count of nodes = %d"), list.Height(), list.Count());
-	}
-	WriteTestFile(1, _T("RemoveSorted: Height of Tree = %d, Count of nodes = %d"), list.Height(), list.Count());
-	for (i = 0; i < 120; ++i)
-	{
-		it = list.FindSorted(numbers + i);
-		if ((i % 2) == 0)
-		{
-			if (*it != nullptr)
-				WriteErrorTestFile(1, _T("*it != nullptr"));
-			if (!!it)
-				WriteErrorTestFile(1, _T("!!it"));
-		}
-		else
-		{
-			j = i;
-			while (it)
-			{
-				if (**it != numbers[j])
-					WriteErrorTestFile(1, _T("**it != numbers[j]"));
-				j += 2;
-				++it;
-			}
-			if (j != 121)
-				WriteErrorTestFile(1, _T("j != 121"));
-		}
-	}
-	for (i = 1; i < 120; i += 2)
-	{
-		if (!list.RemoveSorted(numbers + i))
-			WriteErrorTestFile(1, _T("!RemoveSorted"));
-		if ((i % 5) == 0)
-			WriteTestFile(1, _T("RemoveSorted: Height of Tree = %d, Count of nodes = %d"), list.Height(), list.Count());
-	}
-	WriteTestFile(1, _T("RemoveSorted: Height of Tree = %d, Count of nodes = %d"), list.Height(), list.Count());
-	list.Close();
+	TestBinaryTree(list, numbers, numbers1, 256);
 
 	WriteSuccessTestFile(1);
 
@@ -678,92 +929,12 @@ static void TestRBBinaryTreeT()
 	OpenTestFile(_T("TestRBBinaryTreeT"));
 
 	TestFuncUIntRBBinaryTree list __FILE__LINE__0P;
-	TestFuncUIntRBBinaryTree::Iterator it;
-	dword i;
-	dword j;
-	unsigned int numbers[120];
+	unsigned int numbers[256];
+	unsigned int numbers1[256];
 
-	LoadTestData(_T("TestRBBinaryTreeT"), numbers, 120);
-	qsort(numbers, 120, sizeof(unsigned int), TestCompareSRand);
+	LoadTestData(_T("TestRBBinaryTreeT"), numbers, 256);
 
-	for (i = 0; i < 120; ++i)
-		list.InsertSorted(numbers + i);
-
-	WriteTestFile(1, _T("InsertSorted: Height of Tree = %d, Count of nodes = %d"), list.Height(), list.Count());
-	it = list.Begin();
-	i = 0;
-	while (it)
-	{
-		if (**it != numbers[i++])
-			WriteErrorTestFile(1, _T("**it != numbers[i++]"));
-		++it;
-	}
-	if (i != 120)
-		WriteErrorTestFile(1, _T("i != 120"));
-	it = list.Last();
-	i = 120;
-	while (it)
-	{
-		if (**it != numbers[--i])
-			WriteErrorTestFile(1, _T("**it != numbers[--i]"));
-		--it;
-	}
-	if (i != 0)
-		WriteErrorTestFile(1, _T("i != 0"));
-	for (i = 0; i < 120; ++i)
-	{
-		it = list.FindSorted(numbers + i);
-		j = i;
-		while (it)
-		{
-			if (**it != numbers[j++])
-				WriteErrorTestFile(1, _T("**it != numbers[j++]"));
-			++it;
-		}
-		if (j != 120)
-			WriteErrorTestFile(1, _T("j != 120"));
-	}
-	for (i = 0; i < 120; i += 2)
-	{
-		if (!list.RemoveSorted(numbers + i))
-			WriteErrorTestFile(1, _T("!RemoveSorted"));
-		if ((i % 10) == 0)
-			WriteTestFile(1, _T("RemoveSorted: Height of Tree = %d, Count of nodes = %d"), list.Height(), list.Count());
-	}
-	WriteTestFile(1, _T("RemoveSorted: Height of Tree = %d, Count of nodes = %d"), list.Height(), list.Count());
-	for (i = 0; i < 120; ++i)
-	{
-		it = list.FindSorted(numbers + i);
-		if ((i % 2) == 0)
-		{
-			if (*it != nullptr)
-				WriteErrorTestFile(1, _T("*it != nullptr"));
-			if (!!it)
-				WriteErrorTestFile(1, _T("!!it"));
-		}
-		else
-		{
-			j = i;
-			while (it)
-			{
-				if (**it != numbers[j])
-					WriteErrorTestFile(1, _T("**it != numbers[j]"));
-				j += 2;
-				++it;
-			}
-			if (j != 121)
-				WriteErrorTestFile(1, _T("j != 121"));
-		}
-	}
-	for (i = 1; i < 120; i += 2)
-	{
-		if (!list.RemoveSorted(numbers + i))
-			WriteErrorTestFile(1, _T("!RemoveSorted"));
-		if ((i % 5) == 0)
-			WriteTestFile(1, _T("RemoveSorted: Height of Tree = %d, Count of nodes = %d"), list.Height(), list.Count());
-	}
-	WriteTestFile(1, _T("RemoveSorted: Height of Tree = %d, Count of nodes = %d"), list.Height(), list.Count());
-	list.Close();
+	TestBinaryTree(list, numbers, numbers1, 256);
 
 	WriteSuccessTestFile(1);
 
@@ -774,86 +945,14 @@ static void TestBTreeT()
 {
 	OpenTestFile(_T("TestBTreeT"));
 
-	TestFuncUIntBTree list(__FILE__LINE__ 5);
-	TestFuncUIntBTree::Iterator it;
-	dword i;
-	dword j;
-	unsigned int numbers[630];
+	TestFuncUIntBTree list(__FILE__LINE__ 16);
+	unsigned int numbers[1024];
 
-	LoadTestData(_T("TestBTreeT"), numbers, 630);
-	qsort(numbers, 630, sizeof(unsigned int), TestCompareSRand);
+	LoadTestData(_T("TestBTreeT"), numbers, 1024);
 
-	for (i = 0; i < 630; ++i)
-	{
-		if ((i % 100) == 0)
-			WriteTestFile(1, _T("Height of Tree = %d, Count of nodes = %d"), list.Height(), list.Count());
-		it = list.InsertSorted(numbers + i);
-		if (**it != numbers[i])
-			WriteErrorTestFile(1, _T("**it != numbers[i]"));
-	}
-	WriteTestFile(1, _T("Height of Tree = %d, Count of nodes = %d"), list.Height(), list.Count());
-
-	it = list.Begin();
-	i = 0;
-	while (it)
-	{
-		if (**it != numbers[i++])
-			WriteErrorTestFile(1, _T("**it != numbers[i++]"));
-		++it;
-	}
-	if (i != 630)
-		WriteErrorTestFile(1, _T("i != 630"));
-	it = list.Last();
-	i = 630;
-	while (it)
-	{
-		if (**it != numbers[--i])
-			WriteErrorTestFile(1, _T("**it != numbers[--i]"));
-		--it;
-	}
-	if (i != 0)
-		WriteErrorTestFile(1, _T("i != 0"));
-	for (i = 0; i < 630; ++i)
-	if (!(list.RemoveSorted(numbers + i)))
-		WriteErrorTestFile(1, _T("!RemoveSorted"));
-	for (i = 1; i < 630; i += 2)
-	{
-		it = list.InsertSorted(numbers + i);
-		if (**it != numbers[i])
-			WriteErrorTestFile(1, _T("**it != numbers[i]"));
-	}
-	for (i = 0; i < 630; ++i)
-	{
-		it = list.FindSorted(numbers + i);
-		if ((i % 2) == 0)
-		{
-			if (*it != nullptr)
-				WriteErrorTestFile(1, _T("*it != nullptr"));
-			if (!!it)
-				WriteErrorTestFile(1, _T("!!it"));
-		}
-		else
-		{
-			j = i;
-			while (it)
-			{
-				if (!(**it == numbers[j]))
-					WriteErrorTestFile(1, _T("**it != numbers[j]"));
-				j += 2;
-				++it;
-			}
-			if (j != 631)
-				WriteErrorTestFile(1, _T("j != 631"));
-		}
-	}
-	for (i = 1; i < 630; i += 2)
-	{
-		it = list.FindSorted(numbers + i);
-		if (**it != numbers[i])
-			WriteErrorTestFile(1, _T("**it != numbers[i]"));
-		list.Remove(it);
-	}
-	list.Close();
+	TestSingleKey(list, numbers, 1024);
+	list.Open(__FILE__LINE__ 16);
+	TestMultipleKey(list, numbers, 1024);
 
 	WriteSuccessTestFile(1);
 
@@ -862,22 +961,38 @@ static void TestBTreeT()
 
 void TestDataStructures()
 {
+	COUT << _T("********************** TestDataStructures start **************") << endl;
 	COUT << _T("********************** TestFlagRegister **********************") << endl;
+	COUT << _T("Tests bit register.") << endl;
+	COUT << _T("Standard Test Procedure.") << endl;
 	TestFlagRegister();
 	COUT << _T("********************** TestHashLinkedListT *******************") << endl;
+	COUT << _T("Tests hash linked list.") << endl;
+	COUT << _T("Standard Test Procedure.") << endl;
 	TestHashLinkedListT();
-	COUT << _T("********************** TestHashLinearExploreT ****************") << endl;
-	TestHashLinearExploreT();
-	COUT << _T("********************** TestDoubleLinkedListT ******************") << endl;
+	COUT << _T("********************** TestDoubleLinkedListT *****************") << endl;
+	COUT << _T("Tests double linked list.") << endl;
+	COUT << _T("Standard Test Procedure.") << endl;
 	TestDoubleLinkedListT();
-	COUT << _T("********************** TestArrayT *****************************") << endl;
+	COUT << _T("********************** TestArrayT ****************************") << endl;
+	COUT << _T("Tests array.") << endl;
+	COUT << _T("Standard Test Procedure.") << endl;
 	TestArrayT();
-	COUT << _T("********************** TestVectorT ****************************") << endl;
+	COUT << _T("********************** TestVectorT ***************************") << endl;
+	COUT << _T("Tests vector.") << endl;
+	COUT << _T("Standard Test Procedure.") << endl;
 	TestVectorT();
-	COUT << _T("********************** TestAVLBinaryTreeT ************************") << endl;
+	COUT << _T("********************** TestAVLBinaryTreeT ********************") << endl;
+	COUT << _T("Tests balanced binary tree.") << endl;
+	COUT << _T("Standard Test Procedure.") << endl;
 	TestAVLBinaryTreeT();
-	COUT << _T("********************** TestRBBinaryTreeT ************************") << endl;
+	COUT << _T("********************** TestRBBinaryTreeT *********************") << endl;
+	COUT << _T("Tests balanced binary tree.") << endl;
+	COUT << _T("Standard Test Procedure.") << endl;
 	TestRBBinaryTreeT();
-	COUT << _T("********************** TestBTreeT *****************************") << endl;
+	COUT << _T("********************** TestBTreeT ****************************") << endl;
+	COUT << _T("Tests B*-tree.") << endl;
+	COUT << _T("Standard Test Procedure.") << endl;
 	TestBTreeT();
+	COUT << _T("********************** TestDataStructures exit ***************") << endl;
 }

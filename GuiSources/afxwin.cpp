@@ -3030,7 +3030,7 @@ CControl* CDialog::GetDialogControl(LPCTSTR className)
 
 	TDialogControls::Iterator it = m_DialogControls.FindSorted(&item);
 
-	if (m_DialogControls.MatchSorted(it, &item))
+	if (it)
 		return (*it)->pControl;
 	return nullptr;
 }
@@ -4485,7 +4485,7 @@ void CStatusbar::set_text(CStatusbar::TStatusStyle style, ConstRef(CStringBuffer
 
 	TStatusInfoVector::Iterator it = m_statusinfo.FindSorted(&info);
 
-	if (m_statusinfo.MatchSorted(it, &info))
+	if (it)
 	{
 		CStatic* pStatic = CastDynamicPtr(CStatic, (*it)->pControl);
 

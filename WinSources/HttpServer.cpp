@@ -69,7 +69,7 @@ typedef struct __tagHttpWorkerData
 	HTTPAPI_VERSION version;
 	HANDLE hQueue;
 	PHTTP_REQUEST hrq;
-	CHttpServer::StatusCodeList* statuscodelist;
+	CHttpServer::TStatusCodes* statuscodelist;
 } THttpWorkerData;
 
 #define WDATA(c) CastAnyPtr(THttpWorkerData, _data)->c
@@ -162,69 +162,69 @@ static int GetHttpResponseHeaderNum(ConstRef(CByteBuffer) buf)
 	return -1;
 }
 
-static void FillStatusCodeList(Ptr(CHttpServer::StatusCodeList) list)
+static void FillStatusCodeList(Ptr(CHttpServer::TStatusCodes) list)
 {
-	list->insert(CHttpServer::StatusCode(100, _T("Continue")));
-	list->insert(CHttpServer::StatusCode(101, _T("Switching Protocols")));
-	list->insert(CHttpServer::StatusCode(102, _T("Processing")));
-	list->insert(CHttpServer::StatusCode(200, _T("OK")));
-	list->insert(CHttpServer::StatusCode(201, _T("Created")));
-	list->insert(CHttpServer::StatusCode(202, _T("Accepted")));
-	list->insert(CHttpServer::StatusCode(203, _T("Non-Authoritative Information")));
-	list->insert(CHttpServer::StatusCode(204, _T("No Content")));
-	list->insert(CHttpServer::StatusCode(205, _T("Reset Content")));
-	list->insert(CHttpServer::StatusCode(206, _T("Partial Content")));
-	list->insert(CHttpServer::StatusCode(207, _T("Multi-Status")));
-	list->insert(CHttpServer::StatusCode(208, _T("Already Reported")));
-	list->insert(CHttpServer::StatusCode(226, _T("IM Used")));
-	list->insert(CHttpServer::StatusCode(300, _T("Multiple Choices")));
-	list->insert(CHttpServer::StatusCode(301, _T("Moved Permanently")));
-	list->insert(CHttpServer::StatusCode(302, _T("Found")));
-	list->insert(CHttpServer::StatusCode(303, _T("See Other")));
-	list->insert(CHttpServer::StatusCode(304, _T("Not Modified")));
-	list->insert(CHttpServer::StatusCode(305, _T("Use Proxy")));
-	list->insert(CHttpServer::StatusCode(307, _T("Temporary Redirect")));
-	list->insert(CHttpServer::StatusCode(308, _T("Permanent Redirect")));
-	list->insert(CHttpServer::StatusCode(400, _T("Bad Request")));
-	list->insert(CHttpServer::StatusCode(401, _T("Unauthorized")));
-	list->insert(CHttpServer::StatusCode(402, _T("Payment Required")));
-	list->insert(CHttpServer::StatusCode(403, _T("Forbidden")));
-	list->insert(CHttpServer::StatusCode(404, _T("Not Found")));
-	list->insert(CHttpServer::StatusCode(405, _T("Method Not Allowed")));
-	list->insert(CHttpServer::StatusCode(406, _T("Not Acceptable")));
-	list->insert(CHttpServer::StatusCode(407, _T("Proxy Authentication Required")));
-	list->insert(CHttpServer::StatusCode(408, _T("Request Time-out")));
-	list->insert(CHttpServer::StatusCode(409, _T("Conflict")));
-	list->insert(CHttpServer::StatusCode(410, _T("Gone")));
-	list->insert(CHttpServer::StatusCode(411, _T("Length Required")));
-	list->insert(CHttpServer::StatusCode(412, _T("Precondition Failed")));
-	list->insert(CHttpServer::StatusCode(413, _T("Request Entity Too Large")));
-	list->insert(CHttpServer::StatusCode(414, _T("Request-URL Too Long")));
-	list->insert(CHttpServer::StatusCode(415, _T("Unsupported Media Type")));
-	list->insert(CHttpServer::StatusCode(416, _T("Requested range not satisfiable")));
-	list->insert(CHttpServer::StatusCode(417, _T("Expectation Failed")));
-	list->insert(CHttpServer::StatusCode(418, _T("I’m a teapot")));
-	list->insert(CHttpServer::StatusCode(420, _T("Policy Not Fulfilled")));
-	list->insert(CHttpServer::StatusCode(421, _T("There are too many connections from your internet address")));
-	list->insert(CHttpServer::StatusCode(422, _T("Unprocessable Entity")));
-	list->insert(CHttpServer::StatusCode(423, _T("Locked")));
-	list->insert(CHttpServer::StatusCode(424, _T("Failed Dependency")));
-	list->insert(CHttpServer::StatusCode(425, _T("Unordered Collection")));
-	list->insert(CHttpServer::StatusCode(426, _T("Upgrade Required")));
-	list->insert(CHttpServer::StatusCode(428, _T("Precondition Required")));
-	list->insert(CHttpServer::StatusCode(429, _T("Too Many Requests")));
-	list->insert(CHttpServer::StatusCode(431, _T("Request Header Fields Too Large")));
-	list->insert(CHttpServer::StatusCode(500, _T("Internal Server Error")));
-	list->insert(CHttpServer::StatusCode(501, _T("Not Implemented")));
-	list->insert(CHttpServer::StatusCode(502, _T("Bad Gateway")));
-	list->insert(CHttpServer::StatusCode(503, _T("Service Unavailable")));
-	list->insert(CHttpServer::StatusCode(504, _T("Gateway Time-out")));
-	list->insert(CHttpServer::StatusCode(505, _T("HTTP Version not supported")));
-	list->insert(CHttpServer::StatusCode(506, _T("Variant Also Negotiates")));
-	list->insert(CHttpServer::StatusCode(507, _T("Insufficient Storage")));
-	list->insert(CHttpServer::StatusCode(508, _T("Loop Detected")));
-	list->insert(CHttpServer::StatusCode(509, _T("Bandwidth Limit Exceeded")));
-	list->insert(CHttpServer::StatusCode(510, _T("Not Extended")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(100, _T("Continue")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(101, _T("Switching Protocols")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(102, _T("Processing")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(200, _T("OK")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(201, _T("Created")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(202, _T("Accepted")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(203, _T("Non-Authoritative Information")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(204, _T("No Content")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(205, _T("Reset Content")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(206, _T("Partial Content")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(207, _T("Multi-Status")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(208, _T("Already Reported")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(226, _T("IM Used")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(300, _T("Multiple Choices")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(301, _T("Moved Permanently")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(302, _T("Found")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(303, _T("See Other")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(304, _T("Not Modified")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(305, _T("Use Proxy")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(307, _T("Temporary Redirect")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(308, _T("Permanent Redirect")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(400, _T("Bad Request")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(401, _T("Unauthorized")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(402, _T("Payment Required")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(403, _T("Forbidden")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(404, _T("Not Found")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(405, _T("Method Not Allowed")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(406, _T("Not Acceptable")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(407, _T("Proxy Authentication Required")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(408, _T("Request Time-out")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(409, _T("Conflict")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(410, _T("Gone")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(411, _T("Length Required")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(412, _T("Precondition Failed")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(413, _T("Request Entity Too Large")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(414, _T("Request-URL Too Long")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(415, _T("Unsupported Media Type")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(416, _T("Requested range not satisfiable")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(417, _T("Expectation Failed")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(418, _T("I’m a teapot")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(420, _T("Policy Not Fulfilled")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(421, _T("There are too many connections from your internet address")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(422, _T("Unprocessable Entity")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(423, _T("Locked")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(424, _T("Failed Dependency")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(425, _T("Unordered Collection")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(426, _T("Upgrade Required")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(428, _T("Precondition Required")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(429, _T("Too Many Requests")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(431, _T("Request Header Fields Too Large")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(500, _T("Internal Server Error")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(501, _T("Not Implemented")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(502, _T("Bad Gateway")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(503, _T("Service Unavailable")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(504, _T("Gateway Time-out")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(505, _T("HTTP Version not supported")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(506, _T("Variant Also Negotiates")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(507, _T("Insufficient Storage")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(508, _T("Loop Detected")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(509, _T("Bandwidth Limit Exceeded")));
+	list->InsertSorted(OK_NEW_OPERATOR CHttpServer::StatusCode(510, _T("Not Extended")));
 }
 
 CHttpServer::CHttpServer(bool bWorker):
@@ -246,7 +246,7 @@ void CHttpServer::Initialize(bool bWorker)
 	{
 		_data = TFalloc(sizeof(THttpWorkerData));
 		WDATA(version) = v;
-		WDATA(statuscodelist) = new CHttpServer::StatusCodeList(150);
+		WDATA(statuscodelist) = new CHttpServer::TStatusCodes(__FILE__LINE__ 150, TStatusCodeHashFunctor(150));
 		FillStatusCodeList(WDATA(statuscodelist));
 		HandleError(HttpInitialize(WDATA(version), HTTP_INITIALIZE_SERVER, nullptr), __FILE__LINE__ _T("HttpInitialize"), _T("CHttpServer::Initialize"));
 	}
@@ -649,7 +649,7 @@ void CHttpServer::OpenRequestQueue(CConstPointer name)
 	HandleError(HttpCreateRequestQueue(WDATA(version), name, nullptr, HTTP_CREATE_REQUEST_QUEUE_FLAG_OPEN_EXISTING, &(WDATA(hQueue))), __FILE__LINE__ _T("HttpCreateRequestQueue"), _T("CHttpServer::OpenRequestQueue"));
 }
 
-void CHttpServer::ReceiveRequestHeader(Ref(RequestDataList) header, DWORD timeout)
+void CHttpServer::ReceiveRequestHeader(Ref(TRequestDataItems) header, DWORD timeout)
 {
 	if ((!_worker) || (!(WDATA(hQueue))))
 		throw OK_NEW_OPERATOR CHttpServerException(__FILE__LINE__ _T("Program sequence error in %s"), _T("CHttpServer::OpenRequestQueue"), CWinException::WinExtError, ERROR_REQUEST_OUT_OF_SEQUENCE);
@@ -703,9 +703,7 @@ void CHttpServer::ReceiveRequestHeader(Ref(RequestDataList) header, DWORD timeou
 			buf.set_Buffer(__FILE__LINE__ CastAny(BConstPointer, WDATA(hrq)->Headers.KnownHeaders[i].pRawValue), WDATA(hrq)->Headers.KnownHeaders[i].RawValueLength);
 			value.convertFromUTF8(buf, false);
 
-			RequestDataItem item(key, value);
-
-			header.insert(item);
+			header.InsertSorted(OK_NEW_OPERATOR RequestDataItem(key, value));
 		}
 	}
 	for (int i = 0; i < WDATA(hrq)->Headers.UnknownHeaderCount; ++i)
@@ -719,9 +717,7 @@ void CHttpServer::ReceiveRequestHeader(Ref(RequestDataList) header, DWORD timeou
 		buf.set_Buffer(__FILE__LINE__ CastAny(BConstPointer, WDATA(hrq)->Headers.pUnknownHeaders[i].pRawValue), WDATA(hrq)->Headers.pUnknownHeaders[i].RawValueLength);
 		value.convertFromByteBuffer(buf);
 
-		RequestDataItem item(key, value);
-
-		header.insert(item);
+		header.InsertSorted(OK_NEW_OPERATOR RequestDataItem(key, value));
 	}
 	if (WDATA(hrq)->Address.pLocalAddress->sa_family == AF_INET)
 	{
@@ -731,17 +727,12 @@ void CHttpServer::ReceiveRequestHeader(Ref(RequestDataList) header, DWORD timeou
 
 		value.FormatString(__FILE__LINE__ _T("%02x.%02x.%02x.%02x:%d"), (DWORD)(p->sin_addr.s_net), (DWORD)(p->sin_addr.s_host), (DWORD)(p->sin_addr.s_lh), (DWORD)(p->sin_addr.s_impno), (DWORD)(p->sin_port));
 
-		RequestDataItem item(key, value);
-
-		header.insert(item);
-
+		header.InsertSorted(OK_NEW_OPERATOR RequestDataItem(key, value));
 		p = (PSOCKADDR_IN)(WDATA(hrq)->Address.pRemoteAddress);
 		key.SetString(__FILE__LINE__ _T("$$RemoteAddress"));
 		value.FormatString(__FILE__LINE__ _T("%02x.%02x.%02x.%02x:%d"), (DWORD)(p->sin_addr.s_net), (DWORD)(p->sin_addr.s_host), (DWORD)(p->sin_addr.s_lh), (DWORD)(p->sin_addr.s_impno), (DWORD)(p->sin_port));
 
-		RequestDataItem item1(key, value);
-
-		header.insert(item1);
+		header.InsertSorted(OK_NEW_OPERATOR RequestDataItem(key, value));
 	}
 	else if (WDATA(hrq)->Address.pLocalAddress->sa_family == AF_INET6)
 	{
@@ -751,17 +742,13 @@ void CHttpServer::ReceiveRequestHeader(Ref(RequestDataList) header, DWORD timeou
 
 		value.FormatString(__FILE__LINE__ _T("%04x.%04x.%04x.%04x.%04x.%04x.%04x.%04x:%d"), (DWORD)(p->sin6_addr.u.Word[0]), (DWORD)(p->sin6_addr.u.Word[1]), (DWORD)(p->sin6_addr.u.Word[2]), (DWORD)(p->sin6_addr.u.Word[3]), (DWORD)(p->sin6_addr.u.Word[4]), (DWORD)(p->sin6_addr.u.Word[5]), (DWORD)(p->sin6_addr.u.Word[6]), (DWORD)(p->sin6_addr.u.Word[7]), (DWORD)(p->sin6_port));
 
-		RequestDataItem item(key, value);
-
-		header.insert(item);
+		header.InsertSorted(OK_NEW_OPERATOR RequestDataItem(key, value));
 
 		p = (PSOCKADDR_IN6)(WDATA(hrq)->Address.pRemoteAddress);
 		key.SetString(__FILE__LINE__ _T("$$RemoteAddress6"));
 		value.FormatString(__FILE__LINE__ _T("%04x.%04x.%04x.%04x.%04x.%04x.%04x.%04x:%d"), (DWORD)(p->sin6_addr.u.Word[0]), (DWORD)(p->sin6_addr.u.Word[1]), (DWORD)(p->sin6_addr.u.Word[2]), (DWORD)(p->sin6_addr.u.Word[3]), (DWORD)(p->sin6_addr.u.Word[4]), (DWORD)(p->sin6_addr.u.Word[5]), (DWORD)(p->sin6_addr.u.Word[6]), (DWORD)(p->sin6_addr.u.Word[7]), (DWORD)(p->sin6_port));
 
-		RequestDataItem item1(key, value);
-
-		header.insert(item1);
+		header.InsertSorted(OK_NEW_OPERATOR RequestDataItem(key, value));
 	}
 	if (WDATA(hrq)->CookedUrl.FullUrlLength)
 	{
@@ -770,9 +757,7 @@ void CHttpServer::ReceiveRequestHeader(Ref(RequestDataList) header, DWORD timeou
 
 		value.FormatString(__FILE__LINE__ _T("%.*s"), Castdword(WDATA(hrq)->CookedUrl.FullUrlLength / sizeof(wchar_t)), WDATA(hrq)->CookedUrl.pFullUrl);
 
-		RequestDataItem item(key, value);
-
-		header.insert(item);
+		header.InsertSorted(OK_NEW_OPERATOR RequestDataItem(key, value));
 	}
 	if (WDATA(hrq)->EntityChunkCount)
 	{
@@ -802,9 +787,7 @@ void CHttpServer::ReceiveRequestHeader(Ref(RequestDataList) header, DWORD timeou
 		bufL.GetBuffer(bufB);
 		value.convertToBase64(bufB);
 
-		RequestDataItem item(key, value);
-
-		header.insert(item);
+		header.InsertSorted(OK_NEW_OPERATOR RequestDataItem(key, value));
 	}
 	if (WDATA(hrq)->RawUrlLength)
 	{
@@ -813,9 +796,7 @@ void CHttpServer::ReceiveRequestHeader(Ref(RequestDataList) header, DWORD timeou
 
 		value.FormatString(__FILE__LINE__ _T("%.*hs"), Castdword(WDATA(hrq)->RawUrlLength), WDATA(hrq)->pRawUrl);
 
-		RequestDataItem item(key, value);
-
-		header.insert(item);
+		header.InsertSorted(OK_NEW_OPERATOR RequestDataItem(key, value));
 	}
 	if (WDATA(hrq)->RequestInfoCount)
 	{
@@ -869,10 +850,7 @@ void CHttpServer::ReceiveRequestHeader(Ref(RequestDataList) header, DWORD timeou
 					}
 					break;
 				}
-
-				RequestDataItem item(key, value);
-
-				header.insert(item);
+				header.InsertSorted(OK_NEW_OPERATOR RequestDataItem(key, value));
 			}
 		}
 	}
@@ -944,9 +922,7 @@ void CHttpServer::ReceiveRequestHeader(Ref(RequestDataList) header, DWORD timeou
 			break;
 		}
 
-		RequestDataItem item(key, value);
-
-		header.insert(item);
+		header.InsertSorted(OK_NEW_OPERATOR RequestDataItem(key, value));
 	}
 	if (WDATA(hrq)->pSslInfo)
 	{
@@ -957,9 +933,7 @@ void CHttpServer::ReceiveRequestHeader(Ref(RequestDataList) header, DWORD timeou
 
 		value.FormatString(__FILE__LINE__ _T("%d.%d"), (DWORD)(WDATA(hrq)->Version.MajorVersion), (DWORD)(WDATA(hrq)->Version.MinorVersion));
 
-		RequestDataItem item(key, value);
-
-		header.insert(item);
+		header.InsertSorted(OK_NEW_OPERATOR RequestDataItem(key, value));
 	}
 }
 
@@ -989,13 +963,13 @@ void CHttpServer::ReceiveRequestBody(Ref(CByteLinkedBuffer) body)
 		HandleError(ret, __FILE__LINE__ _T("HttpReceiveRequestEntityBody"), _T("CHttpServer::ReceiveRequestBody"));
 }
 
-void CHttpServer::SendResponse(ConstRef(StatusCode) statuscode, ConstRef(ResponseDataList) header, ConstRef(CByteLinkedBuffer) body, bool bLogging)
+void CHttpServer::SendResponse(ConstPtr(StatusCode) statuscode, ConstRef(TResponseDataItems) header, ConstRef(CByteLinkedBuffer) body, bool bLogging)
 {
 	if ((!_worker) || (!(WDATA(hQueue))) || (!(WDATA(hrq))))
 		throw OK_NEW_OPERATOR CHttpServerException(__FILE__LINE__ _T("Program sequence error in %s"), _T("CHttpServer::SendResponse"), CWinException::WinExtError, ERROR_REQUEST_OUT_OF_SEQUENCE);
 
 	PHTTP_RESPONSE hrp;
-	ResponseDataList::iterator it(header.begin());
+	TResponseDataItems::Iterator it = header.Begin();
 	DWORD sz = 0;
 	DWORD res = 0;
 	DWORD szUnknownHeader = 0;
@@ -1005,7 +979,7 @@ void CHttpServer::SendResponse(ConstRef(StatusCode) statuscode, ConstRef(Respons
 	
 	while (*it)
 	{
-		ResponseDataItem* v(&((*it)->item));
+		Ptr(ResponseDataItem) v = *it;
 		CByteBuffer buf;
 		int i;
 
@@ -1046,10 +1020,10 @@ void CHttpServer::SendResponse(ConstRef(StatusCode) statuscode, ConstRef(Respons
 		pUnknownHeader = p;
 		p = CastAny(PCHAR, _l_ptradd(p, szUnknownHeader * sizeof(HTTP_UNKNOWN_HEADER)));
 	}
-	it = header.begin();
+	it = header.Begin();
 	while (*it)
 	{
-		ResponseDataItem* v(&((*it)->item));
+		Ptr(ResponseDataItem) v = *it;
 		CByteBuffer bufKey;
 		CByteBuffer bufValue;
 		int i;
@@ -1083,12 +1057,21 @@ void CHttpServer::SendResponse(ConstRef(StatusCode) statuscode, ConstRef(Respons
 
 		hrp->Version.MajorVersion = 1;
 		hrp->Version.MinorVersion = 1;
-		hrp->StatusCode = Castword(statuscode.Status);
-		statuscode.Reason.convertToByteBuffer(buf);
-		hrp->ReasonLength = Castword(buf.get_BufferSize());
-		hrp->pReason = p;
-		s_memcpy(p, buf.get_Buffer(), buf.get_BufferSize());
-		p = CastAny(PCHAR, _l_ptradd(p, buf.get_BufferSize()));
+		if (NotPtrCheck(statuscode))
+		{
+			hrp->StatusCode = Castword(statuscode->Status);
+			statuscode->Reason.convertToByteBuffer(buf);
+			hrp->ReasonLength = Castword(buf.get_BufferSize());
+			hrp->pReason = p;
+			s_memcpy(p, buf.get_Buffer(), buf.get_BufferSize());
+			p = CastAny(PCHAR, _l_ptradd(p, buf.get_BufferSize()));
+		}
+		else
+		{
+			hrp->StatusCode = 200;
+			hrp->ReasonLength = 0;
+			hrp->pReason = NULL;
+		}
 	}
 	if (bLogging)
 	{
@@ -1286,7 +1269,12 @@ void CHttpServer::SendResponse(ConstRef(StatusCode) statuscode, ConstRef(Respons
 
 }
 
-ConstRef(CHttpServer::StatusCode) CHttpServer::get_StatusCode(long statuscode) const
+ConstPtr(CHttpServer::StatusCode) CHttpServer::get_StatusCode(long statuscode) const
 {
-	return WDATA(statuscodelist)->search(statuscode);
+	StatusCode toFind(statuscode);
+	TStatusCodes::Iterator it = WDATA(statuscodelist)->FindSorted(&toFind);
+
+	if (it)
+		return *it;
+	return nullptr;
 }

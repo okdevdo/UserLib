@@ -46,31 +46,54 @@ public:
 		HEAD_COMMAND
 	};
 
-	struct ResponseDataItem
+	class ResponseDataItem : public CCppObject
 	{
+	public:
 		CStringBuffer Key;
 		CStringBuffer Value;
 
-		ConstRef(CStringBuffer) key() const
-		{
-			return Key;
-		}
-
-		ResponseDataItem(void):
-		    Key(), Value()
+		ResponseDataItem(void) :
+			Key(), Value()
 		{
 		}
-		ResponseDataItem(ConstRef(CStringBuffer) k, ConstRef(CStringBuffer) v):
-		    Key(k), Value(v)
+		ResponseDataItem(ConstRef(CStringBuffer) k) :
+			Key(k), Value()
 		{
 		}
-		ResponseDataItem(ConstRef(ResponseDataItem) copy):
-		    Key(copy.Key), Value(copy.Value)
+		ResponseDataItem(ConstRef(CStringBuffer) k, ConstRef(CStringBuffer) v) :
+			Key(k), Value(v)
+		{
+		}
+		ResponseDataItem(ConstRef(ResponseDataItem) copy) :
+			Key(copy.Key), Value(copy.Value)
 		{
 		}
 	};
 
-	typedef CHashLinkedListT<ResponseDataItem, CStringBuffer, HashFunctorString> ResponseDataList;
+	class TResponseDataItemHashFunctor
+	{
+	public:
+		TResponseDataItemHashFunctor(sdword cnt) : hs(cnt) {}
+
+		sdword operator()(ConstPtr(ResponseDataItem) p) const
+		{
+			return hs(p->Key);
+		}
+
+	protected:
+		HashFunctorString hs;
+	};
+
+	class TResponseDataItemLessFunctor
+	{
+	public:
+		bool operator()(ConstPtr(ResponseDataItem) p1, ConstPtr(ResponseDataItem) p2) const
+		{
+			return p1->Key.LT(p2->Key);
+		}
+	};
+
+	typedef CDataHashLinkedListT<ResponseDataItem, TResponseDataItemHashFunctor, TResponseDataItemLessFunctor> TResponseDataItems;
 
 public:
 	CHttpClient(void);
@@ -89,20 +112,49 @@ public:
 	__inline int get_BackupReason() const { return _backupReason; }
 	__inline void set_BackupReason(int value) { _backupReason = value; }
 
-	__inline dword get_RequestDataCount() const { return _requestData.count(); }
-	__inline ConstRef(CStringBuffer) get_RequestData(ConstRef(CStringBuffer) name) const { return _requestData.search(name).Value; }
-	__inline void set_RequestData(ConstRef(CStringBuffer) name, ConstRef(CStringBuffer) value) { ResponseDataItem item(name, value); _requestData.insert(item); }
-	__inline void remove_RequestData(ConstRef(CStringBuffer) name) { _requestData.remove(name); }
-	__inline ResponseDataList::iterator get_RequestDataBegin() { return _requestData.begin(); }
+	__inline dword get_RequestDataCount() const { return _requestData.Count(); }
+	__inline CStringBuffer get_RequestData(ConstRef(CStringBuffer) name) const 
+	{ 
+		ResponseDataItem toFind(name);
+		TResponseDataItems::Iterator it = _requestData.FindSorted(&toFind);
+
+		if (it)
+			return (*it)->Value;
+		return CStringBuffer::null();
+	}
+	__inline void set_RequestData(ConstRef(CStringBuffer) name, ConstRef(CStringBuffer) value) 
+	{ 
+		ResponseDataItem toFind(name);
+		TResponseDataItems::Iterator it = _requestData.FindSorted(&toFind);
+
+		if (it)
+			_requestData.RemoveSorted(&toFind);
+		_requestData.InsertSorted(OK_NEW_OPERATOR ResponseDataItem(name, value));
+	}
+	__inline void remove_RequestData(ConstRef(CStringBuffer) name) 
+	{ 
+		ResponseDataItem toFind(name);
+
+		_requestData.RemoveSorted(&toFind);
+	}
+	__inline TResponseDataItems::Iterator get_RequestDataBegin() { return _requestData.Begin(); }
 
 	__inline ConstRef(CStringBuffer) get_ResponseVersion() const { return _responseVersion; }
 	__inline ConstRef(CStringBuffer) get_ResponseTypeNum() const { return _responseTypeNum; }
 	__inline ConstRef(CStringBuffer) get_ResponseTypeText() const { return _responseTypeText; }
 	__inline ConstRef(CByteLinkedBuffer) get_ResponseContent() const { return _responseContent; }
 
-	__inline dword get_ResponseDataCount() const { return _responseData.count(); }
-	__inline ConstRef(CStringBuffer) get_ResponseData(ConstRef(CStringBuffer) name) const { return _responseData.search(name).Value; }
-	__inline ResponseDataList::iterator get_ResponseDataBegin() { return _responseData.begin(); }
+	__inline dword get_ResponseDataCount() const { return _responseData.Count(); }
+	__inline CStringBuffer get_ResponseData(ConstRef(CStringBuffer) name) const
+	{ 
+		ResponseDataItem toFind(name);
+		TResponseDataItems::Iterator it = _responseData.FindSorted(&toFind);
+
+		if (it)
+			return (*it)->Value;
+		return CStringBuffer::null();
+	}
+	__inline TResponseDataItems::Iterator get_ResponseDataBegin() { return _responseData.Begin(); }
 
 	bool InitRequest(ConstRef(CStringBuffer) serverName, ConstRef(CStringBuffer) resourceString);
 	bool InitRequest(ConstRef(CUrl) url);
@@ -130,14 +182,14 @@ protected:
 	CStringBuffer _resourceBackupString;
 	int _backupReason;
 	bool _defaultURL;
-	ResponseDataList _requestData;
+	TResponseDataItems _requestData;
 	LoadCommand _command;
 	CByteBuffer _getBuffer;
 	// response data
 	CStringBuffer _responseVersion;
 	CStringBuffer _responseTypeNum;
 	CStringBuffer _responseTypeText;
-	ResponseDataList _responseData;
+	TResponseDataItems _responseData;
 	CByteLinkedBuffer _responseContent;
     dword _totalsize;
 	// tcp client

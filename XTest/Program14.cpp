@@ -201,7 +201,7 @@ public:
 			finfo.fname = fit.get_Name();
 			Iterator it = FindSorted(&finfo);
 
-			if (MatchSorted(it, &finfo))
+			if (it)
 			{
 				CTestFileInfo* pfinfo = *it;
 				CDateTime pFTime = fit.get_LastWriteTime();
@@ -226,7 +226,7 @@ public:
 			{
 				finfo.fname = fit.get_Name();
 				it = FindSorted(&finfo);
-				if (MatchSorted(it, &finfo))
+				if (it)
 				{
 					CTestFileInfo* pfinfo = *it;
 					CDateTime pFTime = fit.get_LastWriteTime();

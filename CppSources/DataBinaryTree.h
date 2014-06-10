@@ -42,7 +42,7 @@ public:
 		Iterator& operator--() { _result = AVLBinaryTreePrev(_result); return *this; }
 		Ptr(Item) operator*() { return CastAnyPtr(Item, AVLBinaryTreeGetData(_result)); }
 
-		operator bool() { return !LPtrCheck(_result); }
+		operator bool() { return NotPtrCheck(_Lnode(_result)) && NotPtrCheck(AVLBinaryTreeGetData(_result)); }
 		operator LSearchResultType() { return _result; }
 
 		bool operator == (Iterator other) { return LCompareEqual(_result, other._result); }
@@ -119,9 +119,23 @@ public:
 			Ptr(Item) p = *it;
 
 			p->addRef();
-			Append(p);
+			InsertSorted(p);
 			++it;
 		}
+	}
+	void Clear()
+	{
+		AVLBinaryTreeClear(_liste, &TCppObjectReleaseFunc<Item, Deleter>, &_deleter);
+	}
+	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void Clear(RefRef(D) rD = D())
+	{
+		AVLBinaryTreeClear(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
+	}
+	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void Clear(Ref(D) rD)
+	{
+		AVLBinaryTreeClear(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
 	}
 	void Close()
 	{
@@ -190,38 +204,6 @@ public:
 		Iterator it = AVLBinaryTreeFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD);
 		return it;
 	}
-	bool MatchSorted(Iterator it, ConstPtr(Item) data)
-	{
-		if (!it)
-			return false;
-		if (PtrCheck(*it))
-			return false;
-		if (TCppObjectSearchAndSortUserFunc<Item, Lesser>(*it, data, &_lesser) != 0)
-			return false;
-		return true;
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
-	bool MatchSorted(Iterator it, ConstPtr(Item) data, Ref(D) rD)
-	{
-		if (!it)
-			return false;
-		if (PtrCheck(*it))
-			return false;
-		if (TCppObjectSearchAndSortUserFunc<Item, D>(*it, data, &rD) != 0)
-			return false;
-		return true;
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
-	bool MatchSorted(Iterator it, ConstPtr(Item) data, RefRef(D) rD = D())
-	{
-		if (!it)
-			return false;
-		if (PtrCheck(*it))
-			return false;
-		if (TCppObjectSearchAndSortUserFunc<Item, D>(*it, data, &rD) != 0)
-			return false;
-		return true;
-	}
 	Iterator FindSorted(ConstPtr(Item) data)
 	{
 		Iterator it;
@@ -243,52 +225,6 @@ public:
 		Iterator it;
 
 		it = AVLBinaryTreeFindSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
-		return it;
-	}
-	Iterator UpperBound(ConstPtr(Item) data)
-	{
-		Iterator it;
-
-		it = AVLBinaryTreeUpperBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser);
-		return it;
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator UpperBound(ConstPtr(Item) data, Ref(D) rD)
-	{
-		Iterator it;
-
-		it = AVLBinaryTreeUpperBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
-		return it;
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator UpperBound(ConstPtr(Item) data, RefRef(D) rD = D())
-	{
-		Iterator it;
-
-		it = AVLBinaryTreeUpperBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
-		return it;
-	}
-	Iterator LowerBound(ConstPtr(Item) data)
-	{
-		Iterator it;
-
-		it = AVLBinaryTreeLowerBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser);
-		return it;
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator LowerBound(ConstPtr(Item) data, Ref(D) rD)
-	{
-		Iterator it;
-
-		it = AVLBinaryTreeLowerBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
-		return it;
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator LowerBound(ConstPtr(Item) data, RefRef(D) rD = D())
-	{
-		Iterator it;
-
-		it = AVLBinaryTreeLowerBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
 		return it;
 	}
 	Iterator InsertSorted(ConstPtr(Item) data)
@@ -379,7 +315,7 @@ public:
 		Iterator& operator--() { _result = RBBinaryTreePrev(_result); return *this; }
 		Ptr(Item) operator*() { return CastAnyPtr(Item, RBBinaryTreeGetData(_result)); }
 
-		operator bool() { return !LPtrCheck(_result); }
+		operator bool() { return NotPtrCheck(_Lnode(_result)) && NotPtrCheck(RBBinaryTreeGetData(_result)); }
 		operator LSearchResultType() { return _result; }
 
 		bool operator == (Iterator other) { return LCompareEqual(_result, other._result); }
@@ -459,6 +395,20 @@ public:
 			InsertSorted(p);
 			++it;
 		}
+	}
+	void Clear()
+	{
+		RBBinaryTreeClear(_liste, &TCppObjectReleaseFunc<Item, Deleter>, &_deleter);
+	}
+	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void Clear(RefRef(D) rD = D())
+	{
+		RBBinaryTreeClear(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
+	}
+	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void Clear(Ref(D) rD)
+	{
+		RBBinaryTreeClear(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
 	}
 	void Close()
 	{
@@ -561,36 +511,6 @@ public:
 		Iterator it;
 
 		it = RBBinaryTreeFindSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
-		return it;
-	}
-	Iterator UpperBound(ConstPtr(Item) data)
-	{
-		Iterator it;
-
-		it = RBBinaryTreeUpperBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser);
-		return it;
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator UpperBound(ConstPtr(Item) data, Ref(D) rD)
-	{
-		Iterator it;
-
-		it = RBBinaryTreeUpperBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
-		return it;
-	}
-	Iterator LowerBound(ConstPtr(Item) data)
-	{
-		Iterator it;
-
-		it = RBBinaryTreeLowerBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser);
-		return it;
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator LowerBound(ConstPtr(Item) data, Ref(D) rD)
-	{
-		Iterator it;
-
-		it = RBBinaryTreeLowerBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
 		return it;
 	}
 	Iterator InsertSorted(ConstPtr(Item) data)

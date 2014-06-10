@@ -91,28 +91,35 @@ void CArchiveFile::Write(ConstRef(CByteLinkedBuffer) _buffer)
 }
 
 CArchiveProperties::CArchiveProperties(dword maxEntries):
-    m_properties(maxEntries * 5)
+	m_properties(__FILE__LINE__ maxEntries * 5, TArchivePropertyHashFunctor(maxEntries * 5))
 {
 }
 
 void CArchiveProperties::GetProperty(CStringLiteral name, Ref(sqword) value, Ref(bool) isNull) const
 {
-	CArchiveProperty prop(m_properties.search(name));
+	CArchiveProperty toFind(name);
+	TArchiveProperties::Iterator it = m_properties.FindSorted(&toFind);
 
-	value = prop.value();
-	isNull = prop.isNull();
+	if (it)
+	{
+		value = (*it)->value();
+		isNull = (*it)->isNull();
+		return;
+	}
+	value = 0;
+	isNull = true;
 }
 
 void CArchiveProperties::SetProperty(CStringLiteral name, sqword value)
 {
-	CArchiveProperty prop(name, value);
+	Ptr(CArchiveProperty) prop = OK_NEW_OPERATOR CArchiveProperty(name, value);
 
-	m_properties.insert(prop);
+	m_properties.InsertSorted(prop);
 }
 
 void CArchiveProperties::ClearProperties()
 {
-	m_properties.clear();
+	m_properties.Clear();
 }
 
 CArchiveIterator::CArchiveIterator(Ref(CArchive) _archive):

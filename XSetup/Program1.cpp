@@ -113,41 +113,61 @@ static void AddFiles(ConstRef(CFilePath) folder, Ptr(CFile) ffile, ConstRef(CStr
 }
 
 
-class CMetaProjectDependency
+class CMetaProjectDependency: public CCppObject
 {
 public:
 	CMetaProjectDependency() : m_name(), m_guid(), m_liste() {}
 	CMetaProjectDependency(CConstPointer name, CConstPointer liste) : m_name(__FILE__LINE__ name), m_guid(), m_liste(__FILE__LINE__ liste) {}
+	CMetaProjectDependency(ConstRef(CStringBuffer) name) : m_name(name), m_guid(), m_liste() {}
 	CMetaProjectDependency(ConstRef(CStringBuffer) name, ConstRef(CStringBuffer) liste) : m_name(name), m_guid(), m_liste(liste) {}
 	~CMetaProjectDependency() {}
 
-	ConstRef(CStringBuffer) key() const { return m_name; }
+	ConstRef(CStringBuffer) get_Name() const { return m_name; }
 
 	CStringBuffer m_name;
 	CStringBuffer m_guid;
 	CStringBuffer m_liste;
 };
 
-typedef CHashLinkedListT<CMetaProjectDependency, CStringBuffer, HashFunctorString> CMetaProjectDependencies;
+class TMetaProjectDependencyHashFunctor
+{
+public:
+	TMetaProjectDependencyHashFunctor(sdword cnt) : hs(cnt) {}
 
-static void AddDependencies(ConstRef(CMetaProjectDependencies) gdeplist, ConstRef(CMetaProjectDependency) dep, Ptr(CFile) ffile)
+	sdword operator()(ConstPtr(CMetaProjectDependency) p) const
+	{
+		return hs(p->get_Name());
+	}
+
+protected:
+	HashFunctorString hs;
+};
+
+typedef CDataHashLinkedListT<CMetaProjectDependency, TMetaProjectDependencyHashFunctor, CStringByNameLessFunctor<CMetaProjectDependency> > CMetaProjectDependencies;
+
+static void AddDependencies(ConstRef(CMetaProjectDependencies) gdeplist, ConstPtr(CMetaProjectDependency) dep, Ptr(CFile) ffile)
 {
 	CDataVectorT<CStringBuffer> deplist(__FILE__LINE__ 16, 16);
 	CDataVectorT<CStringBuffer>::Iterator it;
 	CStringBuffer tmp;
+	CMetaProjectDependencies::Iterator it2;
 
 	ffile->Write(_T("\t\t<ProjectDependencies>\n"));
-	deplist.Split(dep.m_liste, _T(", "));
+	deplist.Split(dep->m_liste, _T(", "));
 	it = deplist.Begin();
 	while (it)
 	{
 		tmp = *it;
 		tmp.Trim();
 
-		CMetaProjectDependency gdep(gdeplist.search(tmp));
+		CMetaProjectDependency toFind(tmp);
 
-		tmp.FormatString(__FILE__LINE__ _T("\t\t\t<ProjectDependency Name=\"%s\" guid=\"{%s}\" />\n"), gdep.m_name.GetString(), gdep.m_guid.GetString());
-		ffile->Write(tmp);
+		it2 = gdeplist.FindSorted(&toFind);
+		if (it2)
+		{
+			tmp.FormatString(__FILE__LINE__ _T("\t\t\t<ProjectDependency Name=\"%s\" guid=\"{%s}\" />\n"), (*it2)->m_name.GetString(), (*it2)->m_guid.GetString());
+			ffile->Write(tmp);
+		}
 		++it;
 	}
 	ffile->Write(_T("\t\t</ProjectDependencies>\n"));
@@ -156,23 +176,21 @@ static void AddDependencies(ConstRef(CMetaProjectDependencies) gdeplist, ConstRe
 static void InitDependencies(Ref(CMetaProjectDependencies) ProjDep, ConstRef(CAbstractConfiguration::Values) v)
 {
 	CAbstractConfiguration::Values::Iterator vIt = v.Begin();
-	CStringBuffer tmp;
+	CStringBuffer key;
+	CStringBuffer value;
 
 	while (vIt)
 	{
-		tmp.SetString(__FILE__LINE__ _T("MetaProject.Dependencies."));
-		tmp.AppendString(*vIt);
-		tmp = theApp->config()->GetUserValue(tmp, APPLICATION_NAME);
+		key.SetString(__FILE__LINE__ _T("MetaProject.Dependencies."));
+		key.AppendString(*vIt);
+		value = theApp->config()->GetUserValue(key, APPLICATION_NAME);
 
-		if (tmp.IsEmpty())
-			ProjDep.insert(CMetaProjectDependency(*vIt, CStringBuffer(__FILE__LINE__ _T(""))));
-		else
-			ProjDep.insert(CMetaProjectDependency(*vIt, tmp));
+		ProjDep.InsertSorted(OK_NEW_OPERATOR CMetaProjectDependency(*vIt, value));
 		++vIt;
 	}
 }
 
-class CMetaProjectInfo
+class CMetaProjectInfo: public CCppObject
 {
 public:
 	CMetaProjectInfo() {}
@@ -180,7 +198,7 @@ public:
 	CMetaProjectInfo(ConstRef(CStringBuffer) name) : m_name(name) {}
 	~CMetaProjectInfo() {}
 
-	__inline ConstRef(CStringBuffer) key() const { return m_name; }
+	__inline ConstRef(CStringBuffer) get_Name() const { return m_name; }
 
 	CStringBuffer m_name;
 	CStringBuffer m_Culture;
@@ -206,11 +224,25 @@ public:
 
 };
 
-typedef CHashLinkedListT<CMetaProjectInfo, CStringBuffer, HashFunctorString> CMetaProjectInfos;
-
-static void AddInfo(ConstRef(CMetaProjectInfo) info, Ptr(CFile) ffile)
+class TMetaProjectInfoHashFunctor
 {
-	if (info.isAllEmpty())
+public:
+	TMetaProjectInfoHashFunctor(sdword cnt) : hs(cnt) {}
+
+	sdword operator()(ConstPtr(CMetaProjectInfo) p) const
+	{
+		return hs(p->get_Name());
+	}
+
+protected:
+	HashFunctorString hs;
+};
+
+typedef CDataHashLinkedListT<CMetaProjectInfo, TMetaProjectInfoHashFunctor> CMetaProjectInfos;
+
+static void AddInfo(ConstPtr(CMetaProjectInfo) info, Ptr(CFile) ffile)
+{
+	if (info->isAllEmpty())
 		return;
 
 	CDataVectorT<CStringBuffer>::Iterator it;
@@ -218,16 +250,16 @@ static void AddInfo(ConstRef(CMetaProjectInfo) info, Ptr(CFile) ffile)
 	CStringBuffer tmp1;
 
 	ffile->Write(_T("\t\t<ProjectInfos>\n"));
-	if (!(info.m_Culture.IsEmpty()))
-		ffile->Write(_T("\t\t\t<Culture>%s</Culture>\n"), info.m_Culture.GetString());
-	if (!(info.m_Command.IsEmpty()))
-		ffile->Write(_T("\t\t\t<Command>%s</Command>\n"), info.m_Command.GetString());
-	if (!(info.m_OutPuts.IsEmpty()))
+	if (!(info->m_Culture.IsEmpty()))
+		ffile->Write(_T("\t\t\t<Culture>%s</Culture>\n"), info->m_Culture.GetString());
+	if (!(info->m_Command.IsEmpty()))
+		ffile->Write(_T("\t\t\t<Command>%s</Command>\n"), info->m_Command.GetString());
+	if (!(info->m_OutPuts.IsEmpty()))
 	{
 		CDataVectorT<CStringBuffer> liste(__FILE__LINE__ 16, 16);
 
 		ffile->Write(_T("\t\t\t<Outputs>\n"));
-		liste.Split(info.m_OutPuts, _T(", "));
+		liste.Split(info->m_OutPuts, _T(", "));
 		it = liste.Begin();
 		while (it)
 		{
@@ -239,12 +271,12 @@ static void AddInfo(ConstRef(CMetaProjectInfo) info, Ptr(CFile) ffile)
 		}
 		ffile->Write(_T("\t\t\t</Outputs>\n"));
 	}
-	if (!(info.m_AdditionalInputs.IsEmpty()))
+	if (!(info->m_AdditionalInputs.IsEmpty()))
 	{
 		CDataVectorT<CStringBuffer> liste(__FILE__LINE__ 16, 16);
 
 		ffile->Write(_T("\t\t\t<AdditionalInputs>\n"));
-		liste.Split(info.m_AdditionalInputs, _T(", "));
+		liste.Split(info->m_AdditionalInputs, _T(", "));
 		it = liste.Begin();
 		while (it)
 		{
@@ -256,12 +288,12 @@ static void AddInfo(ConstRef(CMetaProjectInfo) info, Ptr(CFile) ffile)
 		}
 		ffile->Write(_T("\t\t\t</AdditionalInputs>\n"));
 	}
-	if (!(info.m_PreprocessorDefinitions.IsEmpty()))
+	if (!(info->m_PreprocessorDefinitions.IsEmpty()))
 	{
 		CDataVectorT<CStringBuffer> liste(__FILE__LINE__ 16, 16);
 
 		ffile->Write(_T("\t\t\t<PreprocessorDefinitions>\n"));
-		liste.Split(info.m_PreprocessorDefinitions, _T(", "));
+		liste.Split(info->m_PreprocessorDefinitions, _T(", "));
 		it = liste.Begin();
 		while (it)
 		{
@@ -273,14 +305,14 @@ static void AddInfo(ConstRef(CMetaProjectInfo) info, Ptr(CFile) ffile)
 		}
 		ffile->Write(_T("\t\t\t</PreprocessorDefinitions>\n"));
 	}
-	if (!(info.m_PrecompiledHeaderFile.IsEmpty()))
-		ffile->Write(_T("\t\t\t<PrecompiledHeaderFile>%s</PrecompiledHeaderFile>\n"), info.m_PrecompiledHeaderFile.GetString());
-	if (!(info.m_AdditionalIncludeDirectories.IsEmpty()))
+	if (!(info->m_PrecompiledHeaderFile.IsEmpty()))
+		ffile->Write(_T("\t\t\t<PrecompiledHeaderFile>%s</PrecompiledHeaderFile>\n"), info->m_PrecompiledHeaderFile.GetString());
+	if (!(info->m_AdditionalIncludeDirectories.IsEmpty()))
 	{
 		CDataVectorT<CStringBuffer> liste(__FILE__LINE__ 16, 16);
 
 		ffile->Write(_T("\t\t\t<AdditionalIncludeDirectories>\n"));
-		liste.Split(info.m_AdditionalIncludeDirectories, _T(", "));
+		liste.Split(info->m_AdditionalIncludeDirectories, _T(", "));
 		it = liste.Begin();
 		while (it)
 		{
@@ -292,12 +324,12 @@ static void AddInfo(ConstRef(CMetaProjectInfo) info, Ptr(CFile) ffile)
 		}
 		ffile->Write(_T("\t\t\t</AdditionalIncludeDirectories>\n"));
 	}
-	if (!(info.m_AdditionalDependencies.IsEmpty()))
+	if (!(info->m_AdditionalDependencies.IsEmpty()))
 	{
 		CDataVectorT<CStringBuffer> liste(__FILE__LINE__ 16, 16);
 
 		ffile->Write(_T("\t\t\t<AdditionalDependencies>\n"));
-		liste.Split(info.m_AdditionalDependencies, _T(", "));
+		liste.Split(info->m_AdditionalDependencies, _T(", "));
 		it = liste.Begin();
 		while (it)
 		{
@@ -319,65 +351,65 @@ static void InitInfos(Ref(CMetaProjectInfos) ProjInfo, ConstRef(CAbstractConfigu
 
 	while (vIt)
 	{
-		CMetaProjectInfo info(*vIt);
+		Ptr(CMetaProjectInfo) info = OK_NEW_OPERATOR CMetaProjectInfo(*vIt);
 
 		tmp.SetString(__FILE__LINE__ _T("MetaProject.Culture."));
 		tmp.AppendString(*vIt);
 		tmp = theApp->config()->GetUserValue(tmp, APPLICATION_NAME);
 
 		if (!(tmp.IsEmpty()))
-			info.m_Culture = tmp;
+			info->m_Culture = tmp;
 
 		tmp.SetString(__FILE__LINE__ _T("MetaProject.Command."));
 		tmp.AppendString(*vIt);
 		tmp = theApp->config()->GetUserValue(tmp, APPLICATION_NAME);
 
 		if (!(tmp.IsEmpty()))
-			info.m_Command = tmp;
+			info->m_Command = tmp;
 
 		tmp.SetString(__FILE__LINE__ _T("MetaProject.Outputs."));
 		tmp.AppendString(*vIt);
 		tmp = theApp->config()->GetUserValue(tmp, APPLICATION_NAME);
 
 		if (!(tmp.IsEmpty()))
-			info.m_OutPuts = tmp;
+			info->m_OutPuts = tmp;
 
 		tmp.SetString(__FILE__LINE__ _T("MetaProject.AdditionalInputs."));
 		tmp.AppendString(*vIt);
 		tmp = theApp->config()->GetUserValue(tmp, APPLICATION_NAME);
 
 		if (!(tmp.IsEmpty()))
-			info.m_AdditionalInputs = tmp;
+			info->m_AdditionalInputs = tmp;
 
 		tmp.SetString(__FILE__LINE__ _T("MetaProject.PreprocessorDefinitions."));
 		tmp.AppendString(*vIt);
 		tmp = theApp->config()->GetUserValue(tmp, APPLICATION_NAME);
 
 		if (!(tmp.IsEmpty()))
-			info.m_PreprocessorDefinitions = tmp;
+			info->m_PreprocessorDefinitions = tmp;
 
 		tmp.SetString(__FILE__LINE__ _T("MetaProject.PrecompiledHeaderFile."));
 		tmp.AppendString(*vIt);
 		tmp = theApp->config()->GetUserValue(tmp, APPLICATION_NAME);
 
 		if (!(tmp.IsEmpty()))
-			info.m_PrecompiledHeaderFile = tmp;
+			info->m_PrecompiledHeaderFile = tmp;
 
 		tmp.SetString(__FILE__LINE__ _T("MetaProject.AdditionalIncludeDirectories."));
 		tmp.AppendString(*vIt);
 		tmp = theApp->config()->GetUserValue(tmp, APPLICATION_NAME);
 
 		if (!(tmp.IsEmpty()))
-			info.m_AdditionalIncludeDirectories = tmp;
+			info->m_AdditionalIncludeDirectories = tmp;
 
 		tmp.SetString(__FILE__LINE__ _T("MetaProject.AdditionalDependencies."));
 		tmp.AppendString(*vIt);
 		tmp = theApp->config()->GetUserValue(tmp, APPLICATION_NAME);
 
 		if (!(tmp.IsEmpty()))
-			info.m_AdditionalDependencies = tmp;
+			info->m_AdditionalDependencies = tmp;
 
-		ProjInfo.insert(info);
+		ProjInfo.InsertSorted(info);
 		++vIt;
 	}
 }
@@ -394,8 +426,12 @@ void MetaProjectCreateProjectFilesXML(CConstPointer xml_file)
 	CAbstractConfiguration::Values GuiExe(__FILE__LINE__ 16, 16);
 	CAbstractConfiguration::Values ConsoleExe(__FILE__LINE__ 16, 16);
 	CAbstractConfiguration::Values::Iterator vIt;
-	CMetaProjectDependencies ProjDep(200);
-	CMetaProjectInfos ProjInfo(200);
+	CMetaProjectDependencies ProjDep(__FILE__LINE__ 200, TMetaProjectDependencyHashFunctor(200));
+	CMetaProjectDependency toFindDep;
+	CMetaProjectDependencies::Iterator depIt;
+	CMetaProjectInfos ProjInfo(__FILE__LINE__ 200, TMetaProjectInfoHashFunctor(200));
+	CMetaProjectInfo toFindInfo;
+	CMetaProjectInfos::Iterator infoIt;
 
 	if (!(theApp->config()->HasUserValue(_T("MetaProject.Libraries"), APPLICATION_NAME)))
 	{
@@ -447,48 +483,64 @@ void MetaProjectCreateProjectFilesXML(CConstPointer xml_file)
 			vIt = Libs.FindSorted(tmp);
 			if (vIt && ((*vIt) == tmp))
 			{
-				CMetaProjectDependency dep(ProjDep.search(tmp));
+				toFindDep.m_name = tmp;
+				depIt = ProjDep.FindSorted(&toFindDep);
+				if (depIt)
+				{
+					Ptr(CMetaProjectDependency) pDep = OK_NEW_OPERATOR CMetaProjectDependency(tmp);
 
-				assert(!(dep.m_name.IsEmpty()));
-				dep.m_guid = create_uuid();
-				ProjDep.remove(tmp);
-				ProjDep.insert(dep);
+					pDep->m_guid = create_uuid();
+					ProjDep.RemoveSorted(&toFindDep);
+					ProjDep.InsertSorted(pDep);
+				}
 				++it;
 				continue;
 			}
 			vIt = NoEntryLibs.FindSorted(tmp);
 			if (vIt && ((*vIt) == tmp))
 			{
-				CMetaProjectDependency dep(ProjDep.search(tmp));
+				toFindDep.m_name = tmp;
+				depIt = ProjDep.FindSorted(&toFindDep);
+				if (depIt)
+				{
+					Ptr(CMetaProjectDependency) pDep = OK_NEW_OPERATOR CMetaProjectDependency(tmp);
 
-				assert(!(dep.m_name.IsEmpty()));
-				dep.m_guid = create_uuid();
-				ProjDep.remove(tmp);
-				ProjDep.insert(dep);
+					pDep->m_guid = create_uuid();
+					ProjDep.RemoveSorted(&toFindDep);
+					ProjDep.InsertSorted(pDep);
+				}
 				++it;
 				continue;
 			}
 			vIt = GuiExe.FindSorted(tmp);
 			if (vIt && ((*vIt) == tmp))
 			{
-				CMetaProjectDependency dep(ProjDep.search(tmp));
+				toFindDep.m_name = tmp;
+				depIt = ProjDep.FindSorted(&toFindDep);
+				if (depIt)
+				{
+					Ptr(CMetaProjectDependency) pDep = OK_NEW_OPERATOR CMetaProjectDependency(tmp);
 
-				assert(!(dep.m_name.IsEmpty()));
-				dep.m_guid = create_uuid();
-				ProjDep.remove(tmp);
-				ProjDep.insert(dep);
+					pDep->m_guid = create_uuid();
+					ProjDep.RemoveSorted(&toFindDep);
+					ProjDep.InsertSorted(pDep);
+				}
 				++it;
 				continue;
 			}
 			vIt = ConsoleExe.FindSorted(tmp);
 			if (vIt && ((*vIt) == tmp))
 			{
-				CMetaProjectDependency dep(ProjDep.search(tmp));
+				toFindDep.m_name = tmp;
+				depIt = ProjDep.FindSorted(&toFindDep);
+				if (depIt)
+				{
+					Ptr(CMetaProjectDependency) pDep = OK_NEW_OPERATOR CMetaProjectDependency(tmp);
 
-				assert(!(dep.m_name.IsEmpty()));
-				dep.m_guid = create_uuid();
-				ProjDep.remove(tmp);
-				ProjDep.insert(dep);
+					pDep->m_guid = create_uuid();
+					ProjDep.RemoveSorted(&toFindDep);
+					ProjDep.InsertSorted(pDep);
+				}
 				++it;
 				continue;
 			}
@@ -504,60 +556,76 @@ void MetaProjectCreateProjectFilesXML(CConstPointer xml_file)
 			vIt = Libs.FindSorted(tmp);
 			if (vIt && ((*vIt) == tmp))
 			{
-				CMetaProjectDependency dep(ProjDep.search(tmp));
-				CMetaProjectInfo info(ProjInfo.search(tmp));
-
-				tmp1.FormatString(__FILE__LINE__ _T("\t<Project Name=\"%s\" Guid=\"{%s}\" Folder=\"%s\" type=\"Library\">\n"), dep.m_name.GetString(), dep.m_guid.GetString(), dep.m_name.GetString());
-				ffile->Write(tmp1);
-				AddInfo(info, ffile);
-				AddFiles(tmp, ffile);
-				AddDependencies(ProjDep, dep, ffile);
-				ffile->Write(_T("\t</Project>\n"));
+				toFindDep.m_name = tmp;
+				depIt = ProjDep.FindSorted(&toFindDep);
+				toFindInfo.m_name = tmp;
+				infoIt = ProjInfo.FindSorted(&toFindInfo);
+				if (depIt && infoIt)
+				{
+					tmp1.FormatString(__FILE__LINE__ _T("\t<Project Name=\"%s\" Guid=\"{%s}\" Folder=\"%s\" type=\"Library\">\n"), (*depIt)->m_name.GetString(), (*depIt)->m_guid.GetString(), (*depIt)->m_name.GetString());
+					ffile->Write(tmp1);
+					AddInfo(*infoIt, ffile);
+					AddFiles(tmp, ffile);
+					AddDependencies(ProjDep, *depIt, ffile);
+					ffile->Write(_T("\t</Project>\n"));
+				}
 				++it;
 				continue;
 			}
 			vIt = NoEntryLibs.FindSorted(tmp);
 			if (vIt && ((*vIt) == tmp))
 			{
-				CMetaProjectDependency dep(ProjDep.search(tmp));
-				CMetaProjectInfo info(ProjInfo.search(tmp));
-
-				tmp1.FormatString(__FILE__LINE__ _T("\t<Project Name=\"%s\" Guid=\"{%s}\" Folder=\"%s\" type=\"NoEntryLibrary\">\n"), dep.m_name.GetString(), dep.m_guid.GetString(), dep.m_name.GetString());
-				ffile->Write(tmp1);
-				AddInfo(info, ffile);
-				AddFiles(tmp, ffile);
-				AddDependencies(ProjDep, dep, ffile);
-				ffile->Write(_T("\t</Project>\n"));
+				toFindDep.m_name = tmp;
+				depIt = ProjDep.FindSorted(&toFindDep);
+				toFindInfo.m_name = tmp;
+				infoIt = ProjInfo.FindSorted(&toFindInfo);
+				if (depIt && infoIt)
+				{
+					tmp1.FormatString(__FILE__LINE__ _T("\t<Project Name=\"%s\" Guid=\"{%s}\" Folder=\"%s\" type=\"NoEntryLibrary\">\n"), (*depIt)->m_name.GetString(), (*depIt)->m_guid.GetString(), (*depIt)->m_name.GetString());
+					ffile->Write(tmp1);
+					AddInfo(*infoIt, ffile);
+					AddFiles(tmp, ffile);
+					AddDependencies(ProjDep, *depIt, ffile);
+					ffile->Write(_T("\t</Project>\n"));
+				}
 				++it;
 				continue;
 			}
 			vIt = GuiExe.FindSorted(tmp);
 			if (vIt && ((*vIt) == tmp))
 			{
-				CMetaProjectDependency dep(ProjDep.search(tmp));
-				CMetaProjectInfo info(ProjInfo.search(tmp));
-
-				tmp1.FormatString(__FILE__LINE__ _T("\t<Project Name=\"%s\" Guid=\"{%s}\" Folder=\"%s\" type=\"GuiExe\">\n"), dep.m_name.GetString(), dep.m_guid.GetString(), dep.m_name.GetString());
-				ffile->Write(tmp1);
-				AddInfo(info, ffile);
-				AddFiles(tmp, ffile);
-				AddDependencies(ProjDep, dep, ffile);
-				ffile->Write(_T("\t</Project>\n"));
+				toFindDep.m_name = tmp;
+				depIt = ProjDep.FindSorted(&toFindDep);
+				toFindInfo.m_name = tmp;
+				infoIt = ProjInfo.FindSorted(&toFindInfo);
+				if (depIt && infoIt)
+				{
+					tmp1.FormatString(__FILE__LINE__ _T("\t<Project Name=\"%s\" Guid=\"{%s}\" Folder=\"%s\" type=\"GuiExe\">\n"), (*depIt)->m_name.GetString(), (*depIt)->m_guid.GetString(), (*depIt)->m_name.GetString());
+					ffile->Write(tmp1);
+					AddInfo(*infoIt, ffile);
+					AddFiles(tmp, ffile);
+					AddDependencies(ProjDep, *depIt, ffile);
+					ffile->Write(_T("\t</Project>\n"));
+				}
 				++it;
 				continue;
 			}
 			vIt = ConsoleExe.FindSorted(tmp);
 			if (vIt && ((*vIt) == tmp))
 			{
-				CMetaProjectDependency dep(ProjDep.search(tmp));
-				CMetaProjectInfo info(ProjInfo.search(tmp));
-
-				tmp1.FormatString(__FILE__LINE__ _T("\t<Project Name=\"%s\" Guid=\"{%s}\" Folder=\"%s\" type=\"ConsoleExe\">\n"), dep.m_name.GetString(), dep.m_guid.GetString(), dep.m_name.GetString());
-				ffile->Write(tmp1);
-				AddInfo(info, ffile);
-				AddFiles(tmp, ffile);
-				AddDependencies(ProjDep, dep, ffile);
-				ffile->Write(_T("\t</Project>\n"));
+				toFindDep.m_name = tmp;
+				depIt = ProjDep.FindSorted(&toFindDep);
+				toFindInfo.m_name = tmp;
+				infoIt = ProjInfo.FindSorted(&toFindInfo);
+				if (depIt && infoIt)
+				{
+					tmp1.FormatString(__FILE__LINE__ _T("\t<Project Name=\"%s\" Guid=\"{%s}\" Folder=\"%s\" type=\"ConsoleExe\">\n"), (*depIt)->m_name.GetString(), (*depIt)->m_guid.GetString(), (*depIt)->m_name.GetString());
+					ffile->Write(tmp1);
+					AddInfo(*infoIt, ffile);
+					AddFiles(tmp, ffile);
+					AddDependencies(ProjDep, *depIt, ffile);
+					ffile->Write(_T("\t</Project>\n"));
+				}
 				++it;
 				continue;
 			}

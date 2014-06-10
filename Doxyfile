@@ -807,11 +807,11 @@ RECURSIVE              = YES
 
 EXCLUDE                = ConSources/ConSources.h \
 					     CppSources/CppSources.h \
-						 CryptSources/AESTAB.H \
-						 CryptSources/CYSOURCES.H \
-						 CryptSources/DES.H \
-						 CryptSources/TWOFISH.H \
-						 CSources/CSOURCES.H \
+						 CryptSources/aestab.h \
+						 CryptSources/cysources.h \
+						 CryptSources/des.h \
+						 CryptSources/twofish.h \
+						 CSources/csources.h \
 						 GuiSources/stdafx.h \
 						 WinSources/WinSources.h
 						 

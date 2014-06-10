@@ -727,7 +727,7 @@ Ptr(CEventLogEvent) CEventLogEvents::FindSorted(DWORD64 eventRecordID)
 
 	Iterator it = super::FindSorted(&toFind);
 
-	if (super::MatchSorted(it, &toFind))
+	if (it)
 		return *it;
 	return nullptr;
 }

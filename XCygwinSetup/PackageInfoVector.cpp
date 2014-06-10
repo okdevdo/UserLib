@@ -48,7 +48,7 @@ bool CPackageInfoVector::InsertSortedUnique(Ptr(CPackageInfo) pInfo)
 {
 	Iterator itPI = FindSorted(pInfo);
 
-	if (!(MatchSorted(itPI, pInfo)))
+	if (!itPI)
 	{
 		pInfo->addRef();
 		InsertSorted(pInfo);
@@ -1169,7 +1169,7 @@ void CPackageInfoVector::Install(CStringLiteral pInstallDir, Ref(CInstallPackage
 
 			ipInfo.SetName(pInfo->GetPackageName());
 			itIP = packInstalled.FindSorted(&ipInfo);
-			if (packInstalled.MatchSorted(itIP, &ipInfo))
+			if (itIP)
 			{
 				pIPInfo = *itIP;
 				pIPInfo->SetIsInstalled(true);

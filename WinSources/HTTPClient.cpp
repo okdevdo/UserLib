@@ -27,8 +27,8 @@
 CHttpClient::CHttpClient(void):
 	_backupReason(0),
 	_defaultURL(false),
-	_requestData(250),
-    _responseData(250),
+	_requestData(__FILE__LINE__ 250, TResponseDataItemHashFunctor(250)),
+	_responseData(__FILE__LINE__ 250, TResponseDataItemHashFunctor(250)),
     _totalsize(0),
 	_open(false),
 	_errcnt(0),
@@ -40,8 +40,8 @@ CHttpClient::CHttpClient(void):
 CHttpClient::CHttpClient(ConstRef(CUrl) url):
 	_backupReason(0),
 	_defaultURL(false),
-	_requestData(250),
-    _responseData(250),
+	_requestData(__FILE__LINE__ 250, TResponseDataItemHashFunctor(250)),
+	_responseData(__FILE__LINE__ 250, TResponseDataItemHashFunctor(250)),
     _totalsize(0),
 	_open(false),
 	_errcnt(0),
@@ -74,12 +74,12 @@ void CHttpClient::ClearAll()
 	_resourceBackupString.Clear();
 	_defaultURL = false;
 	_backupReason = 0;
-	_requestData.clear();
+	_requestData.Clear();
 	_getBuffer.set_BufferSize(__FILE__LINE__ 0);
 	_responseVersion.Clear();
 	_responseTypeNum.Clear();
 	_responseTypeText.Clear();
-	_responseData.clear();
+	_responseData.Clear();
 	_responseContent.Clear();
     _totalsize = 0;
 }
@@ -89,7 +89,7 @@ void CHttpClient::ClearResponse()
 	_responseVersion.Clear();
 	_responseTypeNum.Clear();
 	_responseTypeText.Clear();
-	_responseData.clear();
+	_responseData.Clear();
 	_responseContent.Clear();
     _totalsize = 0;
 }
@@ -156,7 +156,7 @@ void CHttpClient::_InitRequest()
 void CHttpClient::MakeCommand()
 {
 	CStringBuffer getString;
-	ResponseDataList::iterator getIt(_requestData.begin());
+	TResponseDataItems::Iterator getIt = _requestData.Begin();
 
 	switch ( _command )
 	{
@@ -173,9 +173,9 @@ void CHttpClient::MakeCommand()
 	getString.AppendString(_T("\r\n"));
 	while ( *getIt )
 	{
-		getString.AppendString((*getIt)->item.Key);
+		getString.AppendString((*getIt)->Key);
 		getString.AppendString(_T(": "));
-		getString.AppendString((*getIt)->item.Value);
+		getString.AppendString((*getIt)->Value);
 		getString.AppendString(_T("\r\n"));
 		++getIt;
 	}
@@ -346,9 +346,7 @@ bool CHttpClient::Parse(Ref(CByteLinkedBuffer::Iterator) pos, int *state)
 				name.Trim();
 				key.Trim();
 
-				ResponseDataItem value(name, key);
-
-				_responseData.insert(value);
+				_responseData.InsertSorted(OK_NEW_OPERATOR ResponseDataItem(name, key));
 				pos = find;
 			}
 			break;
@@ -384,7 +382,7 @@ bool CHttpClient::Parse(Ref(CByteLinkedBuffer::Iterator) pos, int *state)
 			{
 				dword dvalue = 0;
 
-				sBuf = _responseData.search(CStringBuffer(__FILE__LINE__ _T("Content-Length"))).Value;
+				sBuf = get_ResponseData(CStringBuffer(__FILE__LINE__ _T("Content-Length")));
 				if ( sBuf.IsEmpty() )
                 {
                     ++(*state);
@@ -400,7 +398,7 @@ bool CHttpClient::Parse(Ref(CByteLinkedBuffer::Iterator) pos, int *state)
 			break;
         case 4:
             {
-				  sBuf = _responseData.search(CStringBuffer(__FILE__LINE__ _T("Transfer-Encoding"))).Value;
+				sBuf = get_ResponseData(CStringBuffer(__FILE__LINE__ _T("Transfer-Encoding")));
                 _responseContent.SetBegin(pos);
                 pos = _responseContent.Begin();
 				if ( sBuf.IsEmpty() || (sBuf != CStringLiteral(_T("chunked"))) )

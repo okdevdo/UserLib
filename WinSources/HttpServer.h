@@ -49,18 +49,18 @@ public:
 	void StopServer();
 
 	// Worker
-	struct ResponseDataItem
+	class ResponseDataItem: public CCppObject
 	{
+	public:
 		CStringBuffer Key;
 		CStringBuffer Value;
 
-		ConstRef(CStringBuffer) key() const
-		{
-			return Key;
-		}
-
 		ResponseDataItem(void) :
 			Key(), Value()
+		{
+		}
+		ResponseDataItem(ConstRef(CStringBuffer) k) :
+			Key(k), Value()
 		{
 		}
 		ResponseDataItem(ConstRef(CStringBuffer) k, ConstRef(CStringBuffer) v) :
@@ -73,20 +73,43 @@ public:
 		}
 	};
 
-	typedef CHashLinkedListT<ResponseDataItem, CStringBuffer, HashFunctorString> ResponseDataList;
-
-	struct RequestDataItem
+	class TResponseDataItemHashFunctor
 	{
+	public:
+		TResponseDataItemHashFunctor(sdword cnt) : hs(cnt) {}
+
+		sdword operator()(ConstPtr(ResponseDataItem) p) const
+		{
+			return hs(p->Key);
+		}
+
+	protected:
+		HashFunctorString hs;
+	};
+
+	class TResponseDataItemLessFunctor
+	{
+	public:
+		bool operator()(ConstPtr(ResponseDataItem) p1, ConstPtr(ResponseDataItem) p2) const
+		{
+			return p1->Key.LT(p2->Key);
+		}
+	};
+
+	typedef CDataHashLinkedListT<ResponseDataItem, TResponseDataItemHashFunctor, TResponseDataItemLessFunctor> TResponseDataItems;
+
+	class RequestDataItem: public CCppObject
+	{
+	public:
 		CStringBuffer Key;
 		CStringBuffer Value;
 
-		ConstRef(CStringBuffer) key() const
-		{
-			return Key;
-		}
-
 		RequestDataItem(void) :
 			Key(), Value()
+		{
+		}
+		RequestDataItem(ConstRef(CStringBuffer) k) :
+			Key(k), Value()
 		{
 		}
 		RequestDataItem(ConstRef(CStringBuffer) k, ConstRef(CStringBuffer) v) :
@@ -99,20 +122,43 @@ public:
 		}
 	};
 
-	typedef CHashLinkedListT<RequestDataItem, CStringBuffer, HashFunctorString> RequestDataList;
-
-	struct StatusCode
+	class TRequestDataItemHashFunctor
 	{
+	public:
+		TRequestDataItemHashFunctor(sdword cnt) : hs(cnt) {}
+
+		sdword operator()(ConstPtr(RequestDataItem) p) const
+		{
+			return hs(p->Key);
+		}
+
+	protected:
+		HashFunctorString hs;
+	};
+
+	class TRequestDataItemLessFunctor
+	{
+	public:
+		bool operator()(ConstPtr(RequestDataItem) p1, ConstPtr(RequestDataItem) p2) const
+		{
+			return p1->Key.LT(p2->Key);
+		}
+	};
+
+	typedef CDataHashLinkedListT<RequestDataItem, TRequestDataItemHashFunctor, TRequestDataItemLessFunctor> TRequestDataItems;
+
+	class StatusCode: public CCppObject
+	{
+	public:
 		long Status;
 		CStringBuffer Reason;
 
-		long key() const
-		{
-			return Status;
-		}
-
 		StatusCode(void) :
 			Status(0), Reason()
+		{
+		}
+		StatusCode(long k) :
+			Status(k), Reason()
 		{
 		}
 		StatusCode(long k, CConstPointer v) :
@@ -129,15 +175,38 @@ public:
 		}
 	};
 
-	typedef CHashLinkedListT<StatusCode, long, HashFunctorDigit> StatusCodeList;
+	class TStatusCodeHashFunctor
+	{
+	public:
+		TStatusCodeHashFunctor(sdword cnt) : hd(cnt) {}
+
+		sdword operator()(ConstPtr(StatusCode) p) const
+		{
+			return hd(p->Status);
+		}
+
+	protected:
+		HashFunctorDigit hd;
+	};
+
+	class TStatusCodeLessFunctor
+	{
+	public:
+		bool operator()(ConstPtr(StatusCode) p1, ConstPtr(StatusCode) p2) const
+		{
+			return p1->Status < p2->Status;
+		}
+	};
+
+	typedef CDataHashLinkedListT<StatusCode, TStatusCodeHashFunctor, TStatusCodeLessFunctor> TStatusCodes;
 
 	void OpenRequestQueue(CConstPointer name);
-	void ReceiveRequestHeader(Ref(RequestDataList) header, DWORD timeout = INFINITE);
+	void ReceiveRequestHeader(Ref(TRequestDataItems) header, DWORD timeout = INFINITE);
 	void ReceiveRequestBody(Ref(CByteLinkedBuffer) body);
 
-	ConstRef(StatusCode) get_StatusCode(long statuscode) const;
+	ConstPtr(StatusCode) get_StatusCode(long statuscode) const;
 
-	void SendResponse(ConstRef(StatusCode) statuscode, ConstRef(ResponseDataList) header, ConstRef(CByteLinkedBuffer) body, bool bLogging);
+	void SendResponse(ConstPtr(StatusCode) statuscode, ConstRef(TResponseDataItems) header, ConstRef(CByteLinkedBuffer) body, bool bLogging);
 
 protected:
 	bool _worker;

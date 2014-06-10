@@ -33,36 +33,32 @@
 #include "EventLogger.h"
 #include "WinDirectoryIterator.h"
 
-static CStringBuffer DumpQList(ConstRef(CHttpServer::RequestDataList) qlist)
+static CStringBuffer DumpQList(ConstRef(CHttpServer::TRequestDataItems) qlist)
 {
-	CHttpServer::RequestDataList::iterator qit(qlist.begin());
+	CHttpServer::TRequestDataItems::Iterator qit = qlist.Begin();
 	CStringBuffer tmp;
 
-	while (*qit)
+	while (qit)
 	{
-		CHttpServer::RequestDataItem qitem = (*qit)->item;
-
-		tmp.AppendString(qitem.Key);
+		tmp.AppendString((*qit)->Key);
 		tmp.AppendString(_T(": "));
-		tmp.AppendString(qitem.Value);
+		tmp.AppendString((*qit)->Value);
 		tmp.AppendString(_T("\n"));
 		++qit;
 	}
 	return tmp;
 }
 
-static CStringBuffer DumpPList(ConstRef(CHttpServer::ResponseDataList) qlist)
+static CStringBuffer DumpPList(ConstRef(CHttpServer::TResponseDataItems) qlist)
 {
-	CHttpServer::ResponseDataList::iterator qit(qlist.begin());
+	CHttpServer::TResponseDataItems::Iterator qit = qlist.Begin();
 	CStringBuffer tmp;
 
-	while (*qit)
+	while (qit)
 	{
-		CHttpServer::ResponseDataItem qitem = (*qit)->item;
-
-		tmp.AppendString(qitem.Key);
+		tmp.AppendString((*qit)->Key);
 		tmp.AppendString(_T(": "));
-		tmp.AppendString(qitem.Value);
+		tmp.AppendString((*qit)->Value);
 		tmp.AppendString(_T("\n"));
 		++qit;
 	}
@@ -235,25 +231,30 @@ protected:
 class AnalyzeQList
 {
 public:
-	AnalyzeQList(ConstRef(CHttpServer::RequestDataList) qlist) : _qlist(qlist) {}
+	AnalyzeQList(ConstRef(CHttpServer::TRequestDataItems) qlist) : _qlist(qlist) {}
 	~AnalyzeQList() {}
 
 	void analyzeAccept()
 	{
-		CHttpServer::RequestDataItem item;
+		CHttpServer::TRequestDataItems::Iterator it;
+		CHttpServer::RequestDataItem toFind;
 			
-		item = _qlist.search(CStringBuffer(__FILE__LINE__ _T("Accept")));
-		if (!(item.Value.IsEmpty()))
-			_acceptMediaTypes.SplitQ(item.Value);
-		item = _qlist.search(CStringBuffer(__FILE__LINE__ _T("AcceptCharset")));
-		if (!(item.Value.IsEmpty()))
-			_acceptCharSet.SplitQ(item.Value);
-		item = _qlist.search(CStringBuffer(__FILE__LINE__ _T("AcceptEncoding")));
-		if (!(item.Value.IsEmpty()))
-			_acceptEncoding.SplitQ(item.Value);
-		item = _qlist.search(CStringBuffer(__FILE__LINE__ _T("AcceptLanguage")));
-		if (!(item.Value.IsEmpty()))
-			_acceptLanguage.SplitQ(item.Value);
+		toFind.Key.SetString(__FILE__LINE__ _T("Accept"));
+		it = _qlist.FindSorted(&toFind);
+		if (it)
+			_acceptMediaTypes.SplitQ((*it)->Value);
+		toFind.Key.SetString(__FILE__LINE__ _T("AcceptCharset"));
+		it = _qlist.FindSorted(&toFind);
+		if (it)
+			_acceptCharSet.SplitQ((*it)->Value);
+		toFind.Key.SetString(__FILE__LINE__ _T("AcceptEncoding"));
+		it = _qlist.FindSorted(&toFind);
+		if (it)
+			_acceptEncoding.SplitQ((*it)->Value);
+		toFind.Key.SetString(__FILE__LINE__ _T("AcceptLanguage"));
+		it = _qlist.FindSorted(&toFind);
+		if (it)
+			_acceptLanguage.SplitQ((*it)->Value);
 	}
 
 	CStringBuffer DumpQ()
@@ -289,7 +290,7 @@ public:
 	__inline ConstRef(QualityFactorList) get_AcceptLanguage() const { return _acceptLanguage; }
 
 protected:
-	ConstRef(CHttpServer::RequestDataList) _qlist;
+	ConstRef(CHttpServer::TRequestDataItems) _qlist;
 	QualityFactorList _acceptMediaTypes;
 	QualityFactorList _acceptCharSet;
 	QualityFactorList _acceptEncoding;
@@ -325,9 +326,10 @@ protected:
 void RunClient(CConstPointer queueName, bool bLogging)
 {
 	CHttpServer client(true);
-	CHttpServer::RequestDataList qlist(250);
-	CHttpServer::RequestDataItem item;
-	CHttpServer::ResponseDataList plist(250);
+	CHttpServer::TRequestDataItems qlist(__FILE__LINE__ 250, CHttpServer::TRequestDataItemHashFunctor(250));
+	CHttpServer::TRequestDataItems::Iterator qit;
+	CHttpServer::RequestDataItem toFind;
+	CHttpServer::TResponseDataItems plist(__FILE__LINE__ 250, CHttpServer::TResponseDataItemHashFunctor(250));
 	QualityFactorList::Iterator it;
 	CByteLinkedBuffer body;
 	CByteBuffer bBuf;
@@ -358,7 +360,7 @@ void RunClient(CConstPointer queueName, bool bLogging)
 				trystate = 0;
 
 				client.ReceiveRequestHeader(qlist, timeout);
-				if (qlist.count() == 0)
+				if (qlist.Count() == 0)
 					break;
 			}
 
@@ -372,10 +374,11 @@ void RunClient(CConstPointer queueName, bool bLogging)
 			CEventLogger::WriteLog(CEventLogger::Information, analyzer.DumpQ());
 
 			bKeepAlive = false;
-			item = qlist.search(CStringBuffer(__FILE__LINE__ _T("Connection")));
-			if (!(item.Value.IsEmpty()))
+			toFind.Key.SetString(__FILE__LINE__ _T("Connection"));
+			qit = qlist.FindSorted(&toFind);
+			if (qit)
 			{
-				if (item.Value.Compare(CStringLiteral(_T("keep-alive")), 0, CStringLiteral::cIgnoreCase) == 0)
+				if ((*qit)->Value.Compare(CStringLiteral(_T("keep-alive")), 0, CStringLiteral::cIgnoreCase) == 0)
 					bKeepAlive = true;
 			}
 
@@ -383,48 +386,53 @@ void RunClient(CConstPointer queueName, bool bLogging)
 
 			vDate.Now();
 			tmp = vDate.GetDate();
-			plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("Date")), tmp));
-			plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("Server")), CStringBuffer(__FILE__LINE__ _T("Olivers HTTP Server 1.0, 2014"))));
+			plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("Date")), tmp));
+			plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("Server")), CStringBuffer(__FILE__LINE__ _T("Olivers HTTP Server 1.0, 2014"))));
 
-			item = qlist.search(CStringBuffer(__FILE__LINE__ _T("$$Verb")));
-			if (!(item.Value.IsEmpty()))
+			toFind.Key.SetString(__FILE__LINE__ _T("$$Verb"));
+			qit = qlist.FindSorted(&toFind);
+			if (qit)
 			{
-				if (item.Value.Compare(CStringLiteral(_T("POST")), 0, CStringLiteral::cIgnoreCase) == 0)
+				if ((*qit)->Value.Compare(CStringLiteral(_T("POST")), 0, CStringLiteral::cIgnoreCase) == 0)
 				{
 					body.Clear();
 					client.ReceiveRequestBody(body);
 					body.GetBuffer(bBuf);
 					body.Clear();
 
-					item = qlist.search(CStringBuffer(__FILE__LINE__ _T("ContentLength")));
-					if (!(item.Value.IsEmpty()))
+					toFind.Key.SetString(__FILE__LINE__ _T("ContentLength"));
+					qit = qlist.FindSorted(&toFind);
+					if (qit)
 					{
 						int l;
 
-						tmp = item.Value;
+						tmp = (*qit)->Value;
 						if (tmp.ScanString(_T("%d"), &l) >= 0)
 							bBuf.set_BufferSize(__FILE__LINE__ l);
 					}
 					tmp.convertFromByteBuffer(bBuf);
 					CEventLogger::WriteLog(CEventLogger::Information, tmp);
 
-					item = qlist.search(CStringBuffer(__FILE__LINE__ _T("$$RawUrl")));
-					if (!(item.Value.IsEmpty()))
+					toFind.Key.SetString(__FILE__LINE__ _T("$$RawUrl"));
+					qit = qlist.FindSorted(&toFind);
+					if (qit)
 					{
-						qlist.remove(CStringBuffer(__FILE__LINE__ _T("$$RawUrl")));
-						item.Value.AppendString(_T("?"));
-						item.Value.AppendString(tmp);
-						qlist.insert(item);
+						tmp2 = (*qit)->Value;
+						tmp2.AppendString(_T("?"));
+						tmp2.AppendString(tmp);
+						qlist.RemoveSorted(&toFind);
+						qlist.InsertSorted(OK_NEW_OPERATOR CHttpServer::RequestDataItem(CStringBuffer(__FILE__LINE__ _T("$$RawUrl")), tmp2));
 					}
 				}
 			}
 
-			item = qlist.search(CStringBuffer(__FILE__LINE__ _T("$$RawUrl")));
-			if (!(item.Value.IsEmpty()))
+			toFind.Key.SetString(__FILE__LINE__ _T("$$RawUrl"));
+			qit = qlist.FindSorted(&toFind);
+			if (qit)
 			{
 				trystate = 2;
 
-				CUrl rawurl(item.Value);
+				CUrl rawurl((*qit)->Value);
 				CFilePath path(rawurl.get_Resource(), CDirectoryIterator::UnixPathSeparatorString());
 				bool bPathExists = false;
 				CFilePath path2;
@@ -436,9 +444,9 @@ void RunClient(CConstPointer queueName, bool bLogging)
 					path.set_Filename(_T("index.html"));
 					if (CWinDirectoryIterator::FileExists(path))
 					{
-						tmp = item.Value;
+						tmp = (*qit)->Value;
 						tmp.AppendString(_T("index.html"));
-						plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("Location")), tmp));
+						plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("Location")), tmp));
 						retCode = 301;
 						bstdfopen = false;
 						bencoding = false;
@@ -452,9 +460,9 @@ void RunClient(CConstPointer queueName, bool bLogging)
 					path.set_Filename(_T("index.html"));
 					if (CWinDirectoryIterator::FileExists(path))
 					{
-						tmp = item.Value;
+						tmp = (*qit)->Value;
 						tmp.AppendString(_T("/index.html"));
-						plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("Location")), tmp));
+						plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("Location")), tmp));
 						retCode = 301;
 						bstdfopen = false;
 						bencoding = false;
@@ -479,7 +487,7 @@ void RunClient(CConstPointer queueName, bool bLogging)
 
 							if (CWinDirectoryIterator::DirectoryExists(path2) >= 0)
 							{
-								plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentLanguage")), qfitem->get_Name()));
+								plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentLanguage")), qfitem->get_Name()));
 								tmp = path.get_Path();
 								tmp.ToLowerCase();
 								tmp2.SetString(__FILE__LINE__ _T("homepage\\"));
@@ -488,10 +496,10 @@ void RunClient(CConstPointer queueName, bool bLogging)
 								path.set_Path(tmp);
 								bPathExists = false;
 								tmp2.ReplaceString(_T("\\"), _T("/"));
-								tmp = item.Value;
+								tmp = (*qit)->Value;
 								tmp.ToLowerCase();
 								tmp.ReplaceString(_T("homepage"), tmp2);
-								plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentLocation")), tmp));
+								plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentLocation")), tmp));
 								break;
 							}
 							++it;
@@ -514,8 +522,8 @@ void RunClient(CConstPointer queueName, bool bLogging)
 					md5Buffer = buf.GetDigest();
 					md5Buffer.convertFromHex(bBuf);
 					tmp.convertToBase64(bBuf);
-					plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("Etag")), md5Buffer));
-					plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentMd5")), tmp));
+					plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("Etag")), md5Buffer));
+					plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentMd5")), tmp));
 				}
 				if (bencoding && bPathExists)
 				{
@@ -529,12 +537,13 @@ void RunClient(CConstPointer queueName, bool bLogging)
 					CWinDirectoryIterator::ReadFileTimes(path, crDateTime, laDateTime, lmDateTime);
 					vDate.SetDate(lmDateTime);
 					tmp = vDate.GetDate();
-					plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("LastModified")), tmp));
+					plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("LastModified")), tmp));
 
-					item = qlist.search(CStringBuffer(__FILE__LINE__ _T("IfNoneMatch")));
-					if (!(item.Value.IsEmpty()))
+					toFind.Key.SetString(__FILE__LINE__ _T("IfNoneMatch"));
+					qit = qlist.FindSorted(&toFind);
+					if (qit)
 					{
-						if (item.Value.Compare(md5Buffer, 0, CStringLiteral::cIgnoreCase) == 0)
+						if ((*qit)->Value.Compare(md5Buffer, 0, CStringLiteral::cIgnoreCase) == 0)
 						{
 							retCode = 304;
 							bstdfopen = false;
@@ -542,12 +551,13 @@ void RunClient(CConstPointer queueName, bool bLogging)
 							bCreateContent = false;
 						}
 					}
-					item = qlist.search(CStringBuffer(__FILE__LINE__ _T("IfModifiedSince")));
-					if (!(item.Value.IsEmpty()))
+					toFind.Key.SetString(__FILE__LINE__ _T("IfModifiedSince"));
+					qit = qlist.FindSorted(&toFind);
+					if (qit)
 					{
 						CHttpDate vDate2;
 
-						vDate2.SetDate(item.Value);
+						vDate2.SetDate((*qit)->Value);
 						if (vDate <= vDate2)
 						{
 							retCode = 304;
@@ -562,10 +572,11 @@ void RunClient(CConstPointer queueName, bool bLogging)
 							bCreateContent = true;
 						}
 					}
-					item = qlist.search(CStringBuffer(__FILE__LINE__ _T("$$Verb")));
-					if (!(item.Value.IsEmpty()))
+					toFind.Key.SetString(__FILE__LINE__ _T("$$Verb"));
+					qit = qlist.FindSorted(&toFind);
+					if (qit)
 					{
-						if (item.Value.Compare(CStringLiteral(_T("HEAD")), 0, CStringLiteral::cIgnoreCase) == 0)
+						if ((*qit)->Value.Compare(CStringLiteral(_T("HEAD")), 0, CStringLiteral::cIgnoreCase) == 0)
 						{
 							bstdfopen = false;
 							b404Error = false;
@@ -580,33 +591,33 @@ void RunClient(CConstPointer queueName, bool bLogging)
 						if ((path.get_Extension().Compare(CStringLiteral(_T("html")), 0, CStringLiteral::cIgnoreCase) == 0) &&
 							(qfitem->get_Name().Compare(CStringLiteral(_T("text/html")), 0, CStringLiteral::cIgnoreCase) == 0))
 						{
-							plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentType")), CStringBuffer(__FILE__LINE__ _T("text/html; charset=utf-8"))));
+							plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentType")), CStringBuffer(__FILE__LINE__ _T("text/html; charset=utf-8"))));
 							break;
 						}
 						if ((path.get_Extension().Compare(CStringLiteral(_T("css")), 0, CStringLiteral::cIgnoreCase) == 0) &&
 							(qfitem->get_Name().Compare(CStringLiteral(_T("text/css")), 0, CStringLiteral::cIgnoreCase) == 0))
 						{
-							plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentType")), CStringBuffer(__FILE__LINE__ _T("text/css; charset=utf-8"))));
+							plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentType")), CStringBuffer(__FILE__LINE__ _T("text/css; charset=utf-8"))));
 							break;
 						}
 						if ((path.get_Extension().Compare(CStringLiteral(_T("png")), 0, CStringLiteral::cIgnoreCase) == 0) &&
 							(qfitem->get_Name().Compare(CStringLiteral(_T("image/png")), 0, CStringLiteral::cIgnoreCase) == 0))
 						{
-							plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentType")), CStringBuffer(__FILE__LINE__ _T("image/png"))));
+							plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentType")), CStringBuffer(__FILE__LINE__ _T("image/png"))));
 							bCreateContent = false;
 							break;
 						}
 						if ((path.get_Extension().Compare(CStringLiteral(_T("gif")), 0, CStringLiteral::cIgnoreCase) == 0) &&
 							(qfitem->get_Name().Compare(CStringLiteral(_T("image/*")), 0, CStringLiteral::cIgnoreCase) == 0))
 						{
-							plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentType")), CStringBuffer(__FILE__LINE__ _T("image/gif"))));
+							plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentType")), CStringBuffer(__FILE__LINE__ _T("image/gif"))));
 							bCreateContent = false;
 							break;
 						}
 						if ((path.get_Extension().Compare(CStringLiteral(_T("jpg")), 0, CStringLiteral::cIgnoreCase) == 0) &&
 							(qfitem->get_Name().Compare(CStringLiteral(_T("image/*")), 0, CStringLiteral::cIgnoreCase) == 0))
 						{
-							plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentType")), CStringBuffer(__FILE__LINE__ _T("image/jpg"))));
+							plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentType")), CStringBuffer(__FILE__LINE__ _T("image/jpg"))));
 							bCreateContent = false;
 							break;
 						}
@@ -630,8 +641,8 @@ void RunClient(CConstPointer queueName, bool bLogging)
 								pFilter->do_filter();
 								pFilter->close();
 
-								plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentEncoding")), CStringBuffer(__FILE__LINE__ _T("deflate"))));
-								plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("TransferEncoding")), CStringBuffer(__FILE__LINE__ _T("deflate"))));
+								plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentEncoding")), CStringBuffer(__FILE__LINE__ _T("deflate"))));
+								plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("TransferEncoding")), CStringBuffer(__FILE__LINE__ _T("deflate"))));
 
 								bstdfopen = false;
 								b404Error = false;
@@ -648,8 +659,8 @@ void RunClient(CConstPointer queueName, bool bLogging)
 								pFilter->do_filter();
 								pFilter->close();
 
-								plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentEncoding")), CStringBuffer(__FILE__LINE__ _T("gzip"))));
-								plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("TransferEncoding")), CStringBuffer(__FILE__LINE__ _T("gzip"))));
+								plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentEncoding")), CStringBuffer(__FILE__LINE__ _T("gzip"))));
+								plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("TransferEncoding")), CStringBuffer(__FILE__LINE__ _T("gzip"))));
 
 								bstdfopen = false;
 								b404Error = false;
@@ -700,22 +711,22 @@ void RunClient(CConstPointer queueName, bool bLogging)
 				bKeepAlive = false;
 			if (bKeepAlive)
 			{
-				plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("Connection")), CStringBuffer(__FILE__LINE__ _T("Keep-Alive"))));
-				plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("KeepAlive")), CStringBuffer(__FILE__LINE__ _T("500"))));
+				plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("Connection")), CStringBuffer(__FILE__LINE__ _T("Keep-Alive"))));
+				plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("KeepAlive")), CStringBuffer(__FILE__LINE__ _T("500"))));
 			}
 			else
-				plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("Connection")), CStringBuffer(__FILE__LINE__ _T("close"))));
+				plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("Connection")), CStringBuffer(__FILE__LINE__ _T("close"))));
 
 			tmp.FormatString(__FILE__LINE__ _T("%ld"), body.GetTotalLength());
-			plist.insert(CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentLength")), tmp));
+			plist.InsertSorted(OK_NEW_OPERATOR CHttpServer::ResponseDataItem(CStringBuffer(__FILE__LINE__ _T("ContentLength")), tmp));
 			client.SendResponse(client.get_StatusCode(retCode), plist, body, bLogging);
 			CEventLogger::WriteLog(CEventLogger::Information, DumpPList(plist));
 			if (!bKeepAlive)
 				bContinue = false;
 			bRecReq = true;
 			timeout = 500;
-			qlist.clear();
-			plist.clear();
+			qlist.Clear();
+			plist.Clear();
 		}
 		catch (CBaseException* ex)
 		{
@@ -733,7 +744,7 @@ void RunClient(CConstPointer queueName, bool bLogging)
 				}
 				bContinue = true;
 				bRecReq = false;
-				plist.clear();
+				plist.Clear();
 				svtrystate = 1;
 				break;
 			case 2:
@@ -742,11 +753,13 @@ void RunClient(CConstPointer queueName, bool bLogging)
 					bContinue = false;
 					break;
 				}
-				item = qlist.search(CStringBuffer(__FILE__LINE__ _T("$$RawUrl")));
+				toFind.Key.SetString(__FILE__LINE__ _T("$$RawUrl"));
+				qit = qlist.FindSorted(&toFind);
+				//if (qit)
 				// TODO: check item
 				bContinue = true;
 				bRecReq = false;
-				plist.clear();
+				plist.Clear();
 				svtrystate = 2;
 				break;
 			case 3:
@@ -757,7 +770,7 @@ void RunClient(CConstPointer queueName, bool bLogging)
 				}
 				bContinue = true;
 				bRecReq = false;
-				plist.clear();
+				plist.Clear();
 				svtrystate = 3;
 				break;
 			case 4:
@@ -768,7 +781,7 @@ void RunClient(CConstPointer queueName, bool bLogging)
 				}
 				bContinue = true;
 				bRecReq = false;
-				plist.clear();
+				plist.Clear();
 				svtrystate = 4;
 				break;
 			case 5: // client.SendResponse

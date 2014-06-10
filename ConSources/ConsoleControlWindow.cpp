@@ -62,7 +62,7 @@ CConsoleControl* CConsoleControlWindow::GetControl(CConstPointer name)
 	data.control = OK_NEW_OPERATOR CConsoleControl(name, nullptr);
 	ControlDataList::Iterator it = m_ControlList.FindSorted(&data);
 
-	if (m_ControlList.MatchSorted(it, &data))
+	if (it)
 		return (*it)->control;
 	return nullptr;
 }

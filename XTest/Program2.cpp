@@ -20,220 +20,7 @@
 ******************************************************************************/
 #include "Program.h"
 #include "strutil.h"
-
-static const char* strtoll_cnvt = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-static long long wcstoll_test(const wchar_t *_Str, wchar_t **_EndPtr, int _Radix)
-{
-	long long result = 0;
-	int state = 0;
-	int factor = 1;
-	int value;
-	const char *p;
-	long long vmax;
-	int vrem;
-
-	if (PtrCheck(_Str) || ((_Radix != 0) && ((_Radix < 2) || (_Radix > 36))))
-	{
-		errno = EINVAL;
-		return 0;
-	}
-	while (*_Str)
-	{
-		switch (state)
-		{
-		case 0:
-			if (s_isspace(*_Str))
-			{
-				++_Str;
-				break;
-			}
-			if (*_Str == L'+')
-			{
-				factor = 1;
-				++_Str;
-				++state;
-				break;
-			}
-			if (*_Str == L'-')
-			{
-				factor = -1;
-				++_Str;
-				++state;
-				break;
-			}
-			++state;
-		case 1:
-			if (*_Str == L'0')
-			{
-				++_Str;
-				if (m_toupper(*_Str) == L'X')
-				{
-					if (_Radix == 0)
-						_Radix = 16;
-					++_Str;
-					++state;
-					break;
-				}
-				if (_Radix == 0)
-					_Radix = 8;
-			}
-			else if ((*_Str >= L'1') && (*_Str <= L'9'))
-			{
-				if (_Radix == 0)
-					_Radix = 10;
-			}
-			else if (_Radix == 0)
-			{
-				errno = EINVAL;
-				return 0;
-			}
-			++state;
-		case 2:
-			vmax = LLONG_MAX / _Radix;
-			vrem = LLONG_MAX % _Radix;
-			++state;
-		case 3:
-			p = strchr(strtoll_cnvt, m_toupper(*_Str));
-			if (PtrCheck(p))
-			{
-				if (_EndPtr)
-					*_EndPtr = CastMutablePtr(wchar_t, _Str);
-				return result * factor;
-			}
-			value = Cast(int, p - strtoll_cnvt);
-			if (value >= _Radix)
-			{
-				if (_EndPtr)
-					*_EndPtr = CastMutablePtr(wchar_t, _Str);
-				return result * factor;
-			}
-			if ((result > vmax) || ((result == vmax) && (value > vrem)))
-			{
-				if (_EndPtr)
-					*_EndPtr = CastMutablePtr(wchar_t, _Str);
-				errno = ERANGE;
-				if (factor > 0)
-					return LLONG_MAX;
-				return LLONG_MIN;
-			}
-			result = (result * _Radix) + value;
-			++_Str;
-			break;
-		default:
-			break;
-		}
-	}
-	if (_EndPtr)
-		*_EndPtr = CastMutablePtr(wchar_t, _Str);
-	return result * factor;
-}
-
-static long long strtoll_test(const char *_Str, char **_EndPtr, int _Radix)
-{
-	long long result = 0;
-	int state = 0;
-	int factor = 1;
-	int value;
-	const char *p;
-	long long vmax;
-	int vrem;
-
-	if (PtrCheck(_Str) || ((_Radix != 0) && ((_Radix < 2) || (_Radix > 36))))
-	{
-		errno = EINVAL;
-		return 0;
-	}
-	while (*_Str)
-	{
-		switch (state)
-		{
-		case 0:
-			if (s_isspace(*_Str))
-			{
-				++_Str;
-				break;
-			}
-			if (*_Str == '+')
-			{
-				factor = 1;
-				++_Str;
-				++state;
-				break;
-			}
-			if (*_Str == '-')
-			{
-				factor = -1;
-				++_Str;
-				++state;
-				break;
-			}
-			++state;
-		case 1:
-			if (*_Str == '0')
-			{
-				++_Str;
-				if (m_toupper(*_Str) == 'X')
-				{
-					if (_Radix == 0)
-						_Radix = 16;
-					++_Str;
-					++state;
-					break;
-				}
-				if (_Radix == 0)
-					_Radix = 8;
-			}
-			else if ((*_Str >= '1') && (*_Str <= '9'))
-			{
-				if (_Radix == 0)
-					_Radix = 10;
-			}
-			else if (_Radix == 0)
-			{
-				errno = EINVAL;
-				return 0;
-			}
-			++state;
-		case 2:
-			vmax = LLONG_MAX / _Radix;
-			vrem = LLONG_MAX % _Radix;
-			++state;
-		case 3:
-			p = strchr(strtoll_cnvt, m_toupper(*_Str));
-			if (PtrCheck(p))
-			{
-				if (_EndPtr)
-					*_EndPtr = CastMutablePtr(char, _Str);
-				return result * factor;
-			}
-			value = Cast(int, p - strtoll_cnvt);
-			if (value >= _Radix)
-			{
-				if (_EndPtr)
-					*_EndPtr = CastMutablePtr(char, _Str);
-				return result * factor;
-			}
-			if ((result > vmax) || ((result == vmax) && (value > vrem)))
-			{
-				if (_EndPtr)
-					*_EndPtr = CastMutablePtr(char, _Str);
-				errno = ERANGE;
-				if (factor > 0)
-					return LLONG_MAX;
-				return LLONG_MIN;
-			}
-			result = (result * _Radix) + value;
-			++_Str;
-			break;
-		default:
-			break;
-		}
-	}
-	if (_EndPtr)
-		*_EndPtr = CastMutablePtr(char, _Str);
-	return result * factor;
-}
+#include "utlptr.h"
 
 struct __tagTestZahlU {
 	const wchar_t*sZahl;
@@ -349,15 +136,15 @@ static void TestStrUtil()
 
 	for (dword i = 0; i < sizeof(TestZahlA) / sizeof(struct __tagTestZahlA); ++i)
 	{
-		vTestZahl = strtoll_test(TestZahlA[i].sZahl, &sZahlEndA, TestZahlA[i].vRadix);
+		vTestZahl = strtoll(TestZahlA[i].sZahl, &sZahlEndA, TestZahlA[i].vRadix);
 		if (vTestZahl != TestZahlA[i].vZahl)
-			WriteErrorTestFile(1, _T("vTestZahl=%lld != TestZahlA[i].vZahl=%lld"), vTestZahl, TestZahlA[i].vZahl);
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("vTestZahl=%lld != TestZahlA[i].vZahl=%lld"), vTestZahl, TestZahlA[i].vZahl);
 	}
 	for (dword i = 0; i < sizeof(TestZahlU) / sizeof(struct __tagTestZahlU); ++i)
 	{
-		vTestZahl = wcstoll_test(TestZahlU[i].sZahl, &sZahlEndU, TestZahlU[i].vRadix);
+		vTestZahl = wcstoll(TestZahlU[i].sZahl, &sZahlEndU, TestZahlU[i].vRadix);
 		if (vTestZahl != TestZahlU[i].vZahl)
-			WriteErrorTestFile(1, _T("vTestZahl=%lld != TestZahlU[i].vZahl=%lld"), vTestZahl, TestZahlU[i].vZahl);
+			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("vTestZahl=%lld != TestZahlU[i].vZahl=%lld"), vTestZahl, TestZahlU[i].vZahl);
 	}
 	WriteSuccessTestFile(1);
 
@@ -371,32 +158,92 @@ static void TestStrStr()
 	CPointer p = s_strnistr2(_T("CONSOURCES"), _T("ConSources"), 10);
 
 	if ((p == nullptr) || (s_strcmp(p, _T("CONSOURCES"))))
-		WriteErrorTestFile(1, _T("p=%s != CONSOURCES"), p);
+		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("p=%s != CONSOURCES"), p);
 
 	p = s_strnistr2(_T("CONSOURCESabcdef"), _T("ConSources"), 15);
 
 	if ((p == nullptr) || (s_strcmp(p, _T("CONSOURCESabcdef"))))
-		WriteErrorTestFile(1, _T("p=%s != CONSOURCESabcdef"), p);
+		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("p=%s != CONSOURCESabcdef"), p);
 
 	p = s_strnistr2(_T("abcdefCONSOURCES"), _T("ConSources"), 15);
 
 	if ((p == nullptr) || (s_strcmp(p, _T("CONSOURCES"))))
-		WriteErrorTestFile(1, _T("p=%s != CONSOURCES"), p);
+		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("p=%s != CONSOURCES"), p);
 
 	p = s_strnistr2(_T("abcdefCONSOURCESghijk"), _T("ConSources"), 20);
 
 	if ((p == nullptr) || (s_strcmp(p, _T("CONSOURCESghijk"))))
-		WriteErrorTestFile(1, _T("p=%s != CONSOURCESghijk"), p);
+		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("p=%s != CONSOURCESghijk"), p);
 
 	WriteSuccessTestFile(1);
 	CloseTestFile();
-	return;
+}
+
+static sword __stdcall TestUtlPtr_Func(ConstPointer pA, ConstPointer pB, Pointer context)
+{
+	dword qa = CastAny(dword, pA);
+	dword qb = CastAny(dword, pB);
+
+	if (qa < qb)
+		return -1;
+	if (qa > qb)
+		return 1;
+	return 0;
+}
+
+static void TestUtlPtr()
+{
+	OpenTestFile(_T("TestUtlPtr"));
+
+	ULongPointer numbers[64];
+	ULongPointer testdata[16] = { 22, 33, 13, 89, 56, 23, 128, 55, 98, 45, 30, 248, 64, 5, 57, 152 };
+	ULongPointer testdata1[16] = { 23, 32, 14, 88, 57, 22, 129, 54, 99, 44, 31, 250, 65, 3, 56, 153 };
+	dword cnt = 0;
+	ULongPointer data;
+	sdword result;
+
+	for (int i = 0; i < 4; ++i)
+	{
+		for (int j = 0; j < 16; ++j)
+		{
+			data = testdata[j];
+			result = _lv_ubinsert(CastAny(Array, numbers), CastDWPointer(data), &cnt, TestUtlPtr_Func, NULL);
+
+			_tprintf(_T("testvector: "));
+			for (dword k = 0; k < cnt; ++k)
+				_tprintf(_T("%ld "), numbers[k]);
+			_tprintf(_T("\n"));
+			_tprintf(_T("searches:\ntestdata insert search match\n"));
+			for (int j = 0; j < 16; ++j)
+			{
+				data = testdata1[j];
+				_tprintf(_T("%3ld "), data);
+				result = _lv_ubsearch(CastAny(Array, numbers), CastDWPointer(data), cnt, TestUtlPtr_Func, NULL, UTLPTR_INSERTMODE);
+				_tprintf(_T("%3ld "), result);
+				result = _lv_ubsearch(CastAny(Array, numbers), CastDWPointer(data), cnt, TestUtlPtr_Func, NULL, UTLPTR_SEARCHMODE);
+				_tprintf(_T("%3ld "), result);
+				result = _lv_ubsearch(CastAny(Array, numbers), CastDWPointer(data), cnt, TestUtlPtr_Func, NULL, UTLPTR_MATCHMODE);
+				_tprintf(_T("%3ld"), result);
+				_tprintf(_T("\n"));
+			}
+		}
+	}
+	WriteSuccessTestFile(1);
+	CloseTestFile();
 }
 
 void TestCSources()
 {
-	COUT << _T("******************** TestStrUtil *********************\n") << endl;
+	COUT << _T("******************** TestStrUtil *********************") << endl;
+	COUT << _T("Tests 'strtoll' and 'wcstoll'.") << endl;
+	COUT << _T("Standard Test Procedure.") << endl;
 	TestStrUtil();
-	COUT << _T("******************** TestStrStr ****************************\n") << endl;
+	COUT << _T("******************** TestStrStr ****************************") << endl;
+	COUT << _T("Tests 's_strnistr2'.") << endl;
+	COUT << _T("Standard Test Procedure.") << endl;
 	TestStrStr();
+	COUT << _T("******************** TestUtlPtr ****************************") << endl;
+	COUT << _T("Tests '_lv_ubsearch'.") << endl;
+	COUT << _T("Standard Test Procedure.") << endl;
+	TestUtlPtr();
 }

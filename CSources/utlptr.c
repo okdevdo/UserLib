@@ -178,8 +178,9 @@ _lv_bsearch(Array table, ConstPointer ptr, dword max, TSearchAndSortFunc func, s
 	sdword ux = 1;
 	sdword ox = max;
 	sdword ix = -1;
-	sword erg;
-	Pointer pt;
+	sword erg = 0;
+	Pointer pt = NULL;
+
 	if (PtrCheck(table) || PtrCheck(func))
 		return -1;
 	while (ox >= ux)
@@ -212,29 +213,27 @@ _lv_bsearch(Array table, ConstPointer ptr, dword max, TSearchAndSortFunc func, s
 						return ix;
 			}
 			return 0;
-		}						   /* endif */
-	}							   /* endwhile */
+		}
+	}
 	if (ix >= 0)
 	{
 		switch (_mode)
 		{
 		case UTLPTR_INSERTMODE:
-			if (func(DerefPtr(Pointer, _fl_ptradd(table, ix * szPointer)), CastMutable(Pointer, ptr)) > 0)
-				ix--;
+			if (erg > 0)
+				--ix;
 			break;
 		case UTLPTR_SEARCHMODE:
-			if (func(DerefPtr(Pointer, _fl_ptradd(table, ix * szPointer)), CastMutable(Pointer, ptr)) >= 0)
-				break;
-			if (Cast(dword, ix) < (max - 1))
-				ix++;
+			if (erg < 0)
+				++ix;
 			break;
 		default:
 			ix = -1;
 			break;
-		}							   /* endswitch */
+		}
 	}
 	return ix;
-}								   /* end of v_bsearch */
+}
 
 sdword __stdcall
 _lv_ubsearch(Array table, ConstPointer ptr, dword max, TSearchAndSortUserFunc func, Pointer context, sword _mode)
@@ -242,8 +241,9 @@ _lv_ubsearch(Array table, ConstPointer ptr, dword max, TSearchAndSortUserFunc fu
 	sdword ux = 1;
 	sdword ox = max;
 	sdword ix = -1;
-	sword erg;
-	Pointer pt;
+	sword erg = 0;
+	Pointer pt = NULL;
+
 	if (PtrCheck(table) || PtrCheck(func))
 		return -1;
 	while (ox >= ux)
@@ -276,29 +276,27 @@ _lv_ubsearch(Array table, ConstPointer ptr, dword max, TSearchAndSortUserFunc fu
 						return ix;
 			}
 			return 0;
-		}						   /* endif */
-	}							   /* endwhile */
+		}
+	}
 	if (ix >= 0)
 	{
 		switch (_mode)
 		{
 		case UTLPTR_INSERTMODE:
-			if (func(DerefPtr(Pointer, _fl_ptradd(table, ix * szPointer)), CastMutable(Pointer, ptr), context) > 0)
-				ix--;
+			if (erg > 0)
+				--ix;
 			break;
 		case UTLPTR_SEARCHMODE:
-			if (func(DerefPtr(Pointer, _fl_ptradd(table, ix * szPointer)), CastMutable(Pointer, ptr), context) >= 0)
-				break;
-			if (Cast(dword, ix) < (max - 1))
-				ix++;
+			if (erg < 0)
+				++ix;
 			break;
 		default:
 			ix = -1;
 			break;
-		}							   /* endswitch */
+		}
 	}
 	return ix;
-}								   /* end of v_bsearch */
+}
 
 sdword __stdcall 
 _lv_lsearch( Array table, ConstPointer ptr, dword max, TSearchAndSortFunc func, sword _mode )

@@ -399,6 +399,10 @@ AM_CONDITIONAL([HAVE_NATCXX_11], [test x$ac_cv_cxx_compile_cxx11_native = xyes])
 AM_CONDITIONAL([HAVE_STDCXX_11], [test x$ac_cv_cxx_compile_cxx11_cxx = xyes])
 AM_CONDITIONAL([HAVE_GNUCXX_11], [test x$ac_cv_cxx_compile_cxx11_gxx = xyes])
 
+if  test x$ac_cv_cxx_compile_cxx0x_native = xno && test x$ac_cv_cxx_compile_cxx0x_cxx = xno && test x$ac_cv_cxx_compile_cxx0x_gxx = xno && test x$ac_cv_cxx_compile_cxx11_native = xno && test x$ac_cv_cxx_compile_cxx11_cxx = xno && test x$ac_cv_cxx_compile_cxx11_gxx = xno ; then
+	AC_MSG_ERROR([compiler does not complain to the desired C++11 features])
+fi
+
 # Arguments and Conditionals
 AC_ARG_ENABLE([debug],
  [  --enable-debug    Turn on debugging],

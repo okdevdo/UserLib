@@ -25,6 +25,7 @@
 #pragma once
 
 #include "CppSources.h"
+#include "liste.h"
 
 const int bitslong = CALC_BITS(sdword);
 const int bitslonglong = CALC_BITS(sqword);
@@ -102,324 +103,294 @@ struct HashFunctorString
 	sdword M;
 };
 
-template <class Item, class Key, class HashFunctor>
-class CHashLinkedListPT
+template <typename T1, typename T2>
+sdword __stdcall TDataHashFunc(ConstPointer data, Pointer context)
 {
-private:
-	class node : public CCppObject
+	ConstPtr(T1) pData = CastAnyConstPtr(T1, data);
+	Ptr(T2) pContext = CastAnyPtr(T2, context);
+
+	return (*pContext)(pData);
+}
+
+template <class Item, class Hash, class Lesser = CCppObjectLessFunctor<Item>, class Deleter = CCppObjectReleaseFunctor<Item> >
+class CDataHashLinkedListT
+{
+public:
+	class Iterator
 	{
 	public:
-		node() : item(), next(0) {}
-		node(Ptr(Item) x, node *t = 0) : item(x), next(t) {}
-		virtual ~node() {}
-		Item *item;
-		node* next;
-	};
-	typedef node *link;
-	link *heads;
-	dword N, M;
-	HashFunctor hashFunc;
-	bool removeR(link& x, ConstRef(Key) v)
-	{
-		if (x == 0)
-			return false;
-		if (x->item->key() == v)
-		{
-			link u = x;
-			x = x->next;
-			delete u;
-			return true;
-		}
-		link t = x;
-		while ((t->next != 0) && (t->next->item->key() != v))
-			t = t->next;
-		if (t->next == 0)
-			return false;
-		link u = t->next;
-		t->next = u->next;
-		delete u;
-		return true;
-	}
-	link searchR(link x, ConstRef(Key) v) const
-	{
-		while ((x != 0) && (x->item->key() != v))
-			x = x->next;
-		return x;
-	}
-public:
-	struct iterator
-	{
-		iterator(link *h, dword maxM) : heads(h), M(maxM), curnode(0), ix(0) { findNext(); }
+		Iterator(void) : _result(_LNULL) {}
+		Iterator(LSearchResultType result) : _result(result) {}
 
-		ConstRef(iterator) operator++() { findNext(); return *this; }
-		link operator *() { return curnode; }
+		Iterator& operator++() { _result = HashLinkedListNext(_result); return *this; }
+		Iterator& operator--() { _result = HashLinkedListPrev(_result); return *this; }
+		Ptr(Item) operator*() { return CastAnyPtr(Item, HashLinkedListGetData(_result)); }
+
+		operator bool() { return NotPtrCheck(_Lnode(_result)) && (_Loffset(_result) >= 0) && NotPtrCheck(HashLinkedListGetData(_result)); }
+		operator LSearchResultType() { return _result; }
+
+		bool operator == (Iterator other) { return LCompareEqual(_result, other._result); }
+		bool operator != (Iterator other) { return LCompareNotEqual(_result, other._result); }
 
 	private:
-		void findNext()
-		{
-			for (;;)
-			{
-				if (curnode == 0)
-				{
-					while ((ix < M) && (heads[ix] == 0)) ++ix;
-					if (ix == M)
-						return;
-					curnode = heads[ix];
-					return;
-				}
-				curnode = curnode->next;
-				if (curnode == 0)
-					++ix;
-				else
-					return;
-			}
-		}
-
-		link *heads;
-		dword M;
-		link curnode;
-		dword ix;
+		LSearchResultType _result;
 	};
-	Item* nullItem;
-	CHashLinkedListPT(int maxN) : heads(0), N(0), M(maxN / 5), hashFunc(maxN / 5), nullItem(NULL)
+
+	CDataHashLinkedListT(DECL_FILE_LINE TListCnt max, RefRef(Hash) rHash, RefRef(Lesser) rLesser = Lesser(), RefRef(Deleter) rDeleter = Deleter()) :
+		_liste(NULL), _deleter(rDeleter), _lesser(rLesser), _hash(rHash)
 	{
-		heads = CastAnyPtr(link, TFalloc(M * sizeof(link)));
+		Open(ARGS_FILE_LINE max);
 	}
-	~CHashLinkedListPT()
+	CDataHashLinkedListT(DECL_FILE_LINE TListCnt max, ConstRef(Hash) rHash, ConstRef(Lesser) rLesser, ConstRef(Deleter) rDeleter) :
+		_liste(NULL), _deleter(rDeleter), _lesser(rLesser), _hash(rHash)
 	{
-		clear();
-		TFfree(heads);
+		Open(ARGS_FILE_LINE max);
 	}
-	void clear()
+	CDataHashLinkedListT(ConstRef(CDataHashLinkedListT) copy) :
+		_liste(NULL), _deleter(copy._deleter), _lesser(copy._lesser), _hash(copy._hash)
 	{
-		link t, u;
-		for (dword i = 0; i < M; ++i)
+		Copy(copy);
+	}
+	CDataHashLinkedListT(RefRef(CDataHashLinkedListT) _move) :
+		_liste(_move._liste), _deleter(_move._deleter), _lesser(_move._lesser), _hash(_move._hash)
+	{
+		_move._liste = NULL;
+	}
+	virtual ~CDataHashLinkedListT(void)
+	{
+		Close();
+	}
+
+	ConstRef(CDataHashLinkedListT) operator = (ConstRef(CDataHashLinkedListT) copy)
+	{
+		if (this != &copy)
 		{
-			t = heads[i];
-			while (t != 0)
-			{
-				u = t->next;
-				delete t;
-				t = u;
-			}
-			heads[i] = 0;
+			Close();
+			Copy(copy);
+		}
+		return *this;
+	}
+	ConstRef(CDataHashLinkedListT) operator = (RefRef(CDataHashLinkedListT) _move)
+	{
+		if (this != &_move)
+		{
+			_liste = _move._liste;
+			_move._liste = NULL;
+		}
+		return *this;
+	}
+
+	bool Open(DECL_FILE_LINE TListCnt max)
+	{
+		_liste = HashLinkedListOpen(ARGS_FILE_LINE max, &TDataHashFunc<Item, Hash>, &_hash);
+		return _liste != NULL;
+	}
+	TListCnt Count() const
+	{
+		return HashLinkedListCount(_liste);
+	}
+	TListCnt Maximum() const
+	{
+		return HashLinkedListMaximum(_liste);
+	}
+	void Copy(ConstRef(CDataHashLinkedListT) copy)
+	{
+		Iterator it = copy.Begin();
+		Open(__FILE__LINE__ copy.Maximum());
+
+		while (it)
+		{
+			Ptr(Item) p = *it;
+
+			p->addRef();
+			InsertSorted(p);
+			++it;
 		}
 	}
-	iterator begin() const
+	void Clear()
 	{
-		return iterator(heads, M);
+		HashLinkedListClear(_liste, &TCppObjectReleaseFunc<Item, Deleter>, &_deleter);
 	}
-	dword count() const
+	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void Clear(RefRef(D) rD = D())
 	{
-		return N;
+		HashLinkedListClear(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
 	}
-	Ptr(Item) search(ConstRef(Key) v) const
+	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void Clear(Ref(D) rD)
 	{
-		link t = searchR(heads[hashFunc(v)], v);
-		if (t == 0)
-			return nullItem;
-		return t->item;
+		HashLinkedListClear(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
 	}
-	void insert(Ptr(Item) item)
+	void Close()
 	{
-		sdword i = hashFunc(item->key());
-		heads[i] = OK_NEW_OPERATOR node(item, heads[i]);
-		++N;
-	}
-	void remove(ConstRef(Key) v)
-	{
-		if (removeR(heads[hashFunc(v)], v))
-			--N;
-	}
-};
-
-template <class Item, class Key, class HashFunctor>
-class CHashLinkedListT
-{
-private:
-	class node : public CCppObject
-	{
-	public:
-		node() : item(), next(0) {}
-		node(ConstRef(Item) x, node *t = 0) : item(x), next(t) {}
-		Item item;
-		node* next;
-	};
-	typedef node *link;
-	link *heads;
-	dword N, M;
-	HashFunctor hashFunc;
-	bool removeR(link& x, ConstRef(Key) v)
-	{
-		if (x == 0)
-			return false;
-		if (x->item.key() == v)
-		{
-			link u = x;
-			x = x->next;
-			delete u;
-			return true;
-		}
-		link t = x;
-		while ((t->next != 0) && (t->next->item.key() != v))
-			t = t->next;
-		if (t->next == 0)
-			return false;
-		link u = t->next;
-		t->next = u->next;
-		delete u;
-		return true;
-	}
-	link searchR(link x, ConstRef(Key) v) const
-	{
-		while ((x != 0) && (x->item.key() != v))
-			x = x->next;
-		return x;
-	}
-public:
-	struct iterator
-	{
-		iterator(link *h, dword maxM) : heads(h), M(maxM), curnode(0), ix(0) { findNext(); }
-
-		ConstRef(iterator) operator++() { findNext(); return *this; }
-		link operator *() { return curnode; }
-
-	private:
-		void findNext()
-		{
-			for (;;)
-			{
-				if (curnode == 0)
-				{
-					while ((ix < M) && (heads[ix] == 0)) ++ix;
-					if (ix == M)
-						return;
-					curnode = heads[ix];
-					return;
-				}
-				curnode = curnode->next;
-				if (curnode == 0)
-					++ix;
-				else
-					return;
-			}
-		}
-
-		link *heads;
-		dword M;
-		link curnode;
-		dword ix;
-	};
-	Item nullItem;
-	CHashLinkedListT(int maxN) : heads(0), N(0), M(maxN / 5), hashFunc(maxN / 5)
-	{
-		heads = CastAnyPtr(link, TFalloc(M * sizeof(link)));
-	}
-	~CHashLinkedListT()
-	{
-		clear();
-		TFfree(heads);
-	}
-	void clear()
-	{
-		link t, u;
-		for (dword i = 0; i < M; ++i)
-		{
-			t = heads[i];
-			while (t != 0)
-			{
-				u = t->next;
-				delete t;
-				t = u;
-			}
-			heads[i] = 0;
-		}
-	}
-	iterator begin() const
-	{
-		return iterator(heads, M);
-	}
-	dword count() const
-	{
-		return N;
-	}
-	ConstRef(Item) search(ConstRef(Key) v) const
-	{
-		link t = searchR(heads[hashFunc(v)], v);
-		if (t == 0)
-			return nullItem;
-		return t->item;
-	}
-	void insert(ConstRef(Item) item)
-	{
-		sdword i = hashFunc(item.key());
-		heads[i] = OK_NEW_OPERATOR node(item, heads[i]);
-		++N;
-	}
-	void remove(ConstRef(Key) v)
-	{
-		if (removeR(heads[hashFunc(v)], v))
-			--N;
-	}
-};
-
-template <class Item, class Key, class HashFunctor>
-class CHashLinearExploreT
-{
-private:
-	Item *st;
-	int N, M;
-	HashFunctor hashFunc;
-public:
-	Item nullItem;
-	CHashLinearExploreT(int maxN): st(0), N(0), M(maxN << 1), hashFunc(maxN << 1)
-	{
-		st = CastAnyPtr(Item, TFalloc(sizeof(Item) * (M + 1)));
-		for ( int i = 0; i <= M; ++i )
-			st[i] = nullItem;
-	}
-	~CHashLinearExploreT()
-	{
-		TFfree(st);
-	}
-	int count()
-	{
-		return N;
-	}
-	void insert(Item item)
-	{
-		sdword i = hashFunc(item.key());
-		while ( !(st[i].null()) ) i = (i + 1) % M;
-		st[i] = item; ++N;
-	}
-	Item search(Key v)
-	{
-		sdword i = hashFunc(v);
-		while ( !(st[i].null()) )
-			if ( v == st[i].key() )
-				return st[i];
-			else
-				i = (i + 1) % M;
-		return nullItem;
-	}
-	void remove(Key v)
-	{
-		sdword i = hashFunc(v);
-		sdword j;
-		while ( !(st[i].null()) )
-			if ( v == st[i].key() )
-				break;
-			else
-				i = (i + 1) % M;
-		if ( st[i].null() )
+		if (!_liste)
 			return;
-		st[i] = nullItem; --N;
-		for ( j = i + 1; !(st[j].null()); j = (j + 1) % M, --N )
+		HashLinkedListClose(_liste, &TCppObjectReleaseFunc<Item, Deleter>, &_deleter);
+		_liste = NULL;
+	}
+	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void Close(RefRef(D) rD = D())
+	{
+		if (!_liste)
+			return;
+		HashLinkedListClose(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
+		_liste = NULL;
+	}
+	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void Close(Ref(D) rD)
+	{
+		if (!_liste)
+			return;
+		HashLinkedListClose(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
+		_liste = NULL;
+	}
+	Iterator Index(TListIndex index) const
+	{
+		Iterator it = HashLinkedListIndex(_liste, index);
+
+		return it;
+	}
+	Iterator Begin() const
+	{
+		Iterator it = HashLinkedListBegin(_liste);
+
+		return it;
+	}
+	Iterator Next(Iterator node) const
+	{
+		if (node)
+			++node;
+		return node;
+	}
+	Iterator Prev(Iterator node) const
+	{
+		if (node)
+			--node;
+		return node;
+	}
+	Iterator Last() const
+	{
+		Iterator it = HashLinkedListLast(_liste);
+
+		return it;
+	}
+	template <typename D> // CCppObjectForEachFunctor<Item>
+	bool ForEach(RefRef(D) rD = D())
+	{
+		return HashLinkedListForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD);
+	}
+	template <typename D> // CCppObjectForEachFunctor<Item>
+	bool ForEach(Ref(D) rD)
+	{
+		return HashLinkedListForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD);
+	}
+	template <typename D> // CCppObjectEqualFunctor<Item>
+	Iterator Find(ConstPtr(Item) data, RefRef(D) rD = D())
+	{
+		Iterator it = HashLinkedListFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD);
+		return it;
+	}
+	template <typename D> // CCppObjectEqualFunctor<Item>
+	Iterator Find(ConstPtr(Item) data, Ref(D) rD)
+	{
+		Iterator it = HashLinkedListFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD);
+		return it;
+	}
+	Iterator FindSorted(ConstPtr(Item) data) const
+	{
+		Iterator it;
+
+		it = HashLinkedListFindSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, CastMutablePtr(Lesser, &_lesser));
+		return it;
+	}
+	template <typename D> // CCppObjectLessFunctor<Item>
+	Iterator FindSorted(ConstPtr(Item) data, Ref(D) rD)
+	{
+		Iterator it;
+
+		it = HashLinkedListFindSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
+		return it;
+	}
+	template <typename D> // CCppObjectLessFunctor<Item>
+	Iterator FindSorted(ConstPtr(Item) data, RefRef(D) rD = D())
+	{
+		Iterator it;
+
+		it = HashLinkedListFindSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
+		return it;
+	}
+	Iterator InsertSorted(ConstPtr(Item) data)
+	{
+		return HashLinkedListInsertSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser);
+	}
+	template <typename D> // CCppObjectLessFunctor<Item>
+	Iterator InsertSorted(ConstPtr(Item) data, Ref(D) rD)
+	{
+		return HashLinkedListInsertSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
+	}
+	template <typename D> // CCppObjectLessFunctor<Item>
+	Iterator InsertSorted(ConstPtr(Item) data, RefRef(D) rD = D())
+	{
+		return HashLinkedListInsertSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
+	}
+	bool RemoveSorted(ConstPtr(Item) data)
+	{
+		return HashLinkedListRemoveSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser, &TCppObjectReleaseFunc<Item, Deleter>, &_deleter);
+	}
+	template <typename D, typename E> // CCppObjectLessFunctor<Item>, CCppObjectReleaseFunctor<Item>
+	bool RemoveSorted(ConstPtr(Item) data, Ref(D) rD, Ref(E) rE)
+	{
+		return HashLinkedListRemoveSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD, &TCppObjectReleaseFunc<Item, E>, &rE);
+	}
+	template <typename D, typename E> // CCppObjectLessFunctor<Item>, CCppObjectReleaseFunctor<Item>
+	bool RemoveSorted(ConstPtr(Item) data, RefRef(D) rD = D(), RefRef(E) rE = E())
+	{
+		return HashLinkedListRemoveSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD, &TCppObjectReleaseFunc<Item, E>, &rE);
+	}
+	Ptr(Item) GetData(Iterator node) const
+	{
+		return CastAnyPtr(Item, HashLinkedListGetData(node));
+	}
+	void SetData(Iterator node, Ptr(Item) data)
+	{
+		ConstPtr(Item) p = GetData(node);
+
+		if (NotPtrCheck(p) && (p != data))
 		{
-			Item x = st[j];
-			st[j] = nullItem;
-			insert(x);
+			_deleter(CastMutablePtr(Item, p));
+			HashLinkedListSetData(node, data);
 		}
 	}
+	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void SetData(Iterator node, Ptr(Item) data, Ref(D) rD)
+	{
+		ConstPtr(Item) p = GetData(node);
+
+		if (NotPtrCheck(p) && (p != data))
+		{
+			rD(CastMutablePtr(Item, p));
+			HashLinkedListSetData(node, data);
+		}
+	}
+	template <typename D> // CCppObjectReleaseFunctor<Item>
+	void SetData(Iterator node, Ptr(Item) data, RefRef(D) rD = D())
+	{
+		ConstPtr(Item) p = GetData(node);
+
+		if (NotPtrCheck(p) && (p != data))
+		{
+			rD(CastMutablePtr(Item, p));
+			HashLinkedListSetData(node, data);
+		}
+	}
+
+protected:
+	Pointer _liste;
+	Deleter _deleter;
+	Lesser _lesser;
+	Hash _hash;
+
+private:
+	CDataHashLinkedListT();
 };
 

@@ -115,7 +115,7 @@ void CHttpDownload::RetrieveFileTime(ConstRef(CFilePath) _relativeunixpath, Ref(
 	else
 		Load(OPEN_PERSISTENT, HEAD_COMMAND);
 
-	CStringBuffer sBuf(_responseData.search(CStringBuffer(__FILE__LINE__ _T("Last-Modified"))).Value);
+	CStringBuffer sBuf(super::get_ResponseData(CStringBuffer(__FILE__LINE__ _T("Last-Modified"))));
 	
 	if ( sBuf.IsEmpty() )
 		return;

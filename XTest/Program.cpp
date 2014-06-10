@@ -25,172 +25,8 @@
 #include "Filter.h"
 #include "DirectoryIterator.h"
 
-
-#if 0
-static void TestSpecialBlowfishImport(void)
-{
-	CFilePath finp(__FILE__LINE__ _T("BlowfishTestVectorRaw.txt"));
-	CFilePath foutp(__FILE__LINE__ _T("BlowfishTestVector8.rsp"));
-	CCppObjectPtr<CFile> inp = OK_NEW_OPERATOR CStreamFile(finp, true, false, CFile::BinaryFile_NoEncoding);
-	CCppObjectPtr<CFile> outp = OK_NEW_OPERATOR CStreamFile;
-	CDataVectorT<CStringBuffer> data(__FILE__LINE__ 256, 128);
-	CDataVectorT<CStringBuffer>::Iterator it;
-
-	outp->Create(foutp, false, CFile::BinaryFile_NoEncoding);
-
-	CCppObjectPtr<CFilterInput> ffinp = OK_NEW_OPERATOR CFileFilterInput(inp);
-	CCppObjectPtr<CFilterOutput> ffoutp = OK_NEW_OPERATOR CStringVectorFilterOutput(data);
-	CCppObjectPtr<CFilter> ffilter = OK_NEW_OPERATOR CLineReadFilter(ffinp, ffoutp);
-	bool bFirst = true;
-	int r = 0;
-
-	ffilter->open();
-	ffilter->do_filter();
-	ffilter->close();
-
-	it = data.Begin();
-	while (it)
-	{
-		CStringBuffer tmp(*it);
-		CStringConstIterator it1(tmp);
-		CPointer keyD;
-		WULong keyDLen;
-		CPointer ptD;
-		WULong ptDLen;
-		CPointer ctD;
-		WULong ctDLen;
-
-		if (bFirst)
-		{
-			CDateTime now(CDateTime::LocalTime);
-			CStringBuffer t;
-
-			bFirst = false;
-			++it;
-			outp->Write(_T("# TestVector for Blowfish ECB\r\n# Generated "));
-			now.GetTimeString(t);
-			t.DeleteString(19, t.GetLength() - 19);
-			outp->Write(t);
-			outp->Write(_T("\r\n"));
-			continue;
-		}
-		it1.EatWord(keyD, keyDLen);
-		it1.EatWhite();
-		it1.EatWord(ptD, ptDLen);
-		it1.EatWhite();
-		it1.EatWord(ctD, ctDLen);
-
-		outp->Write(_T("\r\nCOUNT = %d\r\n"), r);
-		outp->Write(_T("KEY = %.*s\r\n"), keyDLen, keyD);
-		outp->Write(_T("PLAINTEXT = %.*s\r\n"), ptDLen, ptD);
-		outp->Write(_T("CIPHERTEXT = %.*s\r\n"), ctDLen, ctD);
-
-		++r;
-		++it;
-	}
-	outp->Close();
-}
-#endif
-
-#if 0
-static void TestSpecialDESImport(void)
-{
-	CFilePath finp(__FILE__LINE__ _T("DESTestVectorRaw.txt"));
-	CFilePath foutp(__FILE__LINE__ _T("DESTestVector8.rsp"));
-	CCppObjectPtr<CFile> inp = OK_NEW_OPERATOR CStreamFile(finp, true, false, CFile::BinaryFile_NoEncoding);
-	CCppObjectPtr<CFile> outp = OK_NEW_OPERATOR CStreamFile;
-	CDataVectorT<CStringBuffer> data(__FILE__LINE__ 256, 128);
-	CDataVectorT<CStringBuffer>::Iterator it;
-
-	outp->Create(foutp, false, CFile::BinaryFile_NoEncoding);
-
-	CCppObjectPtr<CFilterInput> ffinp = OK_NEW_OPERATOR CFileFilterInput(inp);
-	CCppObjectPtr<CFilterOutput> ffoutp = OK_NEW_OPERATOR CStringVectorFilterOutput(data);
-	CCppObjectPtr<CFilter> ffilter = OK_NEW_OPERATOR CLineReadFilter(ffinp, ffoutp);
-	bool bFirst = true;
-	int r = 0;
-
-	ffilter->open();
-	ffilter->do_filter();
-	ffilter->close();
-
-	it = data.Begin();
-	while (it)
-	{
-		CStringBuffer tmp(*it);
-		CStringConstIterator it1(tmp);
-		CPointer keyD;
-		WULong keyDLen;
-		CPointer ptD;
-		WULong ptDLen;
-		CPointer ctD;
-		WULong ctDLen;
-
-		if (bFirst)
-		{
-			CDateTime now(CDateTime::LocalTime);
-			CStringBuffer t;
-
-			bFirst = false;
-			++it;
-			outp->Write(_T("# TestVector for DES\r\n# Generated "));
-			now.GetTimeString(t);
-			t.DeleteString(19, t.GetLength() - 19);
-			outp->Write(t);
-			outp->Write(_T("\r\n"));
-			continue;
-		}
-		it1.EatWord(keyD, keyDLen);
-		it1.EatWhite();
-		it1.EatWord(ptD, ptDLen);
-		it1.EatWhite();
-		it1.EatWord(ctD, ctDLen);
-
-		outp->Write(_T("\r\nCOUNT = %d\r\n"), r);
-		outp->Write(_T("KEY = %.*s\r\n"), keyDLen, keyD);
-		outp->Write(_T("PLAINTEXT = %.*s\r\n"), ptDLen, ptD);
-		outp->Write(_T("CIPHERTEXT = %.*s\r\n"), ctDLen, ctD);
-
-		++r;
-		++it;
-	}
-	outp->Close();
-}
-#endif
-
-class X: public CCppObject
-{
-public:
-	X() : m_name() {}
-	X(CConstPointer name) : m_name(__FILE__LINE__ name) {}
-	X(ConstRef(CStringBuffer) name) : m_name(name) {}
-	ConstRef(CStringBuffer) get_Name() const { return m_name; }
-
-protected:
-	CStringBuffer m_name;
-};
-
 static void TestSpecial(void)
 {
-	auto f = [](ConstPtr(X) pA, ConstPtr(X) pB) -> bool { return pA->get_Name().LT(pB->get_Name()); };
-	auto e = [](ConstPtr(X) pA, ConstPtr(X) pB) -> bool { return pA->get_Name().EQ(pB->get_Name()); };
-	typedef CDataVectorT<X, decltype(f)> TXVector;
-	TXVector dv(__FILE__LINE__ 16, 16, f, CCppObjectReleaseFunctor<X>());
-	TXVector::Iterator it;
-	X toFind(_T("ToFind"));
-
-	dv.Append(new X(_T("Eins")));
-	dv.Append(new X(_T("Zwei")));
-	dv.Append(new X(_T("ToFind")));
-	dv.Append(new X(_T("Vier")));
-	it = dv.Find<decltype(e)>(&toFind, e);
-	assert(it);
-	assert((*it)->get_Name().EQ(CStringLiteral(_T("ToFind"))));
-
-	dv.Sort();
-	it = dv.FindSorted(&toFind);
-	assert(dv.MatchSorted(it, &toFind));
-	assert((*it)->get_Name().EQ(CStringLiteral(_T("ToFind"))));
 }
 
 static Ptr(CFile) _TestFile = nullptr;
@@ -294,7 +130,7 @@ sdword WriteTestFile(int testcase, CConstPointer format, ...)
 	return ret;
 }
 
-sdword WriteErrorTestFile(int testcase, CConstPointer format, ...)
+sdword WriteErrorTestFile(const char* file, int line, int testcase, CConstPointer format, ...)
 {
 	_HasErrors = true;
 	if (ConstStrEmpty(format))
@@ -311,9 +147,41 @@ sdword WriteErrorTestFile(int testcase, CConstPointer format, ...)
 	va_start(argList, format);
 	ret = tmp.FormatString(__FILE__LINE__ format, argList);
 	va_end(argList);
-	tmp1.FormatString(__FILE__LINE__ _T("** ERROR TEST%d: "), testcase);
+	tmp1.FormatString(__FILE__LINE__ _T("** ERROR TEST%d[%hs:%d]: "), testcase, file, line);
 	tmp.PrependString(tmp1);
 	tmp.AppendString(_T("\r\n"));
+	if (NotPtrCheck(_TestFile))
+	{
+		try
+		{
+			_TestFile->Write(tmp);
+		}
+		catch (CBaseException* ex)
+		{
+			CERR << ex->GetExceptionMessage() << endl;
+			return -1;
+		}
+	}
+	return ret;
+}
+
+sdword AssertErrorTestFile(const char* file, int line, int testcase, CConstPointer text, ...)
+{
+	_HasErrors = true;
+
+	va_list argList;
+	sdword ret;
+	CStringBuffer tmp;
+	CStringBuffer tmp1;
+	CPointer format;
+
+	va_start(argList, text);
+	format = va_arg(argList, CPointer);
+	ret = tmp.FormatString(__FILE__LINE__ format, argList);
+	va_end(argList);
+	tmp1.FormatString(__FILE__LINE__ _T("** ERROR TEST%d[%hs:%d]: Condition (%s) failed {"), testcase, file, line, text);
+	tmp.PrependString(tmp1);
+	tmp.AppendString(_T("}\r\n"));
 	if (NotPtrCheck(_TestFile))
 	{
 		try
@@ -456,85 +324,6 @@ _exit:
 	_TestFile->Close();
 	_TestFile->release();
 	_TestFile = nullptr;
-}
-
-sword __stdcall TestSortFunc(ConstPointer pa, ConstPointer pb)
-{
-	if (pa < pb)
-		return -1;
-	if (pa > pb)
-		return 1;
-	return 0;
-}
-
-sword __stdcall TestSortUserFunc(ConstPointer pa, ConstPointer pb, Pointer context)
-{
-	if (pa < pb)
-		return -1;
-	if (pa > pb)
-		return 1;
-	return 0;
-}
-
-sword __stdcall TestSortFuncUInt(ConstPointer pa, ConstPointer pb)
-{
-	unsigned int* ppa = CastAnyPtr(unsigned int, CastMutable(Pointer, pa));
-	unsigned int* ppb = CastAnyPtr(unsigned int, CastMutable(Pointer, pb));
-
-	if (*ppa < *ppb)
-		return -1;
-	if (*ppa > *ppb)
-		return 1;
-	return 0;
-}
-
-sword __stdcall TestSortFuncULongPointer(ConstPointer pa, ConstPointer pb)
-{
-	ULongPointer* ppa = CastAnyPtr(ULongPointer, CastMutable(Pointer, pa));
-	ULongPointer* ppb = CastAnyPtr(ULongPointer, CastMutable(Pointer, pb));
-
-	if (*ppa < *ppb)
-		return -1;
-	if (*ppa > *ppb)
-		return 1;
-	return 0;
-}
-
-int __cdecl TestCompareSRand(const void * pA, const void * pB)
-{
-	unsigned int* piA = (unsigned int*)pA;
-	unsigned int* piB = (unsigned int*)pB;
-
-	if (*piA < *piB)
-		return -1;
-	if (*piA > *piB)
-		return 1;
-	return 0;
-}
-
-int __cdecl TestCompareSRand64(const void * pA, const void * pB)
-{
-	ULongPointer* piA = (ULongPointer *)pA;
-	ULongPointer* piB = (ULongPointer *)pB;
-
-	if (*piA < *piB)
-		return -1;
-	if (*piA > *piB)
-		return 1;
-	return 0;
-}
-
-void __stdcall TestDeleteFunc(ConstPointer data, Pointer context)
-{
-}
-
-void __stdcall VectorEmptyDeleteFunc(ConstPointer data, Pointer context)
-{
-}
-
-void showVisitor(Item v)
-{
-	v.show(COUT);
 }
 
 class TestApplication : public CApplication

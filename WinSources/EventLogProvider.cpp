@@ -1071,7 +1071,7 @@ Ptr(CEventLogProvider) CEventLogProviders::FindSorted(ConstRef(CStringBuffer) na
 
 	Iterator fIt = super::FindSorted(&toFind);
 
-	if (super::MatchSorted(fIt, &toFind))
+	if (fIt)
 		return *fIt;
 	return nullptr;
 }

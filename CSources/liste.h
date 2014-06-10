@@ -51,6 +51,7 @@ extern "C" {
 
 	typedef void (__stdcall *TDeleteFunc)( ConstPointer data, Pointer context );
 	typedef bool (__stdcall *TForEachFunc)( ConstPointer data, Pointer context );
+	typedef sdword (__stdcall *THashFunc)( ConstPointer data, Pointer context );
 
 	#define LSORTMODE_HEAPSORT 0
 	#define LSORTMODE_QUICKSORT 1
@@ -58,6 +59,7 @@ extern "C" {
 	CSOURCES_API Pointer __stdcall DoubleLinkedListOpen(DECL_FILE_LINE0);
 	CSOURCES_API TListCnt __stdcall DoubleLinkedListCount(Pointer liste);
 	CSOURCES_API void __stdcall DoubleLinkedListClose(Pointer liste, TDeleteFunc freeFunc, Pointer context);
+	CSOURCES_API void __stdcall DoubleLinkedListClear(Pointer liste, TDeleteFunc freeFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall DoubleLinkedListIndex(Pointer liste, TListIndex index);
 	CSOURCES_API LSearchResultType __stdcall DoubleLinkedListBegin(Pointer liste);
 	CSOURCES_API LSearchResultType __stdcall DoubleLinkedListNext(LSearchResultType node);
@@ -73,7 +75,7 @@ extern "C" {
 	CSOURCES_API LSearchResultType __stdcall DoubleLinkedListPrepend(Pointer liste, ConstPointer data);
 	CSOURCES_API LSearchResultType __stdcall DoubleLinkedListInsertBefore(LSearchResultType node, ConstPointer data);
 	CSOURCES_API LSearchResultType __stdcall DoubleLinkedListInsertAfter(LSearchResultType node, ConstPointer data);
-	CSOURCES_API void __stdcall DoubleLinkedListRemove(LSearchResultType node, TDeleteFunc freeFunc, Pointer context);
+	CSOURCES_API LSearchResultType __stdcall DoubleLinkedListRemove(LSearchResultType node, TDeleteFunc freeFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall DoubleLinkedListInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
 	CSOURCES_API bool __stdcall DoubleLinkedListRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer sortContext, TDeleteFunc freeFunc, Pointer freeContext);
 	CSOURCES_API Pointer __stdcall DoubleLinkedListGetData(LSearchResultType node);
@@ -81,7 +83,9 @@ extern "C" {
 
 	CSOURCES_API Pointer __stdcall ArrayOpen(DECL_FILE_LINE TListCnt max);
 	CSOURCES_API TListCnt __stdcall ArrayCount(Pointer liste);
+	CSOURCES_API TListCnt __stdcall ArrayMaximum(Pointer liste);
 	CSOURCES_API void __stdcall ArrayClose(Pointer liste, TDeleteFunc freeFunc, Pointer context);
+	CSOURCES_API void __stdcall ArrayClear(Pointer liste, TDeleteFunc freeFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall ArrayIndex(Pointer liste, TListIndex index);
 	CSOURCES_API LSearchResultType __stdcall ArrayBegin(Pointer liste);
 	CSOURCES_API LSearchResultType __stdcall ArrayNext(LSearchResultType node);
@@ -97,7 +101,7 @@ extern "C" {
 	CSOURCES_API LSearchResultType __stdcall ArrayPrepend(Pointer liste, ConstPointer data);
 	CSOURCES_API LSearchResultType __stdcall ArrayInsertBefore(LSearchResultType node, ConstPointer data);
 	CSOURCES_API LSearchResultType __stdcall ArrayInsertAfter(LSearchResultType node, ConstPointer data);
-	CSOURCES_API void __stdcall ArrayRemove(LSearchResultType node, TDeleteFunc freeFunc, Pointer context);
+	CSOURCES_API LSearchResultType __stdcall ArrayRemove(LSearchResultType node, TDeleteFunc freeFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall ArrayInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
 	CSOURCES_API bool __stdcall ArrayRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer sortContext, TDeleteFunc freeFunc, Pointer freeContext);
 	CSOURCES_API Pointer __stdcall ArrayGetData(LSearchResultType node);
@@ -105,8 +109,10 @@ extern "C" {
 
 	CSOURCES_API Pointer __stdcall VectorOpen(DECL_FILE_LINE TListCnt max, TListCnt exp);
 	CSOURCES_API TListCnt __stdcall VectorCount(Pointer liste);
+	CSOURCES_API TListCnt __stdcall VectorMaximum(Pointer liste);
 	CSOURCES_API void __stdcall VectorReserve(Pointer liste);
 	CSOURCES_API void __stdcall VectorClose(Pointer liste, TDeleteFunc freeFunc, Pointer context);
+	CSOURCES_API void __stdcall VectorClear(Pointer liste, TDeleteFunc freeFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall VectorIndex(Pointer liste, TListIndex index);
 	CSOURCES_API LSearchResultType __stdcall VectorBegin(Pointer liste);
 	CSOURCES_API LSearchResultType __stdcall VectorNext(LSearchResultType node);
@@ -122,7 +128,7 @@ extern "C" {
 	CSOURCES_API LSearchResultType __stdcall VectorPrepend(Pointer liste, ConstPointer data);
 	CSOURCES_API LSearchResultType __stdcall VectorInsertBefore(LSearchResultType node, ConstPointer data);
 	CSOURCES_API LSearchResultType __stdcall VectorInsertAfter(LSearchResultType node, ConstPointer data);
-	CSOURCES_API void __stdcall VectorRemove(LSearchResultType node, TDeleteFunc freeFunc, Pointer context);
+	CSOURCES_API LSearchResultType __stdcall VectorRemove(LSearchResultType node, TDeleteFunc freeFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall VectorInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
 	CSOURCES_API bool __stdcall VectorRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer sortContext, TDeleteFunc freeFunc, Pointer freeContext);
 	CSOURCES_API Pointer __stdcall VectorGetData(LSearchResultType node);
@@ -132,6 +138,7 @@ extern "C" {
 	CSOURCES_API TListCnt __stdcall AVLBinaryTreeCount(Pointer liste);
 	CSOURCES_API TListCnt __stdcall AVLBinaryTreeHeight(Pointer liste);
 	CSOURCES_API void __stdcall AVLBinaryTreeClose(Pointer liste, TDeleteFunc freeFunc, Pointer context);
+	CSOURCES_API void __stdcall AVLBinaryTreeClear(Pointer liste, TDeleteFunc freeFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall AVLBinaryTreeBegin(Pointer liste);
 	CSOURCES_API LSearchResultType __stdcall AVLBinaryTreeNext(LSearchResultType node);
 	CSOURCES_API LSearchResultType __stdcall AVLBinaryTreePrev(LSearchResultType node);
@@ -150,6 +157,7 @@ extern "C" {
 	CSOURCES_API TListCnt __stdcall RBBinaryTreeCount(Pointer liste);
 	CSOURCES_API TListCnt __stdcall RBBinaryTreeHeight(Pointer liste);
 	CSOURCES_API void __stdcall RBBinaryTreeClose(Pointer liste, TDeleteFunc freeFunc, Pointer context);
+	CSOURCES_API void __stdcall RBBinaryTreeClear(Pointer liste, TDeleteFunc freeFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall RBBinaryTreeBegin(Pointer liste);
 	CSOURCES_API LSearchResultType __stdcall RBBinaryTreeNext(LSearchResultType node);
 	CSOURCES_API LSearchResultType __stdcall RBBinaryTreePrev(LSearchResultType node);
@@ -168,6 +176,7 @@ extern "C" {
 	CSOURCES_API TListCnt __stdcall BTreeCount(Pointer liste);
 	CSOURCES_API TListCnt __stdcall BTreeHeight(Pointer liste);
 	CSOURCES_API void __stdcall BTreeClose(Pointer liste, TDeleteFunc freeFunc, Pointer context);
+	CSOURCES_API void __stdcall BTreeClear(Pointer liste, TDeleteFunc freeFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall BTreeIndex(Pointer liste, TListIndex index);
 	CSOURCES_API LSearchResultType __stdcall BTreeBegin(Pointer liste);
 	CSOURCES_API LSearchResultType __stdcall BTreeNext(LSearchResultType node);
@@ -178,15 +187,34 @@ extern "C" {
 	CSOURCES_API LSearchResultType __stdcall BTreeFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall BTreeUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall BTreeLowerBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
+	CSOURCES_API void __stdcall BTreeSort(Pointer liste, TSearchAndSortUserFunc sortFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall BTreeInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
 	CSOURCES_API bool __stdcall BTreeRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer sortContext, TDeleteFunc freeFunc, Pointer freeContext);
 	CSOURCES_API LSearchResultType __stdcall BTreeAppend(Pointer liste, ConstPointer data);
 	CSOURCES_API LSearchResultType __stdcall BTreePrepend(Pointer liste, ConstPointer data);
 	CSOURCES_API LSearchResultType __stdcall BTreeInsertBefore(LSearchResultType node, ConstPointer data);
 	CSOURCES_API LSearchResultType __stdcall BTreeInsertAfter(LSearchResultType node, ConstPointer data);
-	CSOURCES_API void __stdcall BTreeRemove(LSearchResultType node, TDeleteFunc freeFunc, Pointer context);
+	CSOURCES_API LSearchResultType __stdcall BTreeRemove(LSearchResultType node, TDeleteFunc freeFunc, Pointer context);
 	CSOURCES_API Pointer __stdcall BTreeGetData(LSearchResultType node);
 	CSOURCES_API void __stdcall BTreeSetData(LSearchResultType node, ConstPointer data);
+
+	CSOURCES_API Pointer __stdcall HashLinkedListOpen(DECL_FILE_LINE TListCnt max, THashFunc hfunc, Pointer hContext);
+	CSOURCES_API TListCnt __stdcall HashLinkedListCount(Pointer liste);
+	CSOURCES_API TListCnt __stdcall HashLinkedListMaximum(Pointer liste);
+	CSOURCES_API void __stdcall HashLinkedListClose(Pointer liste, TDeleteFunc freeFunc, Pointer context);
+	CSOURCES_API void __stdcall HashLinkedListClear(Pointer liste, TDeleteFunc freeFunc, Pointer context);
+	CSOURCES_API LSearchResultType __stdcall HashLinkedListIndex(Pointer liste, TListIndex index);
+	CSOURCES_API LSearchResultType __stdcall HashLinkedListBegin(Pointer liste);
+	CSOURCES_API LSearchResultType __stdcall HashLinkedListNext(LSearchResultType node);
+	CSOURCES_API LSearchResultType __stdcall HashLinkedListPrev(LSearchResultType node);
+	CSOURCES_API LSearchResultType __stdcall HashLinkedListLast(Pointer liste);
+	CSOURCES_API bool __stdcall HashLinkedListForEach(Pointer liste, TForEachFunc func, Pointer context);
+	CSOURCES_API LSearchResultType __stdcall HashLinkedListFind(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, Pointer context);
+	CSOURCES_API LSearchResultType __stdcall HashLinkedListFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
+	CSOURCES_API LSearchResultType __stdcall HashLinkedListInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
+	CSOURCES_API bool __stdcall HashLinkedListRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer sortContext, TDeleteFunc freeFunc, Pointer freeContext);
+	CSOURCES_API Pointer __stdcall HashLinkedListGetData(LSearchResultType node);
+	CSOURCES_API void __stdcall HashLinkedListSetData(LSearchResultType node, ConstPointer data);
 
 #ifdef __cplusplus
 }

@@ -27,6 +27,7 @@
 
 class WINSOURCES_API CHttpDownload: public CHttpClient
 {
+	typedef CHttpClient super;
 public:
 	CHttpDownload(void);
 	CHttpDownload(ConstRef(CStringLiteral) user, ConstRef(CStringLiteral) passwd, ConstRef(CUrl) serverandroot, ConstRef(CFilePath) diskrootpath);

@@ -41,7 +41,7 @@ void CResourceManager::add_resource(LPTSTR wndclass, CResourceManager::TResource
 	Ptr(TResourceItem) item = OK_NEW_OPERATOR TResourceItem(wndclass, rsrctype, id);
 	TResourceItems::Iterator it = m_resourceCache.FindSorted(item);
 
-	if (m_resourceCache.MatchSorted(it, item))
+	if (it)
 	{
 		m_resourceCache.SetData(it, item);
 		return;
@@ -54,7 +54,7 @@ HANDLE CResourceManager::get_resource(LPTSTR wndclass, CResourceManager::TResour
 	TResourceItem item(wndclass, rsrctype);
 	TResourceItems::Iterator it = m_resourceCache.FindSorted(&item);
 
-	if (m_resourceCache.MatchSorted(it, &item))
+	if (it)
 	{
 		if ( (*it)->CachedResource != nullptr )
 			return (*it)->CachedResource;
@@ -90,7 +90,7 @@ DWORD CResourceManager::get_resourceID(LPTSTR wndclass, CResourceManager::TResou
 	TResourceItem item(wndclass, rsrctype);
 	TResourceItems::Iterator it = m_resourceCache.FindSorted(&item);
 
-	if (m_resourceCache.MatchSorted(it, &item))
+	if (it)
 		return (*it)->ResourceID;
 	return 0;
 }
@@ -207,7 +207,7 @@ bool CFontManager::has_Font(CStringLiteral _key)
 	TFontItem item(_key);
 	TFontItems::Iterator it = m_fontCache.FindSorted(&item);
 
-	if (m_fontCache.MatchSorted(it, &item))
+	if (it)
 		return true;
 
 	if ( !(m_prefix.IsEmpty()) )
@@ -238,7 +238,7 @@ Gdiplus::Font* CFontManager::get_Font(CStringLiteral _key)
 	TFontItem item(_key);
 	TFontItems::Iterator it = m_fontCache.FindSorted(&item);
 
-	if (m_fontCache.MatchSorted(it, &item))
+	if (it)
 		return (*it)->font;
 
 	if ( !(m_prefix.IsEmpty()) )
@@ -315,7 +315,7 @@ void CFontManager::set_Font(CStringLiteral _key, ConstRef(CStringBuffer) _text)
 	TFontItem item(_key);
 	TFontItems::Iterator it = m_fontCache.FindSorted(&item);
 
-	if (m_fontCache.MatchSorted(it, &item))
+	if (it)
 	{
 		if ( bDelete )
 			m_fontCache.Remove(it);
@@ -593,7 +593,7 @@ bool CBrushManager::has_Brush(CStringLiteral _key)
 	TBrushItem item(_key);
 	TBrushItems::Iterator it = m_brushCache.FindSorted(&item);
 
-	if (m_brushCache.MatchSorted(it, &item))
+	if (it)
 		return true;
 
 	if ( !(m_prefix.IsEmpty()) )
@@ -624,7 +624,7 @@ Gdiplus::Brush* CBrushManager::get_Brush(CStringLiteral _key, ConstRef(Gdiplus::
 	TBrushItem item(_key);
 	TBrushItems::Iterator it = m_brushCache.FindSorted(&item);
 
-	if (m_brushCache.MatchSorted(it, &item))
+	if (it)
 		return (*it)->brush;
 
 	if ( !(m_prefix.IsEmpty()) )
@@ -677,13 +677,13 @@ void CBrushManager::set_Brush(CStringLiteral _key, ConstRef(Gdiplus::Color) _bru
 	TBrushItem item(_key);
 	TBrushItems::Iterator it = m_brushCache.FindSorted(&item);
 
-	if (m_brushCache.MatchSorted(it, &item))
+	if (it)
 	{
 		if ( (*it)->bPrivateCopy )
 		{
 			remove_Duplicates((*it)->brush);
 			it = m_brushCache.FindSorted(&item);
-			if (!(m_brushCache.MatchSorted(it, &item)))
+			if (!it)
 				return;
 			delete (*it)->brush;
 		}
@@ -705,13 +705,13 @@ void CBrushManager::set_Brush(CStringLiteral _key, Gdiplus::Brush* _brush, bool 
 	TBrushItem item(_key);
 	TBrushItems::Iterator it = m_brushCache.FindSorted(&item);
 
-	if (m_brushCache.MatchSorted(it, &item))
+	if (it)
 	{
 		if ( (*it)->bPrivateCopy )
 		{
 			remove_Duplicates((*it)->brush);
 			it = m_brushCache.FindSorted(&item);
-			if (!(m_brushCache.MatchSorted(it, &item)))
+			if (!it)
 				return;
 			delete (*it)->brush;
 		}
@@ -755,13 +755,13 @@ void CBrushManager::set_Brush(CStringLiteral _key, ConstRef(CStringBuffer) _text
 	TBrushItem item(_key);
 	TBrushItems::Iterator it = m_brushCache.FindSorted(&item);
 
-	if (m_brushCache.MatchSorted(it, &item))
+	if (it)
 	{
 		if ( (*it)->bPrivateCopy )
 		{
 			remove_Duplicates((*it)->brush);
 			it = m_brushCache.FindSorted(&item);
-			if (!(m_brushCache.MatchSorted(it, &item)))
+			if (!it)
 				return;
 			if ( !bDelete )
 				delete (*it)->brush;

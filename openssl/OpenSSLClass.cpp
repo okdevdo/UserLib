@@ -36,7 +36,7 @@ Ptr(COpenSSLClass) COpenSSLClass::find_obj(ConstPointer raw)
 	COpenSSLClass cmp(raw);
 	COpenSSLClasses::Iterator it = _objs.FindSorted(&cmp);
 
-	if (_objs.MatchSorted(it, &cmp))
+	if (it)
 		return *it;
 	return nullptr;
 }
@@ -45,7 +45,7 @@ void COpenSSLClass::insert_obj()
 {
 	COpenSSLClasses::Iterator it = _objs.FindSorted(this);
 
-	if (_objs.MatchSorted(it, this))
+	if (it)
 		return;
 	_objs.InsertSorted(this);
 }
@@ -54,6 +54,6 @@ void COpenSSLClass::remove_obj()
 {
 	COpenSSLClasses::Iterator it = _objs.FindSorted(this);
 
-	if (_objs.MatchSorted(it, this))
+	if (it)
 		_objs.Remove(it);
 }

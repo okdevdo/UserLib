@@ -279,7 +279,7 @@ public:
 		assoc.raw = raw;
 		super::Iterator it = super::FindSorted(&assoc);
 
-		if (super::MatchSorted(it, &assoc))
+		if (it)
 			return (*it)->cdata;
 		return nullptr;
 	}

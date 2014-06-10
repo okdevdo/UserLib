@@ -30,16 +30,11 @@ public:
 	CUrl(ConstRef(CStringBuffer) url);
 	virtual ~CUrl(void);
 
-	class QueryDataItem
+	class QueryDataItem: public CCppObject
 	{
 	public:
 		CStringBuffer Key;
 		CStringBuffer Value;
-
-		ConstRef(CStringBuffer) key() const
-		{
-			return Key;
-		}
 
 		QueryDataItem(void) :
 			Key(), Value()
@@ -67,14 +62,41 @@ public:
 			Key(copy.Key), Value(copy.Value)
 		{
 		}
+		virtual ~QueryDataItem() {}
 	};
 
-	class QueryDataList : public CHashLinkedListT<QueryDataItem, CStringBuffer, HashFunctorString>
+	class TQueryDataItemHashFunctor
 	{
-		typedef CHashLinkedListT<QueryDataItem, CStringBuffer, HashFunctorString> super;
 	public:
-		QueryDataList(): super(250) {}
-		~QueryDataList() {}
+		TQueryDataItemHashFunctor(sdword cnt) : hs(cnt) {}
+
+		sdword operator()(ConstPtr(QueryDataItem) p) const
+		{
+			return hs(p->Key);
+		}
+
+	protected:
+		HashFunctorString hs;
+	};
+
+	class TQueryDataItemLessFunctor
+	{
+	public:
+		bool operator()(ConstPtr(QueryDataItem) p1, ConstPtr(QueryDataItem) p2) const
+		{
+			return p1->Key.LT(p2->Key);
+		}
+	};
+
+	typedef CDataHashLinkedListT<QueryDataItem, TQueryDataItemHashFunctor, TQueryDataItemLessFunctor> TQueryDataItems;
+
+	class QueryDataList : public TQueryDataItems
+	{
+		typedef TQueryDataItems super;
+
+	public:
+		QueryDataList(): super(__FILE__LINE__ 250, TQueryDataItemHashFunctor(250)) {}
+		virtual ~QueryDataList() {}
 
 		void split(ConstRef(CStringBuffer) a)
 		{
@@ -84,7 +106,7 @@ public:
 
 			tmp.SplitAny(_T("&;"), p, 64, &cnt);
 			for (dword i = 0; i < cnt; ++i)
-				insert(QueryDataItem(CStringBuffer(__FILE__LINE__ p[i])));
+				InsertSorted(OK_NEW_OPERATOR QueryDataItem(CStringBuffer(__FILE__LINE__ p[i])));
 		}
 	};
 

@@ -185,7 +185,7 @@ public:
 		CProjectInfo vdata(name);
 		super::Iterator it = super::FindSorted(&vdata);
 
-		if (super::MatchSorted(it, &vdata))
+		if (it)
 		{
 			tmp = (*it)->m_Folder;
 			tmp.PrependString(_T("..\\"));

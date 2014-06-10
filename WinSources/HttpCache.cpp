@@ -593,16 +593,16 @@ void CHttpCache::UpdateCookieCache(Ref(CHttpClient) client, double id)
 			bContinue = false;
 	}
 
-	CHttpClient::ResponseDataList::iterator rit(client.get_ResponseDataBegin());
+	CHttpClient::TResponseDataItems::Iterator rit = client.get_ResponseDataBegin();
 
 	while ( *rit )
 	{
-		sBuf = (*rit)->item.Key;
+		sBuf = (*rit)->Key;
 		if ( sBuf == CStringLiteral(_T("Set-Cookie")) )
 		{
 			m_CookieCache.ClearData();
 			m_CookieCache.SetNumericField(1, id);
-			sBuf = (*rit)->item.Value;
+			sBuf = (*rit)->Value;
 
 			CStringConstIterator sit(sBuf.GetString());
 			dword cnt = 1;

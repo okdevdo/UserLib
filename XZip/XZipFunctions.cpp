@@ -723,7 +723,7 @@ static void _XZipUpdateAddFilesRecurse(Ref(CZipArchive) zipArchive, ConstRef(CFi
 			fpath1.set_Filename(it.get_Name());
 			item.fPath = fpath1.get_Path();
 			itG = fileList.FindSorted(&item);
-			if (!(fileList.MatchSorted(itG, &item)))
+			if (!itG)
 			{
 				if (!_TestExcludeSpecs(fpath1.get_Path(), excludespecs))
 				{
@@ -792,7 +792,7 @@ void _XZipUpdateAddFiles(Ref(CZipArchive) zipArchive, WBool recursefolders, Cons
 				fpath.set_Filename(it.get_Name());
 				item.fPath = fpath.get_Path();
 				itG = fileList.FindSorted(&item);
-				if (!(fileList.MatchSorted(itG, &item)))
+				if (!itG)
 				{
 					if (!_TestExcludeSpecs(fpath.get_Path(), excludespecs))
 					{

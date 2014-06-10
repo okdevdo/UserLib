@@ -1671,7 +1671,7 @@ void CZipArchiveImpl::AddFile(ConstRef(CFilePath) fname, ConstRef(CArchiveProper
 
 	TFileCacheItems::Iterator itFileCacheItems = m_FileCache.FindSorted(pOutput->get_CacheItem());
 
-	if (m_FileCache.MatchSorted(itFileCacheItems, pOutput->get_CacheItem()))
+	if (itFileCacheItems)
 		m_FileCache.Remove(itFileCacheItems);
 	m_FileCache.InsertSorted(pOutput->get_CacheItem());
 	m_modified = true;

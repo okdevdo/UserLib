@@ -21,23 +21,35 @@
 #pragma once
 
 #include "OpenSSL.h"
+#include "DataHashtable.h"
 
 class COpenSSLClass;
-class COpenSSLClassFunctor
+class COpenSSLClassLessFunctor
 {
 public:
 	bool operator()(ConstPtr(COpenSSLClass) pA, ConstPtr(COpenSSLClass) pB) const;
 };
 
+class COpenSSLClassHashFunctor
+{
+public:
+	COpenSSLClassHashFunctor(sdword tsz) : hd(tsz) {}
+
+	sdword operator()(ConstPtr(COpenSSLClass) p) const;
+
+private:
+	HashFunctorDigit64 hd;
+};
+
 class OPENSSL_API COpenSSLClass : public CCppObject
 {
 public:
-	typedef CDataVectorT<COpenSSLClass, COpenSSLClassFunctor> COpenSSLClasses;
+	typedef CDataVectorT<COpenSSLClass, COpenSSLClassLessFunctor> COpenSSLClasses;
+
 	COpenSSLClass(ConstPointer raw = NULL);
 	virtual ~COpenSSLClass();
 
 	__inline ConstPointer get_raw() const { return _raw; }
-	__inline qword key() const { return CastAny(qword, _raw); }
 
 	static Ptr(COpenSSLClass) find_obj(ConstPointer raw);
 
@@ -51,8 +63,12 @@ private:
 	static COpenSSLClasses _objs;
 };
 
-__inline bool COpenSSLClassFunctor::operator()(ConstPtr(COpenSSLClass) pA, ConstPtr(COpenSSLClass) pB) const
+__inline bool COpenSSLClassLessFunctor::operator()(ConstPtr(COpenSSLClass) pA, ConstPtr(COpenSSLClass) pB) const
 {
 	return pA->get_raw() < pB->get_raw();
 }
 
+__inline sdword COpenSSLClassHashFunctor::operator()(ConstPtr(COpenSSLClass) p) const
+{
+	return hd(CastAny(sqword, p->get_raw()));
+}

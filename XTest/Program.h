@@ -27,11 +27,7 @@
 #include "StringLiteral.h"
 #include "StringBuffer.h"
 #include "ByteBuffer.h"
-#include "DataDoubleLinkedList.h"
-#include "DataArray.h"
 #include "DataVector.h"
-#include "DataBinaryTree.h"
-#include "DataBTree.h"
 
 #include <search.h>
 #if defined(OK_COMP_MSC) && defined(__DEBUG__)
@@ -58,54 +54,13 @@ using std::endl;
 #define _tprintf printf
 #endif
 
-sword __stdcall TestSortFunc( ConstPointer pa, ConstPointer pb );
-sword __stdcall TestSortUserFunc( ConstPointer pa, ConstPointer pb, Pointer context );
-sword __stdcall TestSortFuncUInt( ConstPointer pa, ConstPointer pb );
-sword __stdcall TestSortFuncULongPointer(ConstPointer pa, ConstPointer pb);
-int __cdecl TestCompareSRand(const void * pA, const void * pB);
-int __cdecl TestCompareSRand64(const void * pA, const void * pB);
-void __stdcall TestDeleteFunc( ConstPointer data, Pointer context );
-
-class TestFuncUIntLessFunctor
-{
-public:
-	bool operator()(ConstPtr(unsigned int) r1, ConstPtr(unsigned int) r2) const
-	{
-		return *r1 < *r2;
-	}
-};
-
-typedef CDataVectorT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntVector;
-typedef CDataDoubleLinkedListT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntDoubleLinkedList;
-typedef CDataArrayT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntArray;
-typedef CDataAVLBinaryTreeT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntAVLBinaryTree;
-typedef CDataRBBinaryTreeT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntRBBinaryTree;
-typedef CDataBTreeT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntBTree;
-
 void OpenTestFile(CConstPointer _TestFunction);
 sdword WriteTestFile(int testcase, CConstPointer format, ...);
-sdword WriteErrorTestFile(int testcase, CConstPointer format, ...);
+sdword WriteErrorTestFile(const char* file, int line, int testcase, CConstPointer format, ...);
+sdword AssertErrorTestFile(const char* file, int line, int testcase, CConstPointer text, ...);
+#define ASSERTTESTFILE(testcase, boolexpr, ...) if (!(boolexpr)) AssertErrorTestFile(__FILE__, __LINE__, (testcase), _T(#boolexpr), __VA_ARGS__)
 sdword WriteSuccessTestFile(int testcase);
 void CloseTestFile();
-
-struct Item
-{
-	unsigned int _key;
-	int _value;
-	unsigned int key() const { return _key; }
-	bool null() { return _key == 0; }
-	int value() { return _value; }
-	void show(OSTREAM& os) { os << _T("Key: ") << _key << _T(", Value: ") << _value << endl; }
-	Item(): _key(0), _value(0) {}
-	Item(int pKey, int pValue): _key(pKey), _value(pValue) {}
-};
-
-__inline bool operator == (const Item& a, const Item& b)
-{
-	return a.key() == b.key();
-}
-
-void showVisitor(Item v);
 
 void TestCppSources();
 void TestDataStructures();

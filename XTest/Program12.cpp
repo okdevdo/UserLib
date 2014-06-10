@@ -97,61 +97,91 @@ static void _TestURL()
 	assert(url.get_Server().Compare(CStringLiteral(_T("localhost:8080")), 0, CStringLiteral::cIgnoreCase) == 0);
 	assert(url.get_Resource().Compare(CStringLiteral(_T("/homepage/index.html")), 0, CStringLiteral::cIgnoreCase) == 0);
 	assert(url.get_Fragment().IsEmpty());
-	assert(url.get_Queries().count() == 0);
+	assert(url.get_Queries().Count() == 0);
 	CStringBuffer tmp = url.get_Encoded(CUrl::EncodeTypeStandard);
 
 	assert(url1.get_Protocol().Compare(CStringLiteral(_T("http")), 0, CStringLiteral::cIgnoreCase) == 0);
 	assert(url1.get_Server().Compare(CStringLiteral(_T("localhost:8080")), 0, CStringLiteral::cIgnoreCase) == 0);
 	assert(url1.get_Resource().Compare(CStringLiteral(_T("/homepage/index.html")), 0, CStringLiteral::cIgnoreCase) == 0);
 	assert(url1.get_Fragment().Compare(CStringLiteral(_T("anchor")), 0, CStringLiteral::cIgnoreCase) == 0);
-	ConstRef(CUrl::QueryDataList) tmp1 = url1.get_Queries();
-	ConstRef(CUrl::QueryDataItem) value1 = tmp1.search(CStringBuffer(__FILE__LINE__ _T("test")));
-	assert(value1.Value.Compare(CStringLiteral(_T("value")), 0, CStringLiteral::cIgnoreCase) == 0);
+
+	CUrl::QueryDataItem toFind1;
+
+	toFind1.Key.SetString(__FILE__LINE__ _T("test"));
+
+	CUrl::QueryDataList::Iterator it1 = url1.get_Queries().FindSorted(&toFind1);
+	if (it1)
+		assert((*it1)->Value.Compare(CStringLiteral(_T("value")), 0, CStringLiteral::cIgnoreCase) == 0);
 
 	assert(url1a.get_Protocol().Compare(CStringLiteral(_T("http")), 0, CStringLiteral::cIgnoreCase) == 0);
 	assert(url1a.get_Server().Compare(CStringLiteral(_T("localhost:8080")), 0, CStringLiteral::cIgnoreCase) == 0);
 	assert(url1a.get_Resource().Compare(CStringLiteral(_T("/homepage/index.html")), 0, CStringLiteral::cIgnoreCase) == 0);
 	assert(url1a.get_Fragment().IsEmpty());
-	ConstRef(CUrl::QueryDataList) tmp1a = url1a.get_Queries();
-	ConstRef(CUrl::QueryDataItem) value1a = tmp1a.search(CStringBuffer(__FILE__LINE__ _T("test")));
-	assert(value1a.Value.Compare(CStringLiteral(_T("value")), 0, CStringLiteral::cIgnoreCase) == 0);
+
+	CUrl::QueryDataItem toFind1a;
+
+	toFind1a.Key.SetString(__FILE__LINE__ _T("test"));
+
+	CUrl::QueryDataList::Iterator it1a = url1a.get_Queries().FindSorted(&toFind1a);
+	if (it1a)
+		assert((*it1a)->Value.Compare(CStringLiteral(_T("value")), 0, CStringLiteral::cIgnoreCase) == 0);
 
 	assert(url1b.get_Protocol().Compare(CStringLiteral(_T("http")), 0, CStringLiteral::cIgnoreCase) == 0);
 	assert(url1b.get_Server().Compare(CStringLiteral(_T("localhost:8080")), 0, CStringLiteral::cIgnoreCase) == 0);
 	assert(url1b.get_Resource().Compare(CStringLiteral(_T("/")), 0, CStringLiteral::cIgnoreCase) == 0);
 	assert(url1b.get_Fragment().IsEmpty());
-	ConstRef(CUrl::QueryDataList) tmp1b = url1b.get_Queries();
-	ConstRef(CUrl::QueryDataItem) value1b = tmp1b.search(CStringBuffer(__FILE__LINE__ _T("test")));
-	assert(value1b.Value.Compare(CStringLiteral(_T("value")), 0, CStringLiteral::cIgnoreCase) == 0);
+
+	CUrl::QueryDataItem toFind1b;
+
+	toFind1b.Key.SetString(__FILE__LINE__ _T("test"));
+
+	CUrl::QueryDataList::Iterator it1b = url1b.get_Queries().FindSorted(&toFind1b);
+	if (it1b)
+		assert((*it1b)->Value.Compare(CStringLiteral(_T("value")), 0, CStringLiteral::cIgnoreCase) == 0);
 
 	assert(url1c.get_Protocol().Compare(CStringLiteral(_T("http")), 0, CStringLiteral::cIgnoreCase) == 0);
 	assert(url1c.get_Server().Compare(CStringLiteral(_T("localhost:8080")), 0, CStringLiteral::cIgnoreCase) == 0);
 	assert(url1c.get_Resource().Compare(CStringLiteral(_T("/")), 0, CStringLiteral::cIgnoreCase) == 0);
 	assert(url1c.get_Fragment().Compare(CStringLiteral(_T("anchor")), 0, CStringLiteral::cIgnoreCase) == 0);
-	ConstRef(CUrl::QueryDataList) tmp1c = url1c.get_Queries();
-	ConstRef(CUrl::QueryDataItem) value1c = tmp1c.search(CStringBuffer(__FILE__LINE__ _T("test")));
-	assert(value1c.Value.Compare(CStringLiteral(_T("value")), 0, CStringLiteral::cIgnoreCase) == 0);
+
+	CUrl::QueryDataItem toFind1c;
+
+	toFind1c.Key.SetString(__FILE__LINE__ _T("test"));
+
+	CUrl::QueryDataList::Iterator it1c = url1c.get_Queries().FindSorted(&toFind1c);
+	if (it1c)
+		assert((*it1c)->Value.Compare(CStringLiteral(_T("value")), 0, CStringLiteral::cIgnoreCase) == 0);
 
 	assert(url2.get_Protocol().Compare(CStringLiteral(_T("http")), 0, CStringLiteral::cIgnoreCase) == 0);
 	assert(url2.get_Server().IsEmpty());
 	assert(url2.get_Resource().Compare(CStringLiteral(_T("/homepage/index.html")), 0, CStringLiteral::cIgnoreCase) == 0);
-	assert(url2.get_Queries().count() == 0);
+	assert(url2.get_Queries().Count() == 0);
 	assert(url2.get_Fragment().IsEmpty());
 
 	assert(url3.get_Protocol().Compare(CStringLiteral(_T("http")), 0, CStringLiteral::cIgnoreCase) == 0);
 	assert(url3.get_Server().IsEmpty());
 	assert(url3.get_Resource().Compare(CStringLiteral(_T("/homepage/index.html")), 0, CStringLiteral::cIgnoreCase) == 0);
-	ConstRef(CUrl::QueryDataList) tmp3 = url3.get_Queries();
-	ConstRef(CUrl::QueryDataItem) value3 = tmp3.search(CStringBuffer(__FILE__LINE__ _T("test")));
-	assert(value3.Value.Compare(CStringLiteral(_T("value")), 0, CStringLiteral::cIgnoreCase) == 0);
+
+	CUrl::QueryDataItem toFind3;
+
+	toFind3.Key.SetString(__FILE__LINE__ _T("test"));
+
+	CUrl::QueryDataList::Iterator it3 = url3.get_Queries().FindSorted(&toFind3);
+	if (it3)
+		assert((*it3)->Value.Compare(CStringLiteral(_T("value")), 0, CStringLiteral::cIgnoreCase) == 0);
 	assert(url3.get_Fragment().Compare(CStringLiteral(_T("anchor")), 0, CStringLiteral::cIgnoreCase) == 0);
 
 	assert(url3a.get_Protocol().Compare(CStringLiteral(_T("http")), 0, CStringLiteral::cIgnoreCase) == 0);
 	assert(url3a.get_Server().IsEmpty());
 	assert(url3a.get_Resource().Compare(CStringLiteral(_T("/homepage/index.html")), 0, CStringLiteral::cIgnoreCase) == 0);
-	ConstRef(CUrl::QueryDataList) tmp3a = url3a.get_Queries();
-	ConstRef(CUrl::QueryDataItem) value3a = tmp3a.search(CStringBuffer(__FILE__LINE__ _T("test")));
-	assert(value3a.Value.Compare(CStringLiteral(_T("value")), 0, CStringLiteral::cIgnoreCase) == 0);
+
+	CUrl::QueryDataItem toFind3a;
+
+	toFind3a.Key.SetString(__FILE__LINE__ _T("test"));
+
+	CUrl::QueryDataList::Iterator it3a = url3a.get_Queries().FindSorted(&toFind3a);
+	if (it3a)
+		assert((*it3a)->Value.Compare(CStringLiteral(_T("value")), 0, CStringLiteral::cIgnoreCase) == 0);
 	assert(url3a.get_Fragment().IsEmpty());
 }
 

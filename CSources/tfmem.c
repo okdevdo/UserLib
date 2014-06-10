@@ -26,6 +26,7 @@
 
 #ifdef __DEBUG__
 #include <stdio.h>
+//#define __DEBUG1__
 #endif
 
 #ifdef __MT__
@@ -287,54 +288,95 @@ _TFBTreeCloseHelper(_pBTreeNode node)
 	Array p;
 	TListCnt ix;
 
-	if ( !(node->isData) )
+	if (!(node->isData))
 	{
-		for ( ix = 0, p = CastAny(Array, _l_ptradd(node, szBTreeNode)); 
-			ix < node->cnt; 
-			++ix, p = CastAny(Array, _l_ptradd(p, szPointer)) 
-		)
+		for (ix = 0, p = CastAny(Array, _l_ptradd(node, szBTreeNode));
+			ix < node->cnt;
+			++ix, p = CastAny(Array, _l_ptradd(p, szPointer))
+			)
 			_TFBTreeCloseHelper(DerefAnyPtr(_pBTreeNode, p));
 	}
 	free(node);
 }
 
-static void __stdcall 
+static void __stdcall
+_TFBTreeFreeHelper(_pBTreeNode node, TDeleteFunc freeFunc, Pointer context)
+{
+	Array p;
+	TListCnt ix;
+	Pointer d;
+
+	if (node->isData)
+	{
+		for (ix = 0, p = CastAny(Array, _l_ptradd(node, szBTreeNode));
+			ix < node->cnt;
+			++ix, p = CastAny(Array, _l_ptradd(p, szPointer))
+			)
+		{
+			d = DerefPtr(Pointer, p);
+			if (PtrCheck(freeFunc))
+				free(d);
+			else
+				freeFunc(d, context);
+		}
+	}
+	else
+	{
+		for (ix = 0, p = CastAny(Array, _l_ptradd(node, szBTreeNode));
+			ix < node->cnt;
+			++ix, p = CastAny(Array, _l_ptradd(p, szPointer))
+			)
+			_TFBTreeFreeHelper(DerefAnyPtr(_pBTreeNode, p), freeFunc, context);
+	}
+}
+
+static void __stdcall
 _TFBTreeClose(Pointer liste, TDeleteFunc freeFunc, Pointer context)
 {
 	_pBTreeHead pHead = CastAnyPtr(_BTreeHead, liste);
-	LSearchResultType result;
-	Pointer d;
 
 	assert(liste != NULL);
-    result = _TFBTreeBegin(liste);
-	while ( !LPtrCheck(result) )
-	{
-		d = _TFBTreeGetData(result);
-		if ( PtrCheck(freeFunc) )
-			free(d);
-		else
-			freeFunc(d, context);
-		result = _TFBTreeNext(result);
-	}
+	_TFBTreeFreeHelper(pHead->root, freeFunc, context);
 	_TFBTreeCloseHelper(pHead->root);
 	free(pHead);
 }
 
 #ifdef __DEBUG__
-static void __stdcall 
+static void __stdcall
+_TFBTreeForEachHelper(_pBTreeNode node, TForEachFunc forEachFunc, Pointer context)
+{
+	Array p;
+	TListCnt ix;
+
+	if (node->isData)
+	{
+		for (ix = 0, p = CastAny(Array, _l_ptradd(node, szBTreeNode));
+			ix < node->cnt;
+			++ix, p = CastAny(Array, _l_ptradd(p, szPointer))
+			)
+		{
+			if (!forEachFunc(DerefPtr(Pointer, p), context))
+				return;
+		}
+	}
+	else
+	{
+		for (ix = 0, p = CastAny(Array, _l_ptradd(node, szBTreeNode));
+			ix < node->cnt;
+			++ix, p = CastAny(Array, _l_ptradd(p, szPointer))
+			)
+			_TFBTreeForEachHelper(DerefAnyPtr(_pBTreeNode, p), forEachFunc, context);
+	}
+}
+
+static void __stdcall
 _TFBTreeForEach(Pointer liste, TForEachFunc forEachFunc, Pointer context)
 {
-	LSearchResultType result;
+	_pBTreeHead pHead = CastAnyPtr(_BTreeHead, liste);
 
 	assert(liste != NULL);
     assert(forEachFunc != NULL);
-    result = _TFBTreeBegin(liste);
-	while ( !LPtrCheck(result) )
-	{
-		if (!forEachFunc(_TFBTreeGetData(result), context))
-			break;
-		result = _TFBTreeNext(result);
-	}
+	_TFBTreeForEachHelper(pHead->root, forEachFunc, context);
 }
 #endif
 
@@ -352,8 +394,23 @@ _TFBTreeFindSortedHelper(_pBTreeNode pNode, ConstPointer data, TSearchAndSortFun
 	{
         sdword ix = _lv_bsearch( p, data, pNode->cnt, sortFunc, UTLPTR_MATCHMODE );
 
-		if ( ix < 0 )
+		if (ix < 0)
+		{
+			ix = _lv_bsearch(p, data, pNode->cnt, sortFunc, UTLPTR_SEARCHMODE);
+			if (ix >= Cast(TListIndex, pNode->cnt))
+			{
+				Pointer d;
+
+				_Lnode(result) = pNode;
+				_Loffset(result) = ix;
+				result = _TFBTreeNext(result);
+				d = _TFBTreeGetData(result);
+				if (NotPtrCheck(d) && (sortFunc(d, data) == 0))
+					return result;
+				result = _LNULL;
+			}
 			return result;
+		}
 		_Lnode(result) = pNode;
 		_Loffset(result) = ix;
 		return result;
@@ -362,7 +419,7 @@ _TFBTreeFindSortedHelper(_pBTreeNode pNode, ConstPointer data, TSearchAndSortFun
     for ( ix = 0, p1 = p; ix < pNode->cnt; ++ix, p1 = CastAny(Array, _l_ptradd(p1, szPointer)) )
 	{
 		pNode1 = DerefAnyPtr(_pBTreeNode, _l_ptradd(p1, szPointer));
-		if ( ((ix + 1) == pNode->cnt) || (0 < sortFunc(pNode1->key, data)) )
+		if ( ((ix + 1) == pNode->cnt) || (0 <= sortFunc(pNode1->key, data)) )
 			return _TFBTreeFindSortedHelper(DerefAnyPtr(_pBTreeNode, p1), data, sortFunc);
 	}
 	return result;
@@ -398,13 +455,17 @@ _TFBTreeLowerBoundHelper(_pBTreeNode pNode, ConstPointer data, TSearchAndSortFun
 			return result;
 		_Lnode(result) = pNode;
 		_Loffset(result) = ix;
+
+		if (ix >= Cast(TListIndex, pNode->cnt))
+			return _TFBTreeNext(result);
+
 		return result;
 	}
 	assert(pNode->cnt > 0);
     for ( ix = 0, p1 = p; ix < pNode->cnt; ++ix, p1 = CastAny(Array, _l_ptradd(p1, szPointer)) )
 	{
 		pNode1 = DerefAnyPtr(_pBTreeNode, _l_ptradd(p1, szPointer));
-		if ( ((ix + 1) == pNode->cnt) || (0 < sortFunc(pNode1->key, data)) )
+		if ( ((ix + 1) == pNode->cnt) || (0 <= sortFunc(pNode1->key, data)) )
 			return _TFBTreeLowerBoundHelper(DerefAnyPtr(_pBTreeNode, p1), data, sortFunc);
 	}
 	return result;
@@ -420,6 +481,33 @@ _TFBTreeLowerBound(Pointer liste, ConstPointer data, TSearchAndSortFunc sortFunc
 	assert(pNode != NULL);
 	assert(sortFunc != NULL);
 	return _TFBTreeLowerBoundHelper(pNode, data, sortFunc);
+}
+
+static void __stdcall
+_TFBTreeKeyUpdateHelper(_pBTreeNode pNode)
+{
+	_pBTreeNode pNode1;
+	_pBTreeNode pNode2;
+	sdword ix;
+
+	pNode1 = pNode;
+	if (pNode1->isData)
+		pNode1->key = DerefPtr(Pointer, _l_ptradd(pNode1, szBTreeNode));
+	else
+	{
+		pNode2 = DerefPtr(_pBTreeNode, _l_ptradd(pNode1, szBTreeNode));
+		pNode1->key = pNode2->key;
+	}
+	while (NotPtrCheck(pNode1->parent))
+	{
+		pNode2 = pNode1->parent;
+		ix = _lv_searchptr(CastAny(Array, _l_ptradd(pNode2, szBTreeNode)), pNode1, pNode2->cnt);
+		assert(ix >= 0);
+		if (ix != 0)
+			break;
+		pNode2->key = pNode1->key;
+		pNode1 = pNode2;
+	}
 }
 
 static _pBTreeNode __stdcall
@@ -440,21 +528,8 @@ _TFBTreeInsertSortedHelper(_pBTreeNode pNode, ConstPointer data, TSearchAndSortF
 
 		_LPnode(pResult) = pNode;
 		_LPoffset(pResult) = ix;
-		if ( ix == 0 )
-		{
-			pNode1 = pNode;
-			pNode1->key = DerefPtr(Pointer, _l_ptradd(pNode1, szBTreeNode));
-			while ( NotPtrCheck(pNode1->parent) )
-			{
-				pNode2 = pNode1->parent;
-				ix = _lv_searchptr(CastAny(Array, _l_ptradd(pNode2, szBTreeNode)), pNode1, pNode2->cnt);
-				assert(ix >= 0);
-				if ( ix != 0 )
-					break;
-				pNode2->key = pNode1->key;
-				pNode1 = pNode1->parent;
-			}
-		}
+		if (ix == 0)
+			_TFBTreeKeyUpdateHelper(pNode);
 		++(pNode->head->nodeCount);
 		if ( pNode->cnt >= pNode->head->maxEntriesPerNode )
 		{
@@ -465,8 +540,8 @@ _TFBTreeInsertSortedHelper(_pBTreeNode pNode, ConstPointer data, TSearchAndSortF
 			pNode2->head = pNode->head;
 			p1 = CastAny(Array, _l_ptradd(pNode2, szBTreeNode));
 			cnt = pNode->cnt / 2;
-			s_memcpy(p1, _l_ptradd(p, (pNode->cnt - cnt) * szPointer), cnt * szPointer);
 			pNode->cnt -= cnt;
+			s_memcpy(p1, _l_ptradd(p, pNode->cnt * szPointer), cnt * szPointer);
 			pNode2->cnt += cnt;
 			pNode2->key = DerefAnyPtr(Pointer,p1);
 			pNode2->isData = TRUE;
@@ -502,8 +577,8 @@ _TFBTreeInsertSortedHelper(_pBTreeNode pNode, ConstPointer data, TSearchAndSortF
 		pNode2->head = pNode->head;
 		p1 = CastAny(Array, _l_ptradd(pNode2, szBTreeNode));
 		cnt = pNode->cnt / 2;
-		s_memcpy(p1, _l_ptradd(p, (pNode->cnt - cnt) * szPointer), cnt * szPointer);
 		pNode->cnt -= cnt;
+		s_memcpy(p1, _l_ptradd(p, pNode->cnt * szPointer), cnt * szPointer);
 		pNode2->cnt += cnt;
 		pNode1 = DerefAnyPtr(_pBTreeNode,p1);
 		pNode2->key = pNode1->key;
@@ -560,7 +635,6 @@ _TFBTreeRemoveJoinHelper(_pBTreeNode pNodeDest, _pBTreeNode pNodeSrc)
 	pDest = CastAny(Array, _l_ptradd(pDest, pNodeDest->cnt * szPointer));
 	s_memcpy_s(pDest, (pNodeDest->head->maxEntriesPerNode - pNodeDest->cnt) * szPointer,
 		pSrc, pNodeSrc->cnt * szPointer);
-	pNodeDest->cnt += pNodeSrc->cnt;
 	if ( !(pNodeDest->isData) )
 	{
 		for ( ix = 0; ix < Cast(sdword, pNodeSrc->cnt); ++ix, pDest = CastAny(Array, _l_ptradd(pDest, szPointer)) )
@@ -569,34 +643,10 @@ _TFBTreeRemoveJoinHelper(_pBTreeNode pNodeDest, _pBTreeNode pNodeSrc)
 			pNode->parent = pNodeDest;
 		}
 	}
+	if (pNodeDest->cnt == 0)
+		_TFBTreeKeyUpdateHelper(pNodeDest);
+	pNodeDest->cnt += pNodeSrc->cnt;
 	free(pNodeSrc);
-}
-
-static void __stdcall
-_TFBTreeRemoveKeyUpdateHelper(_pBTreeNode pNode)
-{
-	_pBTreeNode pNode1;
-	_pBTreeNode pNode2;
-	sdword ix;
-
-	pNode1 = pNode;
-	if ( pNode1->isData )
-		pNode1->key = DerefPtr(Pointer, _l_ptradd(pNode1, szBTreeNode));
-	else
-	{
-		pNode2 = DerefPtr(_pBTreeNode, _l_ptradd(pNode1, szBTreeNode));
-		pNode1->key = pNode2->key;
-	}
-	while ( NotPtrCheck(pNode1->parent) )
-	{
-		pNode2 = pNode1->parent;
-		ix = _lv_searchptr(CastAny(Array, _l_ptradd(pNode2, szBTreeNode)), pNode1, pNode2->cnt);
-		assert(ix >= 0);
-		if ( ix != 0 )
-			break;
-		pNode2->key = pNode1->key;
-		pNode1 = pNode2;
-	}
 }
 
 static void __stdcall 
@@ -611,7 +661,6 @@ _TFBTreeRemove(LSearchResultType node, TDeleteFunc freeFunc, Pointer context)
 	Array p;
 	Pointer data1;
 	sdword ix = _Loffset(node);
-	bool b;
 
 	assert(pNode->cnt > 0);
 	assert(pNode->isData);
@@ -623,7 +672,7 @@ _TFBTreeRemove(LSearchResultType node, TDeleteFunc freeFunc, Pointer context)
 		free(data1);
 	_lv_delete( p, ix, &(pNode->cnt) );
 	if ( (ix == 0) && (pNode->cnt > 0) )
-		_TFBTreeRemoveKeyUpdateHelper(pNode);
+		_TFBTreeKeyUpdateHelper(pNode);
 	--(pHead->nodeCount);
 	if ( pNode->cnt < (pHead->maxEntriesPerNode / 2) )
 	{
@@ -636,6 +685,7 @@ _TFBTreeRemove(LSearchResultType node, TDeleteFunc freeFunc, Pointer context)
 			ix = _lv_searchptr(p, pNode1, pNode2->cnt);
 			assert(ix >= 0);
 			pNode3 = DerefAnyPtr(_pBTreeNode,_l_ptradd(p, ix * szPointer));
+			assert(pNode3 == pNode1);
 			if ( (pNode2->cnt < 2) && (pNode3->cnt == 0) )
 			{
 				free(pNode3);
@@ -646,22 +696,16 @@ _TFBTreeRemove(LSearchResultType node, TDeleteFunc freeFunc, Pointer context)
 				pNode4 = DerefAnyPtr(_pBTreeNode,_l_ptradd(p, (ix + 1) * szPointer));
 				if ( (ix < Cast(sdword, (pNode2->cnt - 1))) && ((pNode3->cnt + pNode4->cnt) < pHead->maxEntriesPerNode) )
 				{
-					b = ((ix == 0) && (pNode3->cnt == 0));
 					_TFBTreeRemoveJoinHelper(pNode3, pNode4);
 					_lv_delete(p, ix + 1, &(pNode2->cnt) );
-					if ( b )
-						_TFBTreeRemoveKeyUpdateHelper(pNode3);
 				}
 				else
 				{
 					pNode4 = DerefAnyPtr(_pBTreeNode,_l_ptradd(p, (ix - 1) * szPointer));
 					if ( (ix > 0) && ((pNode3->cnt + pNode4->cnt) < pHead->maxEntriesPerNode) )
 					{
-						b = ((ix == 1) && (pNode4->cnt == 0));
 						_TFBTreeRemoveJoinHelper(pNode4, pNode3);
 						_lv_delete(p, ix, &(pNode2->cnt) );
-						if ( b )
-							_TFBTreeRemoveKeyUpdateHelper(pNode4);
 					}
 				}
 			}
@@ -682,16 +726,17 @@ static Pointer __stdcall
 _TFBTreeGetData(LSearchResultType node)
 {
 	_pBTreeNode pNode = CastAnyPtr(_BTreeNode, _Lnode(node));
-	Array p;
 
 	if ( PtrCheck(pNode) || (_Loffset(node) < 0) || (_Loffset(node) >= Cast(TListIndex, pNode->cnt)) )
 		return NULL;
-	p = CastAny(Array, _l_ptradd(pNode, szBTreeNode + (_Loffset(node) * szPointer)));
-	return DerefPtr(Pointer, p);
+	return DerefPtr(Pointer, _l_ptradd(pNode, szBTreeNode + (_Loffset(node) * szPointer)));
 }
 
 typedef struct _MEMITEM
 {
+#ifdef __DEBUG__
+	qword bufmarker1;
+#endif
 	size_t size;
 	size_t bsize;
 	size_t asize;
@@ -700,6 +745,9 @@ typedef struct _MEMITEM
 #ifdef __DEBUG__
 	const char* file;
 	int line;
+#endif
+#ifdef __DEBUG__
+	qword bufmarker2;
 #endif
 } MEMITEM, *PMEMITEM;
 #define szMEMITEM sizeof(MEMITEM)
@@ -859,21 +907,76 @@ _TFremoveonexitf( ConstPointer data, Pointer context )
 	}
 }
 
-#ifdef __DEBUG__
+#ifdef __DEBUG1__
+#define TMP_PMI_CNT 256
+static PMEMITEM tmp_pmi[TMP_PMI_CNT];
+static int tmp_pmi_cnt = -1;
+
+static void add_tmp_pmi(PMEMITEM pmi)
+{
+	if (pmi->refCnt > 0)
+		return;
+	if (tmp_pmi_cnt < (TMP_PMI_CNT - 1))
+		tmp_pmi[++tmp_pmi_cnt] = pmi;
+}
+
+static void del_tmp_pmi(PMEMITEM pmi)
+{
+	int i = tmp_pmi_cnt;
+	bool bFound = false;
+
+	while (i >= 0)
+	{
+		if (tmp_pmi[i] == pmi)
+		{
+			bFound = true;
+			break;
+		}
+		--i;
+	}
+	if (bFound)
+	{
+		--tmp_pmi_cnt;
+		while (i < tmp_pmi_cnt)
+		{
+			tmp_pmi[i] = tmp_pmi[i + 1];
+			++i;
+		}
+	}
+}
+
 static bool __stdcall 
 _TFscanonalloca( ConstPointer data, Pointer context )
 {
 	PMEMITEM pmi = CastAnyPtr(MEMITEM, CastMutable(Pointer, data));
+	bool test_refcnt = true;
+	int i = tmp_pmi_cnt;
 
 	--pmi;
-	assert(pmi->refCnt > 0);
+	while (i >= 0)
+	{
+		if (pmi == tmp_pmi[i])
+		{
+			test_refcnt = false;
+			break;
+		}
+		--i;
+	}
+	if (test_refcnt)
+		assert(pmi->refCnt > 0);
+	assert(pmi->bsize > 0);
+#ifdef __DEBUG__
+	assert(pmi->bufmarker1 == 0xFEFEFEFEFEFEFEFE);
+	assert(pmi->bufmarker2 == 0xFEFEFEFEFEFEFEFE);
+#endif
 	switch ( pmi->mode )
 	{
 	case MEMITEM_MODE_LARGEBLOCK:
 	case MEMITEM_MODE_ALLOCBLOCK:
 		_allocatedBufferSize += pmi->asize;
-		break;
+	case MEMITEM_MODE_SMALLBLOCK:
 	default:
+		assert((pmi->mode == MEMITEM_MODE_LARGEBLOCK) || (pmi->mode == MEMITEM_MODE_ALLOCBLOCK) || (pmi->mode == MEMITEM_MODE_SMALLBLOCK));
 		break;
 	}
 	return TRUE;
@@ -885,19 +988,26 @@ _TFscanonallocf( ConstPointer data, Pointer context )
 	PMEMITEM pmi = CastAnyPtr(MEMITEM, CastMutable(Pointer, data));
 
 	assert(pmi->refCnt == 1);
+	assert(pmi->bsize > 0);
+#ifdef __DEBUG__
+	assert(pmi->bufmarker1 == 0xFEFEFEFEFEFEFEFE);
+	assert(pmi->bufmarker2 == 0xFEFEFEFEFEFEFEFE);
+#endif
 	switch ( pmi->mode )
 	{
 	case MEMITEM_MODE_LARGEBLOCK:
 	case MEMITEM_MODE_ALLOCBLOCK:
 		_freeBufferSize += pmi->asize;
-		break;
+	case MEMITEM_MODE_SMALLBLOCK:
 	default:
+		assert((pmi->mode == MEMITEM_MODE_LARGEBLOCK) || (pmi->mode == MEMITEM_MODE_ALLOCBLOCK) || (pmi->mode == MEMITEM_MODE_SMALLBLOCK));
 		break;
 	}
 	return TRUE;
 }
-
-static bool __stdcall 
+#endif
+#ifdef __DEBUG__
+static bool __stdcall
 _TFscanonexita( ConstPointer data, Pointer context )
 {
 	PMEMITEM pmi = CastAnyPtr(MEMITEM, CastMutable(Pointer, data));
@@ -1079,14 +1189,14 @@ Pointer _TFHashTabAlloc(size_t sz)
 			s_memset(&mi, 0, szMEMITEM);
 			mi.size = bufSize;
 			result = _TFBTreeLowerBound(_defaultpoolf, &mi, _TFsortsizes);
-			while (!(LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi))))
+			while (!(PtrCheck(_TFBTreeGetData(result)) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi))))
 			{
 				pmi = CastAnyPtr(MEMITEM, _TFBTreeGetData(result));
 				if (pmi->mode == MEMITEM_MODE_LARGEBLOCK)
 					break;
 				result = _TFBTreeNext(result);
 			}
-			if (LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi)))
+			if (PtrCheck(_TFBTreeGetData(result)) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi)))
 			{
 				pmi = (PMEMITEM)malloc(bufSize + szMEMITEM);
 				if (PtrCheck(pmi))
@@ -1116,18 +1226,18 @@ Pointer _TFHashTabAlloc(size_t sz)
 			s_memset(&mi, 0, szMEMITEM);
 			mi.size = bufSize;
 			result = _TFBTreeLowerBound(_defaultpoolf, &mi, _TFsortsizes);
-			if (LPtrCheck(result) || (0 != _TFsortsizes(_TFBTreeGetData(result), &mi)))
+			if (PtrCheck(_TFBTreeGetData(result)) || (0 != _TFsortsizes(_TFBTreeGetData(result), &mi)))
 			{
 				mi.size = (bufSize + szMEMITEM) * max_memitems;
 				result = _TFBTreeLowerBound(_defaultpoolf, &mi, _TFsortsizes);
-				while (!(LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi))))
+				while (!(PtrCheck(_TFBTreeGetData(result)) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi))))
 				{
 					pmi = CastAnyPtr(MEMITEM, _TFBTreeGetData(result));
 					if (pmi->mode == MEMITEM_MODE_LARGEBLOCK)
 						break;
 					result = _TFBTreeNext(result);
 				}
-				if (LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi)))
+				if (PtrCheck(_TFBTreeGetData(result)) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi)))
 				{
 					pmi = (PMEMITEM)malloc((bufSize + szMEMITEM) * max_memitems);
 					if (PtrCheck(pmi))
@@ -1202,16 +1312,6 @@ void* TFalloc(size_t sz)
 	if (PtrCheck(_defaultpoola) || PtrCheck(_defaultpoolf))
 		return NULL;
 	TFLOCK
-#ifdef __DEBUG1__
-		++_cntTFalloc;
-	if ((_cntTFalloc % 1000) == 0)
-	{
-		_allocatedBufferSize = 0;
-		_TFBTreeForEach(_defaultpoola, _TFscanonalloca, NULL);
-		_freeBufferSize = 0;
-		_TFBTreeForEach(_defaultpoolf, _TFscanonallocf, NULL);
-	}
-#endif
 	if (sz < 256)
 	{
 		bufSize = ((sz + 15) / 16) * 16;
@@ -1228,14 +1328,14 @@ void* TFalloc(size_t sz)
 		s_memset(&mi, 0, szMEMITEM);
 		mi.size = bufSize;
 		result = _TFBTreeLowerBound(_defaultpoolf, &mi, _TFsortsizes);
-		while (!(LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi))))
+		while (!(PtrCheck(_TFBTreeGetData(result)) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi))))
 		{
 			pmi = CastAnyPtr(MEMITEM, _TFBTreeGetData(result));
 			if (pmi->mode == MEMITEM_MODE_LARGEBLOCK)
 				break;
 			result = _TFBTreeNext(result);
 		}
-		if (LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi)))
+		if (PtrCheck(_TFBTreeGetData(result)) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi)))
 		{
 			pmi = (PMEMITEM)malloc(bufSize + szMEMITEM);
 			if (PtrCheck(pmi))
@@ -1267,18 +1367,18 @@ void* TFalloc(size_t sz)
 		s_memset(&mi, 0, szMEMITEM);
 		mi.size = bufSize;
 		result = _TFBTreeLowerBound(_defaultpoolf, &mi, _TFsortsizes);
-		if (LPtrCheck(result) || (0 != _TFsortsizes(_TFBTreeGetData(result), &mi)))
+		if (PtrCheck(_TFBTreeGetData(result)) || (0 != _TFsortsizes(_TFBTreeGetData(result), &mi)))
 		{
 			mi.size = (bufSize + szMEMITEM) * max_memitems;
 			result = _TFBTreeLowerBound(_defaultpoolf, &mi, _TFsortsizes);
-			while (!(LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi))))
+			while (!(PtrCheck(_TFBTreeGetData(result)) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi))))
 			{
 				pmi = CastAnyPtr(MEMITEM, _TFBTreeGetData(result));
 				if (pmi->mode == MEMITEM_MODE_LARGEBLOCK)
 					break;
 				result = _TFBTreeNext(result);
 			}
-			if (LPtrCheck(result) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi)))
+			if (PtrCheck(_TFBTreeGetData(result)) || (0 > _TFsortsizes(_TFBTreeGetData(result), &mi)))
 			{
 				pmi = (PMEMITEM)malloc((bufSize + szMEMITEM) * max_memitems);
 				if (PtrCheck(pmi))
@@ -1306,6 +1406,10 @@ void* TFalloc(size_t sz)
 			for (ix = 1; ix < max_memitems; ++ix)
 			{
 				pmi->mode = MEMITEM_MODE_SMALLBLOCK;
+#ifdef __DEBUG__
+				pmi->bufmarker1 = 0xFEFEFEFEFEFEFEFE;
+				pmi->bufmarker2 = 0xFEFEFEFEFEFEFEFE;
+#endif
 				pmi->size = bufSize;
 				pmi->bsize = bufSize;
 				pmi->refCnt = 1;
@@ -1321,6 +1425,10 @@ void* TFalloc(size_t sz)
 			_TFBTreeRemove(result, _TFremovenull, NULL);
 		}
 	}
+#ifdef __DEBUG__
+	pmi->bufmarker1 = 0xFEFEFEFEFEFEFEFE;
+	pmi->bufmarker2 = 0xFEFEFEFEFEFEFEFE;
+#endif
 	pmi->size = bufSize;
 	pmi->refCnt = 1;
 #ifdef __DEBUG__
@@ -1342,6 +1450,15 @@ void* TFalloc(size_t sz)
 	pmi->file = file;
 #endif
 	pmi->line = line;
+#endif
+#ifdef __DEBUG1__
+	{
+		del_tmp_pmi(pmi);
+		_allocatedBufferSize = 0;
+		_TFBTreeForEach(_defaultpoola, _TFscanonalloca, NULL);
+		_freeBufferSize = 0;
+		_TFBTreeForEach(_defaultpoolf, _TFscanonallocf, NULL);
+	}
 #endif
 	++pmi;
 	_TFBTreeInsertSorted(_defaultpoola, pmi, _TFsortpointers);
@@ -1410,6 +1527,16 @@ void* TFrealloc(void* p, size_t newsz)
 	s_memcpy_s(p1, sz, p, sz);
 	if ( newsz > oldsz )
 		s_memset(_l_ptradd(p1, oldsz), 0, newsz - oldsz);
+#ifdef __DEBUG1__
+	//		++_cntTFalloc;
+	//	if ((_cntTFalloc % 1000) == 0)
+	{
+		_allocatedBufferSize = 0;
+		_TFBTreeForEach(_defaultpoola, _TFscanonalloca, NULL);
+		_freeBufferSize = 0;
+		_TFBTreeForEach(_defaultpoolf, _TFscanonallocf, NULL);
+	}
+#endif
 	TFUNLOCK
 	TFfree(p);
 	return p1;
@@ -1440,6 +1567,17 @@ void TFfree(void* p)
 	pmi->refCnt = 1;
 	s_memset(p, 0, pmi->size);
 	_TFBTreeInsertSorted(_defaultpoolf, pmi, _TFsortsizes);
+#ifdef __DEBUG1__
+	//		++_cntTFalloc;
+	//	if ((_cntTFalloc % 1000) == 0)
+	{
+		del_tmp_pmi(pmi);
+		_allocatedBufferSize = 0;
+		_TFBTreeForEach(_defaultpoola, _TFscanonalloca, NULL);
+		_freeBufferSize = 0;
+		_TFBTreeForEach(_defaultpoolf, _TFscanonallocf, NULL);
+	}
+#endif
 	TFUNLOCK
 }
 
@@ -1450,6 +1588,16 @@ bool TFisalloc(void* p)
 	if ( PtrCheck(_defaultpoola) || PtrCheck(_defaultpoolf) || PtrCheck(p) )
 		return false;
 	TFLOCK
+#ifdef __DEBUG1__
+		//		++_cntTFalloc;
+		//	if ((_cntTFalloc % 1000) == 0)
+	{
+		_allocatedBufferSize = 0;
+		_TFBTreeForEach(_defaultpoola, _TFscanonalloca, NULL);
+		_freeBufferSize = 0;
+		_TFBTreeForEach(_defaultpoolf, _TFscanonallocf, NULL);
+	}
+#endif
 	result = _TFBTreeFindSorted(_defaultpoola, p, _TFsortpointers);
 	if ( (!LPtrCheck(result)) && (_TFBTreeGetData(result) == p) )
 	{
@@ -1468,6 +1616,16 @@ size_t TFsize(void* p)
 	if ( PtrCheck(_defaultpoola) || PtrCheck(_defaultpoolf) || PtrCheck(p) )
 		return 0;
 	TFLOCK
+#ifdef __DEBUG1__
+		//		++_cntTFalloc;
+		//	if ((_cntTFalloc % 1000) == 0)
+	{
+		_allocatedBufferSize = 0;
+		_TFBTreeForEach(_defaultpoola, _TFscanonalloca, NULL);
+		_freeBufferSize = 0;
+		_TFBTreeForEach(_defaultpoolf, _TFscanonallocf, NULL);
+	}
+#endif
 	pmi = CastAnyPtr(MEMITEM, p);
 	--pmi;
 	result = pmi->size;
@@ -1483,6 +1641,16 @@ dword TFrefcnt(void* p)
 	if ( PtrCheck(_defaultpoola) || PtrCheck(_defaultpoolf) || PtrCheck(p) )
 		return 0;
 	TFLOCK
+#ifdef __DEBUG1__
+		//		++_cntTFalloc;
+		//	if ((_cntTFalloc % 1000) == 0)
+	{
+		_allocatedBufferSize = 0;
+		_TFBTreeForEach(_defaultpoola, _TFscanonalloca, NULL);
+		_freeBufferSize = 0;
+		_TFBTreeForEach(_defaultpoolf, _TFscanonallocf, NULL);
+	}
+#endif
 	pmi = CastAnyPtr(MEMITEM, p);
 	--pmi;
 	result = pmi->refCnt;
@@ -1502,6 +1670,17 @@ dword TFincrefcnt(void* p)
 	--pmi;
 	++(pmi->refCnt);
 	result = pmi->refCnt;
+#ifdef __DEBUG1__
+		//		++_cntTFalloc;
+		//	if ((_cntTFalloc % 1000) == 0)
+	{
+		del_tmp_pmi(pmi);
+		_allocatedBufferSize = 0;
+		_TFBTreeForEach(_defaultpoola, _TFscanonalloca, NULL);
+		_freeBufferSize = 0;
+		_TFBTreeForEach(_defaultpoolf, _TFscanonallocf, NULL);
+	}
+#endif
 	TFUNLOCK
 	return result;
 }
@@ -1516,15 +1695,26 @@ dword TFdecrefcnt(void* p)
 	if ( PtrCheck(_defaultpoola) || PtrCheck(_defaultpoolf) || PtrCheck(p) )
 		return 0;
 	TFLOCK
-	pmi = CastAnyPtr(MEMITEM, p);
 	sresult = _TFBTreeFindSorted(_defaultpoola, p, _TFsortpointers);
 	if ((!LPtrCheck(sresult)) && (_TFBTreeGetData(sresult) == p))
 	{
+		pmi = CastAnyPtr(MEMITEM, p);
 		--pmi;
 		result1 = pmi->refCnt;
 		--(pmi->refCnt);
 		result = pmi->refCnt;
 	}
+#ifdef __DEBUG1__
+		//		++_cntTFalloc;
+		//	if ((_cntTFalloc % 1000) == 0)
+	{
+		add_tmp_pmi(pmi);
+		_allocatedBufferSize = 0;
+		_TFBTreeForEach(_defaultpoola, _TFscanonalloca, NULL);
+		_freeBufferSize = 0;
+		_TFBTreeForEach(_defaultpoolf, _TFscanonallocf, NULL);
+	}
+#endif
 	TFUNLOCK
 	assert(result1 > 0);
 	return result;

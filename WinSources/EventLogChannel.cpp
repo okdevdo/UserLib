@@ -637,7 +637,7 @@ Ptr(CEventLogChannel) CEventLogChannels::FindSorted(ConstRef(CStringBuffer) name
 
 	Iterator fIt = super::FindSorted(&toFind);
 
-	if (super::MatchSorted(fIt, &toFind))
+	if (fIt)
 		return *fIt;
 	return nullptr;
 }
