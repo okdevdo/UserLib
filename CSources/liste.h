@@ -65,7 +65,7 @@ extern "C" {
 	CSOURCES_API LSearchResultType __stdcall DoubleLinkedListNext(LSearchResultType node);
 	CSOURCES_API LSearchResultType __stdcall DoubleLinkedListPrev(LSearchResultType node);
 	CSOURCES_API LSearchResultType __stdcall DoubleLinkedListLast(Pointer liste);
-	CSOURCES_API bool __stdcall DoubleLinkedListForEach(Pointer liste, TForEachFunc func, Pointer context);
+	CSOURCES_API bool __stdcall DoubleLinkedListForEach(Pointer liste, TForEachFunc func, Pointer context, bool bbackward);
 	CSOURCES_API LSearchResultType __stdcall DoubleLinkedListFind(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall DoubleLinkedListFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall DoubleLinkedListUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
@@ -91,7 +91,7 @@ extern "C" {
 	CSOURCES_API LSearchResultType __stdcall ArrayNext(LSearchResultType node);
 	CSOURCES_API LSearchResultType __stdcall ArrayPrev(LSearchResultType node);
 	CSOURCES_API LSearchResultType __stdcall ArrayLast(Pointer liste);
-	CSOURCES_API bool __stdcall ArrayForEach(Pointer liste, TForEachFunc func, Pointer context);
+	CSOURCES_API bool __stdcall ArrayForEach(Pointer liste, TForEachFunc func, Pointer context, bool bbackward);
 	CSOURCES_API LSearchResultType __stdcall ArrayFind(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall ArrayFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall ArrayUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
@@ -118,7 +118,7 @@ extern "C" {
 	CSOURCES_API LSearchResultType __stdcall VectorNext(LSearchResultType node);
 	CSOURCES_API LSearchResultType __stdcall VectorPrev(LSearchResultType node);
 	CSOURCES_API LSearchResultType __stdcall VectorLast(Pointer liste);
-	CSOURCES_API bool __stdcall VectorForEach(Pointer liste, TForEachFunc func, Pointer context);
+	CSOURCES_API bool __stdcall VectorForEach(Pointer liste, TForEachFunc func, Pointer context, bool bbackward);
 	CSOURCES_API LSearchResultType __stdcall VectorFind(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, Pointer context );
 	CSOURCES_API LSearchResultType __stdcall VectorFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall VectorUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
@@ -143,11 +143,9 @@ extern "C" {
 	CSOURCES_API LSearchResultType __stdcall AVLBinaryTreeNext(LSearchResultType node);
 	CSOURCES_API LSearchResultType __stdcall AVLBinaryTreePrev(LSearchResultType node);
 	CSOURCES_API LSearchResultType __stdcall AVLBinaryTreeLast(Pointer liste);
-	CSOURCES_API bool __stdcall AVLBinaryTreeForEach(Pointer liste, TForEachFunc func, Pointer context);
+	CSOURCES_API bool __stdcall AVLBinaryTreeForEach(Pointer liste, TForEachFunc func, Pointer context, bool bbackward);
 	CSOURCES_API LSearchResultType __stdcall AVLBinaryTreeFind(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall AVLBinaryTreeFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
-	CSOURCES_API LSearchResultType __stdcall AVLBinaryTreeUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
-	CSOURCES_API LSearchResultType __stdcall AVLBinaryTreeLowerBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall AVLBinaryTreeInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
 	CSOURCES_API bool __stdcall AVLBinaryTreeRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer sortContext, TDeleteFunc freeFunc, Pointer freeContext);
 	CSOURCES_API Pointer __stdcall AVLBinaryTreeGetData(LSearchResultType node);
@@ -162,11 +160,9 @@ extern "C" {
 	CSOURCES_API LSearchResultType __stdcall RBBinaryTreeNext(LSearchResultType node);
 	CSOURCES_API LSearchResultType __stdcall RBBinaryTreePrev(LSearchResultType node);
 	CSOURCES_API LSearchResultType __stdcall RBBinaryTreeLast(Pointer liste);
-	CSOURCES_API bool __stdcall RBBinaryTreeForEach(Pointer liste, TForEachFunc func, Pointer context);
+	CSOURCES_API bool __stdcall RBBinaryTreeForEach(Pointer liste, TForEachFunc func, Pointer context, bool bbackward);
 	CSOURCES_API LSearchResultType __stdcall RBBinaryTreeFind(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall RBBinaryTreeFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
-	CSOURCES_API LSearchResultType __stdcall RBBinaryTreeUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
-	CSOURCES_API LSearchResultType __stdcall RBBinaryTreeLowerBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall RBBinaryTreeInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
 	CSOURCES_API bool __stdcall RBBinaryTreeRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer sortContext, TDeleteFunc freeFunc, Pointer freeContext);
 	CSOURCES_API Pointer __stdcall RBBinaryTreeGetData(LSearchResultType node);
@@ -182,7 +178,7 @@ extern "C" {
 	CSOURCES_API LSearchResultType __stdcall BTreeNext(LSearchResultType node);
 	CSOURCES_API LSearchResultType __stdcall BTreePrev(LSearchResultType node);
 	CSOURCES_API LSearchResultType __stdcall BTreeLast(Pointer liste);
-	CSOURCES_API bool __stdcall BTreeForEach(Pointer liste, TForEachFunc func, Pointer context);
+	CSOURCES_API bool __stdcall BTreeForEach(Pointer liste, TForEachFunc func, Pointer context, bool bbackward);
 	CSOURCES_API LSearchResultType __stdcall BTreeFind(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall BTreeFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall BTreeUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
@@ -208,7 +204,7 @@ extern "C" {
 	CSOURCES_API LSearchResultType __stdcall HashLinkedListNext(LSearchResultType node);
 	CSOURCES_API LSearchResultType __stdcall HashLinkedListPrev(LSearchResultType node);
 	CSOURCES_API LSearchResultType __stdcall HashLinkedListLast(Pointer liste);
-	CSOURCES_API bool __stdcall HashLinkedListForEach(Pointer liste, TForEachFunc func, Pointer context);
+	CSOURCES_API bool __stdcall HashLinkedListForEach(Pointer liste, TForEachFunc func, Pointer context, bool bbackward);
 	CSOURCES_API LSearchResultType __stdcall HashLinkedListFind(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall HashLinkedListFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);
 	CSOURCES_API LSearchResultType __stdcall HashLinkedListInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context);

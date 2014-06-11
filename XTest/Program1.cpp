@@ -223,7 +223,8 @@ static void TestHashLinkedListT()
 	{
 		it = list.InsertSorted(numbers + i);
 		ASSERTTESTFILE(1, (it), _T("Test iterator"));
-		ASSERTTESTFILE(1, (**it == numbers[i]), _T("Test iterator value"));
+		if (it)
+			ASSERTTESTFILE(1, (**it == numbers[i]), _T("Test iterator value"));
 	}
 	it = list.Begin();
 	i = 0;
@@ -247,7 +248,8 @@ static void TestHashLinkedListT()
 	{
 		it = list.FindSorted(numbers + i);
 		ASSERTTESTFILE(1, (it), _T("Test iterator"));
-		ASSERTTESTFILE(1, (**it == numbers[i]), _T("Test iterator value"));
+		if (it)
+			ASSERTTESTFILE(1, (**it == numbers[i]), _T("Test iterator value"));
 	}
 	for (i = 0; i < 120; i += 2)
 		ASSERTTESTFILE(1, (list.RemoveSorted(numbers + i)), _T("Test RemoveSorted"));
@@ -261,7 +263,8 @@ static void TestHashLinkedListT()
 		else
 		{
 			ASSERTTESTFILE(1, (it), _T("Test iterator"));
-			ASSERTTESTFILE(1, (**it == numbers[i]), _T("Test iterator value"));
+			if (it)
+				ASSERTTESTFILE(1, (**it == numbers[i]), _T("Test iterator value"));
 		}
 	}
 	list.Close();
@@ -272,6 +275,226 @@ static void TestHashLinkedListT()
 }
 
 template <typename TListe>
+static void TestIterateBeginNext(Ref(TListe) list, unsigned int* numbers, dword k)
+{
+	TListe::Iterator it;
+	dword j;
+
+	it = list.Begin();
+	j = 0;
+	while (it)
+	{
+		ASSERTTESTFILE(1, (**it == numbers[j]), _T("Test iterator value"));
+		++j;
+		++it;
+	}
+	ASSERTTESTFILE(1, (k == j), _T("End of loop"));
+	it = list.Last();
+	j = k;
+	while (it)
+	{
+		--j;
+		ASSERTTESTFILE(1, (**it == numbers[j]), _T("Test iterator value"));
+		--it;
+	}
+	ASSERTTESTFILE(1, (j == 0), _T("End of loop"));
+}
+
+template <typename TListe>
+static void TestIterateForEachX(Ref(TListe) list, unsigned int* numbers, dword k)
+{
+	TListe::Iterator it;
+	dword j;
+
+	j = k;
+	list.ForEach([&j, numbers](Ptr(unsigned int) p) -> bool {
+		--j;
+		ASSERTTESTFILE(1, (*p == numbers[j]), _T("Test iterator value"));
+		return true;
+	});
+	ASSERTTESTFILE(1, (j == 0), _T("End of loop"));
+	j = 0;
+	list.ForEach([&j, numbers](Ptr(unsigned int) p) -> bool {
+		ASSERTTESTFILE(1, (*p == numbers[j]), _T("Test iterator value"));
+		++j;
+		return true;
+	}, true);
+	ASSERTTESTFILE(1, (k == j), _T("End of loop"));
+}
+
+template <typename TListe>
+static void TestIterateForEach(Ref(TListe) list, unsigned int* numbers1, dword k)
+{
+	TListe::Iterator it;
+	dword j;
+
+	j = 0;
+	list.ForEach([&j, numbers1](Ptr(unsigned int) p) -> bool {
+		ASSERTTESTFILE(1, (*p == numbers1[j]), _T("Test iterator value"));
+		++j;
+		return true;
+	});
+	ASSERTTESTFILE(1, (j == k), _T("End of loop"));
+	j = k;
+	list.ForEach([&j, numbers1](Ptr(unsigned int) p) -> bool {
+		--j;
+		ASSERTTESTFILE(1, (*p == numbers1[j]), _T("Test iterator value"));
+		return true;
+	}, true);
+	ASSERTTESTFILE(1, (0 == j), _T("End of loop"));
+}
+
+template <typename TListe>
+static void TestSortedListSingleKey(Ref(TListe) list, unsigned int* numbers, unsigned int* numbers1, dword k)
+{
+	TListe::Iterator it;
+	TListe::Iterator it1;
+	dword i;
+	dword j;
+	Ptr(unsigned int) pb;
+
+	for (i = 0; i < k; ++i)
+	{
+		it = list.FindSorted(numbers + i);
+		ASSERTTESTFILE(1, (it), _T("FindSorted"));
+		pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb, NULL);
+		assert(NotPtrCheck(pb));
+		j = pb - numbers1;
+		while (it)
+		{
+			ASSERTTESTFILE(1, (**it == numbers1[j]), _T("Test iterator value"));
+			++j;
+			++it;
+		}
+		ASSERTTESTFILE(1, (k == j), _T("End of loop"));
+	}
+	for (i = 0; i < k; i += 2)
+		ASSERTTESTFILE(1, (list.RemoveSorted(numbers + i)), _T("RemoveSorted"));
+	for (i = 0; i < k; ++i)
+	{
+		it = list.FindSorted(numbers + i);
+		if ((i % 2) == 0)
+		{
+			ASSERTTESTFILE(1, (!(it)), _T("FindSorted"));
+		}
+		else
+		{
+			ASSERTTESTFILE(1, (it), _T("FindSorted"));
+			if (it)
+			{
+				pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb, NULL);
+				assert(NotPtrCheck(pb));
+				j = pb - numbers1;
+				ASSERTTESTFILE(1, (**it == numbers1[j]), _T("Test iterator value"));
+			}
+		}
+		it = list.LowerBound(numbers + i);
+		it1 = list.UpperBound(numbers + i);
+		if ((i % 2) == 0)
+		{
+			ASSERTTESTFILE(1, (it == it1), _T("it = [%08lx:%03ld], it1 = [%08lx:%03ld]"), _Lnode(Cast(LSearchResultType, it)), _Loffset(Cast(LSearchResultType, it)), _Lnode(Cast(LSearchResultType, it1)), _Loffset(Cast(LSearchResultType, it1)));
+			if (it)
+				ASSERTTESTFILE(1, (**it > numbers[i]), _T("Test iterator value"));
+		}
+		else
+		{
+			ASSERTTESTFILE(1, (it), _T("LowerBound"));
+			ASSERTTESTFILE(1, (it != it1), _T("it = [%08lx:%03ld], it1 = [%08lx:%03ld]"), _Lnode(Cast(LSearchResultType, it)), _Loffset(Cast(LSearchResultType, it)), _Lnode(Cast(LSearchResultType, it1)), _Loffset(Cast(LSearchResultType, it1)));
+			if (it)
+			{
+				pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb, NULL);
+				assert(NotPtrCheck(pb));
+				j = pb - numbers1;
+				ASSERTTESTFILE(1, (**it == numbers1[j]), _T("Test iterator value"));
+				++it;
+				ASSERTTESTFILE(1, (it == it1), _T("it = [%08lx:%03ld], it1 = [%08lx:%03ld]"), _Lnode(Cast(LSearchResultType, it)), _Loffset(Cast(LSearchResultType, it)), _Lnode(Cast(LSearchResultType, it1)), _Loffset(Cast(LSearchResultType, it1)));
+			}
+		}
+	}
+}
+
+template <typename TListe>
+static void TestSortedListMultipleKey(Ref(TListe) list, unsigned int* numbers, unsigned int* numbers1, dword k, dword m)
+{
+	TListe::Iterator it;
+	TListe::Iterator it1;
+	dword i;
+	dword j;
+	dword l;
+	Ptr(unsigned int) pb;
+
+	for (i = 0; i < k; ++i)
+	{
+		it = list.FindSorted(numbers + i);
+		ASSERTTESTFILE(1, (it), _T("FindSorted"));
+		pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k * m, sizeof(unsigned int), bsearch_cb, NULL);
+		assert(NotPtrCheck(pb));
+		j = pb - numbers1;
+		while ((j > 0) && (bsearch_cb(NULL, numbers + i, numbers1 + j) == 0))
+			--j;
+		if (j > 0)
+			++j;
+		while (it)
+		{
+			ASSERTTESTFILE(1, (**it == numbers1[j]), _T("Test iterator value"));
+			++j;
+			++it;
+		}
+		ASSERTTESTFILE(1, ((k * m) == j), _T("End of loop"));
+	}
+	for (i = 0; i < k; i += 2)
+		ASSERTTESTFILE(1, (list.RemoveSorted(numbers + i)), _T("RemoveSorted"));
+	for (i = 0; i < k; ++i)
+	{
+		it = list.FindSorted(numbers + i);
+		if ((i % 2) == 0)
+		{
+			ASSERTTESTFILE(1, (!(it)), _T("FindSorted"));
+		}
+		else
+		{
+			ASSERTTESTFILE(1, (it), _T("FindSorted"));
+			if (it)
+			{
+				pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k * m, sizeof(unsigned int), bsearch_cb, NULL);
+				assert(NotPtrCheck(pb));
+				j = pb - numbers1;
+				for (l = 0; l < m; ++l)
+				{
+					ASSERTTESTFILE(1, (**it == numbers1[j]), _T("Test iterator value"));
+					++it;
+				}
+			}
+		}
+		it = list.LowerBound(numbers + i);
+		it1 = list.UpperBound(numbers + i);
+		if ((i % 2) == 0)
+		{
+			ASSERTTESTFILE(1, (it == it1), _T("it = [%08lx:%03ld], it1 = [%08lx:%03ld]"), _Lnode(Cast(LSearchResultType, it)), _Loffset(Cast(LSearchResultType, it)), _Lnode(Cast(LSearchResultType, it1)), _Loffset(Cast(LSearchResultType, it1)));
+			if (it)
+				ASSERTTESTFILE(1, (**it > numbers[i]), _T("Test iterator value"));
+		}
+		else
+		{
+			ASSERTTESTFILE(1, (it), _T("LowerBound"));
+			ASSERTTESTFILE(1, (it != it1), _T("it = [%08lx:%03ld], it1 = [%08lx:%03ld]"), _Lnode(Cast(LSearchResultType, it)), _Loffset(Cast(LSearchResultType, it)), _Lnode(Cast(LSearchResultType, it1)), _Loffset(Cast(LSearchResultType, it1)));
+			if (it)
+			{
+				pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k * m, sizeof(unsigned int), bsearch_cb, NULL);
+				assert(NotPtrCheck(pb));
+				j = pb - numbers1;
+				for (l = 0; l < m; ++l)
+				{
+					ASSERTTESTFILE(1, (**it == numbers1[j]), _T("Test iterator value"));
+					++it;
+				}
+				ASSERTTESTFILE(1, (it == it1), _T("it = [%08lx:%03ld], it1 = [%08lx:%03ld]"), _Lnode(Cast(LSearchResultType, it)), _Loffset(Cast(LSearchResultType, it)), _Lnode(Cast(LSearchResultType, it1)), _Loffset(Cast(LSearchResultType, it1)));
+			}
+		}
+	}
+}
+
+template <typename TListe>
 static void TestSingleKey(Ref(TListe) list, unsigned int* numbers, size_t max_n)
 {
 	TListe::Iterator it;
@@ -279,42 +502,18 @@ static void TestSingleKey(Ref(TListe) list, unsigned int* numbers, size_t max_n)
 	dword i;
 	dword j;
 	dword k;
-	Ptr(unsigned int) pb;
 	Ptr(unsigned int) numbers1;
 
 	/* empty list */
 	it = list.Begin();
-	if (it)
-		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it)"));
+	ASSERTTESTFILE(1, (!it), _T("empty list, begin"));
 	it = list.Last();
-	if (it)
-		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it)"));
+	ASSERTTESTFILE(1, (!it), _T("empty list, begin"));
 	/* Append */
 	for (i = 0; i < max_n; ++i)
 	{
 		list.Append(numbers + i);
-		it = list.Begin();
-		j = 0;
-		while (it)
-		{
-			if (**it != numbers[j])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers[j]"));
-			++j;
-			++it;
-		}
-		if ((i + 1) != j)
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("((i + 1) != j)"));
-		it = list.Last();
-		j = i + 1;
-		while (it)
-		{
-			--j;
-			if (**it != numbers[j])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers[j]"));
-			--it;
-		}
-		if (j != 0)
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("j != 0"));
+		TestIterateBeginNext(list, numbers, i + 1);
 	}
 	/* Remove */
 	i = 0;
@@ -326,8 +525,7 @@ static void TestSingleKey(Ref(TListe) list, unsigned int* numbers, size_t max_n)
 		it = list.Begin();
 		while (it)
 		{
-			if (**it != numbers[j])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers[j]"));
+			ASSERTTESTFILE(1, (**it == numbers[j]), _T("Test iterator value"));
 			++j;
 			++it;
 		}
@@ -336,25 +534,7 @@ static void TestSingleKey(Ref(TListe) list, unsigned int* numbers, size_t max_n)
 	for (i = 0; i < max_n; ++i)
 	{
 		list.Prepend(numbers + i);
-		j = i + 1;
-		list.ForEach([&j, numbers](Ptr(unsigned int) p) -> bool {
-			if (*p != numbers[--j])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(*p != numbers[--j])"));
-			return true;
-		});
-		if (j != 0)
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(j != 0)"));
-		it = list.Last();
-		j = 0;
-		while (it)
-		{
-			if (**it != numbers[j])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it != numbers[j])"));
-			++j;
-			--it;
-		}
-		if (j != (i + 1))
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(j != (i + 1))"));
+		TestIterateForEachX(list, numbers, i + 1);
 	}
 	list.Clear();
 	/* InsertBefore */
@@ -362,28 +542,7 @@ static void TestSingleKey(Ref(TListe) list, unsigned int* numbers, size_t max_n)
 	for (i = 1; i < max_n; ++i)
 	{
 		list.InsertBefore(list.Begin(), numbers + i);
-		it = list.Begin();
-		j = i + 1;
-		while (it)
-		{
-			--j;
-			if (**it != numbers[j])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it != numbers[j])"));
-			++it;
-		}
-		if (j != 0)
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(j != 0)"));
-		it = list.Last();
-		j = 0;
-		while (it)
-		{
-			if (**it != numbers[j])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it != numbers[j])"));
-			++j;
-			--it;
-		}
-		if (j != (i + 1))
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(j != (i + 1))"));
+		TestIterateForEachX(list, numbers, i + 1);
 	}
 	list.Clear();
 	/* InsertAfter */
@@ -391,28 +550,7 @@ static void TestSingleKey(Ref(TListe) list, unsigned int* numbers, size_t max_n)
 	for (i = 1; i < max_n; ++i)
 	{
 		list.InsertAfter(list.Last(), numbers + i);
-		it = list.Begin();
-		j = 0;
-		while (it)
-		{
-			if (**it != numbers[j])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers[j]"));
-			++j;
-			++it;
-		}
-		if ((i + 1) != j)
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("((i + 1) != j)"));
-		it = list.Last();
-		j = i + 1;
-		while (it)
-		{
-			--j;
-			if (**it != numbers[j])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers[j]"));
-			--it;
-		}
-		if (j != 0)
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(j != 0)"));
+		TestIterateBeginNext(list, numbers, i + 1);
 	}
 	list.Clear();
 
@@ -421,7 +559,12 @@ static void TestSingleKey(Ref(TListe) list, unsigned int* numbers, size_t max_n)
 	for (k = 0; k < max_n; ++k)
 	{
 		for (i = 0; i < k; ++i)
+		{
 			it = list.Append(numbers + i);
+			ASSERTTESTFILE(1, (it), _T("Append"));
+			if (it)
+				ASSERTTESTFILE(1, (**it == numbers[i]), _T("Test iterator value"));
+		}
 
 		list.Sort();
 
@@ -429,96 +572,9 @@ static void TestSingleKey(Ref(TListe) list, unsigned int* numbers, size_t max_n)
 			numbers1[i] = numbers[i];
 		qsort(numbers1, k, sizeof(unsigned int), TestCompareSRand);
 
-		it = list.Begin();
-		i = 0;
-		while (it)
-		{
-			if (**it != numbers1[i++])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[i++]"));
-			++it;
-		}
-		if (k != i)
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(k != i)"));
-		it = list.Last();
-		i = k;
-		while (it)
-		{
-			if (**it != numbers1[--i])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[--i]"));
-			--it;
-		}
-		if (i != 0)
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(i != 0)"));
+		TestIterateForEach(list, numbers1, k);
+		TestSortedListSingleKey(list, numbers, numbers1, k);
 
-		for (i = 0; i < k; ++i)
-		{
-			it = list.FindSorted(numbers + i);
-			pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb, NULL);
-			assert(NotPtrCheck(pb));
-			j = pb - numbers1;
-			while (it)
-			{
-				if (**it != numbers1[j++])
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j++]"));
-				++it;
-			}
-			if (j != k)
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(j != k)"));
-		}
-		for (i = 0; i < k; i += 2)
-			list.RemoveSorted(numbers + i);
-		for (i = 0; i < k; ++i)
-		{
-			it = list.FindSorted(numbers + i);
-			if ((i % 2) == 0)
-			{
-				if (it)
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it)"));
-			}
-			else
-			{
-				if (!it)
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(!it)"));
-				else
-				{
-					pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb, NULL);
-					assert(NotPtrCheck(pb));
-					j = pb - numbers1;
-					if (**it != numbers1[j])
-						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j]"));
-				}
-			}
-			it = list.LowerBound(numbers + i);
-			it1 = list.UpperBound(numbers + i);
-			if ((i % 2) == 0)
-			{
-				if (it != it1)
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it[%08lx:%03ld] != it1[%08lx:%03ld])"), _Lnode(Cast(LSearchResultType, it)), _Loffset(Cast(LSearchResultType, it)), _Lnode(Cast(LSearchResultType, it1)), _Loffset(Cast(LSearchResultType, it1)));
-				if (it)
-				{
-					if (**it <= numbers[i])
-						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it <= numbers[i])"));
-				}
-			}
-			else
-			{
-				if (!it)
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(!it)"));
-				if (it == it1)
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it == it1)"));
-				if (it)
-				{
-					pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb, NULL);
-					assert(NotPtrCheck(pb));
-					j = pb - numbers1;
-					if (**it != numbers1[j])
-						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j]"));
-					++it;
-					if (it != it1)
-						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it != it1)"));
-				}
-			}
-		}
 		list.Clear();
 	}
 	/* InsertSorted */
@@ -531,103 +587,13 @@ static void TestSingleKey(Ref(TListe) list, unsigned int* numbers, size_t max_n)
 		for (i = 0; i < k; ++i)
 		{
 			it = list.InsertSorted(numbers + i);
-			if (!it)
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(!it)"));
-			else if (**it != numbers[i])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it != numbers[i])"));
+			ASSERTTESTFILE(1, (it), _T("InsertSorted"));
+			if (it)
+				ASSERTTESTFILE(1, (**it == numbers[i]), _T("Test iterator value"));
 		}
-		i = 0;
-		it = list.Begin();
-		while (it)
-		{
-			if (**it != numbers1[i])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it[%08lx] != numbers1[i][%08lx])"), **it, numbers1[i]);
-			++i;
-			++it;
-		}
-		if (i != k)
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(i != k)"));
-		i = k;
-		it = list.Last();
-		while (it)
-		{
-			--i;
-			if (**it != numbers1[i])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it[%08lx] != numbers1[i][%08lx])"), **it, numbers1[i]);
-			--it;
-		}
-		if (i != 0)
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(i != 0)"));
 
-		for (i = 0; i < k; ++i)
-		{
-			it = list.FindSorted(numbers + i);
-			pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb, NULL);
-			assert(NotPtrCheck(pb));
-			j = pb - numbers1;
-			while (it)
-			{
-				if (**it != numbers1[j++])
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j++]"));
-				++it;
-			}
-			if (j != k)
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(j != k)"));
-		}
-		for (i = 0; i < k; i += 2)
-			list.RemoveSorted(numbers + i);
-		for (i = 0; i < k; ++i)
-		{
-			it = list.FindSorted(numbers + i);
-			if ((i % 2) == 0)
-			{
-				if (it)
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it)"));
-			}
-			else
-			{
-				if (!it)
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(!it)"));
-				else
-				{
-					pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb, NULL);
-					assert(NotPtrCheck(pb));
-					j = pb - numbers1;
-					if (**it != numbers1[j])
-						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j]"));
-				}
-			}
-			it = list.LowerBound(numbers + i);
-			it1 = list.UpperBound(numbers + i);
-			if ((i % 2) == 0)
-			{
-				if (it != it1)
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it[%08lx:%03ld] != it1[%08lx:%03ld])"), _Lnode(Cast(LSearchResultType, it)), _Loffset(Cast(LSearchResultType, it)), _Lnode(Cast(LSearchResultType, it1)), _Loffset(Cast(LSearchResultType, it1)));
-				if (it)
-				{
-					if (**it <= numbers[i])
-						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it <= numbers[i])"));
-				}
-			}
-			else
-			{
-				if (!it)
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(!it)"));
-				if (it == it1)
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it == it1)"));
-				if (it)
-				{
-					pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb, NULL);
-					assert(NotPtrCheck(pb));
-					j = pb - numbers1;
-					if (**it != numbers1[j])
-						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j]"));
-					++it;
-					if (it != it1)
-						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it != it1)"));
-				}
-			}
-		}
+		TestIterateForEach(list, numbers1, k);
+		TestSortedListSingleKey(list, numbers, numbers1, k);
 		list.Clear();
 	}
 	delete[] numbers1;
@@ -643,7 +609,6 @@ static void TestMultipleKey(Ref(TListe) list, unsigned int* numbers, size_t max_
 	dword j;
 	dword k;
 	dword l;
-	Ptr(unsigned int) pb;
 	Ptr(unsigned int) numbers1;
 
 	/* InsertSorted + multiple keys */
@@ -659,109 +624,14 @@ static void TestMultipleKey(Ref(TListe) list, unsigned int* numbers, size_t max_
 			for (l = 0; l < 5; ++l, ++j)
 			{
 				it = list.InsertSorted(numbers + i);
-				if (!it)
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(!it)"));
-				else if (**it != numbers[i])
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it != numbers[i])"));
+				ASSERTTESTFILE(1, (it), _T("InsertSorted"));
+				if (it)
+					ASSERTTESTFILE(1, (**it == numbers[i]), _T("Test iterator value"));
 			}
-		i = 0;
-		it = list.Begin();
-		while (it)
-		{
-			if (**it != numbers1[i])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it[%08lx] != numbers1[i][%08lx])"), **it, numbers1[i]);
-			++i;
-			++it;
-		}
-		if (i != (k * 5))
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(i != (k * 5))"));
-		i = (k * 5);
-		it = list.Last();
-		while (it)
-		{
-			--i;
-			if (**it != numbers1[i])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it[%08lx] != numbers1[i][%08lx])"), **it, numbers1[i]);
-			--it;
-		}
-		if (i != 0)
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(i != 0)"));
 
-		for (i = 0; i < k; ++i)
-		{
-			it = list.FindSorted(numbers + i);
-			pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k * 5, sizeof(unsigned int), bsearch_cb, NULL);
-			assert(NotPtrCheck(pb));
-			j = pb - numbers1;
-			while ((j > 0) && (bsearch_cb(NULL, numbers + i, numbers1 + j) == 0))
-				--j;
-			if (j > 0)
-				++j;
-			while (it)
-			{
-				if (**it != numbers1[j])
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j]"));
-				++j;
-				++it;
-			}
-			if (j != (k * 5))
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(j != (k * 5))"));
-		}
-		for (i = 0; i < k; i += 2)
-			list.RemoveSorted(numbers + i);
-		for (i = 0; i < k; ++i)
-		{
-			it = list.FindSorted(numbers + i);
-			if ((i % 2) == 0)
-			{
-				if (it)
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it)"));
-			}
-			else
-			{
-				if (!it)
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(!it)"));
-				else
-				{
-					pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k * 5, sizeof(unsigned int), bsearch_cb, NULL);
-					assert(NotPtrCheck(pb));
-					j = pb - numbers1;
-					if (**it != numbers1[j])
-						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j]"));
-				}
-			}
-			it = list.LowerBound(numbers + i);
-			it1 = list.UpperBound(numbers + i);
-			if ((i % 2) == 0)
-			{
-				if (it != it1)
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it[%08lx:%03ld] != it1[%08lx:%03ld])"), _Lnode(Cast(LSearchResultType, it)), _Loffset(Cast(LSearchResultType, it)), _Lnode(Cast(LSearchResultType, it1)), _Loffset(Cast(LSearchResultType, it1)));
-				if (it)
-				{
-					if (**it <= numbers[i])
-						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(**it <= numbers[i])"));
-				}
-			}
-			else
-			{
-				if (!it)
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(!it)"));
-				if (it == it1)
-					WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it == it1)"));
-				if (it)
-				{
-					pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k * 5, sizeof(unsigned int), bsearch_cb, NULL);
-					assert(NotPtrCheck(pb));
-					j = pb - numbers1;
-					if (**it != numbers1[j])
-						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j]"));
-					for (l = 0; l < 5; ++l)
-						++it;
-					if (it != it1)
-						WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it != it1)"));
-				}
-			}
-		}
+		TestIterateForEach(list, numbers1, k * 5);
+		TestSortedListMultipleKey(list, numbers, numbers1, k, 5);
+
 		list.Clear();
 	}
 	delete[] numbers1;
@@ -775,79 +645,65 @@ static void TestBinaryTree(Ref(TListe) list, unsigned int* numbers, unsigned int
 	TListe::Iterator it1;
 	dword i;
 	dword j;
+	dword l;
 	Ptr(unsigned int) pb;
 
+	/* empty list */
 	it = list.Begin();
-	if (it)
-		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it)"));
+	ASSERTTESTFILE(1, (!it), _T("empty list, begin"));
 	it = list.Last();
-	if (it)
-		WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(it)"));
+	ASSERTTESTFILE(1, (!it), _T("empty list, begin"));
 	for (i = 0; i < max_n; ++i)
 	{
-		list.InsertSorted(numbers + i);
+		for (j = 0; j < (i + 1); ++j)
+		{
+			it = list.InsertSorted(numbers + j);
+			ASSERTTESTFILE(1, (it), _T("InsertSorted"));
+			if (it)
+				ASSERTTESTFILE(1, (**it == numbers[j]), _T("Test iterator value"));
+		}
 		for (j = 0; j < (i + 1); ++j)
 			numbers1[j] = numbers[j];
 		qsort(numbers1, i + 1, sizeof(unsigned int), TestCompareSRand);
-		it = list.Begin();
-		j = 0;
-		while (it)
-		{
-			if (**it != numbers1[j++])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j++]"));
-			++it;
-		}
-		if ((i + 1) != j)
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("i != j"));
-		it = list.Last();
-		j = i + 1;
-		while (it)
-		{
-			if (**it != numbers1[--j])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[--j]"));
-			--it;
-		}
-		if (j != 0)
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("j != 0"));
-	}
-	for (i = 0; i < max_n; ++i)
-	{
-		it = list.FindSorted(numbers + i);
-		pb = (unsigned int*)bsearch_s(numbers + i, numbers1, max_n, sizeof(unsigned int), bsearch_cb, NULL);
-		assert(NotPtrCheck(pb));
-		j = pb - numbers1;
-		while (it)
-		{
-			if (**it != numbers1[j++])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers1[j++]"));
-			++it;
-		}
-		if (j != max_n)
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(j != k)"));
-	}
-	i = 0;
-	while (list.Count() > 0)
-	{
-		list.RemoveSorted(numbers + i);
-		++i;
-		if (i > max_n)
-		{
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("(i > max_n)"));
-			break;
-		}
-		for (j = i; j < max_n; ++j)
-			numbers1[j-i] = numbers[j];
-		qsort(numbers1, max_n - i, sizeof(unsigned int), TestCompareSRand);
-		j = 0;
-		it = list.Begin();
-		while (it)
-		{
-			if (**it != numbers1[j++])
-				WriteErrorTestFile(__FILE__, __LINE__, 1, _T("**it != numbers[j++]"));
-			++it;
-		}
-	}
 
+		TestIterateBeginNext(list, numbers1, i + 1);
+		TestIterateForEach(list, numbers1, i + 1);
+
+		for (j = 0; j < (i + 1); ++j)
+		{
+			it = list.FindSorted(numbers + j);
+			pb = (unsigned int*)bsearch_s(numbers + j, numbers1, i + 1, sizeof(unsigned int), bsearch_cb, NULL);
+			assert(NotPtrCheck(pb));
+			j = pb - numbers1;
+			while (it)
+			{
+				ASSERTTESTFILE(1, (**it == numbers1[j]), _T("Test iterator value"));
+				++j;
+				++it;
+			}
+			ASSERTTESTFILE(1, (j == (i + 1)), _T("End of loop"));
+		}
+		j = 0;
+		while (list.Count() > 0)
+		{
+			ASSERTTESTFILE(1, (list.RemoveSorted(numbers + j)), _T("RemoveSorted"));
+			++j;
+			ASSERTTESTFILE(1, (j <= (i + 1)), _T("End of loop"));
+
+			for (l = j; l < (i + 1); ++l)
+				numbers1[l - j] = numbers[l];
+			qsort(numbers1, i + 1 - j, sizeof(unsigned int), TestCompareSRand);
+			l = 0;
+			it = list.Begin();
+			while (it)
+			{
+				ASSERTTESTFILE(1, (**it == numbers1[l]), _T("Test iterator value"));
+				++l;
+				++it;
+			}
+			ASSERTTESTFILE(1, (l == (i + 1 - j)), _T("End of loop"));
+		}
+	}
 	list.Close();
 }
 

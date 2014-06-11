@@ -275,19 +275,19 @@ public:
 		return it;
 	}
 	template <typename D> // CCppObjectForEachFunctor<Item>
-	bool ForEach(RefRef(D) rD = D())
+	bool ForEach(RefRef(D) rD = D(), bool bbackward = false)
 	{
 		return HashLinkedListForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD);
 	}
 	template <typename D> // CCppObjectForEachFunctor<Item>
-	bool ForEach(Ref(D) rD)
+	bool ForEach(Ref(D) rD, bool bbackward = false)
 	{
-		return HashLinkedListForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD);
+		return HashLinkedListForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD, bbackward);
 	}
 	template <typename D> // CCppObjectEqualFunctor<Item>
 	Iterator Find(ConstPtr(Item) data, RefRef(D) rD = D())
 	{
-		Iterator it = HashLinkedListFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD);
+		Iterator it = HashLinkedListFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD, bbackward);
 		return it;
 	}
 	template <typename D> // CCppObjectEqualFunctor<Item>

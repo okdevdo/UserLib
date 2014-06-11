@@ -183,14 +183,14 @@ public:
 		return it; 
 	}
 	template <typename D> // CCppObjectForEachFunctor<Item>
-	bool ForEach(RefRef(D) rD = D())
+	bool ForEach(RefRef(D) rD = D(), bool bbackward = false)
 	{
-		return AVLBinaryTreeForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD);
+		return AVLBinaryTreeForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD, bbackward);
 	}
 	template <typename D> // CCppObjectForEachFunctor<Item>
-	bool ForEach(Ref(D) rD)
+	bool ForEach(Ref(D) rD, bool bbackward = false)
 	{
-		return AVLBinaryTreeForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD);
+		return AVLBinaryTreeForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD, bbackward);
 	}
 	template <typename D> // CCppObjectEqualFunctor<Item>
 	Iterator Find(ConstPtr(Item) data, RefRef(D) rD = D())
@@ -456,14 +456,14 @@ public:
 		return it; 
 	}
 	template <typename D> // CCppObjectForEachFunctor<Item>
-	bool ForEach(RefRef(D) rD = D()) const
+	bool ForEach(RefRef(D) rD = D(), bool bbackward = false) const
 	{
-		return RBBinaryTreeForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD);
+		return RBBinaryTreeForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD, bbackward);
 	}
 	template <typename D> // CCppObjectForEachFunctor<Item>
-	bool ForEach(Ref(D) rD) const
+	bool ForEach(Ref(D) rD, bool bbackward = false) const
 	{
-		return RBBinaryTreeForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD);
+		return RBBinaryTreeForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD, bbackward);
 	}
 	template <typename D> // CCppObjectEqualFunctor<Item>
 	Iterator Find(ConstPtr(Item) data, RefRef(D) rD = D())

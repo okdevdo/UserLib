@@ -184,14 +184,14 @@ public:
 		return it; 
 	}
 	template <typename D> // CCppObjectForEachFunctor<Item>
-	bool ForEach(RefRef(D) rD = D()) const
+	bool ForEach(RefRef(D) rD = D(), bool bbackward = false) const
 	{
-		return DoubleLinkedListForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD);
+		return DoubleLinkedListForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD, bbackward);
 	}
 	template <typename D> // CCppObjectForEachFunctor<Item>
-	bool ForEach(Ref(D) rD) const
+	bool ForEach(Ref(D) rD, bool bbackward = false) const
 	{
-		return DoubleLinkedListForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD);
+		return DoubleLinkedListForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD, bbackward);
 	}
 	template <typename D> // CCppObjectEqualFunctor<Item>
 	Iterator Find(ConstPtr(Item) data, RefRef(D) rD = D())

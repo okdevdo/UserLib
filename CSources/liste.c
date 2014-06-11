@@ -74,13 +74,12 @@ DoubleLinkedListCount(Pointer liste)
 }
 
 void __stdcall
-DoubleLinkedListClose(Pointer liste, TDeleteFunc freeFunc, Pointer context)
+DoubleLinkedListCloseClearHelper(_pDoubleLinkedListHead head, TDeleteFunc freeFunc, Pointer context)
 {
-	_pDoubleLinkedListHead head = CastAny(_pDoubleLinkedListHead, liste);
-	_pDoubleLinkedListNode node = head->head->next;
+	_pDoubleLinkedListNode node;
 	_pDoubleLinkedListNode node1;
 
-	assert(liste != NULL);
+	node = head->head->next;
 	while (node != head->head)
 	{
 		node1 = node->next;
@@ -91,6 +90,14 @@ DoubleLinkedListClose(Pointer liste, TDeleteFunc freeFunc, Pointer context)
 		TFfree(node);
 		node = node1;
 	}
+}
+
+void __stdcall
+DoubleLinkedListClose(Pointer liste, TDeleteFunc freeFunc, Pointer context)
+{
+	_pDoubleLinkedListHead head = CastAny(_pDoubleLinkedListHead, liste);
+
+	DoubleLinkedListCloseClearHelper(head, freeFunc, context);
 	TFfree(head->head);
 	TFfree(head);
 }
@@ -99,20 +106,8 @@ void __stdcall
 DoubleLinkedListClear(Pointer liste, TDeleteFunc freeFunc, Pointer context)
 {
 	_pDoubleLinkedListHead head = CastAny(_pDoubleLinkedListHead, liste);
-	_pDoubleLinkedListNode node = head->head->next;
-	_pDoubleLinkedListNode node1;
 
-	assert(liste != NULL);
-	while (node != head->head)
-	{
-		node1 = node->next;
-		if (PtrCheck(freeFunc))
-			TFfree(node->data);
-		else
-			freeFunc(node->data, context);
-		TFfree(node);
-		node = node1;
-	}
+	DoubleLinkedListCloseClearHelper(head, freeFunc, context);
 	head->head->next = head->head;
 	head->head->prev = head->head;
 }
@@ -121,12 +116,13 @@ LSearchResultType __stdcall
 DoubleLinkedListIndex(Pointer liste, TListIndex index)
 {
 	_pDoubleLinkedListHead head = CastAny(_pDoubleLinkedListHead,liste);
-	_pDoubleLinkedListNode node = head->head->next;
+	_pDoubleLinkedListNode node;
 	LSearchResultType result = _LNULL;
 
 	assert(liste != NULL);
 	if ( (index < 0) || (index > Cast(TListIndex, head->nodeCount)) )
 		return result;
+	node = head->head->next;
 	while ((node != head->head) && (index > 0))
 	{
 		--index;
@@ -140,13 +136,12 @@ LSearchResultType __stdcall
 DoubleLinkedListBegin(Pointer liste)
 {
 	_pDoubleLinkedListHead head = CastAny(_pDoubleLinkedListHead,liste);
-	_pDoubleLinkedListNode node = head->head->next;
 	LSearchResultType result = _LNULL;
 
 	assert(liste != NULL);
-	if (node == head->head)
+	if (head->head->next == head->head)
 		return result;
-	_Lnode(result) = node;
+	_Lnode(result) = head->head->next;
 	return result;
 }
 
@@ -154,10 +149,11 @@ LSearchResultType __stdcall
 DoubleLinkedListNext(LSearchResultType _node)
 {
 	_pDoubleLinkedListNode node = CastAny(_pDoubleLinkedListNode,_Lnode(_node));
-	_pDoubleLinkedListHead head = node->head;
+	_pDoubleLinkedListHead head;
 	LSearchResultType result = _LNULL;
 
 	assert(node != NULL);
+	head = node->head;
 	if (node == head->head)
 		return result;
 	node = node->next;
@@ -169,10 +165,11 @@ LSearchResultType __stdcall
 DoubleLinkedListPrev(LSearchResultType _node)
 {
 	_pDoubleLinkedListNode node = CastAny(_pDoubleLinkedListNode,_Lnode(_node));
-	_pDoubleLinkedListHead head = node->head;
+	_pDoubleLinkedListHead head;
 	LSearchResultType result = _LNULL;
 
 	assert(node != NULL);
+	head = node->head;
 	node = node->prev;
 	if (node == head->head)
 		return result;
@@ -184,33 +181,49 @@ LSearchResultType __stdcall
 DoubleLinkedListLast(Pointer liste)
 {
 	_pDoubleLinkedListHead head = CastAny(_pDoubleLinkedListHead, liste);
-	_pDoubleLinkedListNode node = head->head->prev;
 	LSearchResultType result = _LNULL;
 
 	assert(liste != NULL);
-	if (node == head->head)
+	if (head->head->prev == head->head)
 		return result;
-	_Lnode(result) = node;
+	_Lnode(result) = head->head->prev;
 	return result;
 }
 
 bool __stdcall 
-DoubleLinkedListForEach(Pointer liste, TForEachFunc func, Pointer context)
+DoubleLinkedListForEach(Pointer liste, TForEachFunc func, Pointer context, bool bbackward)
 {
 	_pDoubleLinkedListHead head = CastAny(_pDoubleLinkedListHead,liste);
-	_pDoubleLinkedListNode node = head->head->next;
+	_pDoubleLinkedListNode node;
 	bool result = true;
 
 	assert(liste != NULL);
 	assert(func != NULL);
-	while (node != head->head)
+	if (bbackward)
 	{
-		if (0 == func(node->data, context))
+		node = head->head->prev;
+		while (node != head->head)
 		{
-			result = false;
-			break;
+			if (0 == func(node->data, context))
+			{
+				result = false;
+				break;
+			}
+			node = node->prev;
 		}
-		node = node->next;
+	}
+	else
+	{
+		node = head->head->next;
+		while (node != head->head)
+		{
+			if (0 == func(node->data, context))
+			{
+				result = false;
+				break;
+			}
+			node = node->next;
+		}
 	}
 	return result;
 }
@@ -219,11 +232,12 @@ LSearchResultType __stdcall
 DoubleLinkedListFind(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, Pointer context)
 {
 	_pDoubleLinkedListHead head = CastAny(_pDoubleLinkedListHead,liste);
-	_pDoubleLinkedListNode node = head->head->next;
+	_pDoubleLinkedListNode node;
 	LSearchResultType result = _LNULL;
 
 	assert(liste != NULL);
 	assert(findFunc != NULL);
+	node = head->head->next;
 	while (node != head->head)
 	{
 		if ( 0 == findFunc(node->data, data, context) )
@@ -240,12 +254,13 @@ LSearchResultType __stdcall
 DoubleLinkedListFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
 {
 	_pDoubleLinkedListHead head = CastAny(_pDoubleLinkedListHead,liste);
-	_pDoubleLinkedListNode node = head->head->next;
+	_pDoubleLinkedListNode node;
 	LSearchResultType result = _LNULL;
 	sword cmp;
 
 	assert(liste != NULL);
 	assert(sortFunc != NULL);
+	node = head->head->next;
 	while (node != head->head)
 	{
 		cmp = sortFunc(node->data, data, context);
@@ -264,13 +279,14 @@ LSearchResultType __stdcall
 DoubleLinkedListUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
 {
 	_pDoubleLinkedListHead head = CastAny(_pDoubleLinkedListHead,liste);
-	_pDoubleLinkedListNode node = head->head->next;
+	_pDoubleLinkedListNode node;
 	LSearchResultType result = _LNULL;
 
 	assert(liste != NULL);
 	assert(sortFunc != NULL);
 	if (head->nodeCount == 0)
 		return result;
+	node = head->head->next;
 	while (node != head->head)
 	{
 		if (0 < sortFunc(node->data, data, context))
@@ -289,13 +305,14 @@ LSearchResultType __stdcall
 DoubleLinkedListLowerBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
 {
 	_pDoubleLinkedListHead head = CastAny(_pDoubleLinkedListHead,liste);
-	_pDoubleLinkedListNode node = head->head->next;
+	_pDoubleLinkedListNode node;
 	LSearchResultType result = _LNULL;
 
 	assert(liste != NULL);
 	assert(sortFunc != NULL);
 	if (head->nodeCount == 0)
 		return result;
+	node = head->head->next;
 	while (node != head->head)
 	{
 		if (0 <= sortFunc(node->data, data, context))
@@ -452,10 +469,11 @@ LSearchResultType __stdcall
 DoubleLinkedListRemove(LSearchResultType _node, TDeleteFunc freeFunc, Pointer context)
 {
 	_pDoubleLinkedListNode node = CastAny(_pDoubleLinkedListNode,_Lnode(_node));
-	_pDoubleLinkedListHead head = node->head;
+	_pDoubleLinkedListHead head;
 	LSearchResultType result = _LNULL;
 
 	assert(NotPtrCheck(node));
+	head = node->head;
 	if (node == head->head)
 		return result;
 	if (node->next == head->head)
@@ -509,9 +527,8 @@ Pointer __stdcall
 DoubleLinkedListGetData(LSearchResultType _node)
 {
 	_pDoubleLinkedListNode node = CastAny(_pDoubleLinkedListNode,_Lnode(_node));
-	_pDoubleLinkedListHead head = node->head;
 
-	if (PtrCheck(node) || (node == head->head))
+	if (PtrCheck(node) || (node == node->head->head))
 		return NULL;
 	return node->data;
 }
@@ -520,9 +537,8 @@ void __stdcall
 DoubleLinkedListSetData(LSearchResultType _node, ConstPointer data)
 {
 	_pDoubleLinkedListNode node = CastAny(_pDoubleLinkedListNode, _Lnode(_node));
-	_pDoubleLinkedListHead head = node->head;
 
-	if (PtrCheck(node) || (node == head->head))
+	if (PtrCheck(node) || (node == node->head->head))
 		return;
 	node->data = CastMutable(Pointer, data);
 }
@@ -573,15 +589,13 @@ ArrayMaximum(Pointer liste)
 	return head->max;
 }
 
-void __stdcall
-ArrayClose(Pointer liste, TDeleteFunc freeFunc, Pointer context)
+static void __stdcall
+ArrayCloseClearHelper(_pArrayHead head, TDeleteFunc freeFunc, Pointer context)
 {
-	_pArrayHead head = CastAny(_pArrayHead, liste);
 	Array data = CastAny(Array, _l_ptradd(head, szArrayHead));
 	Pointer d;
 	TListCnt ix;
 
-	assert(liste != NULL);
 	for (ix = 0; ix < head->cnt; ++ix, data = CastAny(Array, _l_ptradd(data, szPointer)))
 	{
 		d = DerefPtr(Pointer, data);
@@ -590,6 +604,14 @@ ArrayClose(Pointer liste, TDeleteFunc freeFunc, Pointer context)
 		else
 			freeFunc(d, context);
 	}
+}
+
+void __stdcall
+ArrayClose(Pointer liste, TDeleteFunc freeFunc, Pointer context)
+{
+	_pArrayHead head = CastAny(_pArrayHead, liste);
+
+	ArrayCloseClearHelper(head, freeFunc, context);
 	TFfree(head);
 }
 
@@ -597,20 +619,8 @@ void __stdcall
 ArrayClear(Pointer liste, TDeleteFunc freeFunc, Pointer context)
 {
 	_pArrayHead head = CastAny(_pArrayHead, liste);
-	Array data = CastAny(Array, _l_ptradd(head, szArrayHead));
-	Pointer d;
-	TListCnt ix;
 
-	assert(liste != NULL);
-	for (ix = 0; ix < head->cnt; ++ix, data = CastAny(Array, _l_ptradd(data, szPointer)))
-	{
-		d = DerefPtr(Pointer, data);
-		if (PtrCheck(freeFunc))
-			TFfree(d);
-		else
-			freeFunc(d, context);
-		d = NULL;
-	}
+	ArrayCloseClearHelper(head, freeFunc, context);
 	head->cnt = 0;
 }
 
@@ -692,23 +702,37 @@ ArrayLast(Pointer liste)
 }
 
 bool __stdcall 
-ArrayForEach(Pointer liste, TForEachFunc func, Pointer context)
+ArrayForEach(Pointer liste, TForEachFunc func, Pointer context, bool bbackward)
 {
 	_pArrayHead head = CastAny(_pArrayHead,liste);
 	Array dataArray = CastAny(Array, _l_ptradd(liste, szArrayHead));
-	Array pt = dataArray;
+	Array pt;
 	bool result = true;
 	TListCnt ix;
 
 	assert(liste != NULL);
 	assert(head->max > 0);
 	assert(func != NULL);
-	for (ix = 0; ix < head->cnt; ++ix, pt = CastAny(Array, _l_ptradd(pt, szPointer)))
+	if (bbackward)
 	{
-		if (0 == func(*pt, context))
+		for (ix = head->cnt, pt = CastAny(Array, _l_ptradd(dataArray, (head->cnt - 1) * szPointer)); ix > 0; --ix, pt = CastAny(Array, _l_ptradd(pt, -1 * Castsdword(szPointer))))
 		{
-			result = false;
-			break;
+			if (!(func(*pt, context)))
+			{
+				result = false;
+				break;
+			}
+		}
+	}
+	else
+	{
+		for (ix = 0, pt = dataArray; ix < head->cnt; ++ix, pt = CastAny(Array, _l_ptradd(pt, szPointer)))
+		{
+			if (!(func(*pt, context)))
+			{
+				result = false;
+				break;
+			}
 		}
 	}
 	return result;
@@ -1030,13 +1054,11 @@ VectorReserve(Pointer liste)
 	head->data = CastAny(Array, p);
 }
 
-void __stdcall
-VectorClose(Pointer liste, TDeleteFunc freeFunc, Pointer context)
+static void __stdcall
+VectorCloseClearHelper(_pVectorHead head, TDeleteFunc freeFunc, Pointer context)
 {
-	_pVectorHead head = CastAny(_pVectorHead, liste);
 	Pointer d;
 
-	assert(liste != NULL);
 	while (head->cnt > 0)
 	{
 		--(head->cnt);
@@ -1046,6 +1068,14 @@ VectorClose(Pointer liste, TDeleteFunc freeFunc, Pointer context)
 		else
 			freeFunc(d, context);
 	}
+}
+
+void __stdcall
+VectorClose(Pointer liste, TDeleteFunc freeFunc, Pointer context)
+{
+	_pVectorHead head = CastAny(_pVectorHead, liste);
+
+	VectorCloseClearHelper(head, freeFunc, context);
 	TFfree(head->data);
 	TFfree(head);
 }
@@ -1054,19 +1084,8 @@ void __stdcall
 VectorClear(Pointer liste, TDeleteFunc freeFunc, Pointer context)
 {
 	_pVectorHead head = CastAny(_pVectorHead, liste);
-	Pointer d;
 
-	assert(liste != NULL);
-	while (head->cnt > 0)
-	{
-		--(head->cnt);
-		d = DerefPtr(Pointer, _l_ptradd(head->data, (szPointer * head->cnt)));
-		if (PtrCheck(freeFunc))
-			TFfree(d);
-		else
-			freeFunc(d, context);
-		d = NULL;
-	}
+	VectorCloseClearHelper(head, freeFunc, context);
 }
 
 LSearchResultType __stdcall
@@ -1147,23 +1166,38 @@ VectorLast(Pointer liste)
 }
 
 bool __stdcall 
-VectorForEach(Pointer liste, TForEachFunc func, Pointer context)
+VectorForEach(Pointer liste, TForEachFunc func, Pointer context, bool bbackward)
 {
 	_pVectorHead head = CastAny(_pVectorHead, liste);
-	Array dataVector = head->data;
-	Array pt = dataVector;
+	Array dataVector;
+	Array pt;
 	bool result = true;
 	TListCnt ix;
 
 	assert(liste != NULL);
 	assert(head->max > 0);
 	assert(func != NULL);
-	for (ix = 0; ix < head->cnt; ++ix, pt = CastAny(Array, _l_ptradd(pt, szPointer)))
+	dataVector = head->data;
+	if (bbackward)
 	{
-		if (!(func(*pt, context)))
+		for (ix = head->cnt, pt = CastAny(Array, _l_ptradd(dataVector, (head->cnt - 1) * szPointer)); ix > 0; --ix, pt = CastAny(Array, _l_ptradd(pt, -1 * Castsdword(szPointer))))
 		{
-			result = false;
-			break;
+			if (!(func(*pt, context)))
+			{
+				result = false;
+				break;
+			}
+		}
+	}
+	else
+	{
+		for (ix = 0, pt = dataVector; ix < head->cnt; ++ix, pt = CastAny(Array, _l_ptradd(pt, szPointer)))
+		{
+			if (!(func(*pt, context)))
+			{
+				result = false;
+				break;
+			}
 		}
 	}
 	return result;
@@ -1173,7 +1207,6 @@ LSearchResultType __stdcall
 VectorFind(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, Pointer context)
 {
 	_pVectorHead head = CastAny(_pVectorHead,liste);
-	Array dataVector = head->data;
 	LSearchResultType result = _LNULL;
 
 	assert(liste != NULL);
@@ -1182,7 +1215,7 @@ VectorFind(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, Po
 	if ( 0 == head->cnt )
 		return result;
 	_Lnode(result) = head;
-	_Loffset(result) = _lv_ulsearch( dataVector, data, head->cnt, findFunc, context, UTLPTR_MATCHMODE );
+	_Loffset(result) = _lv_ulsearch(head->data, data, head->cnt, findFunc, context, UTLPTR_MATCHMODE);
 	if ( _Loffset(result) < 0 )
 		return _LNULL;
 	return result;
@@ -1192,7 +1225,6 @@ LSearchResultType __stdcall
 VectorFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
 {
 	_pVectorHead head = CastAny(_pVectorHead,liste);
-	Array dataVector = head->data;
 	LSearchResultType result = _LNULL;
 
 	assert(liste != NULL);
@@ -1201,7 +1233,7 @@ VectorFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFu
 	if ( 0 == head->cnt )
 		return result;
 	_Lnode(result) = head;
-	_Loffset(result) = _lv_ubsearch(dataVector, data, head->cnt, sortFunc, context, UTLPTR_MATCHMODE);
+	_Loffset(result) = _lv_ubsearch(head->data, data, head->cnt, sortFunc, context, UTLPTR_MATCHMODE);
 	if ( _Loffset(result) < 0 )
 		return _LNULL;
 	return result;
@@ -1211,7 +1243,6 @@ LSearchResultType __stdcall
 VectorUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
 {
 	_pVectorHead head = CastAny(_pVectorHead,liste);
-	Array dataVector = head->data;
 	LSearchResultType result = _LNULL;
 
 	assert(liste != NULL);
@@ -1220,7 +1251,7 @@ VectorUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFu
 	if ( 0 == head->cnt )
 		return result;
 	_Lnode(result) = head;
-	_Loffset(result) = _lv_ubsearch( dataVector, data, head->cnt, sortFunc, context, UTLPTR_INSERTMODE) + 1;
+	_Loffset(result) = _lv_ubsearch(head->data, data, head->cnt, sortFunc, context, UTLPTR_INSERTMODE) + 1;
 	return result;
 }
 
@@ -1228,7 +1259,6 @@ LSearchResultType __stdcall
 VectorLowerBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
 {
 	_pVectorHead head = CastAny(_pVectorHead,liste);
-	Array dataVector = head->data;
 	LSearchResultType result = _LNULL;
 
 	assert(liste != NULL);
@@ -1237,7 +1267,7 @@ VectorLowerBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFu
 	if ( 0 == head->cnt )
 		return result;
 	_Lnode(result) = head;
-	_Loffset(result) = _lv_ubsearch( dataVector, data, head->cnt, sortFunc, context, UTLPTR_SEARCHMODE);
+	_Loffset(result) = _lv_ubsearch(head->data, data, head->cnt, sortFunc, context, UTLPTR_SEARCHMODE);
 	return result;
 }
 
@@ -1245,7 +1275,6 @@ void __stdcall
 VectorSort(Pointer liste, TSearchAndSortUserFunc sortFunc, Pointer context, word mode)
 {
 	_pVectorHead head = CastAny(_pVectorHead,liste);
-	Array dataVector = head->data;
 
 	assert(liste != NULL);
 	assert(head->max > 0);
@@ -1255,10 +1284,10 @@ VectorSort(Pointer liste, TSearchAndSortUserFunc sortFunc, Pointer context, word
 	switch ( mode )
 	{
 	case LSORTMODE_HEAPSORT:
-		_lv_uheapsort(dataVector, head->cnt, sortFunc, context);
+		_lv_uheapsort(head->data, head->cnt, sortFunc, context);
 		break;
 	case LSORTMODE_QUICKSORT:
-		_lv_uquicksort(dataVector, head->cnt, sortFunc, context);
+		_lv_uquicksort(head->data, head->cnt, sortFunc, context);
 		break;
 	}
 }
@@ -1267,7 +1296,6 @@ LSearchResultType __stdcall
 VectorAppend(Pointer liste, ConstPointer data)
 {
 	_pVectorHead head = CastAny(_pVectorHead,liste);
-	Array dataVector = head->data;
 	LSearchResultType result = _LNULL;
 
 	assert(liste != NULL);
@@ -1277,11 +1305,10 @@ VectorAppend(Pointer liste, ConstPointer data)
 		VectorReserve(liste);
 		if ( head->cnt >= head->max )
 			return result;
-		dataVector = head->data;
 	}
 	_Lnode(result) = head;
-	_Loffset(result) = _lv_insert( dataVector, Cast(sdword,head->cnt) - 1, data, &(head->cnt) );
-	DerefPtr(Pointer, _fl_ptradd(dataVector, head->cnt * szPointer)) = NULL;
+	_Loffset(result) = _lv_insert(head->data, Cast(sdword, head->cnt) - 1, data, &(head->cnt));
+	DerefPtr(Pointer, _fl_ptradd(head->data, head->cnt * szPointer)) = NULL;
 	return result;
 }
 
@@ -1289,7 +1316,6 @@ LSearchResultType __stdcall
 VectorPrepend(Pointer liste, ConstPointer data)
 {
 	_pVectorHead head = CastAny(_pVectorHead,liste);
-	Array dataVector = head->data;
 	LSearchResultType result = _LNULL;
 
 	assert(liste != NULL);
@@ -1299,11 +1325,10 @@ VectorPrepend(Pointer liste, ConstPointer data)
 		VectorReserve(liste);
 		if ( head->cnt >= head->max )
 			return result;
-		dataVector = head->data;
 	}
 	_Lnode(result) = head;
-	_Loffset(result) = _lv_insert( dataVector, -1, data, &(head->cnt) );
-	DerefPtr(Pointer, _fl_ptradd(dataVector, head->cnt * szPointer)) = NULL;
+	_Loffset(result) = _lv_insert(head->data, -1, data, &(head->cnt));
+	DerefPtr(Pointer, _fl_ptradd(head->data, head->cnt * szPointer)) = NULL;
 	return result;
 }
 
@@ -1311,7 +1336,6 @@ LSearchResultType __stdcall
 VectorInsertBefore(LSearchResultType node, ConstPointer data)
 {
 	_pVectorHead head = CastAny(_pVectorHead,_Lnode(node));
-	Array dataVector = head->data;
 	LSearchResultType result = _LNULL;
 
 	assert(head != NULL);
@@ -1323,11 +1347,10 @@ VectorInsertBefore(LSearchResultType node, ConstPointer data)
 		VectorReserve(head);
 		if ( head->cnt >= head->max )
 			return result;
-		dataVector = head->data;
 	}
 	_Lnode(result) = head;
-	_Loffset(result) = _lv_insert( dataVector, _Loffset(node) - 1, data, &(head->cnt) );
-	DerefPtr(Pointer, _fl_ptradd(dataVector, head->cnt * szPointer)) = NULL;
+	_Loffset(result) = _lv_insert(head->data, _Loffset(node) - 1, data, &(head->cnt));
+	DerefPtr(Pointer, _fl_ptradd(head->data, head->cnt * szPointer)) = NULL;
 	return result;
 }
 
@@ -1335,7 +1358,6 @@ LSearchResultType __stdcall
 VectorInsertAfter(LSearchResultType node, ConstPointer data)
 {
 	_pVectorHead head = CastAny(_pVectorHead,_Lnode(node));
-	Array dataVector = head->data;
 	LSearchResultType result = _LNULL;
 
 	assert(head != NULL);
@@ -1347,11 +1369,10 @@ VectorInsertAfter(LSearchResultType node, ConstPointer data)
 		VectorReserve(head);
 		if ( head->cnt >= head->max )
 			return result;
-		dataVector = head->data;
 	}
 	_Lnode(result) = head;
-	_Loffset(result) = _lv_insert( dataVector, _Loffset(node), data, &(head->cnt) );
-	DerefPtr(Pointer, _fl_ptradd(dataVector, head->cnt * szPointer)) = NULL;
+	_Loffset(result) = _lv_insert(head->data, _Loffset(node), data, &(head->cnt));
+	DerefPtr(Pointer, _fl_ptradd(head->data, head->cnt * szPointer)) = NULL;
 	return result;
 }
 
@@ -1359,7 +1380,6 @@ LSearchResultType __stdcall
 VectorRemove(LSearchResultType node, TDeleteFunc freeFunc, Pointer context)
 {
 	_pVectorHead head = CastAny(_pVectorHead,_Lnode(node));
-	Array dataVector = head->data;
 	Pointer data;
 	LSearchResultType result = _LNULL;
 
@@ -1367,14 +1387,14 @@ VectorRemove(LSearchResultType node, TDeleteFunc freeFunc, Pointer context)
 	assert(head->max > 0);
 	if ( (0 == head->cnt) || (_Loffset(node) < 0) || (_Loffset(node) >= Cast(TListIndex, head->cnt)) )
 		return result;
-	data = DerefPtr(Pointer,_l_ptradd(dataVector, _Loffset(node) * szPointer));
+	data = DerefPtr(Pointer, _l_ptradd(head->data, _Loffset(node) * szPointer));
 	if ( PtrCheck(freeFunc) )
 		TFfree( data );
 	else
 		freeFunc( data, context );
 	_Lnode(result) = head;
-	_Loffset(result) = _lv_delete( dataVector, _Loffset(node), &(head->cnt) );
-	DerefPtr(Pointer, _fl_ptradd(dataVector, head->cnt * szPointer)) = NULL;
+	_Loffset(result) = _lv_delete(head->data, _Loffset(node), &(head->cnt));
+	DerefPtr(Pointer, _fl_ptradd(head->data, head->cnt * szPointer)) = NULL;
 	return result;
 }
 
@@ -1395,7 +1415,6 @@ bool __stdcall
 VectorRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer sortContext, TDeleteFunc freeFunc, Pointer freeContext)
 {
 	_pVectorHead head = CastAny(_pVectorHead,liste);
-	Array dataVector = head->data;
 	LSearchResultType result = _LNULL;
 	Pointer key;
 
@@ -1418,26 +1437,24 @@ Pointer __stdcall
 VectorGetData(LSearchResultType node)
 {
 	_pVectorHead head = CastAny(_pVectorHead,_Lnode(node));
-	Array dataVector = head->data;
 
 	assert(head != NULL);
 	assert(head->max > 0);
 	if ( (0 == head->cnt) || (_Loffset(node) < 0) || (_Loffset(node) >= Cast(TListIndex, head->cnt)) )
 		return NULL;
-	return DerefPtr(Pointer,_l_ptradd(dataVector, _Loffset(node) * szPointer));
+	return DerefPtr(Pointer, _l_ptradd(head->data, _Loffset(node) * szPointer));
 }
 
 void __stdcall 
 VectorSetData(LSearchResultType node, ConstPointer data)
 {
 	_pVectorHead head = CastAny(_pVectorHead,_Lnode(node));
-	Array dataVector = head->data;
 
 	assert(head != NULL);
 	assert(head->max > 0);
 	if ( (0 == head->cnt) || (_Loffset(node) < 0) || (_Loffset(node) >= Cast(TListIndex, head->cnt)) )
 		return;
-	DerefPtr(Pointer,_l_ptradd(dataVector, _Loffset(node) * szPointer)) = CastMutable(Pointer, data);
+	DerefPtr(Pointer, _l_ptradd(head->data, _Loffset(node) * szPointer)) = CastMutable(Pointer, data);
 }
 
 /*			  */
@@ -1499,48 +1516,27 @@ AVLBinaryTreeHeight(Pointer liste)
 	return AVLBinaryTreeHeightHelper(head->root);
 }
 
-static void __stdcall 
-AVLBinaryTreeCloseHelper(_pAVLBinaryTreeNode node)
+static void __stdcall
+AVLBinaryTreeCloseClearHelper(_pAVLBinaryTreeNode node, TDeleteFunc freeFunc, Pointer context)
 {
-	_pAVLBinaryTreeNode nodeLeft = node->left;
-	_pAVLBinaryTreeNode nodeRight = node->right;
-
-	if ( NotPtrCheck(nodeLeft) )
-	{
-		AVLBinaryTreeCloseHelper(nodeLeft);
-		TFfree(nodeLeft);
-	}
-	if ( NotPtrCheck(nodeRight) )
-	{
-		AVLBinaryTreeCloseHelper(nodeRight);
-		TFfree(nodeRight);
-	}
+	if (PtrCheck(node))
+		return;
+	AVLBinaryTreeCloseClearHelper(node->left, freeFunc, context);
+	AVLBinaryTreeCloseClearHelper(node->right, freeFunc, context);
+	if (freeFunc)
+		freeFunc(node->data, context);
+	else
+		TFfree(node->data);
+	TFfree(node);
 }
 
 void __stdcall
 AVLBinaryTreeClose(Pointer liste, TDeleteFunc freeFunc, Pointer context)
 {
 	_pAVLBinaryTreeHead head = CastAnyPtr(_AVLBinaryTreeHead, liste);
-	LSearchResultType result = AVLBinaryTreeBegin(liste);
-	Pointer d;
 
 	assert(liste != NULL);
-	while (!LPtrCheck(result))
-	{
-		d = AVLBinaryTreeGetData(result);
-		if (PtrCheck(freeFunc))
-			TFfree(d);
-		else
-			freeFunc(d, context);
-		result = AVLBinaryTreeNext(result);
-	}
-	if (PtrCheck(liste))
-		return;
-	if (NotPtrCheck(head->root))
-	{
-		AVLBinaryTreeCloseHelper(head->root);
-		TFfree(head->root);
-	}
+	AVLBinaryTreeCloseClearHelper(head->root, freeFunc, context);
 	TFfree(head);
 }
 
@@ -1548,26 +1544,9 @@ void __stdcall
 AVLBinaryTreeClear(Pointer liste, TDeleteFunc freeFunc, Pointer context)
 {
 	_pAVLBinaryTreeHead head = CastAnyPtr(_AVLBinaryTreeHead, liste);
-	LSearchResultType result = AVLBinaryTreeBegin(liste);
-	Pointer d;
 
 	assert(liste != NULL);
-	while (!LPtrCheck(result))
-	{
-		d = AVLBinaryTreeGetData(result);
-		if (PtrCheck(freeFunc))
-			TFfree(d);
-		else
-			freeFunc(d, context);
-		result = AVLBinaryTreeNext(result);
-	}
-	if (PtrCheck(liste))
-		return;
-	if (NotPtrCheck(head->root))
-	{
-		AVLBinaryTreeCloseHelper(head->root);
-		TFfree(head->root);
-	}
+	AVLBinaryTreeCloseClearHelper(head->root, freeFunc, context);
 	head->nodeCount = 0;
 	head->root = NULL;
 }
@@ -1666,61 +1645,88 @@ AVLBinaryTreeLast(Pointer liste)
 	return result;
 }
 
-bool __stdcall 
-AVLBinaryTreeForEach(Pointer liste, TForEachFunc func, Pointer context)
+static bool __stdcall
+AVLBinaryTreeForEachForwardHelper(_pAVLBinaryTreeNode node, TForEachFunc func, Pointer context)
 {
-	LSearchResultType it = AVLBinaryTreeBegin(liste);
-	bool result = true;
-	Pointer d;
+	if (PtrCheck(node))
+		return true;
+	if (!(AVLBinaryTreeForEachForwardHelper(node->left, func, context)))
+		return false;
+	if (!(func(node->data, context)))
+		return false;
+	if (!(AVLBinaryTreeForEachForwardHelper(node->right, func, context)))
+		return false;
+	return true;
+}
+
+static bool __stdcall
+AVLBinaryTreeForEachBackwardHelper(_pAVLBinaryTreeNode node, TForEachFunc func, Pointer context)
+{
+	if (PtrCheck(node))
+		return true;
+	if (!(AVLBinaryTreeForEachBackwardHelper(node->right, func, context)))
+		return false;
+	if (!(func(node->data, context)))
+		return false;
+	if (!(AVLBinaryTreeForEachBackwardHelper(node->left, func, context)))
+		return false;
+	return true;
+}
+
+bool __stdcall
+AVLBinaryTreeForEach(Pointer liste, TForEachFunc func, Pointer context, bool bbackward)
+{
+	_pAVLBinaryTreeHead head = CastAnyPtr(_AVLBinaryTreeHead, liste);
 
 	assert(liste != NULL);
 	assert(func != NULL);
-	while (!LPtrCheck(it))
-	{
-		d = AVLBinaryTreeGetData(it);
-		if (0 == func(d, context))
-		{
-			result = false;
-			break;
-		}
-		it = AVLBinaryTreeNext(it);
-	}
-	return result;
+	if (bbackward)
+		return AVLBinaryTreeForEachBackwardHelper(head->root, func, context);
+	return AVLBinaryTreeForEachForwardHelper(head->root, func, context);
 }
 
-LSearchResultType __stdcall 
+static LSearchResultType __stdcall
+AVLBinaryTreeFindHelper(_pAVLBinaryTreeNode node, ConstPointer data, TSearchAndSortUserFunc findFunc, Pointer context)
+{
+	LSearchResultType result = _LNULL;
+
+	if (PtrCheck(node))
+		return result;
+	result = AVLBinaryTreeFindHelper(node->left, data, findFunc, context);
+	if (!LPtrCheck(result))
+		return result;
+	if (0 == findFunc(node->data, data, context))
+	{
+		_Lnode(result) = node;
+		return result;
+	}
+	return AVLBinaryTreeFindHelper(node->right, data, findFunc, context);
+}
+
+LSearchResultType __stdcall
 AVLBinaryTreeFind(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, Pointer context)
 {
-	LSearchResultType result = AVLBinaryTreeBegin(liste);
-	Pointer d;
+	_pAVLBinaryTreeHead head = CastAnyPtr(_AVLBinaryTreeHead, liste);
 
 	assert(liste != NULL);
 	assert(findFunc != NULL);
-	while ( !LPtrCheck(result) )
-	{
-		d = AVLBinaryTreeGetData(result);
-		if ( 0 == findFunc(d, data, context) )
-			return result;
-		result = AVLBinaryTreeNext(result);
-	}
-	return _LNULL;
+	return AVLBinaryTreeFindHelper(head->root, data, findFunc, context);
 }
 
 static _pAVLBinaryTreeNode __stdcall
 AVLBinaryTreeFindSortedHelper(_pAVLBinaryTreeNode node, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
 {
-	sword funcResult = sortFunc(node->data, data, context);
+	sword funcResult;
+
+	if (PtrCheck(node))
+		return NULL;
+
+	funcResult = sortFunc(node->data, data, context);
 
 	if ( 0 == funcResult )
 		return node;
 	if ( 0 < funcResult )
-	{
-		if ( PtrCheck(node->left) )
-			return NULL;
 		return AVLBinaryTreeFindSortedHelper(node->left, data, sortFunc, context);
-	}
-	if ( PtrCheck(node->right) )
-		return NULL;
 	return AVLBinaryTreeFindSortedHelper(node->right, data, sortFunc, context);
 }
 
@@ -1732,73 +1738,7 @@ AVLBinaryTreeFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc
 
 	assert(liste != NULL);
 	assert(sortFunc != NULL);
-	if ( PtrCheck(head->root) )
-		return result;
 	_Lnode(result) = AVLBinaryTreeFindSortedHelper(head->root, data, sortFunc, context);
-	return result;
-}
-
-static _pAVLBinaryTreeNode __stdcall
-AVLBinaryTreeUpperBoundHelper(_pAVLBinaryTreeNode node, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
-{
-	sword funcResult = sortFunc(node->data, data, context);
-
-	if ( 0 == funcResult )
-		return node;
-	if ( 0 < funcResult )
-	{
-		if ( PtrCheck(node->left) )
-			return NULL;
-		return AVLBinaryTreeUpperBoundHelper(node->left, data, sortFunc, context);
-	}
-	if ( PtrCheck(node->right) )
-		return NULL;
-	return AVLBinaryTreeUpperBoundHelper(node->right, data, sortFunc, context);
-}
-
-LSearchResultType __stdcall 
-AVLBinaryTreeUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
-{
-	_pAVLBinaryTreeHead head = CastAnyPtr(_AVLBinaryTreeHead, liste);
-	LSearchResultType result = _LNULL;
-
-	assert(liste != NULL);
-	assert(sortFunc != NULL);
-	if ( PtrCheck(head->root) )
-		return result;
-	_Lnode(result) = AVLBinaryTreeUpperBoundHelper(head->root, data, sortFunc, context);
-	return result;
-}
-
-static _pAVLBinaryTreeNode __stdcall
-AVLBinaryTreeLowerBoundHelper(_pAVLBinaryTreeNode node, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
-{
-	sword funcResult = sortFunc(node->data, data, context);
-
-	if ( 0 == funcResult )
-		return node;
-	if ( 0 < funcResult )
-	{
-		if ( PtrCheck(node->left) )
-			return NULL;
-		return AVLBinaryTreeLowerBoundHelper(node->left, data, sortFunc, context);
-	}
-	if ( PtrCheck(node->right) )
-		return NULL;
-	return AVLBinaryTreeLowerBoundHelper(node->right, data, sortFunc, context);
-}
-
-LSearchResultType __stdcall 
-AVLBinaryTreeLowerBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
-{
-	_pAVLBinaryTreeHead head = CastAnyPtr(_AVLBinaryTreeHead, liste);
-	LSearchResultType result = _LNULL;
-
-	assert(liste != NULL);
-	assert(sortFunc != NULL);
-	if ( PtrCheck(head->root) )
-		return result;
-	_Lnode(result) = AVLBinaryTreeLowerBoundHelper(head->root, data, sortFunc, context);
 	return result;
 }
 
@@ -1911,12 +1851,13 @@ LSearchResultType __stdcall
 AVLBinaryTreeInsertSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
 {
 	_pAVLBinaryTreeHead head = CastAnyPtr(_AVLBinaryTreeHead, liste);
-	_pAVLBinaryTreeNode node1 = head->root;
+	_pAVLBinaryTreeNode node1;
 	_pAVLBinaryTreeNode node2 = NULL;
 	LSearchResultType result = _LNULL;
 
 	assert(liste != NULL);
 	assert(sortFunc != NULL);
+	node1 = head->root;
 	if ( PtrCheck(node1) )
 	{
 		node2 = CastAnyPtr(_AVLBinaryTreeNode, TFalloc(szAVLBinaryTreeNode));
@@ -2027,11 +1968,12 @@ bool __stdcall
 AVLBinaryTreeRemoveSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer sortContext, TDeleteFunc freeFunc, Pointer freeContext)
 {
 	_pAVLBinaryTreeHead head = CastAnyPtr(_AVLBinaryTreeHead, liste);
-	_pAVLBinaryTreeNode node = head->root;
+	_pAVLBinaryTreeNode node;
 	bool result = false;
 
 	assert(liste != NULL);
 	assert(sortFunc != NULL);
+	node = head->root;
 	if ( PtrCheck(node) )
 		return false;
 	head->root = AVLBinaryTreeRemoveSortedHelper(head, node, data, sortFunc, sortContext, freeFunc, freeContext, true, &result);
@@ -2194,47 +2136,26 @@ RBBinaryTreeHeight(Pointer liste)
 }
 
 static void __stdcall
-RBBinaryTreeCloseHelper(_pRBBinaryTreeNode node)
+RBBinaryTreeCloseClearHelper(_pRBBinaryTreeNode node, TDeleteFunc freeFunc, Pointer context)
 {
-	_pRBBinaryTreeNode nodeLeft = node->left;
-	_pRBBinaryTreeNode nodeRight = node->right;
-
-	if (NotPtrCheck(nodeLeft))
-	{
-		RBBinaryTreeCloseHelper(nodeLeft);
-		TFfree(nodeLeft);
-	}
-	if (NotPtrCheck(nodeRight))
-	{
-		RBBinaryTreeCloseHelper(nodeRight);
-		TFfree(nodeRight);
-	}
+	if (PtrCheck(node))
+		return;
+	RBBinaryTreeCloseClearHelper(node->left, freeFunc, context);
+	RBBinaryTreeCloseClearHelper(node->right, freeFunc, context);
+	if (PtrCheck(freeFunc))
+		TFfree(node->data);
+	else
+		freeFunc(node->data, context);
+	TFfree(node);
 }
 
 void __stdcall
 RBBinaryTreeClose(Pointer liste, TDeleteFunc freeFunc, Pointer context)
 {
 	_pRBBinaryTreeHead head = CastAnyPtr(_RBBinaryTreeHead, liste);
-	LSearchResultType result = RBBinaryTreeBegin(liste);
-	Pointer d;
 
 	assert(liste != NULL);
-	while (!LPtrCheck(result))
-	{
-		d = RBBinaryTreeGetData(result);
-		if (PtrCheck(freeFunc))
-			TFfree(d);
-		else
-			freeFunc(d, context);
-		result = RBBinaryTreeNext(result);
-	}
-	if (PtrCheck(liste))
-		return;
-	if (NotPtrCheck(head->root))
-	{
-		RBBinaryTreeCloseHelper(head->root);
-		TFfree(head->root);
-	}
+	RBBinaryTreeCloseClearHelper(head->root, freeFunc, context);
 	TFfree(head);
 }
 
@@ -2242,28 +2163,11 @@ void __stdcall
 RBBinaryTreeClear(Pointer liste, TDeleteFunc freeFunc, Pointer context)
 {
 	_pRBBinaryTreeHead head = CastAnyPtr(_RBBinaryTreeHead, liste);
-	LSearchResultType result = RBBinaryTreeBegin(liste);
-	Pointer d;
 
 	assert(liste != NULL);
-	while (!LPtrCheck(result))
-	{
-		d = RBBinaryTreeGetData(result);
-		if (PtrCheck(freeFunc))
-			TFfree(d);
-		else
-			freeFunc(d, context);
-		result = RBBinaryTreeNext(result);
-	}
-	if (PtrCheck(liste))
-		return;
-	if (NotPtrCheck(head->root))
-	{
-		RBBinaryTreeCloseHelper(head->root);
-		TFfree(head->root);
-	}
+	RBBinaryTreeCloseClearHelper(head->root, freeFunc, context);
 	head->nodeCount = 0;
-	head->root = 0;
+	head->root = NULL;
 }
 
 LSearchResultType __stdcall
@@ -2360,24 +2264,63 @@ RBBinaryTreeLast(Pointer liste)
 	return result;
 }
 
-bool __stdcall
-RBBinaryTreeForEach(Pointer liste, TForEachFunc func, Pointer context)
+static bool __stdcall
+RBBinaryTreeForEachForwardHelper(_pRBBinaryTreeNode node, TForEachFunc func, Pointer context)
 {
-	LSearchResultType it = RBBinaryTreeBegin(liste);
-	bool result = true;
-	Pointer d;
+	if (PtrCheck(node))
+		return true;
+	if (!(RBBinaryTreeForEachForwardHelper(node->left, func, context)))
+		return false;
+	if (!(func(node->data, context)))
+		return false;
+	return RBBinaryTreeForEachForwardHelper(node->right, func, context);
+}
+
+static bool __stdcall
+RBBinaryTreeForEachBackwardHelper(_pRBBinaryTreeNode node, TForEachFunc func, Pointer context)
+{
+	if (PtrCheck(node))
+		return true;
+	if (!(RBBinaryTreeForEachBackwardHelper(node->right, func, context)))
+		return false;
+	if (!(func(node->data, context)))
+		return false;
+	return RBBinaryTreeForEachBackwardHelper(node->left, func, context);
+}
+
+bool __stdcall
+RBBinaryTreeForEach(Pointer liste, TForEachFunc func, Pointer context, bool bbackward)
+{
+	_pRBBinaryTreeHead head = CastAnyPtr(_RBBinaryTreeHead, liste);
 
 	assert(liste != NULL);
 	assert(func != NULL);
-	while (!LPtrCheck(it))
+	if (bbackward)
+		return RBBinaryTreeForEachBackwardHelper(head->root, func, context);
+	return RBBinaryTreeForEachForwardHelper(head->root, func, context);
+}
+
+static LSearchResultType __stdcall
+RBBinaryTreeFindHelper(_pRBBinaryTreeNode node, ConstPointer data, TSearchAndSortUserFunc findFunc, Pointer context)
+{
+	LSearchResultType result = _LNULL;
+
+	if (NotPtrCheck(node->left))
 	{
-		d = RBBinaryTreeGetData(it);
-		if (0 == func(d, context))
-		{
-			result = false;
-			break;
-		}
-		it = RBBinaryTreeNext(it);
+		result = RBBinaryTreeFindHelper(node->left, data, findFunc, context);
+		if (!LPtrCheck(result))
+			return result;
+	}
+	if (0 == findFunc(node->data, data, context))
+	{
+		_Lnode(result) = node;
+		return result;
+	}
+	if (NotPtrCheck(node->right))
+	{
+		result = RBBinaryTreeFindHelper(node->right, data, findFunc, context);
+		if (!LPtrCheck(result))
+			return result;
 	}
 	return result;
 }
@@ -2385,36 +2328,27 @@ RBBinaryTreeForEach(Pointer liste, TForEachFunc func, Pointer context)
 LSearchResultType __stdcall
 RBBinaryTreeFind(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, Pointer context)
 {
-	LSearchResultType result = RBBinaryTreeBegin(liste);
-	Pointer d;
+	_pRBBinaryTreeHead head = CastAnyPtr(_RBBinaryTreeHead, liste);
 
 	assert(liste != NULL);
 	assert(findFunc != NULL);
-	while (!LPtrCheck(result))
-	{
-		d = RBBinaryTreeGetData(result);
-		if (0 == findFunc(d, data, context))
-			return result;
-		result = RBBinaryTreeNext(result);
-	}
-	return _LNULL;
+	return RBBinaryTreeFindHelper(head->root, data, findFunc, context);
 }
 
 static _pRBBinaryTreeNode __stdcall
 RBBinaryTreeFindSortedHelper(_pRBBinaryTreeNode node, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
 {
-	sword funcResult = sortFunc(node->data, data, context);
+	sword funcResult;
+
+	if (PtrCheck(node))
+		return NULL;
+
+	funcResult = sortFunc(node->data, data, context);
 
 	if (0 == funcResult)
 		return node;
 	if (0 < funcResult)
-	{
-		if (PtrCheck(node->left))
-			return NULL;
 		return RBBinaryTreeFindSortedHelper(node->left, data, sortFunc, context);
-	}
-	if (PtrCheck(node->right))
-		return NULL;
 	return RBBinaryTreeFindSortedHelper(node->right, data, sortFunc, context);
 }
 
@@ -2426,73 +2360,7 @@ RBBinaryTreeFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc 
 
 	assert(liste != NULL);
 	assert(sortFunc != NULL);
-	if (PtrCheck(head->root))
-		return result;
 	_Lnode(result) = RBBinaryTreeFindSortedHelper(head->root, data, sortFunc, context);
-	return result;
-}
-
-static _pRBBinaryTreeNode __stdcall
-RBBinaryTreeUpperBoundHelper(_pRBBinaryTreeNode node, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
-{
-	sword funcResult = sortFunc(node->data, data, context);
-
-	if (0 == funcResult)
-		return node;
-	if (0 < funcResult)
-	{
-		if (PtrCheck(node->left))
-			return NULL;
-		return RBBinaryTreeUpperBoundHelper(node->left, data, sortFunc, context);
-	}
-	if (PtrCheck(node->right))
-		return NULL;
-	return RBBinaryTreeUpperBoundHelper(node->right, data, sortFunc, context);
-}
-
-LSearchResultType __stdcall
-RBBinaryTreeUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
-{
-	_pRBBinaryTreeHead head = CastAnyPtr(_RBBinaryTreeHead, liste);
-	LSearchResultType result = _LNULL;
-
-	assert(liste != NULL);
-	assert(sortFunc != NULL);
-	if (PtrCheck(head->root))
-		return result;
-	_Lnode(result) = RBBinaryTreeUpperBoundHelper(head->root, data, sortFunc, context);
-	return result;
-}
-
-static _pRBBinaryTreeNode __stdcall
-RBBinaryTreeLowerBoundHelper(_pRBBinaryTreeNode node, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
-{
-	sword funcResult = sortFunc(node->data, data, context);
-
-	if (0 == funcResult)
-		return node;
-	if (0 < funcResult)
-	{
-		if (PtrCheck(node->left))
-			return NULL;
-		return RBBinaryTreeLowerBoundHelper(node->left, data, sortFunc, context);
-	}
-	if (PtrCheck(node->right))
-		return NULL;
-	return RBBinaryTreeLowerBoundHelper(node->right, data, sortFunc, context);
-}
-
-LSearchResultType __stdcall
-RBBinaryTreeLowerBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
-{
-	_pRBBinaryTreeHead head = CastAnyPtr(_RBBinaryTreeHead, liste);
-	LSearchResultType result = _LNULL;
-
-	assert(liste != NULL);
-	assert(sortFunc != NULL);
-	if (PtrCheck(head->root))
-		return result;
-	_Lnode(result) = RBBinaryTreeLowerBoundHelper(head->root, data, sortFunc, context);
 	return result;
 }
 
@@ -2914,10 +2782,11 @@ TListCnt __stdcall
 BTreeHeight(Pointer liste)
 {
 	_pBTreeHead pHead = CastAnyPtr(_BTreeHead, liste);
-	_pBTreeNode pNode = pHead->root;
+	_pBTreeNode pNode;
 	TListCnt height = 1;
 
 	assert(liste != NULL);
+	pNode = pHead->root;
 	assert(pNode != NULL);
 	while ( !(pNode->isData) )
 	{
@@ -3052,10 +2921,12 @@ LSearchResultType __stdcall
 BTreeBegin(Pointer liste)
 {
 	_pBTreeHead pHead = CastAnyPtr(_BTreeHead, liste);
-	_pBTreeNode pNode = pHead->root;
+	_pBTreeNode pNode;
 	LSearchResultType result = _LNULL;
 
 	assert(liste != NULL);
+	pNode = pHead->root;
+	assert(NotPtrCheck(pNode));
 	while ( !(pNode->isData) )
 	{
 		assert(pNode->cnt > 0);
@@ -3169,12 +3040,14 @@ LSearchResultType __stdcall
 BTreeLast(Pointer liste)
 {
 	_pBTreeHead pHead = CastAnyPtr(_BTreeHead, liste);
-	_pBTreeNode pNode = pHead->root;
+	_pBTreeNode pNode;
 	Array p;
 	LSearchResultType result = _LNULL;
 
 	assert(liste != NULL);
-	while ( !(pNode->isData) )
+	pNode = pHead->root;
+	assert(NotPtrCheck(pNode));
+	while (!(pNode->isData))
 	{
 		assert(pNode->cnt > 0);
 		p = CastAny(Array, _l_ptradd(pNode, szBTreeNode + ((pNode->cnt - 1) * szPointer)));
@@ -3188,7 +3061,7 @@ BTreeLast(Pointer liste)
 }
 
 static bool __stdcall
-BTreeForEachHelper(_pBTreeNode pNode, TForEachFunc func, Pointer context)
+BTreeForEachHelper(_pBTreeNode pNode, TForEachFunc func, Pointer context, bool bbackward)
 {
 	Array p;
 	Array p1;
@@ -3198,32 +3071,52 @@ BTreeForEachHelper(_pBTreeNode pNode, TForEachFunc func, Pointer context)
 	p = CastAny(Array, _l_ptradd(pNode, szBTreeNode));
 	if (pNode->isData)
 	{
-		for (ix = 0, p1 = p; ix < pNode->cnt; ++ix, p1 = CastAny(Array, _l_ptradd(p1, szPointer)))
+		if (bbackward)
 		{
-			d = DerefPtr(Pointer, p1);
-			if (0 == func(d, context))
-				return false;
+			for (ix = pNode->cnt, p1 = CastAny(Array, _l_ptradd(p, (pNode->cnt - 1) * szPointer)); ix > 0; --ix, p1 = CastAny(Array, _l_ptradd(p1, -1 * Castsdword(szPointer))))
+			{
+				d = DerefPtr(Pointer, p1);
+				if (!(func(d, context)))
+					return false;
+			}
+		}
+		else
+		{
+			for (ix = 0, p1 = p; ix < pNode->cnt; ++ix, p1 = CastAny(Array, _l_ptradd(p1, szPointer)))
+			{
+				d = DerefPtr(Pointer, p1);
+				if (!(func(d, context)))
+					return false;
+			}
 		}
 	}
 	else
 	{
 		assert(pNode->cnt > 0);
-		for (ix = 0, p1 = p; ix < pNode->cnt; ++ix, p1 = CastAny(Array, _l_ptradd(p1, szPointer)))
-			if (!BTreeForEachHelper(DerefAnyPtr(_pBTreeNode, p1), func, context))
-				return false;
+		if (bbackward)
+		{
+			for (ix = pNode->cnt, p1 = CastAny(Array, _l_ptradd(p, (pNode->cnt - 1) * szPointer)); ix > 0; --ix, p1 = CastAny(Array, _l_ptradd(p1, -1 * Castsdword(szPointer))))
+				if (!BTreeForEachHelper(DerefAnyPtr(_pBTreeNode, p1), func, context, bbackward))
+					return false;
+		}
+		else
+		{
+			for (ix = 0, p1 = p; ix < pNode->cnt; ++ix, p1 = CastAny(Array, _l_ptradd(p1, szPointer)))
+				if (!BTreeForEachHelper(DerefAnyPtr(_pBTreeNode, p1), func, context, bbackward))
+					return false;
+		}
 	}
 	return true;
 }
 
 bool __stdcall
-BTreeForEach(Pointer liste, TForEachFunc func, Pointer context)
+BTreeForEach(Pointer liste, TForEachFunc func, Pointer context, bool bbackward)
 {
 	_pBTreeHead pHead = CastAnyPtr(_BTreeHead, liste);
-	_pBTreeNode pNode = pHead->root;
 
 	assert(liste != NULL);
 	assert(func != NULL);
-	return BTreeForEachHelper(pNode, func, context);
+	return BTreeForEachHelper(pHead->root, func, context, bbackward);
 }
 
 static LSearchResultType __stdcall
@@ -3266,11 +3159,10 @@ LSearchResultType __stdcall
 BTreeFind(Pointer liste, ConstPointer data, TSearchAndSortUserFunc findFunc, Pointer context)
 {
 	_pBTreeHead pHead = CastAnyPtr(_BTreeHead, liste);
-	_pBTreeNode pNode = pHead->root;
 
 	assert(liste != NULL);
 	assert(findFunc != NULL);
-	return BTreeFindHelper(pNode, data, findFunc, context);
+	return BTreeFindHelper(pHead->root, data, findFunc, context);
 }
 
 static LSearchResultType __stdcall 
@@ -3322,12 +3214,10 @@ LSearchResultType __stdcall
 BTreeFindSorted(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
 {
 	_pBTreeHead pHead = CastAnyPtr(_BTreeHead, liste);
-	_pBTreeNode pNode = pHead->root;
 
 	assert(liste != NULL);
-	assert(pNode != NULL);
 	assert(sortFunc != NULL);
-	return BTreeFindSortedHelper(pNode, data, sortFunc, context);
+	return BTreeFindSortedHelper(pHead->root, data, sortFunc, context);
 }
 
 static LSearchResultType __stdcall 
@@ -3366,12 +3256,10 @@ LSearchResultType __stdcall
 BTreeUpperBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
 {
 	_pBTreeHead pHead = CastAnyPtr(_BTreeHead, liste);
-	_pBTreeNode pNode = pHead->root;
 
 	assert(liste != NULL);
-	assert(pNode != NULL);
 	assert(sortFunc != NULL);
-	return BTreeUpperBoundHelper(pNode, data, sortFunc, context);
+	return BTreeUpperBoundHelper(pHead->root, data, sortFunc, context);
 }
 
 static LSearchResultType __stdcall 
@@ -3412,12 +3300,10 @@ LSearchResultType __stdcall
 BTreeLowerBound(Pointer liste, ConstPointer data, TSearchAndSortUserFunc sortFunc, Pointer context)
 {
 	_pBTreeHead pHead = CastAnyPtr(_BTreeHead, liste);
-	_pBTreeNode pNode = pHead->root;
 
 	assert(liste != NULL);
-	assert(pNode != NULL);
 	assert(sortFunc != NULL);
-	return BTreeLowerBoundHelper(pNode, data, sortFunc, context);
+	return BTreeLowerBoundHelper(pHead->root, data, sortFunc, context);
 }
 
 static void __stdcall
@@ -3551,15 +3437,14 @@ BTreeAppendPrependHelper(_pBTreeNode pNode, ConstPointer data, bool bAppend, Ptr
 }
 
 static LSearchResultType __stdcall
-BTreeAppendPrependHelper2(Pointer liste, ConstPointer data, bool bAppend)
+BTreeAppendPrependHelper2(_pBTreeHead pHead, ConstPointer data, bool bAppend)
 {
-	_pBTreeHead pHead = CastAnyPtr(_BTreeHead, liste);
-	_pBTreeNode pNode = pHead->root;
+	_pBTreeNode pNode;
 	_pBTreeNode pNode2;
 	Array p1;
 	LSearchResultType result = _LNULL;
 
-	assert(liste != NULL);
+	pNode = pHead->root;
 	assert(pNode != NULL);
 	pNode = BTreeAppendPrependHelper(pNode, data, bAppend, &result);
 	if (PtrCheck(pNode))
@@ -3581,13 +3466,19 @@ BTreeAppendPrependHelper2(Pointer liste, ConstPointer data, bool bAppend)
 LSearchResultType __stdcall
 BTreeAppend(Pointer liste, ConstPointer data)
 {
-	return BTreeAppendPrependHelper2(liste, data, true);
+	_pBTreeHead pHead = CastAnyPtr(_BTreeHead, liste);
+
+	assert(liste != NULL);
+	return BTreeAppendPrependHelper2(pHead, data, true);
 }
 
 LSearchResultType __stdcall
 BTreePrepend(Pointer liste, ConstPointer data)
 {
-	return BTreeAppendPrependHelper2(liste, data, false);
+	_pBTreeHead pHead = CastAnyPtr(_BTreeHead, liste);
+
+	assert(liste != NULL);
+	return BTreeAppendPrependHelper2(pHead, data, false);
 }
 
 static LSearchResultType __stdcall
@@ -4267,7 +4158,7 @@ HashLinkedListLast(Pointer liste)
 }
 
 bool __stdcall
-HashLinkedListForEach(Pointer liste, TForEachFunc func, Pointer context)
+HashLinkedListForEach(Pointer liste, TForEachFunc func, Pointer context, bool bbackward)
 {
 	_pHashLinkedListHead head = CastAny(_pHashLinkedListHead, liste);
 	_pHashLinkedListBucketNode node;
@@ -4276,14 +4167,30 @@ HashLinkedListForEach(Pointer liste, TForEachFunc func, Pointer context)
 
 	assert(NotPtrCheck(liste));
 	assert(NotPtrCheck(func));
-	for (i = 0, node = head->buckets; i < head->nodeMax; ++i, ++node)
+	if (bbackward)
 	{
-		node1 = node->list;
-		while (NotPtrCheck(node1))
+		for (i = head->nodeMax, node = head->buckets + (i - 1); i > 0; --i, --node)
 		{
-			if (!(func(node1->data, context)))
-				return false;
-			node1 = node1->next;
+			node1 = node->lend;
+			while (NotPtrCheck(node1))
+			{
+				if (!(func(node1->data, context)))
+					return false;
+				node1 = node1->prev;
+			}
+		}
+	}
+	else
+	{
+		for (i = 0, node = head->buckets; i < head->nodeMax; ++i, ++node)
+		{
+			node1 = node->list;
+			while (NotPtrCheck(node1))
+			{
+				if (!(func(node1->data, context)))
+					return false;
+				node1 = node1->next;
+			}
 		}
 	}
 	return true;
