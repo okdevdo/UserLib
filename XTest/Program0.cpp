@@ -1737,29 +1737,31 @@ static void TestSpecialDESImport(void)
 
 void TestCppSources()
 {
-	COUT << _T("******************** TestFile *****************************") << endl;
+	COUT << _T("********************** TestCppSources start **************") << endl;
+	COUT << _T("******************** TestFile ****************************") << endl;
 	COUT << _T("Writes and reads test files in the current directory.") << endl;
 	COUT << _T("Standard Test Procedure.") << endl;
 	TestFile();
-	COUT << _T("******************** TestStringBuffer ************************") << endl;
+	COUT << _T("******************** TestStringBuffer ********************") << endl;
 	COUT << _T("Tests CStringBuffer::ScanString.") << endl;
 	COUT << _T("Standard Test Procedure.") << endl;
 	TestStringBuffer();
-	COUT << _T("******************** TestConfiguration *********************") << endl;
+	COUT << _T("******************** TestConfiguration *******************") << endl;
 	COUT << _T("Tests CAbstractConfiguration::GetUserValues.") << endl;
 	COUT << _T("XTest needs a configuration file. Entries 'HttpServerService.AddUrls' and 'HttpServerService.LoggingFields' have to be defined.") << endl;
 	COUT << _T("Standard Test Procedure.") << endl;
 	TestConfiguration();
-	COUT << _T("******************** TestDateTime **************************") << endl;
+	COUT << _T("******************** TestDateTime ************************") << endl;
 	COUT << _T("Tests local (german) time and conversion to UTC time.") << endl;
 	COUT << _T("Standard Test Procedure.") << endl;
 	TestDateTime();
-	COUT << _T("******************** TestHashBuffer **************************") << endl;
+	COUT << _T("******************** TestHashBuffer **********************") << endl;
 	COUT << _T("Tests digest algorithm. Test data is hard coded.") << endl;
 	COUT << _T("Standard Test Procedure.") << endl;
 	TestHashBuffer();
-	COUT << _T("******************** TestCryptFilter **************************") << endl;
+	COUT << _T("******************** TestCryptFilter *********************") << endl;
 	COUT << _T("Tests cryptographic algorithms. 'AesTestVector' and 'DesTestVector' directories must be supplied. Additionally files 'BlowfishTestVector8.rsp', 'TwofishTestVector*.rsp' and 'DESTestVector8.rsp' will be used for tests") << endl;
 	COUT << _T("Standard Test Procedure.") << endl;
 	TestCryptFilter();
+	COUT << _T("********************** TestCppSources exit ***************") << endl;
 }

@@ -81,7 +81,7 @@ public:
 	}
 	Ptr(c) search(Ptr(c) k)
 	{
-		THashList::Iterator it = _list.FindSorted(k);
+		typename THashList::Iterator it = _list.FindSorted(k);
 
 		if (it)
 			return (*it);

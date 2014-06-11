@@ -181,8 +181,14 @@ static void TestStrStr()
 
 static sword __stdcall TestUtlPtr_Func(ConstPointer pA, ConstPointer pB, Pointer context)
 {
+#ifdef OK_CPU_32BIT
 	dword qa = CastAny(dword, pA);
 	dword qb = CastAny(dword, pB);
+#endif
+#ifdef OK_CPU_64BIT
+	qword qa = CastAny(qword, pA);
+	qword qb = CastAny(qword, pB);
+#endif
 
 	if (qa < qb)
 		return -1;
@@ -211,19 +217,29 @@ static void TestUtlPtr()
 
 			_tprintf(_T("testvector: "));
 			for (dword k = 0; k < cnt; ++k)
+#ifdef OK_CPU_32BIT
 				_tprintf(_T("%ld "), numbers[k]);
+#endif
+#ifdef OK_CPU_64BIT
+				_tprintf(_T("%lld "), numbers[k]);
+#endif
 			_tprintf(_T("\n"));
 			_tprintf(_T("searches:\ntestdata insert search match\n"));
 			for (int j = 0; j < 16; ++j)
 			{
 				data = testdata1[j];
+#ifdef OK_CPU_32BIT
 				_tprintf(_T("%3ld "), data);
+#endif
+#ifdef OK_CPU_64BIT
+				_tprintf(_T("%3lld "), data);
+#endif
 				result = _lv_ubsearch(CastAny(Array, numbers), CastDWPointer(data), cnt, TestUtlPtr_Func, NULL, UTLPTR_INSERTMODE);
 				_tprintf(_T("%3ld "), result);
 				result = _lv_ubsearch(CastAny(Array, numbers), CastDWPointer(data), cnt, TestUtlPtr_Func, NULL, UTLPTR_SEARCHMODE);
 				_tprintf(_T("%3ld "), result);
 				result = _lv_ubsearch(CastAny(Array, numbers), CastDWPointer(data), cnt, TestUtlPtr_Func, NULL, UTLPTR_MATCHMODE);
-				_tprintf(_T("%3ld"), result);
+				_tprintf(_T("%3ld "), result);
 				_tprintf(_T("\n"));
 			}
 		}

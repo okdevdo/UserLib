@@ -61,7 +61,8 @@ typedef CDataRBBinaryTreeT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNull
 typedef CDataBTreeT<unsigned int, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntBTree;
 typedef CDataHashLinkedListT<unsigned int, TestFuncUIntHashFunctor, TestFuncUIntLessFunctor, CCppObjectNullFunctor<unsigned int> > TestFuncUIntHashLinkedList;
 
-static int bsearch_cb(Pointer context, ConstPointer key, ConstPointer arrayitem)
+#ifdef OK_COMP_MSC
+static int bsearch_s_cb(Pointer context, ConstPointer key, ConstPointer arrayitem)
 {
 	ConstPtr(unsigned int) pkey = CastAnyConstPtr(unsigned int, key);
 	ConstPtr(unsigned int) parrayitem = CastAnyConstPtr(unsigned int, arrayitem);
@@ -72,6 +73,20 @@ static int bsearch_cb(Pointer context, ConstPointer key, ConstPointer arrayitem)
 		return -1;
 	return 0;
 }
+#endif
+#ifdef OK_COMP_GNUC
+static int bsearch_cb(ConstPointer key, ConstPointer arrayitem)
+{
+	ConstPtr(unsigned int) pkey = CastAnyConstPtr(unsigned int, key);
+	ConstPtr(unsigned int) parrayitem = CastAnyConstPtr(unsigned int, arrayitem);
+
+	if (*pkey > *parrayitem)
+		return 1;
+	if (*pkey < *parrayitem)
+		return -1;
+	return 0;
+}
+#endif
 
 static int __cdecl TestCompareSRand(const void * pA, const void * pB)
 {
@@ -277,7 +292,7 @@ static void TestHashLinkedListT()
 template <typename TListe>
 static void TestIterateBeginNext(Ref(TListe) list, unsigned int* numbers, dword k)
 {
-	TListe::Iterator it;
+	typename TListe::Iterator it;
 	dword j;
 
 	it = list.Begin();
@@ -303,7 +318,7 @@ static void TestIterateBeginNext(Ref(TListe) list, unsigned int* numbers, dword 
 template <typename TListe>
 static void TestIterateForEachX(Ref(TListe) list, unsigned int* numbers, dword k)
 {
-	TListe::Iterator it;
+	typename TListe::Iterator it;
 	dword j;
 
 	j = k;
@@ -325,7 +340,7 @@ static void TestIterateForEachX(Ref(TListe) list, unsigned int* numbers, dword k
 template <typename TListe>
 static void TestIterateForEach(Ref(TListe) list, unsigned int* numbers1, dword k)
 {
-	TListe::Iterator it;
+	typename TListe::Iterator it;
 	dword j;
 
 	j = 0;
@@ -347,19 +362,24 @@ static void TestIterateForEach(Ref(TListe) list, unsigned int* numbers1, dword k
 template <typename TListe>
 static void TestSortedListSingleKey(Ref(TListe) list, unsigned int* numbers, unsigned int* numbers1, dword k)
 {
-	TListe::Iterator it;
-	TListe::Iterator it1;
+	typename TListe::Iterator it;
+	typename TListe::Iterator it1;
 	dword i;
 	dword j;
-	Ptr(unsigned int) pb;
+	Ptr(unsigned int) pb = NULL;
 
 	for (i = 0; i < k; ++i)
 	{
 		it = list.FindSorted(numbers + i);
 		ASSERTTESTFILE(1, (it), _T("FindSorted"));
-		pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb, NULL);
+#ifdef OK_COMP_MSC
+		pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_s_cb, NULL);
+#endif
+#ifdef OK_COMP_GNUC
+		pb = (unsigned int*)bsearch(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb);
+#endif
 		assert(NotPtrCheck(pb));
-		j = pb - numbers1;
+		j = Castdword(pb - numbers1);
 		while (it)
 		{
 			ASSERTTESTFILE(1, (**it == numbers1[j]), _T("Test iterator value"));
@@ -382,9 +402,14 @@ static void TestSortedListSingleKey(Ref(TListe) list, unsigned int* numbers, uns
 			ASSERTTESTFILE(1, (it), _T("FindSorted"));
 			if (it)
 			{
-				pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb, NULL);
+#ifdef OK_COMP_MSC
+				pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_s_cb, NULL);
+#endif
+#ifdef OK_COMP_GNUC
+				pb = (unsigned int*)bsearch(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb);
+#endif
 				assert(NotPtrCheck(pb));
-				j = pb - numbers1;
+				j = Castdword(pb - numbers1);
 				ASSERTTESTFILE(1, (**it == numbers1[j]), _T("Test iterator value"));
 			}
 		}
@@ -402,9 +427,14 @@ static void TestSortedListSingleKey(Ref(TListe) list, unsigned int* numbers, uns
 			ASSERTTESTFILE(1, (it != it1), _T("it = [%08lx:%03ld], it1 = [%08lx:%03ld]"), _Lnode(Cast(LSearchResultType, it)), _Loffset(Cast(LSearchResultType, it)), _Lnode(Cast(LSearchResultType, it1)), _Loffset(Cast(LSearchResultType, it1)));
 			if (it)
 			{
-				pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb, NULL);
+#ifdef OK_COMP_MSC
+				pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_s_cb, NULL);
+#endif
+#ifdef OK_COMP_GNUC
+				pb = (unsigned int*)bsearch(numbers + i, numbers1, k, sizeof(unsigned int), bsearch_cb);
+#endif
 				assert(NotPtrCheck(pb));
-				j = pb - numbers1;
+				j = Castdword(pb - numbers1);
 				ASSERTTESTFILE(1, (**it == numbers1[j]), _T("Test iterator value"));
 				++it;
 				ASSERTTESTFILE(1, (it == it1), _T("it = [%08lx:%03ld], it1 = [%08lx:%03ld]"), _Lnode(Cast(LSearchResultType, it)), _Loffset(Cast(LSearchResultType, it)), _Lnode(Cast(LSearchResultType, it1)), _Loffset(Cast(LSearchResultType, it1)));
@@ -416,21 +446,31 @@ static void TestSortedListSingleKey(Ref(TListe) list, unsigned int* numbers, uns
 template <typename TListe>
 static void TestSortedListMultipleKey(Ref(TListe) list, unsigned int* numbers, unsigned int* numbers1, dword k, dword m)
 {
-	TListe::Iterator it;
-	TListe::Iterator it1;
+	typename TListe::Iterator it;
+	typename TListe::Iterator it1;
 	dword i;
 	dword j;
 	dword l;
-	Ptr(unsigned int) pb;
+	Ptr(unsigned int) pb = NULL;
 
 	for (i = 0; i < k; ++i)
 	{
 		it = list.FindSorted(numbers + i);
 		ASSERTTESTFILE(1, (it), _T("FindSorted"));
-		pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k * m, sizeof(unsigned int), bsearch_cb, NULL);
+#ifdef OK_COMP_MSC
+		pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k * m, sizeof(unsigned int), bsearch_s_cb, NULL);
+#endif
+#ifdef OK_COMP_GNUC
+		pb = (unsigned int*)bsearch(numbers + i, numbers1, k * m, sizeof(unsigned int), bsearch_cb);
+#endif
 		assert(NotPtrCheck(pb));
-		j = pb - numbers1;
-		while ((j > 0) && (bsearch_cb(NULL, numbers + i, numbers1 + j) == 0))
+		j = Castdword(pb - numbers1);
+#ifdef OK_COMP_MSC
+		while ((j > 0) && (bsearch_s_cb(NULL, numbers + i, numbers1 + j) == 0))
+#endif
+#ifdef OK_COMP_GNUC
+			while ((j > 0) && (bsearch_cb(numbers + i, numbers1 + j) == 0))
+#endif
 			--j;
 		if (j > 0)
 			++j;
@@ -456,9 +496,14 @@ static void TestSortedListMultipleKey(Ref(TListe) list, unsigned int* numbers, u
 			ASSERTTESTFILE(1, (it), _T("FindSorted"));
 			if (it)
 			{
-				pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k * m, sizeof(unsigned int), bsearch_cb, NULL);
+#ifdef OK_COMP_MSC
+				pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k * m, sizeof(unsigned int), bsearch_s_cb, NULL);
+#endif
+#ifdef OK_COMP_GNUC
+				pb = (unsigned int*)bsearch(numbers + i, numbers1, k * m, sizeof(unsigned int), bsearch_cb);
+#endif
 				assert(NotPtrCheck(pb));
-				j = pb - numbers1;
+				j = Castdword(pb - numbers1);
 				for (l = 0; l < m; ++l)
 				{
 					ASSERTTESTFILE(1, (**it == numbers1[j]), _T("Test iterator value"));
@@ -480,9 +525,14 @@ static void TestSortedListMultipleKey(Ref(TListe) list, unsigned int* numbers, u
 			ASSERTTESTFILE(1, (it != it1), _T("it = [%08lx:%03ld], it1 = [%08lx:%03ld]"), _Lnode(Cast(LSearchResultType, it)), _Loffset(Cast(LSearchResultType, it)), _Lnode(Cast(LSearchResultType, it1)), _Loffset(Cast(LSearchResultType, it1)));
 			if (it)
 			{
-				pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k * m, sizeof(unsigned int), bsearch_cb, NULL);
+#ifdef OK_COMP_MSC
+				pb = (unsigned int*)bsearch_s(numbers + i, numbers1, k * m, sizeof(unsigned int), bsearch_s_cb, NULL);
+#endif
+#ifdef OK_COMP_GNUC
+				pb = (unsigned int*)bsearch(numbers + i, numbers1, k * m, sizeof(unsigned int), bsearch_cb);
+#endif
 				assert(NotPtrCheck(pb));
-				j = pb - numbers1;
+				j = Castdword(pb - numbers1);
 				for (l = 0; l < m; ++l)
 				{
 					ASSERTTESTFILE(1, (**it == numbers1[j]), _T("Test iterator value"));
@@ -497,8 +547,8 @@ static void TestSortedListMultipleKey(Ref(TListe) list, unsigned int* numbers, u
 template <typename TListe>
 static void TestSingleKey(Ref(TListe) list, unsigned int* numbers, size_t max_n)
 {
-	TListe::Iterator it;
-	TListe::Iterator it1;
+	typename TListe::Iterator it;
+	typename TListe::Iterator it1;
 	dword i;
 	dword j;
 	dword k;
@@ -603,8 +653,8 @@ static void TestSingleKey(Ref(TListe) list, unsigned int* numbers, size_t max_n)
 template <typename TListe>
 static void TestMultipleKey(Ref(TListe) list, unsigned int* numbers, size_t max_n)
 {
-	TListe::Iterator it;
-	TListe::Iterator it1;
+	typename TListe::Iterator it;
+	typename TListe::Iterator it1;
 	dword i;
 	dword j;
 	dword k;
@@ -641,12 +691,12 @@ static void TestMultipleKey(Ref(TListe) list, unsigned int* numbers, size_t max_
 template <typename TListe>
 static void TestBinaryTree(Ref(TListe) list, unsigned int* numbers, unsigned int* numbers1, size_t max_n)
 {
-	TListe::Iterator it;
-	TListe::Iterator it1;
+	typename TListe::Iterator it;
+	typename TListe::Iterator it1;
 	dword i;
 	dword j;
 	dword l;
-	Ptr(unsigned int) pb;
+	Ptr(unsigned int) pb = NULL;
 
 	/* empty list */
 	it = list.Begin();
@@ -672,9 +722,14 @@ static void TestBinaryTree(Ref(TListe) list, unsigned int* numbers, unsigned int
 		for (j = 0; j < (i + 1); ++j)
 		{
 			it = list.FindSorted(numbers + j);
-			pb = (unsigned int*)bsearch_s(numbers + j, numbers1, i + 1, sizeof(unsigned int), bsearch_cb, NULL);
+#ifdef OK_COMP_MSC
+			pb = (unsigned int*)bsearch_s(numbers + j, numbers1, i + 1, sizeof(unsigned int), bsearch_s_cb, NULL);
+#endif
+#ifdef OK_COMP_GNUC
+			pb = (unsigned int*)bsearch(numbers + j, numbers1, i + 1, sizeof(unsigned int), bsearch_cb);
+#endif
 			assert(NotPtrCheck(pb));
-			j = pb - numbers1;
+			j = Castdword(pb - numbers1);
 			while (it)
 			{
 				ASSERTTESTFILE(1, (**it == numbers1[j]), _T("Test iterator value"));

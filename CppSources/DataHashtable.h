@@ -277,7 +277,7 @@ public:
 	template <typename D> // CCppObjectForEachFunctor<Item>
 	bool ForEach(RefRef(D) rD = D(), bool bbackward = false)
 	{
-		return HashLinkedListForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD);
+		return HashLinkedListForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD, bbackward);
 	}
 	template <typename D> // CCppObjectForEachFunctor<Item>
 	bool ForEach(Ref(D) rD, bool bbackward = false)
@@ -287,7 +287,7 @@ public:
 	template <typename D> // CCppObjectEqualFunctor<Item>
 	Iterator Find(ConstPtr(Item) data, RefRef(D) rD = D())
 	{
-		Iterator it = HashLinkedListFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD, bbackward);
+		Iterator it = HashLinkedListFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD);
 		return it;
 	}
 	template <typename D> // CCppObjectEqualFunctor<Item>

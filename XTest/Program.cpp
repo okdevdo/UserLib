@@ -912,6 +912,7 @@ _tmain(int argc, CPointer *argv)
 
 {
 	COUT << _T("sizeof(CPointer) = ") << sizeof(CPointer) << endl;
+	COUT << _T("sizeof(WLong) = ") << sizeof(WLong) << endl;
 
 	int res;
 
