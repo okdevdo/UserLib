@@ -137,14 +137,12 @@ static void TestStrUtil()
 	for (dword i = 0; i < sizeof(TestZahlA) / sizeof(struct __tagTestZahlA); ++i)
 	{
 		vTestZahl = strtoll(TestZahlA[i].sZahl, &sZahlEndA, TestZahlA[i].vRadix);
-		if (vTestZahl != TestZahlA[i].vZahl)
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("vTestZahl=%lld != TestZahlA[i].vZahl=%lld"), vTestZahl, TestZahlA[i].vZahl);
+		ASSERTTESTFILE(1, (vTestZahl == TestZahlA[i].vZahl), _T("vTestZahl=%lld != TestZahlA[i].vZahl=%lld"), vTestZahl, TestZahlA[i].vZahl);
 	}
 	for (dword i = 0; i < sizeof(TestZahlU) / sizeof(struct __tagTestZahlU); ++i)
 	{
 		vTestZahl = wcstoll(TestZahlU[i].sZahl, &sZahlEndU, TestZahlU[i].vRadix);
-		if (vTestZahl != TestZahlU[i].vZahl)
-			WriteErrorTestFile(__FILE__, __LINE__, 1, _T("vTestZahl=%lld != TestZahlU[i].vZahl=%lld"), vTestZahl, TestZahlU[i].vZahl);
+		ASSERTTESTFILE(1, (vTestZahl == TestZahlU[i].vZahl), _T("vTestZahl=%lld != TestZahlU[i].vZahl=%lld"), vTestZahl, TestZahlU[i].vZahl);
 	}
 	WriteSuccessTestFile(1);
 

@@ -2815,7 +2815,7 @@ void CDockInfo::LoadStatus()
 
 		FindDockWindowByNameForEachFunctor arg(name);
 
-		m_dockwindows.ForEach<FindDockWindowByNameForEachFunctor>(arg);
+		m_dockwindows.ForEach(arg);
 		if ( !(arg._params.pResult) )
 			continue;
 
@@ -2837,7 +2837,7 @@ void CDockInfo::LoadStatus()
 			CDockWindow::TDockingStyle style = CDockWindow::String2DockingStyle(tmpa[0]);
 			FindDockWindowByNameForEachFunctor arg1(tmpa[1]);
 
-			m_dockwindows.ForEach<FindDockWindowByNameForEachFunctor>(arg);
+			m_dockwindows.ForEach(arg);
 			arg._params.pResult->AppendNeighbour(style, arg1._params.pResult);
 
 			++it;
@@ -3454,7 +3454,7 @@ void CDockInfo::FindClientNeighboursLeft2RightTop(RECT r1)
 	RECT r3;
 	RECT r4;
 
-	m_dockwindows.ForEach<FindDockWindowForEachFunctor>(arg);
+	m_dockwindows.ForEach(arg);
 
 	while ( arg._params.pResult )
 	{
@@ -3497,7 +3497,7 @@ void CDockInfo::FindClientNeighboursLeft2RightBottom(RECT r1)
 	RECT r3;
 	RECT r4;
 
-	m_dockwindows.ForEach<FindDockWindowForEachFunctor>(arg);
+	m_dockwindows.ForEach(arg);
 
 	while (arg._params.pResult)
 	{
@@ -3540,7 +3540,7 @@ void CDockInfo::FindClientNeighboursTop2DownLeft(RECT r1)
 	RECT r3;
 	RECT r4;
 
-	m_dockwindows.ForEach<FindDockWindowForEachFunctor>(arg);
+	m_dockwindows.ForEach(arg);
 
 	while (arg._params.pResult)
 	{
@@ -3583,7 +3583,7 @@ void CDockInfo::FindClientNeighboursTop2DownRight(RECT r1)
 	RECT r3;
 	RECT r4;
 
-	m_dockwindows.ForEach<FindDockWindowForEachFunctor>(arg);
+	m_dockwindows.ForEach(arg);
 
 	while (arg._params.pResult)
 	{
@@ -3626,7 +3626,7 @@ void CDockInfo::FindClientNeighboursRight2LeftTop(RECT r1)
 	RECT r3;
 	RECT r4;
 
-	m_dockwindows.ForEach<FindDockWindowForEachFunctor>(arg);
+	m_dockwindows.ForEach(arg);
 
 	while (arg._params.pResult)
 	{
@@ -3669,7 +3669,7 @@ void CDockInfo::FindClientNeighboursRight2LeftBottom(RECT r1)
 	RECT r3;
 	RECT r4;
 
-	m_dockwindows.ForEach<FindDockWindowForEachFunctor>(arg);
+	m_dockwindows.ForEach(arg);
 
 	while (arg._params.pResult)
 	{
@@ -3712,7 +3712,7 @@ void CDockInfo::FindClientNeighboursDown2TopLeft(RECT r1)
 	RECT r3;
 	RECT r4;
 
-	m_dockwindows.ForEach<FindDockWindowForEachFunctor>(arg);
+	m_dockwindows.ForEach(arg);
 
 	while (arg._params.pResult)
 	{
@@ -3755,7 +3755,7 @@ void CDockInfo::FindClientNeighboursDown2TopRight(RECT r1)
 	RECT r3;
 	RECT r4;
 
-	m_dockwindows.ForEach<FindDockWindowForEachFunctor>(arg);
+	m_dockwindows.ForEach(arg);
 
 	while (arg._params.pResult)
 	{
@@ -3823,7 +3823,7 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 
 	FindDockWindowForEachFunctor arg(*pt);
 
-	m_dockwindows.ForEach<FindDockWindowForEachFunctor>(arg);
+	m_dockwindows.ForEach(arg);
 
 	if ( arg._params.bAnyNonFloatingWindows )
 	{
@@ -3894,7 +3894,7 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 			{
 				SortDockWindowsLessFunctor arg1(TSortDockWindowsParams::TSortOrderLeft);
 
-				m_dockwindows.Sort<SortDockWindowsLessFunctor>(arg1);
+				m_dockwindows.Sort(arg1);
 
 				CDockWindowVector::Iterator it = m_dockwindows.Begin();
 				
@@ -3944,7 +3944,7 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 			{
 				SortDockWindowsLessFunctor arg1(TSortDockWindowsParams::TSortOrderTop);
 
-				m_dockwindows.Sort<SortDockWindowsLessFunctor>(arg1);
+				m_dockwindows.Sort(arg1);
 
 				CDockWindowVector::Iterator it = m_dockwindows.Begin();
 				
@@ -3994,7 +3994,7 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 			{
 				SortDockWindowsLessFunctor arg1(TSortDockWindowsParams::TSortOrderRight, true);
 
-				m_dockwindows.Sort<SortDockWindowsLessFunctor>(arg1);
+				m_dockwindows.Sort(arg1);
 
 				CDockWindowVector::Iterator it = m_dockwindows.Begin();
 				
@@ -4044,7 +4044,7 @@ void CDockInfo::CheckDockTargets(LPPOINT pt, bool bLast)
 			{
 				SortDockWindowsLessFunctor arg1(TSortDockWindowsParams::TSortOrderBottom, true);
 
-				m_dockwindows.Sort<SortDockWindowsLessFunctor>(arg1);
+				m_dockwindows.Sort(arg1);
 
 				CDockWindowVector::Iterator it = m_dockwindows.Begin();
 				

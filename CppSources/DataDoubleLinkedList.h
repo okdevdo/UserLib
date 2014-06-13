@@ -128,11 +128,6 @@ public:
 	{
 		DoubleLinkedListClear(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
 	}
-	template <typename D> // CCppObjectReleaseFunctor<Item>
-	void Clear(Ref(D) rD)
-	{
-		DoubleLinkedListClear(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
-	}
 	void Close()
 	{
 		if (!_liste)
@@ -142,14 +137,6 @@ public:
 	}
 	template <typename D> // CCppObjectReleaseFunctor<Item>
 	void Close(RefRef(D) rD = D())
-	{
-		if (!_liste)
-			return;
-		DoubleLinkedListClose(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
-		_liste = NULL;
-	}
-	template <typename D> // CCppObjectReleaseFunctor<Item>
-	void Close(Ref(D) rD)
 	{
 		if (!_liste)
 			return;
@@ -188,19 +175,8 @@ public:
 	{
 		return DoubleLinkedListForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD, bbackward);
 	}
-	template <typename D> // CCppObjectForEachFunctor<Item>
-	bool ForEach(Ref(D) rD, bool bbackward = false) const
-	{
-		return DoubleLinkedListForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD, bbackward);
-	}
 	template <typename D> // CCppObjectEqualFunctor<Item>
 	Iterator Find(ConstPtr(Item) data, RefRef(D) rD = D())
-	{
-		Iterator it = DoubleLinkedListFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD);
-		return it;
-	}
-	template <typename D> // CCppObjectEqualFunctor<Item>
-	Iterator Find(ConstPtr(Item) data, Ref(D) rD)
 	{
 		Iterator it = DoubleLinkedListFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD);
 		return it;
@@ -210,14 +186,6 @@ public:
 		Iterator it;
 
 		it =  DoubleLinkedListFindSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser);
-		return it;
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator FindSorted(ConstPtr(Item) data, Ref(D) rD)
-	{
-		Iterator it;
-
-		it = DoubleLinkedListFindSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
 		return it;
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
@@ -236,14 +204,6 @@ public:
 		return it;
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator UpperBound(ConstPtr(Item) data, Ref(D) rD)
-	{
-		Iterator it;
-
-		it = DoubleLinkedListUpperBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
-		return it;
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
 	Iterator UpperBound(ConstPtr(Item) data, RefRef(D) rD = D())
 	{
 		Iterator it;
@@ -259,14 +219,6 @@ public:
 		return it;
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator LowerBound(ConstPtr(Item) data, Ref(D) rD)
-	{
-		Iterator it;
-
-		it = DoubleLinkedListLowerBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
-		return it;
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
 	Iterator LowerBound(ConstPtr(Item) data, RefRef(D) rD = D())
 	{
 		Iterator it;
@@ -279,12 +231,7 @@ public:
 		 DoubleLinkedListSort(_liste, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser);
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
-	void Sort(Ref(D) rD)
-	{
-		DoubleLinkedListSort(_liste, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
-	void Sort(RefRef(D) rD)
+	void Sort(RefRef(D) rD = D())
 	{
 		DoubleLinkedListSort(_liste, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
 	}
@@ -313,11 +260,6 @@ public:
 		 DoubleLinkedListRemove(node, &TCppObjectReleaseFunc<Item, Deleter>, &_deleter);
 	}
 	template <typename D> // CCppObjectReleaseFunctor<Item>
-	void Remove(Iterator node, Ref(D) rD)
-	{
-		DoubleLinkedListRemove(node, &TCppObjectReleaseFunc<Item, D>, &rD);
-	}
-	template <typename D> // CCppObjectReleaseFunctor<Item>
 	void Remove(Iterator node, RefRef(D) rD = D())
 	{
 		DoubleLinkedListRemove(node, &TCppObjectReleaseFunc<Item, D>, &rD);
@@ -327,11 +269,6 @@ public:
 		return  DoubleLinkedListInsertSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser);
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator InsertSorted(ConstPtr(Item) data, Ref(D) rD)
-	{
-		return  DoubleLinkedListInsertSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
 	Iterator InsertSorted(ConstPtr(Item) data, RefRef(D) rD = D())
 	{
 		return  DoubleLinkedListInsertSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
@@ -339,11 +276,6 @@ public:
 	bool RemoveSorted(ConstPtr(Item) data)
 	{
 		return  DoubleLinkedListRemoveSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser, &TCppObjectReleaseFunc<Item, Deleter>, &_deleter);
-	}
-	template <typename D, typename E> // CCppObjectLessFunctor<Item>, CCppObjectReleaseFunctor<Item>
-	bool RemoveSorted(ConstPtr(Item) data, Ref(D) rD, Ref(E) rE)
-	{
-		return DoubleLinkedListRemoveSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD, &TCppObjectReleaseFunc<Item, E>, &rE);
 	}
 	template <typename D, typename E> // CCppObjectLessFunctor<Item>, CCppObjectReleaseFunctor<Item>
 	bool RemoveSorted(ConstPtr(Item) data, RefRef(D) rD = D(), RefRef(E) rE = E())
@@ -361,17 +293,6 @@ public:
 		if (NotPtrCheck(p) && (p != data))
 		{
 			_deleter(CastMutablePtr(Item, p));
-			DoubleLinkedListSetData(node, data);
-		}
-	}
-	template <typename D> // CCppObjectReleaseFunctor<Item>
-	void SetData(Iterator node, Ptr(Item) data, Ref(D) rD)
-	{
-		ConstPtr(Item) p = GetData(node);
-
-		if (NotPtrCheck(p) && (p != data))
-		{
-			rD(CastMutablePtr(Item, p));
 			DoubleLinkedListSetData(node, data);
 		}
 	}

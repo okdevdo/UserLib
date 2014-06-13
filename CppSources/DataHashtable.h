@@ -216,11 +216,6 @@ public:
 	{
 		HashLinkedListClear(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
 	}
-	template <typename D> // CCppObjectReleaseFunctor<Item>
-	void Clear(Ref(D) rD)
-	{
-		HashLinkedListClear(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
-	}
 	void Close()
 	{
 		if (!_liste)
@@ -230,14 +225,6 @@ public:
 	}
 	template <typename D> // CCppObjectReleaseFunctor<Item>
 	void Close(RefRef(D) rD = D())
-	{
-		if (!_liste)
-			return;
-		HashLinkedListClose(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
-		_liste = NULL;
-	}
-	template <typename D> // CCppObjectReleaseFunctor<Item>
-	void Close(Ref(D) rD)
 	{
 		if (!_liste)
 			return;
@@ -279,19 +266,8 @@ public:
 	{
 		return HashLinkedListForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD, bbackward);
 	}
-	template <typename D> // CCppObjectForEachFunctor<Item>
-	bool ForEach(Ref(D) rD, bool bbackward = false)
-	{
-		return HashLinkedListForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD, bbackward);
-	}
 	template <typename D> // CCppObjectEqualFunctor<Item>
 	Iterator Find(ConstPtr(Item) data, RefRef(D) rD = D())
-	{
-		Iterator it = HashLinkedListFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD);
-		return it;
-	}
-	template <typename D> // CCppObjectEqualFunctor<Item>
-	Iterator Find(ConstPtr(Item) data, Ref(D) rD)
 	{
 		Iterator it = HashLinkedListFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD);
 		return it;
@@ -301,14 +277,6 @@ public:
 		Iterator it;
 
 		it = HashLinkedListFindSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, CastMutablePtr(Lesser, &_lesser));
-		return it;
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator FindSorted(ConstPtr(Item) data, Ref(D) rD)
-	{
-		Iterator it;
-
-		it = HashLinkedListFindSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
 		return it;
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
@@ -324,11 +292,6 @@ public:
 		return HashLinkedListInsertSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser);
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator InsertSorted(ConstPtr(Item) data, Ref(D) rD)
-	{
-		return HashLinkedListInsertSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
 	Iterator InsertSorted(ConstPtr(Item) data, RefRef(D) rD = D())
 	{
 		return HashLinkedListInsertSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
@@ -336,11 +299,6 @@ public:
 	bool RemoveSorted(ConstPtr(Item) data)
 	{
 		return HashLinkedListRemoveSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser, &TCppObjectReleaseFunc<Item, Deleter>, &_deleter);
-	}
-	template <typename D, typename E> // CCppObjectLessFunctor<Item>, CCppObjectReleaseFunctor<Item>
-	bool RemoveSorted(ConstPtr(Item) data, Ref(D) rD, Ref(E) rE)
-	{
-		return HashLinkedListRemoveSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD, &TCppObjectReleaseFunc<Item, E>, &rE);
 	}
 	template <typename D, typename E> // CCppObjectLessFunctor<Item>, CCppObjectReleaseFunctor<Item>
 	bool RemoveSorted(ConstPtr(Item) data, RefRef(D) rD = D(), RefRef(E) rE = E())
@@ -358,17 +316,6 @@ public:
 		if (NotPtrCheck(p) && (p != data))
 		{
 			_deleter(CastMutablePtr(Item, p));
-			HashLinkedListSetData(node, data);
-		}
-	}
-	template <typename D> // CCppObjectReleaseFunctor<Item>
-	void SetData(Iterator node, Ptr(Item) data, Ref(D) rD)
-	{
-		ConstPtr(Item) p = GetData(node);
-
-		if (NotPtrCheck(p) && (p != data))
-		{
-			rD(CastMutablePtr(Item, p));
 			HashLinkedListSetData(node, data);
 		}
 	}

@@ -4540,7 +4540,7 @@ LRESULT CStatusbar::OnDestroy(WPARAM wParam, LPARAM lParam)
 
 	rD.pStatusbar = this;
 	rD.hKeyboardProc_StatusInfo = hKeyboardProc_StatusInfo;
-	m_statusinfo.Close<TStatusInfoReleaseFunctor>(rD);
+	m_statusinfo.Close(rD);
 	return 0;
 }
 

@@ -320,9 +320,7 @@ public:
 		CTextControlCharForEachFunctor param;
 
 		param.cntNL = scrollpos.y;
-		m_vector.ForEach<CTextControlCharForEachFunctor>(param);
-
-		if (!(m_vector.ForEach<CTextControlCharForEachFunctor>(param)))
+		if (!(m_vector.ForEach(param)))
 			return -1;
 		param.cntCh += scrollpos.x;
 		if ( param.cntCh >= m_vector.Count() )

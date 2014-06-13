@@ -180,7 +180,7 @@ LRESULT COpenDialog::OnInitDialog(WPARAM wParam, LPARAM lParam)
 		TEventLogChannelForEachFunctor arg;
 
 		arg.pListView = pListView;
-		eventLogChannels.ForEach<TEventLogChannelForEachFunctor>(arg);
+		eventLogChannels.ForEach(arg);
 
 		pListView->set_CurrentNode(pListView->get_Node((dword)0));
 		pListView->set_VScrollEnabled(TRUE);

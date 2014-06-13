@@ -132,11 +132,6 @@ public:
 	{
 		BTreeClear(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
 	}
-	template <typename D> // CCppObjectReleaseFunctor<Item>
-	void Clear(Ref(D) rD)
-	{
-		BTreeClear(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
-	}
 	void Close()
 	{
 		if (!_liste)
@@ -146,14 +141,6 @@ public:
 	}
 	template <typename D> // CCppObjectReleaseFunctor<Item>
 	void Close(RefRef(D) rD = D())
-	{
-		if (!_liste)
-			return;
-		BTreeClose(_liste, &TCppObjectReleaseFunc<Item, D>, &rD);
-		_liste = NULL;
-	}
-	template <typename D> // CCppObjectReleaseFunctor<Item>
-	void Close(Ref(D) rD)
 	{
 		if (!_liste)
 			return;
@@ -192,19 +179,8 @@ public:
 	{
 		return BTreeForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD, bbackward);
 	}
-	template <typename D> // CCppObjectForEachFunctor<Item>
-	bool ForEach(Ref(D) rD, bool bbackward = false) const
-	{
-		return BTreeForEach(_liste, TCppObjectForEachFunc<Item, D>, &rD, bbackward);
-	}
 	template <typename D> // CCppObjectEqualFunctor<Item>
 	Iterator Find(ConstPtr(Item) data, RefRef(D) rD = D())
-	{
-		Iterator it = BTreeFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD);
-		return it;
-	}
-	template <typename D> // CCppObjectEqualFunctor<Item>
-	Iterator Find(ConstPtr(Item) data, Ref(D) rD)
 	{
 		Iterator it = BTreeFind(_liste, data, &TCppObjectFindUserFunc<Item, D>, &rD);
 		return it;
@@ -214,14 +190,6 @@ public:
 		Iterator it;
 
 		it = BTreeFindSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser);
-		return it;
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator FindSorted(ConstPtr(Item) data, Ref(D) rD)
-	{
-		Iterator it;
-
-		it = BTreeFindSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
 		return it;
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
@@ -240,14 +208,6 @@ public:
 		return it;
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator UpperBound(ConstPtr(Item) data, Ref(D) rD)
-	{
-		Iterator it;
-
-		it = BTreeUpperBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
-		return it;
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
 	Iterator UpperBound(ConstPtr(Item) data, RefRef(D) rD = D())
 	{
 		Iterator it;
@@ -263,14 +223,6 @@ public:
 		return it;
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator LowerBound(ConstPtr(Item) data, Ref(D) rD)
-	{
-		Iterator it;
-
-		it = BTreeLowerBound(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
-		return it;
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
 	Iterator LowerBound(ConstPtr(Item) data, RefRef(D) rD = D())
 	{
 		Iterator it;
@@ -283,12 +235,7 @@ public:
 		BTreeSort(_liste, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser);
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
-	void Sort(Ref(D) rD)
-	{
-		BTreeSort(_liste, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
-	void Sort(RefRef(D) rD)
+	void Sort(RefRef(D) rD = D())
 	{
 		BTreeSort(_liste, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
 	}
@@ -317,11 +264,6 @@ public:
 		BTreeRemove(node, &TCppObjectReleaseFunc<Item, Deleter>, &_deleter);
 	}
 	template <typename D> // CCppObjectReleaseFunctor<Item>
-	void Remove(Iterator node, Ref(D) rD)
-	{
-		BTreeRemove(node, &TCppObjectReleaseFunc<Item, D>, &rD);
-	}
-	template <typename D> // CCppObjectReleaseFunctor<Item>
 	void Remove(Iterator node, RefRef(D) rD = D())
 	{
 		BTreeRemove(node, &TCppObjectReleaseFunc<Item, D>, &rD);
@@ -329,11 +271,6 @@ public:
 	Iterator InsertSorted(ConstPtr(Item) data)
 	{
 		return BTreeInsertSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, Lesser>, &_lesser);
-	}
-	template <typename D> // CCppObjectLessFunctor<Item>
-	Iterator InsertSorted(ConstPtr(Item) data, Ref(D) rD)
-	{
-		return BTreeInsertSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD);
 	}
 	template <typename D> // CCppObjectLessFunctor<Item>
 	Iterator InsertSorted(ConstPtr(Item) data, RefRef(D) rD = D())
@@ -349,11 +286,6 @@ public:
 	{
 		return BTreeRemoveSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD, &TCppObjectReleaseFunc<Item, E>, &rE);
 	}
-	template <typename D, typename E> // CCppObjectLessFunctor<Item>, CCppObjectReleaseFunctor<Item>
-	bool RemoveSorted(ConstPtr(Item) data, Ref(D) rD, Ref(E) rE)
-	{
-		return BTreeRemoveSorted(_liste, data, &TCppObjectSearchAndSortUserFunc<Item, D>, &rD, &TCppObjectReleaseFunc<Item, E>, &rE);
-	}
 	Ptr(Item) GetData(Iterator node) const
 	{ 
 		return CastAnyPtr(Item, BTreeGetData(node)); 
@@ -365,17 +297,6 @@ public:
 		if (NotPtrCheck(p) && (p != data))
 		{
 			_deleter(CastMutablePtr(Item, p));
-			BTreeSetData(node, data);
-		}
-	}
-	template <typename D> // CCppObjectReleaseFunctor<Item>
-	void SetData(Iterator node, Ptr(Item) data, Ref(D) rD)
-	{
-		ConstPtr(Item) p = GetData(node);
-
-		if (NotPtrCheck(p) && (p != data))
-		{
-			rD(CastMutablePtr(Item, p));
 			BTreeSetData(node, data);
 		}
 	}

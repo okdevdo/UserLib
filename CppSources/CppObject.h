@@ -283,8 +283,10 @@ public:
 template <typename C, typename D>
 void __stdcall TCppObjectReleaseFunc(ConstPointer data, Pointer context)
 {
+	typedef typename std::remove_reference<D>::type context_type;
+
 	Ptr(C) pC = CastAnyPtr(C, CastMutable(Pointer, data));
-	Ptr(D) pD = CastAnyPtr(D, context);
+	Ptr(context_type) pD = CastAnyPtr(context_type, context);
 
 	(*pD)(pC);
 }
@@ -302,9 +304,11 @@ public:
 template <typename C, typename D>
 sword __stdcall TCppObjectSearchAndSortUserFunc(ConstPointer ArrayItem, ConstPointer DataItem, Pointer Context)
 {
+	typedef typename std::remove_reference<D>::type context_type;
+
 	ConstPtr(C) pCA = CastAnyConstPtr(C, ArrayItem);
 	ConstPtr(C) pCD = CastAnyConstPtr(C, DataItem);
-	Ptr(D) pD = CastAnyPtr(D, Context);
+	Ptr(context_type) pD = CastAnyPtr(context_type, Context);
 
 	if ((*pD)(pCA, pCD))
 		return -1;
@@ -326,9 +330,11 @@ public:
 template <typename C, typename D>
 sword __stdcall TCppObjectFindUserFunc(ConstPointer ArrayItem, ConstPointer DataItem, Pointer Context)
 {
+	typedef typename std::remove_reference<D>::type context_type;
+
 	ConstPtr(C) pCA = CastAnyConstPtr(C, ArrayItem);
 	ConstPtr(C) pCD = CastAnyConstPtr(C, DataItem);
-	Ptr(D) pD = CastAnyPtr(D, Context);
+	Ptr(context_type) pD = CastAnyPtr(context_type, Context);
 
 	if ((*pD)(pCA, pCD))
 		return 0;
@@ -348,8 +354,10 @@ public:
 template <typename C, typename D>
 bool __stdcall TCppObjectForEachFunc(ConstPointer data, Pointer context)
 {
+	typedef typename std::remove_reference<D>::type context_type;
+
 	Ptr(C) pC = CastAnyPtr(C, CastMutable(Pointer, data));
-	Ptr(D) pD = CastAnyPtr(D, context);
+	Ptr(context_type) pD = CastAnyPtr(context_type, context);
 
 	return (*pD)(pC);
 }

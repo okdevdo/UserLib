@@ -22,54 +22,6 @@
 #include "utlptr.h"
 #include "strutil.h"
 
-static sword __stdcall 
-s_lsearch( Pointer table, dword size, ConstPointer ptr, word max, TSearchAndSortFunc func, sword _mode )
-	{
-	sword ix = max;
-	Pointer pt = table;
-	sword res;
-	sword pix = -1;
-	sword pres = 0;
-	if ( PtrCheck(table) || PtrCheck(func) || (size == 0) )
-		return -1;
-	if ( _mode == UTLPTR_INSERTMODE )
-		return max - 1;
-	for ( ; ix > 0; ix--, pt = l_ptradd( pt, ( long ) size ) )
-		{
-		res = func( pt, ptr );
-		if ( res == 0 )
-			return max - ix;
-		if ( _mode == UTLPTR_SEARCHMODE )
-			{
-			if ( ( res > 0 ) && ( ( pix == -1 ) || ( res < pres ) ) )
-				{
-				pix = max - ix;
-				pres = res;
-				}					   /* endif */
-			}						   /* endif */
-		}							   /* endfor */
-	if ( _mode == UTLPTR_SEARCHMODE )
-		return pix;
-	return -1;
-	}								   /* end of v_lsearch */
-
-static sword __stdcall
-s_delete(Pointer table, dword size, sword ix, WPointer max)
-{
-	word len;
-	Pointer tabP;
-	if (PtrCheck(table) || PtrCheck(max) || (size == 0) || (ix < 0) || (ix >= DerefSWPointer(max)))
-		return -1;
-	tabP = l_ptradd(table, ix * size);
-	DerefWPointer(max)--;
-	if (0 < (len = DerefWPointer(max) - ix))
-		s_memmove_s(tabP, len * size, _fl_ptradd(tabP, size), len * size);
-	s_memset(_fl_ptradd(tabP, len * size), 0, size);
-	if (ix >= DerefSWPointer(max))
-		return ix - 1;
-	return ix;
-}
-
 sdword __stdcall
 _lv_binsert(Array table, ConstPointer ptr, DWPointer max, TSearchAndSortFunc func)
 {
@@ -321,13 +273,13 @@ _lv_lsearch( Array table, ConstPointer ptr, dword max, TSearchAndSortFunc func, 
 				{
 				pix = max - ix;
 				pres = res;
-				}					   /* endif */
-			}						   /* endif */
-		}							   /* endfor */
+				}
+			}
+		}
 	if ( _mode == UTLPTR_SEARCHMODE )
 		return pix;
 	return -1;
-	}								   /* end of v_lsearch */
+	}
 
 sdword __stdcall 
 _lv_ulsearch( Array table, ConstPointer ptr, dword max, TSearchAndSortUserFunc func, Pointer user, sword _mode )
@@ -352,13 +304,13 @@ _lv_ulsearch( Array table, ConstPointer ptr, dword max, TSearchAndSortUserFunc f
 				{
 				pix = max - ix;
 				pres = res;
-				}					   /* endif */
-			}						   /* endif */
-		}							   /* endfor */
+				}
+			}
+		}
 	if ( _mode == UTLPTR_SEARCHMODE )
 		return pix;
 	return -1;
-	}								   /* end of v_lsearch */
+	}
 
 void __stdcall 
 _lv_heapsort( Array _heap, dword cnt, TSearchAndSortFunc _cmp )
@@ -680,13 +632,6 @@ _ls_ldelete( Pointer table, dword size, ConstPointer ptr, DWPointer max, TSearch
 	return _ls_delete( table, size, ix, max );
 	}
 
-sword __stdcall 
-s_ldelete( Pointer table, dword size, ConstPointer ptr, WPointer max, TSearchAndSortFunc func )
-	{
-	sword ix = s_lsearch( table, size, ptr, *max, func, UTLPTR_MATCHMODE );
-	return s_delete( table, size, ix, max );
-	}
-
 sdword __stdcall 
 _ls_delete( Pointer table, dword size, sdword ix, DWPointer max )
 	{
@@ -767,14 +712,12 @@ _ls_bsearch( Pointer table, dword size, ConstPointer ptr, dword max, TSearchAndS
 		switch ( _mode )
 			{
 		case UTLPTR_INSERTMODE:
-			if ( func( _fl_ptradd( table, size * ix ), CastMutable(Pointer, ptr) ) > 0 )
+			if (erg > 0)
 				ix--;
 			break;
 		case UTLPTR_SEARCHMODE:
-			if ( func( _fl_ptradd( table, size * ix ), CastMutable(Pointer, ptr) ) >= 0 )
-				break;
-			if ( Cast(dword,ix) < ( max - 1 ) )
-				ix++;
+			if (erg < 0)
+				++ix;
 			break;
 		default:
 			ix = -1;
@@ -830,22 +773,20 @@ _ls_ubsearch( Pointer table, dword size, ConstPointer ptr, dword max, TSearchAnd
 		switch ( _mode )
 			{
 		case UTLPTR_INSERTMODE:
-			if ( func( _fl_ptradd( table, size * ix ), CastMutable(Pointer, ptr), context ) > 0 )
-				ix--;
+			if (erg > 0)
+				--ix;
 			break;
 		case UTLPTR_SEARCHMODE:
-			if ( func( _fl_ptradd( table, size * ix ), CastMutable(Pointer, ptr), context ) >= 0 )
-				break;
-			if ( Cast(dword,ix) < ( max - 1 ) )
-				ix++;
+			if (erg < 0)
+				++ix;
 			break;
 		default:
 			ix = -1;
 			break;
-			}							   /* endswitch */
+			}
 		}
 	return ix;
-	}								   /* end of s_bsearch */
+	}
 
 sdword __stdcall 
 _ls_lsearch( Pointer table, dword size, ConstPointer ptr, dword max, TSearchAndSortFunc func, sword _mode )

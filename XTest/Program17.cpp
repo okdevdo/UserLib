@@ -72,7 +72,7 @@ static void TestEventLogRecord()
 		xmlFile.Write(bBuf);
 		CEventLogRecord::PrintXMLHeader(_T("EventRecords"), &xmlFile);
 		arg.xmlfile = &xmlFile;
-		records.ForEach<TestEventLogRecordForEachFunctor>(arg);
+		records.ForEach(arg);
 		time(&t2);
 		CDebug() << _T("TestEventLogRecord::records.ForEach<TestEventLogRecordForEachFunctor>(arg): t = ") << t2 - t1 << eodbg;
 		CEventLogRecord::PrintXMLFooter(_T("EventRecords"), &xmlFile);
@@ -524,7 +524,7 @@ static void TestEventLogProviderChannel(void)
 		CDebug() << _T("channels.Load(): t = ") << t2 - t1 << eodbg;
 		t1 = t2;
 		arg.providers = &providers;
-		channels.ForEach<CEventLogChannelForEachFunctor>(arg);
+		channels.ForEach(arg);
 		time(&t2);
 		CDebug() << _T("channels.ForEach<CEventLogChannelForEachFunctor>(arg): t = ") << t2 - t1 << eodbg;
 	}
