@@ -40,7 +40,6 @@
 		<tr><td><code>TListCnt Count() const;</code></td></tr>
 		<tr><td><code>void Close();</code></td></tr>
 		<tr><td><code>template &lt;typename D&gt; void Close(RefRef(D) rD = D());</code></td></tr>
-		<tr><td><code>template &lt;typename D&gt; void Close(Ref(D) rD)</code></td></tr>
 		<tr><td>Open allocates the list. Close disposes it. Template parameter D is a function object, which releases one item. Count gives the number of elements.</td></tr>
 		<tr><td><code>Iterator Index(TListIndex index) const;</code></td></tr>
 		<tr><td><code>Iterator Begin() const;</code></td></tr>
@@ -49,24 +48,15 @@
 		<tr><td><code>Iterator Last() const;</code></td></tr>
 		<tr><td>Index transforms an integer to an iterator. Begin, Next, Prev and Last iterate through the list step by step.</td></tr>
 		<tr><td><code>template &lt;typename F&gt; bool ForEach(RefRef(F) rF = F()) const;</code></td></tr>
-		<tr><td><code>template &lt;typename F&gt; bool ForEach(Ref(F) rF) const;</code></td></tr>
 		<tr><td><code>template &lt;typename E&gt; Iterator Find(ConstPtr(Item) data, RefRef(E) rE = E()) const;</code></td></tr>
-		<tr><td><code>template &lt;typename E&gt; Iterator Find(ConstPtr(Item) data, Ref(E) rE) const;</code></td></tr>
 		<tr><td>ForEach supports traversing the list by using a function object of type F. Find searches the possibly unordered list and returns an iterator to the item found.</td></tr>
 		<tr><td><code>Iterator FindSorted(ConstPtr(Item) data);</code></td></tr>
-		<tr><td><code>template &lt;typename S&gt; Iterator FindSorted(ConstPtr(Item) data, Ref(S) rS);</code></td></tr>
 		<tr><td><code>template &lt;typename S&gt; Iterator FindSorted(ConstPtr(Item) data, RefRef(S) rS = S());</code></td></tr>
-		<tr><td><code>bool MatchSorted(Iterator it, ConstPtr(Item) data);</code></td></tr>
-		<tr><td><code>template &lt;typename S&gt; bool MatchSorted(Iterator it, ConstPtr(Item) data, Ref(S) rS);</code></td></tr>
-		<tr><td><code>template &lt;typename S&gt; bool MatchSorted(Iterator it, ConstPtr(Item) data, RefRef(S) rS = S());</code></td></tr>
 		<tr><td><code>Iterator UpperBound(ConstPtr(Item) data) const;</code></td></tr>
-		<tr><td><code>template &lt;typename S&gt; Iterator UpperBound(ConstPtr(Item) data, Ref(S) rS) const;</code></td></tr>
 		<tr><td><code>template &lt;typename S&gt; Iterator UpperBound(ConstPtr(Item) data, RefRef(S) rS = S()) const;</code></td></tr>
 		<tr><td><code>Iterator LowerBound(ConstPtr(Item) data) const;</code></td></tr>
-		<tr><td><code>template &lt;typename S&gt; Iterator LowerBound(ConstPtr(Item) data, Ref(S) rS) const;</code></td></tr>
 		<tr><td><code>template &lt;typename S&gt; Iterator LowerBound(ConstPtr(Item) data, RefRef(S) rS = S()) const;</code></td></tr>
 		<tr><td><code>void Sort(TSortMode mode = HeapSortMode) const;</code></td></tr>
-		<tr><td><code>template &lt;typename S&gt; void Sort(TSortMode mode = HeapSortMode, Ref(S) rS) const;</code></td></tr>
 		<tr><td><code>template &lt;typename S&gt; void Sort(TSortMode mode = HeapSortMode, RefRef(S) rS = S()) const;</code></td></tr>
 		<tr><td>FindSorted, UpperBound and LowerBound search the ordered list and return an iterator to the item found. Sort transforms an unordered list into an ordered one. S is a function object implementing a less algorithm.</td></tr>
 		<tr><td><code>Iterator Append(ConstPtr(Item) data) const;</code></td></tr>
@@ -75,17 +65,15 @@
 		<tr><td><code>Iterator InsertAfter(Iterator node, ConstPtr(Item) data) const;</code></td></tr>
 		<tr><td><code>void Remove(Iterator node) const;</code></td></tr>
 		<tr><td><code>template &lt;typename D&gt; void Remove(Iterator node, RefRef(D) rD = D()) const;</code></td></tr>
-		<tr><td><code>template &lt;typename D&gt; void Remove(Iterator node, Ref(D) rD) const;</code></td></tr>
 		<tr><td>Append, Prepend, InsertBefore, InsertAfter and Remove manipulate the list in an unordered fashion.</td></tr>
 		<tr><td><code>Iterator InsertSorted(ConstPtr(Item) data) const;</code></td></tr>
-		<tr><td><code>template &lt;typename S&gt; Iterator InsertSorted(ConstPtr(Item) data, Ref(S) rS) const;</code></td></tr>
 		<tr><td><code>template &lt;typename S&gt; Iterator InsertSorted(ConstPtr(Item) data, RefRef(S) rS = S()) const;</code></td></tr>
 		<tr><td><code>bool RemoveSorted(ConstPtr(Item) data) const;</code></td></tr>
-		<tr><td><code>template &lt;typename S, typename D&gt; bool RemoveSorted(ConstPtr(Item) data, Ref(S) rS, Ref(D) rD) const;</code></td></tr>
 		<tr><td><code>template &lt;typename S, typename D&gt; bool RemoveSorted(ConstPtr(Item) data, RefRef(S) rS, RefRef(D) rD) const;</code></td></tr>
 		<tr><td>InsertSorted and RemoveSorted manipulate the list in an ordered way.</td></tr>
 		<tr><td><code>ConstPtr(Item) GetData(Iterator node) const;</code></td></tr>
-		<tr><td><code>void SetData(Iterator node, ConstPtr(Item) data) const;</code></td></tr>
+		<tr><td><code>void SetData(Iterator node, ConstPtr(Item) data);</code></td></tr>
+		<tr><td><code>template &lt;typename D&gt; void SetData(Iterator node, ConstPtr(Item) data, RefRef(D) rD = D());</code></td></tr>
 		<tr><td>GetData and SetData implement an access to the data pointed to by the iterator.</td></tr>
 	  </table>
 	  <p>And sample code looks like this:</p>
@@ -115,13 +103,13 @@ int main(void)
 	dv.Append(new X(_T("Zwei")));
 	dv.Append(new X(_T("ToFind")));
 	dv.Append(new X(_T("Vier")));
-	it = dv.Find&lt;decltype(e)&gt;(&toFind, e);
+	it = dv.Find(&toFind, e);
 	assert(it);
 	assert((*it)&minus;&gt;get_Name().EQ(CStringLiteral(_T("ToFind"))));
 
 	dv.Sort();
 	it = dv.FindSorted(&toFind);
-	assert(dv.MatchSorted(it, &toFind));
+	assert(it);
 	assert((*it)&minus;&gt;get_Name().EQ(CStringLiteral(_T("ToFind"))));
 	return 0;
 }
